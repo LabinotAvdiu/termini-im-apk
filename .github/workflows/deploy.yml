@@ -33,7 +33,7 @@ jobs:
         run: flutter test
 
       - name: Build web release
-        run: flutter build web --release --web-renderer canvaskit
+        run: flutter build web --release
 
       - name: Setup SSH key
         run: |
