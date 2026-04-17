@@ -104,6 +104,9 @@ class AuthRepository {
   // Register
   // ---------------------------------------------------------------------------
 
+  Future<bool> checkEmailAvailable(String email) =>
+      _datasource.checkEmail(email);
+
   Future<AuthResponse> register({
     required Map<String, dynamic> data,
     bool rememberMe = true,

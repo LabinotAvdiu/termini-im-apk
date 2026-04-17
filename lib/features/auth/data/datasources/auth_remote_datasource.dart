@@ -74,6 +74,22 @@ class AuthRemoteDatasource {
   }
 
   // ---------------------------------------------------------------------------
+  // checkEmail — returns true if the email is available, false if taken
+  // ---------------------------------------------------------------------------
+  Future<bool> checkEmail(String email) async {
+    try {
+      final response = await _client.get(
+        '/auth/check-email',
+        queryParameters: {'email': email},
+      );
+      final data = response.data as Map<String, dynamic>;
+      return data['available'] as bool? ?? true;
+    } on DioException {
+      return true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // register
   // ---------------------------------------------------------------------------
   Future<AuthResponse> register({

@@ -28,6 +28,9 @@ class AuthState {
   final bool rememberMe;
   // True when the user chose to browse without logging in.
   final bool isGuest;
+  // One-shot flag set to true right after a successful signup; the shell
+  // consumes it to land a new owner on the "Mon Salon" tab, then clears it.
+  final bool justSignedUp;
 
   const AuthState({
     this.isAuthenticated = false,
@@ -38,6 +41,7 @@ class AuthState {
     this.token,
     this.rememberMe = true, // default: remember the user
     this.isGuest = false,
+    this.justSignedUp = false,
   });
 
   /// Convenience getters for tab-layout decisions in MainShell.
@@ -54,6 +58,7 @@ class AuthState {
     String? token,
     bool? rememberMe,
     bool? isGuest,
+    bool? justSignedUp,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -66,6 +71,7 @@ class AuthState {
       token: token ?? this.token,
       rememberMe: rememberMe ?? this.rememberMe,
       isGuest: isGuest ?? this.isGuest,
+      justSignedUp: justSignedUp ?? this.justSignedUp,
     );
   }
 }
@@ -186,6 +192,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? city,
     String? companyName,
     String? address,
+    String? bookingMode,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -200,6 +207,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         'city': city,
         'company_name': companyName,
         'address': address,
+        if (bookingMode != null) 'booking_mode': bookingMode,
       }..removeWhere((_, v) => v == null);
 
       final response = await _repository.register(
@@ -214,6 +222,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         user: response.user,
         role: _resolveRole(response.role, response.user),
         error: null,
+        justSignedUp: true,
       );
     } on ApiException catch (e) {
       state = state.copyWith(
@@ -225,6 +234,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         error: e.toString(),
       );
+    }
+  }
+
+  /// Called by the shell after consuming the one-shot flag.
+  void clearJustSignedUp() {
+    if (state.justSignedUp) {
+      state = state.copyWith(justSignedUp: false);
     }
   }
 

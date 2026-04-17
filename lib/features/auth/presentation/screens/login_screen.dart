@@ -23,8 +23,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: Remove default values before push
-  final _emailController = TextEditingController(text: 'karim@barbier-parisien.fr');
-  final _passwordController = TextEditingController(text: 'Test1234');
+  final _emailController = TextEditingController(text: 'test2@test.com');
+  final _passwordController = TextEditingController(text: 'Password1');
   bool _passwordVisible = false;
 
   @override
@@ -221,14 +221,14 @@ class _LogoHeader extends StatelessWidget {
             ],
           ),
           child: const Icon(
-            Icons.calendar_month_rounded,
+            Icons.content_cut_rounded,
             color: Colors.white,
             size: 32,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         const Text(
-          'Takimi IM',
+          'Termini im',
           style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w800,

@@ -4,9 +4,11 @@ import '../theme/app_text_styles.dart';
 
 class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final String? label;
   final String? hint;
   final String? Function(String?)? validator;
+  final String? errorText;
   final bool obscureText;
   final TextInputType? keyboardType;
   final IconData? prefixIcon;
@@ -18,9 +20,11 @@ class AppTextField extends StatelessWidget {
   const AppTextField({
     super.key,
     this.controller,
+    this.focusNode,
     this.label,
     this.hint,
     this.validator,
+    this.errorText,
     this.obscureText = false,
     this.keyboardType,
     this.prefixIcon,
@@ -42,6 +46,7 @@ class AppTextField extends StatelessWidget {
         ],
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           validator: validator,
           obscureText: obscureText,
           keyboardType: keyboardType,
@@ -52,6 +57,7 @@ class AppTextField extends StatelessWidget {
             hintText: hint,
             prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
             suffixIcon: suffixIcon,
+            errorText: errorText,
           ),
         ),
       ],
