@@ -100,12 +100,14 @@ class EmployeeModel {
   final String name;
   final String? photoUrl;
   final List<String> specialties;
+  final List<String> serviceIds;
 
   const EmployeeModel({
     required this.id,
     required this.name,
     this.photoUrl,
     this.specialties = const [],
+    this.serviceIds = const [],
   });
 
   factory EmployeeModel.fromJson(Map<String, dynamic> json) {
@@ -115,6 +117,10 @@ class EmployeeModel {
       photoUrl: json['photoUrl'] as String?,
       specialties: (json['specialties'] as List<dynamic>?)
               ?.map((e) => e as String)
+              .toList() ??
+          [],
+      serviceIds: (json['serviceIds'] as List<dynamic>?)
+              ?.map((e) => e.toString())
               .toList() ??
           [],
     );

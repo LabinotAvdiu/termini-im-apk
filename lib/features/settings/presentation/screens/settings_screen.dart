@@ -8,6 +8,8 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/language_sheet.dart';
+import '../../../../core/network/dio_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -21,27 +23,46 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
-  late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
-  bool _isEditing = false;
   bool _isSaving = false;
+  bool _hasChanges = false;
   bool _notificationsEnabled = true;
+
+  // Original values to detect changes
+  late String _origFirstName;
+  late String _origLastName;
+  late String _origPhone;
 
   @override
   void initState() {
     super.initState();
-    // TODO: Populate with real user data from auth state
-    _firstNameController = TextEditingController(text: 'Jean');
-    _lastNameController = TextEditingController(text: 'Dupont');
-    _emailController = TextEditingController(text: 'jean.dupont@email.com');
-    _phoneController = TextEditingController(text: '+33 6 12 34 56 78');
+    final user = ref.read(authStateProvider).user;
+    _origFirstName = user?.firstName ?? '';
+    _origLastName = user?.lastName ?? '';
+    _origPhone = user?.phone ?? '';
+
+    _firstNameController = TextEditingController(text: _origFirstName);
+    _lastNameController = TextEditingController(text: _origLastName);
+    _phoneController = TextEditingController(text: _origPhone);
+
+    _firstNameController.addListener(_checkChanges);
+    _lastNameController.addListener(_checkChanges);
+    _phoneController.addListener(_checkChanges);
+  }
+
+  void _checkChanges() {
+    final changed = _firstNameController.text != _origFirstName ||
+        _lastNameController.text != _origLastName ||
+        _phoneController.text != _origPhone;
+    if (changed != _hasChanges) {
+      setState(() => _hasChanges = changed);
+    }
   }
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
@@ -51,17 +72,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     setState(() => _isSaving = true);
 
-    // TODO: Call API to update user info
-    await Future.delayed(const Duration(milliseconds: 800));
+    try {
+      final repository = ref.read(authRepositoryProvider);
+      final updatedUser = await repository.updateProfile(data: {
+        'first_name': _firstNameController.text.trim(),
+        'last_name': _lastNameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+      });
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-      _isSaving = false;
-      _isEditing = false;
-    });
+      ref.read(authStateProvider.notifier).updateUser(updatedUser);
 
-    context.showSnackBar(context.l10n.changesSaved);
+      // Update originals so button hides
+      _origFirstName = _firstNameController.text;
+      _origLastName = _lastNameController.text;
+      _origPhone = _phoneController.text;
+
+      setState(() {
+        _isSaving = false;
+        _hasChanges = false;
+      });
+
+      context.showSnackBar(context.l10n.changesSaved);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      context.showSnackBar(e.toString(), isError: true);
+    }
   }
 
   void _showLogoutDialog() {
@@ -124,7 +162,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 validator: (v) => Validators.password(v,
                     requiredMessage: context.l10n.passwordRequired),
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.lg),
               AppTextField(
                 controller: newPwController,
                 label: context.l10n.newPassword,
@@ -134,7 +172,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     requiredMessage: context.l10n.passwordRequired,
                     tooShortMessage: context.l10n.passwordTooShort),
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.lg),
               AppTextField(
                 controller: confirmPwController,
                 label: context.l10n.confirmNewPassword,
@@ -153,11 +191,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (pwFormKey.currentState!.validate()) {
-                // TODO: Call API to change password
+            onPressed: () async {
+              if (!pwFormKey.currentState!.validate()) return;
+              try {
+                final repository = ref.read(authRepositoryProvider);
+                await repository.changePassword(
+                  currentPassword: currentPwController.text,
+                  password: newPwController.text,
+                  passwordConfirmation: confirmPwController.text,
+                );
+                if (!mounted) return;
                 Navigator.of(ctx).pop();
-                context.showSnackBar(context.l10n.changesSaved);
+                context.showSnackBar(context.l10n.resetPasswordSuccess);
+              } catch (e) {
+                if (!mounted) return;
+                Navigator.of(ctx).pop();
+                context.showSnackBar(e.toString(), isError: true);
               }
             },
             child: Text(context.l10n.saveChanges),
@@ -168,55 +217,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showLanguageSheet() {
-    final currentLocale = ref.read(localeProvider);
-
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.radiusXl),
-        ),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(context.l10n.language, style: AppTextStyles.h3),
-            const SizedBox(height: AppSpacing.md),
-            _LanguageTile(
-              label: context.l10n.french,
-              flag: '🇫🇷',
-              isSelected: currentLocale.languageCode == 'fr',
-              onTap: () {
-                ref.read(localeProvider.notifier).state = const Locale('fr');
-                Navigator.of(context).pop();
-              },
-            ),
-            const Divider(height: 1),
-            _LanguageTile(
-              label: context.l10n.english,
-              flag: '🇬🇧',
-              isSelected: currentLocale.languageCode == 'en',
-              onTap: () {
-                ref.read(localeProvider.notifier).state = const Locale('en');
-                Navigator.of(context).pop();
-              },
-            ),
-            const SizedBox(height: AppSpacing.md),
-          ],
-        ),
-      ),
+    final repository = ref.read(authRepositoryProvider);
+    final isAuthenticated = ref.read(authStateProvider).isAuthenticated;
+    showLanguageSheet(
+      context,
+      repository: isAuthenticated ? repository : null,
     );
   }
 
@@ -230,15 +235,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           onPressed: () => context.go('/home'),
         ),
-        actions: [
-          if (!_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, size: 20),
-              tooltip: context.l10n.editProfile,
-              onPressed: () => setState(() => _isEditing = true),
-            ),
-          const SizedBox(width: AppSpacing.xs),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -247,7 +243,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             // Profile avatar
             _ProfileAvatar(
               name: '${_firstNameController.text} ${_lastNameController.text}',
-              isEditing: _isEditing,
+              isEditing: false,
             ),
 
             const SizedBox(height: AppSpacing.lg),
@@ -260,18 +256,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    // Email (read-only)
+                    AppTextField(
+                      controller: TextEditingController(
+                        text: ref.watch(authStateProvider).user?.email ?? '',
+                      ),
+                      label: context.l10n.email,
+                      enabled: false,
+                      prefixIcon: Icons.email_outlined,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+
                     Row(
                       children: [
                         Expanded(
                           child: AppTextField(
                             controller: _firstNameController,
                             label: context.l10n.firstName,
-                            enabled: _isEditing,
                             prefixIcon: Icons.person_outline,
-                            validator: _isEditing
-                                ? (v) => Validators.required(v,
-                                    message: context.l10n.firstNameRequired)
-                                : null,
+                            validator: (v) => Validators.required(v,
+                                message: context.l10n.firstNameRequired),
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
@@ -279,58 +283,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           child: AppTextField(
                             controller: _lastNameController,
                             label: context.l10n.lastName,
-                            enabled: _isEditing,
                             prefixIcon: Icons.person_outline,
-                            validator: _isEditing
-                                ? (v) => Validators.required(v,
-                                    message: context.l10n.lastNameRequired)
-                                : null,
+                            validator: (v) => Validators.required(v,
+                                message: context.l10n.lastNameRequired),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(
-                      controller: _emailController,
-                      label: context.l10n.email,
-                      enabled: _isEditing,
-                      prefixIcon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: _isEditing
-                          ? (v) => Validators.email(v,
-                              requiredMessage: context.l10n.emailRequired,
-                              invalidMessage: context.l10n.emailInvalid)
-                          : null,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
+
                     AppTextField(
                       controller: _phoneController,
                       label: context.l10n.phone,
-                      enabled: _isEditing,
                       prefixIcon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
                     ),
-                    if (_isEditing) ...[
+
+                    // Update button — only visible when changes detected
+                    if (_hasChanges) ...[
                       const SizedBox(height: AppSpacing.lg),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppButton(
-                              text: context.l10n.cancel,
-                              isOutlined: true,
-                              onPressed: () =>
-                                  setState(() => _isEditing = false),
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: AppButton(
-                              text: context.l10n.saveChanges,
-                              isLoading: _isSaving,
-                              onPressed: _saveChanges,
-                            ),
-                          ),
-                        ],
+                      AppButton(
+                        text: context.l10n.saveChanges,
+                        isLoading: _isSaving,
+                        onPressed: _saveChanges,
+                        width: double.infinity,
                       ),
                     ],
                   ],
@@ -351,9 +327,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     icon: Icons.language_rounded,
                     title: context.l10n.language,
                     trailing: Text(
-                      ref.watch(localeProvider).languageCode == 'fr'
-                          ? context.l10n.french
-                          : context.l10n.english,
+                      switch (ref.watch(localeProvider).languageCode) {
+                        'fr' => context.l10n.french,
+                        'sq' => context.l10n.albanian,
+                        _ => context.l10n.english,
+                      },
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
@@ -640,35 +618,3 @@ class _SettingsTile extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Language tile
-// ---------------------------------------------------------------------------
-
-class _LanguageTile extends StatelessWidget {
-  final String label;
-  final String flag;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _LanguageTile({
-    required this.label,
-    required this.flag,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Text(flag, style: const TextStyle(fontSize: 24)),
-      title: Text(label, style: AppTextStyles.body),
-      trailing: isSelected
-          ? const Icon(Icons.check_circle_rounded,
-              color: AppColors.primary, size: 22)
-          : null,
-      onTap: onTap,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-    );
-  }
-}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../data/models/company_detail_model.dart';
 
 class ServiceTile extends StatelessWidget {
@@ -101,8 +102,8 @@ class ServiceTile extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     minimumSize: const Size(0, 36),
                   ),
-                  child: const Text(
-                    'Choisir',
+                  child: Text(
+                    context.l10n.choose,
                     style: AppTextStyles.buttonSmall,
                   ),
                 ),

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/utils/extensions.dart';
 import '../providers/company_detail_provider.dart';
 import '../widgets/photo_gallery.dart';
 import '../widgets/service_category_section.dart';
@@ -46,6 +47,7 @@ class _CompanyDetailScreenState extends ConsumerState<CompanyDetailScreen> {
                   : _CompanyBody(
                       companyId: widget.companyId,
                       state: state,
+                      ref: ref,
                     ),
     );
   }
@@ -58,8 +60,13 @@ class _CompanyDetailScreenState extends ConsumerState<CompanyDetailScreen> {
 class _CompanyBody extends StatelessWidget {
   final String companyId;
   final CompanyDetailState state;
+  final WidgetRef ref;
 
-  const _CompanyBody({required this.companyId, required this.state});
+  const _CompanyBody({
+    required this.companyId,
+    required this.state,
+    required this.ref,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +113,7 @@ class _CompanyBody extends StatelessWidget {
                   AppSpacing.xs,
                 ),
                 child: Text(
-                  'Nos services',
+                  context.l10n.ourServices,
                   style: AppTextStyles.h2,
                 ),
               ),
@@ -223,7 +230,7 @@ class _CompanyInfoCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                '(${company.reviewCount} avis)',
+                context.l10n.reviews(company.reviewCount as int),
                 style: AppTextStyles.bodySmall,
               ),
             ],
@@ -318,7 +325,13 @@ class _BackButton extends StatelessWidget {
         shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => context.go('/home'),
+          onTap: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
           child: const Padding(
             padding: EdgeInsets.all(8),
             child: Icon(Icons.arrow_back_ios_new_rounded,

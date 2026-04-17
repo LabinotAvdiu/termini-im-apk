@@ -22,7 +22,7 @@ class BookingModel {
       companyId: data['companyId']?.toString() ?? '',
       serviceId: data['serviceId']?.toString() ?? '',
       employeeId: data['employeeId']?.toString(),
-      dateTime: DateTime.parse(data['dateTime'] as String),
+      dateTime: DateTime.parse(data['dateTime'] as String? ?? data['date_time'] as String? ?? DateTime.now().toIso8601String()),
       status: data['status'] as String? ?? 'pending',
     );
   }

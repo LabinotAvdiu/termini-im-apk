@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/extensions.dart';
 import '../providers/booking_provider.dart';
 
 class BookingConfirmation extends ConsumerWidget {
@@ -17,10 +18,10 @@ class BookingConfirmation extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Récapitulatif', style: AppTextStyles.h3),
+          Text(context.l10n.summary, style: AppTextStyles.h3),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Vérifiez les détails avant de confirmer.',
+            context.l10n.bookingConfirmationSubtitle,
             style: AppTextStyles.bodySmall,
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -83,7 +84,7 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
-                  'Votre rendez-vous',
+                  context.l10n.yourAppointment,
                   style: AppTextStyles.subtitle.copyWith(color: Colors.white),
                 ),
               ],
@@ -97,8 +98,8 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 _SummaryRow(
                   icon: Icons.content_cut_rounded,
-                  label: 'Service',
-                  value: state.serviceName ?? 'Service',
+                  label: context.l10n.service,
+                  value: state.serviceName ?? context.l10n.service,
                   subValue: state.servicePrice != null
                       ? '${state.servicePrice!.toStringAsFixed(2)} €'
                       : null,
@@ -107,7 +108,7 @@ class _SummaryCard extends StatelessWidget {
                 const Divider(height: AppSpacing.lg),
                 _SummaryRow(
                   icon: Icons.person_outline_rounded,
-                  label: 'Coiffeur(se)',
+                  label: context.l10n.hairdresser,
                   value: state.employeeDisplayName,
                   subValue: state.noPreference
                       ? null
@@ -119,13 +120,13 @@ class _SummaryCard extends StatelessWidget {
                   const Divider(height: AppSpacing.lg),
                   _SummaryRow(
                     icon: Icons.event_rounded,
-                    label: 'Date',
-                    value: _formatDate(state.selectedSlot!.dateTime),
+                    label: context.l10n.dateLabel,
+                    value: _formatDate(context, state.selectedSlot!.dateTime),
                   ),
                   const Divider(height: AppSpacing.lg),
                   _SummaryRow(
                     icon: Icons.access_time_rounded,
-                    label: 'Heure',
+                    label: context.l10n.timeLabel,
                     value: _formatTime(state.selectedSlot!.dateTime),
                     subValue: state.serviceDuration != null
                         ? '~${state.serviceDuration} min'
@@ -140,13 +141,16 @@ class _SummaryCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime dt) {
-    const months = [
-      'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
+  String _formatDate(BuildContext context, DateTime dt) {
+    final l = context.l10n;
+    final months = [
+      l.monthJan, l.monthFeb, l.monthMar, l.monthApr,
+      l.monthMay, l.monthJun, l.monthJul, l.monthAug,
+      l.monthSep, l.monthOct, l.monthNov, l.monthDec,
     ];
-    const days = [
-      'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche',
+    final days = [
+      l.monday, l.tuesday, l.wednesday, l.thursday,
+      l.friday, l.saturday, l.sunday,
     ];
     return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]} ${dt.year}';
   }
@@ -243,8 +247,7 @@ class _InfoNote extends StatelessWidget {
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              'Un rappel vous sera envoyé 24h avant votre rendez-vous. '
-              'L\'annulation est possible jusqu\'à 2h avant.',
+              context.l10n.reminderNote,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.info,
                 height: 1.5,

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
 import 'app_localizations_fr.dart';
+import 'app_localizations_sq.dart';
 
 // ignore_for_file: type=lint
 
@@ -96,6 +97,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('fr'),
+    Locale('sq'),
   ];
 
   /// No description provided for @appName.
@@ -218,11 +220,23 @@ abstract class AppLocalizations {
   /// **'Je suis un client'**
   String get iAmUser;
 
+  /// No description provided for @iAmUserSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trouvez et réservez vos rendez-vous beauté'**
+  String get iAmUserSubtitle;
+
   /// No description provided for @iAmCompany.
   ///
   /// In fr, this message translates to:
   /// **'Je suis un professionnel'**
   String get iAmCompany;
+
+  /// No description provided for @iAmCompanySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérez votre salon et vos réservations'**
+  String get iAmCompanySubtitle;
 
   /// No description provided for @chooseRole.
   ///
@@ -488,6 +502,12 @@ abstract class AppLocalizations {
   /// **'English'**
   String get english;
 
+  /// No description provided for @albanian.
+  ///
+  /// In fr, this message translates to:
+  /// **'Shqip'**
+  String get albanian;
+
   /// No description provided for @logout.
   ///
   /// In fr, this message translates to:
@@ -587,7 +607,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterCityHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ex: Paris, Salon Élégance...'**
+  /// **'Ex: Prishtina, Salon Elegance...'**
   String get filterCityHint;
 
   /// No description provided for @filterCitySalonLabel.
@@ -770,6 +790,12 @@ abstract class AppLocalizations {
   /// **'Veuillez vérifier votre email pour pouvoir prendre rendez-vous.'**
   String get emailNotVerifiedMessage;
 
+  /// No description provided for @security.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sécurité'**
+  String get security;
+
   /// No description provided for @yourInfo.
   ///
   /// In fr, this message translates to:
@@ -787,6 +813,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Étape {current}/{total}'**
   String stepOf(int current, int total);
+
+  /// No description provided for @signupSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez votre compte en quelques secondes'**
+  String get signupSubtitle;
+
+  /// No description provided for @companyNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon Salon'**
+  String get companyNameHint;
 
   /// No description provided for @companyNameRequired.
   ///
@@ -809,7 +847,7 @@ abstract class AppLocalizations {
   /// No description provided for @cityHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ex: Paris, Lyon...'**
+  /// **'Ex: Prishtinë, Prizren...'**
   String get cityHint;
 
   /// No description provided for @cityDescription.
@@ -835,6 +873,804 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'La ville est requise'**
   String get cityRequired;
+
+  /// No description provided for @findYourSalon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trouvez votre salon idéal'**
+  String get findYourSalon;
+
+  /// No description provided for @loginToBook.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez-vous pour réserver'**
+  String get loginToBook;
+
+  /// No description provided for @loginToBookMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour prendre rendez-vous, vous devez avoir un compte.'**
+  String get loginToBookMessage;
+
+  /// No description provided for @continueWithoutAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer sans compte'**
+  String get continueWithoutAccount;
+
+  /// No description provided for @welcome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bienvenue'**
+  String get welcome;
+
+  /// No description provided for @search.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher'**
+  String get search;
+
+  /// No description provided for @myAppointments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes RDV'**
+  String get myAppointments;
+
+  /// No description provided for @upcoming.
+  ///
+  /// In fr, this message translates to:
+  /// **'À venir'**
+  String get upcoming;
+
+  /// No description provided for @past.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passés'**
+  String get past;
+
+  /// No description provided for @noUpcomingAppointments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun rendez-vous à venir'**
+  String get noUpcomingAppointments;
+
+  /// No description provided for @noPastAppointments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun rendez-vous passé'**
+  String get noPastAppointments;
+
+  /// No description provided for @appointmentConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmé'**
+  String get appointmentConfirmed;
+
+  /// No description provided for @appointmentPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get appointmentPending;
+
+  /// No description provided for @appointmentCompleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminé'**
+  String get appointmentCompleted;
+
+  /// No description provided for @appointmentCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulé'**
+  String get appointmentCancelled;
+
+  /// No description provided for @mySalon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon Salon'**
+  String get mySalon;
+
+  /// No description provided for @companyInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations du salon'**
+  String get companyInfo;
+
+  /// No description provided for @servicesAndCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Services & Catégories'**
+  String get servicesAndCategories;
+
+  /// No description provided for @team.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipe'**
+  String get team;
+
+  /// No description provided for @openingHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires d\'ouverture'**
+  String get openingHours;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une catégorie'**
+  String get addCategory;
+
+  /// No description provided for @addService.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un service'**
+  String get addService;
+
+  /// No description provided for @inviteEmployee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inviter un employé'**
+  String get inviteEmployee;
+
+  /// No description provided for @createEmployee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un compte employé'**
+  String get createEmployee;
+
+  /// No description provided for @closed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermé'**
+  String get closed;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la catégorie'**
+  String get categoryName;
+
+  /// No description provided for @serviceDuration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée (minutes)'**
+  String get serviceDuration;
+
+  /// No description provided for @servicePrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix (€)'**
+  String get servicePrice;
+
+  /// No description provided for @employeeEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email de l\'employé'**
+  String get employeeEmail;
+
+  /// No description provided for @specialties.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spécialités'**
+  String get specialties;
+
+  /// No description provided for @active.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get active;
+
+  /// No description provided for @inactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactif'**
+  String get inactive;
+
+  /// No description provided for @assignedServices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Services assignés'**
+  String get assignedServices;
+
+  /// No description provided for @noServicesAssigned.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun service assigné'**
+  String get noServicesAssigned;
+
+  /// No description provided for @myPlanning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon Planning'**
+  String get myPlanning;
+
+  /// No description provided for @available.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible'**
+  String get available;
+
+  /// No description provided for @walkIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans RDV'**
+  String get walkIn;
+
+  /// No description provided for @addWalkIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un client'**
+  String get addWalkIn;
+
+  /// No description provided for @nextAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochain rendez-vous'**
+  String get nextAppointment;
+
+  /// No description provided for @noAppointmentsToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun rendez-vous aujourd\'hui'**
+  String get noAppointmentsToday;
+
+  /// No description provided for @clientFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom du client'**
+  String get clientFirstName;
+
+  /// No description provided for @clientLastName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du client (optionnel)'**
+  String get clientLastName;
+
+  /// No description provided for @clientPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (optionnel)'**
+  String get clientPhone;
+
+  /// No description provided for @scheduleSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires'**
+  String get scheduleSettings;
+
+  /// No description provided for @myWorkHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes horaires de travail'**
+  String get myWorkHours;
+
+  /// No description provided for @companyHoursHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon : {hours}'**
+  String companyHoursHint(String hours);
+
+  /// No description provided for @breaks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pauses'**
+  String get breaks;
+
+  /// No description provided for @addBreak.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une pause'**
+  String get addBreak;
+
+  /// No description provided for @breakLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé (optionnel)'**
+  String get breakLabel;
+
+  /// No description provided for @daysOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jours de congé'**
+  String get daysOff;
+
+  /// No description provided for @addDayOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un jour de congé'**
+  String get addDayOff;
+
+  /// No description provided for @reason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif (optionnel)'**
+  String get reason;
+
+  /// No description provided for @everyDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les jours'**
+  String get everyDay;
+
+  /// No description provided for @breakSlot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pause'**
+  String get breakSlot;
+
+  /// No description provided for @working.
+  ///
+  /// In fr, this message translates to:
+  /// **'Travaille'**
+  String get working;
+
+  /// No description provided for @notWorking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne travaille pas'**
+  String get notWorking;
+
+  /// No description provided for @delete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get delete;
+
+  /// No description provided for @dayOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour de congé'**
+  String get dayOff;
+
+  /// No description provided for @youDontWorkToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne travaillez pas ce jour'**
+  String get youDontWorkToday;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez-vous à votre compte'**
+  String get loginSubtitle;
+
+  /// No description provided for @bookingAppBarTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre RDV'**
+  String get bookingAppBarTitle;
+
+  /// No description provided for @back.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get back;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get continueLabel;
+
+  /// No description provided for @bookingSuccessMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre rendez-vous a été pris avec succès. Vous recevrez une confirmation par notification.'**
+  String get bookingSuccessMessage;
+
+  /// No description provided for @bookingConfirmationSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez les détails avant de confirmer.'**
+  String get bookingConfirmationSubtitle;
+
+  /// No description provided for @yourAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre rendez-vous'**
+  String get yourAppointment;
+
+  /// No description provided for @reminderNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un rappel vous sera envoyé 24h avant votre rendez-vous. L\'annulation est possible jusqu\'à 2h avant.'**
+  String get reminderNote;
+
+  /// No description provided for @hairdresser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coiffeur(se)'**
+  String get hairdresser;
+
+  /// No description provided for @noPreferenceShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans préf.'**
+  String get noPreferenceShort;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heure'**
+  String get timeLabel;
+
+  /// No description provided for @selectDateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez une date ci-dessus.'**
+  String get selectDateHint;
+
+  /// No description provided for @noSlotsAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun créneau disponible\npour cette date.'**
+  String get noSlotsAvailable;
+
+  /// No description provided for @slotStatusDayOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congé'**
+  String get slotStatusDayOff;
+
+  /// No description provided for @slotStatusNotWorking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absent'**
+  String get slotStatusNotWorking;
+
+  /// No description provided for @slotStatusFull.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complet'**
+  String get slotStatusFull;
+
+  /// No description provided for @ourServices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nos services'**
+  String get ourServices;
+
+  /// No description provided for @orDivider.
+  ///
+  /// In fr, this message translates to:
+  /// **'ou'**
+  String get orDivider;
+
+  /// No description provided for @resultsFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} résultat{plural} trouvé{plural}'**
+  String resultsFound(int count, String plural);
+
+  /// No description provided for @salonsNearby.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} salon{plural} près de vous'**
+  String salonsNearby(int count, String plural);
+
+  /// No description provided for @phoneCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro copié : {phone}'**
+  String phoneCopied(String phone);
+
+  /// No description provided for @selectServiceRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez sélectionner un service'**
+  String get selectServiceRequired;
+
+  /// No description provided for @walkInSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Client ajouté avec succès'**
+  String get walkInSuccess;
+
+  /// No description provided for @walkInError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'ajout'**
+  String get walkInError;
+
+  /// No description provided for @todayLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get todayLabel;
+
+  /// No description provided for @previousDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour précédent'**
+  String get previousDay;
+
+  /// No description provided for @nextDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour suivant'**
+  String get nextDay;
+
+  /// No description provided for @noBreaksConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune pause configurée'**
+  String get noBreaksConfigured;
+
+  /// No description provided for @noLeavePlanned.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun congé planifié'**
+  String get noLeavePlanned;
+
+  /// No description provided for @noServicesConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun service configuré'**
+  String get noServicesConfigured;
+
+  /// No description provided for @dayOfWeekLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour de la semaine'**
+  String get dayOfWeekLabel;
+
+  /// No description provided for @startTimeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get startTimeLabel;
+
+  /// No description provided for @endTimeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get endTimeLabel;
+
+  /// No description provided for @employeeScheduleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires : {hours}'**
+  String employeeScheduleHint(String hours);
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description'**
+  String get descriptionLabel;
+
+  /// No description provided for @monday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lundi'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mardi'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mercredi'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeudi'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vendredi'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Samedi'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dimanche'**
+  String get sunday;
+
+  /// No description provided for @monthJan.
+  ///
+  /// In fr, this message translates to:
+  /// **'janvier'**
+  String get monthJan;
+
+  /// No description provided for @monthFeb.
+  ///
+  /// In fr, this message translates to:
+  /// **'février'**
+  String get monthFeb;
+
+  /// No description provided for @monthMar.
+  ///
+  /// In fr, this message translates to:
+  /// **'mars'**
+  String get monthMar;
+
+  /// No description provided for @monthApr.
+  ///
+  /// In fr, this message translates to:
+  /// **'avril'**
+  String get monthApr;
+
+  /// No description provided for @monthMay.
+  ///
+  /// In fr, this message translates to:
+  /// **'mai'**
+  String get monthMay;
+
+  /// No description provided for @monthJun.
+  ///
+  /// In fr, this message translates to:
+  /// **'juin'**
+  String get monthJun;
+
+  /// No description provided for @monthJul.
+  ///
+  /// In fr, this message translates to:
+  /// **'juillet'**
+  String get monthJul;
+
+  /// No description provided for @monthAug.
+  ///
+  /// In fr, this message translates to:
+  /// **'août'**
+  String get monthAug;
+
+  /// No description provided for @monthSep.
+  ///
+  /// In fr, this message translates to:
+  /// **'septembre'**
+  String get monthSep;
+
+  /// No description provided for @monthOct.
+  ///
+  /// In fr, this message translates to:
+  /// **'octobre'**
+  String get monthOct;
+
+  /// No description provided for @monthNov.
+  ///
+  /// In fr, this message translates to:
+  /// **'novembre'**
+  String get monthNov;
+
+  /// No description provided for @monthDec.
+  ///
+  /// In fr, this message translates to:
+  /// **'décembre'**
+  String get monthDec;
+
+  /// No description provided for @monthShortJan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jan'**
+  String get monthShortJan;
+
+  /// No description provided for @monthShortFeb.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fév'**
+  String get monthShortFeb;
+
+  /// No description provided for @monthShortMar.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mar'**
+  String get monthShortMar;
+
+  /// No description provided for @monthShortApr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avr'**
+  String get monthShortApr;
+
+  /// No description provided for @monthShortMay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mai'**
+  String get monthShortMay;
+
+  /// No description provided for @monthShortJun.
+  ///
+  /// In fr, this message translates to:
+  /// **'Juin'**
+  String get monthShortJun;
+
+  /// No description provided for @monthShortJul.
+  ///
+  /// In fr, this message translates to:
+  /// **'Juil'**
+  String get monthShortJul;
+
+  /// No description provided for @monthShortAug.
+  ///
+  /// In fr, this message translates to:
+  /// **'Août'**
+  String get monthShortAug;
+
+  /// No description provided for @monthShortSep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sep'**
+  String get monthShortSep;
+
+  /// No description provided for @monthShortOct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oct'**
+  String get monthShortOct;
+
+  /// No description provided for @monthShortNov.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nov'**
+  String get monthShortNov;
+
+  /// No description provided for @monthShortDec.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déc'**
+  String get monthShortDec;
+
+  /// No description provided for @dayShortMon.
+  ///
+  /// In fr, this message translates to:
+  /// **'lun.'**
+  String get dayShortMon;
+
+  /// No description provided for @dayShortTue.
+  ///
+  /// In fr, this message translates to:
+  /// **'mar.'**
+  String get dayShortTue;
+
+  /// No description provided for @dayShortWed.
+  ///
+  /// In fr, this message translates to:
+  /// **'mer.'**
+  String get dayShortWed;
+
+  /// No description provided for @dayShortThu.
+  ///
+  /// In fr, this message translates to:
+  /// **'jeu.'**
+  String get dayShortThu;
+
+  /// No description provided for @dayShortFri.
+  ///
+  /// In fr, this message translates to:
+  /// **'ven.'**
+  String get dayShortFri;
+
+  /// No description provided for @dayShortSat.
+  ///
+  /// In fr, this message translates to:
+  /// **'sam.'**
+  String get dayShortSat;
+
+  /// No description provided for @dayShortSun.
+  ///
+  /// In fr, this message translates to:
+  /// **'dim.'**
+  String get dayShortSun;
 }
 
 class _AppLocalizationsDelegate
@@ -848,7 +1684,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'fr'].contains(locale.languageCode);
+      <String>['en', 'fr', 'sq'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -861,6 +1697,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsEn();
     case 'fr':
       return AppLocalizationsFr();
+    case 'sq':
+      return AppLocalizationsSq();
   }
 
   throw FlutterError(

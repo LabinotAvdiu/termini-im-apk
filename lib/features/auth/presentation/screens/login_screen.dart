@@ -10,6 +10,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/language_sheet.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -22,8 +23,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: Remove default values before push
-  final _emailController = TextEditingController(text: 'test@test.com');
-  final _passwordController = TextEditingController(text: '123456789');
+  final _emailController = TextEditingController(text: 'karim@barbier-parisien.fr');
+  final _passwordController = TextEditingController(text: 'Test1234');
   bool _passwordVisible = false;
 
   @override
@@ -120,18 +121,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // ---- Social buttons ----
                   AppSocialButton(
                     text: context.l10n.continueWithGoogle,
-                    isLoading: isLoading,
                     onPressed: isLoading ? null : _loginWithGoogle,
-                    icon: _GoogleIcon(),
+                    icon: const _GoogleIcon(),
                   ),
 
                   const SizedBox(height: AppSpacing.sm),
 
                   AppSocialButton(
                     text: context.l10n.continueWithFacebook,
-                    isLoading: isLoading,
                     onPressed: isLoading ? null : _loginWithFacebook,
-                    icon: _FacebookIcon(),
+                    icon: const _FacebookIcon(),
                   ),
 
                   const SizedBox(height: AppSpacing.xl),
@@ -141,6 +140,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   const SizedBox(height: AppSpacing.lg),
                 ],
+              ),
+            ),
+          ),
+
+          // Language toggle — positioned last so it stays on top of scroll view
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.sm),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.language_rounded,
+                    color: AppColors.textSecondary,
+                    size: 22,
+                  ),
+                  tooltip: context.l10n.language,
+                  onPressed: () => showLanguageSheet(context),
+                ),
               ),
             ),
           ),
@@ -219,9 +237,9 @@ class _LogoHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
-        const Text(
-          'Bon retour parmi nous !',
-          style: TextStyle(
+        Text(
+          context.l10n.loginSubtitle,
+          style: const TextStyle(
             fontSize: 14,
             color: AppColors.textSecondary,
             fontWeight: FontWeight.w400,
@@ -288,7 +306,7 @@ class _FormCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
 
             Text(
-              'Connectez-vous à votre compte',
+              context.l10n.loginSubtitle,
               style: AppTextStyles.bodySmall,
             ),
 
@@ -493,9 +511,9 @@ class _SignupLink extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () => context.goNamed(RouteNames.roleSelect),
-          child: const Text(
-            'Inscrivez-vous',
-            style: TextStyle(
+          child: Text(
+            context.l10n.signupNow,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
@@ -508,50 +526,160 @@ class _SignupLink extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Social brand icons (inline SVG-like via CustomPaint / simple containers)
+// Social brand icons — rendered via CustomPainter (no external packages)
 // ---------------------------------------------------------------------------
+
+/// Official Google multicolor "G" logo painted on a 24x24 canvas.
 class _GoogleIcon extends StatelessWidget {
+  const _GoogleIcon();
+
   @override
   Widget build(BuildContext context) {
-    // Simple colored "G" badge matching Google branding
-    return Container(
-      width: 20,
-      height: 20,
-      decoration: const BoxDecoration(shape: BoxShape.circle),
-      child: const Text(
-        'G',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: Color(0xFF4285F4),
-          height: 1.4,
-        ),
-      ),
+    return CustomPaint(
+      size: const Size(24, 24),
+      painter: _GoogleLogoPainter(),
     );
   }
 }
 
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r = size.width / 2;
+
+    // Clip to circle
+    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r)));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.white);
+
+    // Segment angles (degrees → radians): Red, Yellow, Green, Blue
+    // Standard Google G arc: starts at ~-21° and sweeps 360° split into 4 segments
+    const double toRad = 3.14159265 / 180.0;
+    final segments = [
+      // [startDeg, sweepDeg, color]
+      [-21.0, 90.0, const Color(0xFFEA4335)],  // Red    (top-right → bottom-right)
+      [69.0,  90.0, const Color(0xFFFBBC05)],  // Yellow (bottom-right → bottom-left)
+      [159.0, 90.0, const Color(0xFF34A853)],  // Green  (bottom-left → top-left)
+      [249.0, 90.0, const Color(0xFF4285F4)],  // Blue   (top-left → top-right)
+    ];
+
+    final arcRect = Rect.fromCircle(center: Offset(cx, cy), radius: r);
+    final strokeWidth = r * 0.38;
+    final innerR = r - strokeWidth;
+
+    for (final seg in segments) {
+      final paint = Paint()
+        ..color = seg[2] as Color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth;
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: innerR + strokeWidth / 2),
+        (seg[0] as double) * toRad,
+        (seg[1] as double) * toRad,
+        false,
+        paint,
+      );
+    }
+
+    // White cutout inner circle to form ring
+    canvas.drawCircle(
+      Offset(cx, cy),
+      innerR - 0.5,
+      Paint()..color = Colors.white,
+    );
+
+    // Blue horizontal bar (the crossbar of the G)
+    final barPaint = Paint()
+      ..color = const Color(0xFF4285F4)
+      ..style = PaintingStyle.fill;
+
+    // Bar sits in the right half, vertically centered, inset from center
+    final barTop = cy - strokeWidth * 0.38;
+    final barBottom = cy + strokeWidth * 0.38;
+    final barLeft = cx - 0.5;          // starts at center
+    final barRight = cx + innerR + 0.5; // reaches outer edge of ring
+
+    // Clip to right semicircle so bar doesn't bleed left
+    canvas.save();
+    canvas.clipRect(Rect.fromLTRB(cx, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTRB(barLeft, barTop, barRight, barBottom), barPaint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Official Facebook "f" logo: blue rounded square with white f.
 class _FacebookIcon extends StatelessWidget {
+  const _FacebookIcon();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 20,
-      height: 20,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1877F2),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Text(
-        'f',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: Colors.white,
-          height: 1.4,
-        ),
-      ),
+    return CustomPaint(
+      size: const Size(24, 24),
+      painter: _FacebookLogoPainter(),
     );
   }
+}
+
+class _FacebookLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rr = size.width * 0.22; // corner radius
+
+    // Blue rounded-square background
+    final bgPaint = Paint()..color = const Color(0xFF1877F2);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Radius.circular(rr),
+      ),
+      bgPaint,
+    );
+
+    // White "f" glyph via path
+    final w = size.width;
+    final h = size.height;
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    // Stem
+    final stemW = w * 0.13;
+    final stemLeft = w * 0.425;
+    final stemTop = h * 0.33;
+    canvas.drawRect(
+      Rect.fromLTWH(stemLeft, stemTop, stemW, h * 0.56),
+      paint,
+    );
+
+    // Crossbar
+    final crossH = h * 0.10;
+    final crossTop = h * 0.48;
+    canvas.drawRect(
+      Rect.fromLTWH(w * 0.28, crossTop, w * 0.42, crossH),
+      paint,
+    );
+
+    // Rounded cap on top of stem (the arc of the f)
+    final capPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stemW
+      ..strokeCap = StrokeCap.round;
+
+    final capCenter = Offset(stemLeft + stemW * 2.2, stemTop);
+    canvas.drawArc(
+      Rect.fromCircle(center: capCenter, radius: stemW * 1.5),
+      3.14159,
+      3.14159,
+      false,
+      capPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

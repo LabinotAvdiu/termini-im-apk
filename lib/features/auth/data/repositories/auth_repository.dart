@@ -219,6 +219,21 @@ class AuthRepository {
       );
 
   // ---------------------------------------------------------------------------
+  // Change password
+  // ---------------------------------------------------------------------------
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String password,
+    required String passwordConfirmation,
+  }) =>
+      _datasource.changePassword(
+        currentPassword: currentPassword,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
+
+  // ---------------------------------------------------------------------------
   // Token read helper (used by other parts of the app if needed)
   // ---------------------------------------------------------------------------
 

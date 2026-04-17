@@ -9,7 +9,7 @@ class AvailableSlotModel {
 
   factory AvailableSlotModel.fromJson(Map<String, dynamic> json) {
     return AvailableSlotModel(
-      dateTime: DateTime.parse(json['dateTime'] as String),
+      dateTime: DateTime.parse(json['dateTime'] as String? ?? DateTime.now().toIso8601String()),
       employeeId: json['employeeId'] as String?,
     );
   }

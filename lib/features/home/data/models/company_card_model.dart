@@ -28,6 +28,22 @@ class DaySlot {
       available: json['available'] as bool? ?? true,
     );
   }
+
+  /// Build from an availability item returned by the API:
+  /// { "date": "2026-04-17", "morning": true, "afternoon": false }
+  factory DaySlot.fromAvailabilityItem(
+    Map<String, dynamic> json, {
+    required bool useMorning,
+  }) {
+    final date = DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now();
+    final available =
+        (useMorning ? json['morning'] : json['afternoon']) as bool? ?? false;
+    return DaySlot(
+      label: date.dayAbbreviation,
+      date: date,
+      available: available,
+    );
+  }
 }
 
 /// Model displayed in each company card on the home screen.
@@ -61,6 +77,13 @@ class CompanyCardModel {
   String get priceLevelDisplay => priceLevel.priceLevel;
 
   factory CompanyCardModel.fromJson(Map<String, dynamic> json) {
+    // The API returns a single `availability` array:
+    // [{ "date": "2026-04-17", "morning": true, "afternoon": false }, ...]
+    // We fan it out into two DaySlot lists — one per period.
+    final availability =
+        (json['availability'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+            [];
+
     return CompanyCardModel(
       id: json['id']?.toString() ?? '',
       name: json['name'] as String? ?? '',
@@ -69,14 +92,12 @@ class CompanyCardModel {
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: json['reviewCount'] as int? ?? 0,
       priceLevel: json['priceLevel'] as int? ?? 2,
-      morningSlots: (json['morningSlots'] as List<dynamic>?)
-              ?.map((s) => DaySlot.fromJson(s as Map<String, dynamic>))
-              .toList() ??
-          [],
-      afternoonSlots: (json['afternoonSlots'] as List<dynamic>?)
-              ?.map((s) => DaySlot.fromJson(s as Map<String, dynamic>))
-              .toList() ??
-          [],
+      morningSlots: availability
+          .map((item) => DaySlot.fromAvailabilityItem(item, useMorning: true))
+          .toList(),
+      afternoonSlots: availability
+          .map((item) => DaySlot.fromAvailabilityItem(item, useMorning: false))
+          .toList(),
     );
   }
 }

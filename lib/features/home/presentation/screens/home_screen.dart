@@ -5,7 +5,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/language_sheet.dart';
+import '../../../../core/network/dio_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/widgets/auth_required_modal.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart';
 import '../widgets/search_filter_bar.dart';
@@ -135,124 +138,31 @@ class _HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       centerTitle: false,
       actions: [
-        // Language toggle
+        // Language toggle — passes repository when authenticated so the
+        // locale choice is also persisted server-side.
         IconButton(
           icon: const Icon(
             Icons.language_rounded,
             color: AppColors.textSecondary,
           ),
           tooltip: context.l10n.language,
-          onPressed: () => _showLanguageSheet(context, ref),
+          onPressed: () {
+            final isAuth = ref.read(authStateProvider).isAuthenticated;
+            showLanguageSheet(
+              context,
+              repository: isAuth ? ref.read(authRepositoryProvider) : null,
+            );
+          },
         ),
-        // Settings
-        IconButton(
-          icon: const Icon(
-            Icons.tune_rounded,
-            color: AppColors.textSecondary,
-          ),
-          tooltip: context.l10n.settings,
-          onPressed: () => context.go('/settings'),
-        ),
+        // Profile
+        _ProfileButton(ref: ref),
         const SizedBox(width: AppSpacing.xs),
       ],
     );
   }
 
-  void _showLanguageSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.radiusXl),
-        ),
-      ),
-      builder: (_) => _LanguageSheet(ref: ref),
-    );
-  }
 }
 
-// ---------------------------------------------------------------------------
-// Language bottom sheet
-// ---------------------------------------------------------------------------
-
-class _LanguageSheet extends StatelessWidget {
-  final WidgetRef ref;
-  const _LanguageSheet({required this.ref});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.lg,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle bar
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(context.l10n.language, style: AppTextStyles.h3),
-          const SizedBox(height: AppSpacing.md),
-          _LanguageTile(
-            label: context.l10n.french,
-            locale: const Locale('fr'),
-            ref: ref,
-          ),
-          const Divider(height: 1, color: AppColors.divider),
-          _LanguageTile(
-            label: context.l10n.english,
-            locale: const Locale('en'),
-            ref: ref,
-          ),
-          const SizedBox(height: AppSpacing.md),
-        ],
-      ),
-    );
-  }
-}
-
-class _LanguageTile extends ConsumerWidget {
-  final String label;
-  final Locale locale;
-  final WidgetRef ref;
-
-  const _LanguageTile({
-    required this.label,
-    required this.locale,
-    required this.ref,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef innerRef) {
-    // Import auth_provider's localeProvider
-    // We use a dynamic import-compatible approach here via the localeProvider
-    // already exposed at the app level through auth_provider.dart
-    return ListTile(
-      title: Text(label, style: AppTextStyles.body),
-      trailing: const Icon(
-        Icons.chevron_right_rounded,
-        color: AppColors.textHint,
-      ),
-      onTap: () {
-        // Navigate back; locale switching wired in app.dart
-        Navigator.of(context).pop();
-      },
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-    );
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Results count label
@@ -266,15 +176,82 @@ class _ResultsLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final plural = count > 1 ? 's' : '';
     final label = isFiltered
-        ? '$count résultat${count > 1 ? 's' : ''} trouvé${count > 1 ? 's' : ''}'
-        : '$count salon${count > 1 ? 's' : ''} près de vous';
+        ? context.l10n.resultsFound(count, plural)
+        : context.l10n.salonsNearby(count, plural);
 
     return Text(
       label,
       style: AppTextStyles.bodySmall.copyWith(
         color: AppColors.textSecondary,
         fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Profile button in AppBar
+// ---------------------------------------------------------------------------
+
+class _ProfileButton extends StatelessWidget {
+  final WidgetRef ref;
+
+  const _ProfileButton({required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authStateProvider);
+    final isLoggedIn = authState.isAuthenticated;
+    final user = authState.user;
+
+    // Build initials for logged-in users
+    final initials = user != null
+        ? '${user.firstName.isNotEmpty ? user.firstName[0] : ''}${user.lastName.isNotEmpty ? user.lastName[0] : ''}'
+            .toUpperCase()
+        : '';
+
+    return Padding(
+      padding: const EdgeInsets.only(right: AppSpacing.xs),
+      child: GestureDetector(
+        onTap: () {
+          if (isLoggedIn) {
+            context.go('/settings');
+          } else {
+            showAuthRequiredModal(context);
+          }
+        },
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: isLoggedIn
+                ? AppColors.primary.withValues(alpha: 0.12)
+                : AppColors.background,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isLoggedIn ? AppColors.primary : AppColors.border,
+              width: 1.5,
+            ),
+          ),
+          child: isLoggedIn && initials.isNotEmpty
+              ? Center(
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                )
+              : const Icon(
+                  Icons.person_outline_rounded,
+                  color: AppColors.textSecondary,
+                  size: 20,
+                ),
+        ),
       ),
     );
   }

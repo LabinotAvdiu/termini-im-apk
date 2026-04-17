@@ -3,8 +3,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../data/models/available_slot_model.dart';
+import '../../data/models/day_availability_model.dart';
 import '../providers/booking_provider.dart';
+
+String _shortDayName(BuildContext context, DateTime date) {
+  final l = context.l10n;
+  switch (date.weekday) {
+    case DateTime.monday:
+      return l.dayShortMon;
+    case DateTime.tuesday:
+      return l.dayShortTue;
+    case DateTime.wednesday:
+      return l.dayShortWed;
+    case DateTime.thursday:
+      return l.dayShortThu;
+    case DateTime.friday:
+      return l.dayShortFri;
+    case DateTime.saturday:
+      return l.dayShortSat;
+    case DateTime.sunday:
+    default:
+      return l.dayShortSun;
+  }
+}
 
 class TimeSlotSelection extends ConsumerWidget {
   const TimeSlotSelection({super.key});
@@ -13,28 +36,41 @@ class TimeSlotSelection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(bookingProvider);
 
-    // Distinct available dates
-    final dates = _distinctDates(state.availableSlots);
+    if (state.isLoading && state.availability.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.xl),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Horizontal date picker
+        // Date picker with availability
         SizedBox(
-          height: 80,
+          height: 90,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            itemCount: dates.length,
+            itemCount: state.availability.length,
             itemBuilder: (context, index) {
-              final date = dates[index];
+              final day = state.availability[index];
+              final dateObj = DateTime.tryParse(day.date);
               final isSelected = state.selectedDate != null &&
-                  _isSameDay(state.selectedDate!, date);
+                  dateObj != null &&
+                  state.selectedDate!.year == dateObj.year &&
+                  state.selectedDate!.month == dateObj.month &&
+                  state.selectedDate!.day == dateObj.day;
+
               return _DateChip(
-                date: date,
+                day: day,
                 isSelected: isSelected,
-                onTap: () =>
-                    ref.read(bookingProvider.notifier).selectDate(date),
+                onTap: day.isAvailable && dateObj != null
+                    ? () =>
+                        ref.read(bookingProvider.notifier).selectDate(dateObj)
+                    : null,
               );
             },
           ),
@@ -42,81 +78,81 @@ class TimeSlotSelection extends ConsumerWidget {
 
         const SizedBox(height: AppSpacing.sm),
 
-        // Time slots for selected date
+        // Slots for selected date
         Expanded(
           child: state.selectedDate == null
-              ? const _EmptyDateHint()
-              : _SlotsForDay(
-                  slots: ref
-                      .read(bookingProvider.notifier)
-                      .slotsForSelectedDate(),
-                  selectedSlot: state.selectedSlot,
-                  onSlotTap: (slot) =>
-                      ref.read(bookingProvider.notifier).selectSlot(slot),
-                ),
+              ? const _SelectDateHint()
+              : state.isLoadingSlots
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppColors.primary),
+                    )
+                  : _SlotsForDay(
+                      slots: state.availableSlots,
+                      selectedSlot: state.selectedSlot,
+                      onSlotTap: (slot) =>
+                          ref.read(bookingProvider.notifier).selectSlot(slot),
+                    ),
         ),
       ],
     );
   }
-
-  List<DateTime> _distinctDates(List<AvailableSlotModel> slots) {
-    final seen = <String>{};
-    final result = <DateTime>[];
-    for (final s in slots) {
-      final key =
-          '${s.dateTime.year}-${s.dateTime.month}-${s.dateTime.day}';
-      if (seen.add(key)) {
-        result.add(
-            DateTime(s.dateTime.year, s.dateTime.month, s.dateTime.day));
-      }
-    }
-    return result;
-  }
-
-  bool _isSameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
 // ---------------------------------------------------------------------------
-// Date chip
+// Date chip with availability status
 // ---------------------------------------------------------------------------
 
 class _DateChip extends StatelessWidget {
-  final DateTime date;
+  final DayAvailability day;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _DateChip({
-    required this.date,
+    required this.day,
     required this.isSelected,
-    required this.onTap,
+    this.onTap,
   });
 
-  static const _dayAbbreviations = [
-    'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim',
-  ];
-
-  static const _monthAbbreviations = [
-    'jan', 'fév', 'mar', 'avr', 'mai', 'jun',
-    'jul', 'aoû', 'sep', 'oct', 'nov', 'déc',
-  ];
+  String _statusLabel(BuildContext context) {
+    switch (day.status) {
+      case 'closed':
+        return context.l10n.closed;
+      case 'day_off':
+        return context.l10n.slotStatusDayOff;
+      case 'not_working':
+        return context.l10n.slotStatusNotWorking;
+      case 'full':
+        return context.l10n.slotStatusFull;
+      default:
+        return '${day.slotsCount ?? 0}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final dayName = _dayAbbreviations[date.weekday - 1];
-    final monthAbbr = _monthAbbreviations[date.month - 1];
+    final disabled = day.isDisabled;
+    final dateObj = DateTime.tryParse(day.date);
+    final dayNum = dateObj?.day.toString() ?? '';
 
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 58,
+        width: 62,
         margin: const EdgeInsets.only(right: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.surface,
+          color: isSelected
+              ? AppColors.primary
+              : disabled
+                  ? AppColors.background
+                  : AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected
+                ? AppColors.primary
+                : disabled
+                    ? AppColors.divider
+                    : AppColors.border,
             width: isSelected ? 0 : 1,
           ),
           boxShadow: isSelected
@@ -127,41 +163,47 @@ class _DateChip extends StatelessWidget {
                     offset: const Offset(0, 3),
                   ),
                 ]
-              : [
-                  const BoxShadow(
-                    color: AppColors.cardShadow,
-                    blurRadius: 4,
-                    offset: Offset(0, 1),
-                  ),
-                ],
+              : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              dayName,
+              dateObj != null ? _shortDayName(context, dateObj) : day.dayName,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white70 : AppColors.textSecondary,
+                color: isSelected
+                    ? Colors.white70
+                    : disabled
+                        ? AppColors.textHint
+                        : AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 2),
             Text(
-              '${date.day}',
+              dayNum,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? Colors.white : AppColors.textPrimary,
+                color: isSelected
+                    ? Colors.white
+                    : disabled
+                        ? AppColors.textHint
+                        : AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 2),
             Text(
-              monthAbbr,
+              _statusLabel(context),
               style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-                color: isSelected ? Colors.white70 : AppColors.textHint,
+                fontSize: 9,
+                fontWeight: FontWeight.w500,
+                color: isSelected
+                    ? Colors.white70
+                    : disabled
+                        ? AppColors.error.withValues(alpha: 0.6)
+                        : AppColors.success,
               ),
             ),
           ],
@@ -203,7 +245,7 @@ class _SlotsForDay extends StatelessWidget {
           if (morning.isNotEmpty) ...[
             _SlotSectionHeader(
               icon: Icons.wb_sunny_outlined,
-              label: 'Matin',
+              label: context.l10n.morning,
             ),
             const SizedBox(height: AppSpacing.sm),
             _SlotGrid(
@@ -216,7 +258,7 @@ class _SlotsForDay extends StatelessWidget {
           if (afternoon.isNotEmpty) ...[
             _SlotSectionHeader(
               icon: Icons.wb_twilight_rounded,
-              label: 'Après-midi',
+              label: context.l10n.afternoon,
             ),
             const SizedBox(height: AppSpacing.sm),
             _SlotGrid(
@@ -321,14 +363,14 @@ class _SlotGrid extends StatelessWidget {
   }
 }
 
-class _EmptyDateHint extends StatelessWidget {
-  const _EmptyDateHint();
+class _SelectDateHint extends StatelessWidget {
+  const _SelectDateHint();
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Text(
-        'Sélectionnez une date ci-dessus.',
+        context.l10n.selectDateHint,
         style: AppTextStyles.bodySmall,
       ),
     );
@@ -340,17 +382,17 @@ class _NoSlotsMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(AppSpacing.xl),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.event_busy_rounded,
+            const Icon(Icons.event_busy_rounded,
                 size: 48, color: AppColors.textHint),
-            SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.md),
             Text(
-              'Aucun créneau disponible\npour cette date.',
+              context.l10n.noSlotsAvailable,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySmall,
             ),

@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/widgets/auth_required_modal.dart';
 import '../providers/booking_provider.dart';
 import '../widgets/step_indicator.dart';
 import '../widgets/employee_selection.dart';
@@ -114,7 +117,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   child: StepIndicator(
                     currentStep: state.currentStep,
                     totalSteps: 2,
-                    labels: const ['RDV', 'Confirmation'],
+                    labels: [context.l10n.bookAppointment, context.l10n.step3Title],
                   ),
                 ),
                 const Divider(height: 1),
@@ -135,6 +138,11 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                 _BottomNavBar(
                   state: state,
                   onNext: () {
+                    final authState = ref.read(authStateProvider);
+                    if (!authState.isAuthenticated) {
+                      showAuthRequiredModal(context);
+                      return;
+                    }
                     ref.read(bookingProvider.notifier).nextStep();
                   },
                   onBack: () {
@@ -231,7 +239,7 @@ class _BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Prendre RDV', style: AppTextStyles.h3),
+          Text(context.l10n.bookingAppBarTitle, style: AppTextStyles.h3),
           if (serviceName != null)
             Text(
               serviceName!,
@@ -242,7 +250,7 @@ class _BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
         onPressed: onBack,
-        tooltip: 'Retour',
+        tooltip: context.l10n.back,
       ),
     );
   }
@@ -350,8 +358,8 @@ class _BottomNavBar extends StatelessWidget {
                         children: [
                           Text(
                             isLastStep
-                                ? 'Confirmer la réservation'
-                                : 'Continuer',
+                                ? context.l10n.confirmBooking
+                                : context.l10n.continueLabel,
                             style: AppTextStyles.button
                                 .copyWith(color: Colors.white),
                           ),
@@ -453,20 +461,19 @@ class _BookingSuccessDialogState extends State<_BookingSuccessDialog>
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'Réservation confirmée !',
+              context.l10n.bookingConfirmed,
               style: AppTextStyles.h3,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Votre rendez-vous a été pris avec succès. '
-              'Vous recevrez une confirmation par notification.',
+              context.l10n.bookingSuccessMessage,
               style: AppTextStyles.bodySmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xl),
             AppButton(
-              text: 'Retour à l\'accueil',
+              text: context.l10n.backToHome,
               onPressed: widget.onDone,
               width: double.infinity,
             ),

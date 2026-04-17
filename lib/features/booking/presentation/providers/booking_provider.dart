@@ -6,6 +6,7 @@ import '../../../company_detail/presentation/providers/company_detail_provider.d
 import '../../data/datasources/booking_remote_datasource.dart';
 import '../../data/models/available_slot_model.dart';
 import '../../data/models/booking_model.dart';
+import '../../data/models/day_availability_model.dart';
 
 // ---------------------------------------------------------------------------
 // Datasource provider
@@ -27,8 +28,10 @@ class BookingState {
   final DateTime? selectedDate;
   final AvailableSlotModel? selectedSlot;
   final bool isLoading;
+  final bool isLoadingSlots;
   final bool isConfirmed;
   final List<EmployeeModel> employees;
+  final List<DayAvailability> availability;
   final List<AvailableSlotModel> availableSlots;
   final String? companyId;
   final String? serviceId;
@@ -43,8 +46,10 @@ class BookingState {
     this.selectedDate,
     this.selectedSlot,
     this.isLoading = false,
+    this.isLoadingSlots = false,
     this.isConfirmed = false,
     this.employees = const [],
+    this.availability = const [],
     this.availableSlots = const [],
     this.companyId,
     this.serviceId,
@@ -53,8 +58,9 @@ class BookingState {
     this.serviceDuration,
   });
 
-  bool get canProceedStep0 => noPreference || selectedEmployee != null;
-  bool get canProceedStep1 => selectedSlot != null;
+  bool get canProceedStep0 =>
+      (noPreference || selectedEmployee != null) && selectedSlot != null;
+  bool get canProceedStep1 => true;
 
   String get employeeDisplayName {
     if (noPreference) return 'Sans préférence';
@@ -68,8 +74,10 @@ class BookingState {
     DateTime? selectedDate,
     AvailableSlotModel? selectedSlot,
     bool? isLoading,
+    bool? isLoadingSlots,
     bool? isConfirmed,
     List<EmployeeModel>? employees,
+    List<DayAvailability>? availability,
     List<AvailableSlotModel>? availableSlots,
     String? companyId,
     String? serviceId,
@@ -84,8 +92,10 @@ class BookingState {
       selectedDate: selectedDate ?? this.selectedDate,
       selectedSlot: selectedSlot ?? this.selectedSlot,
       isLoading: isLoading ?? this.isLoading,
+      isLoadingSlots: isLoadingSlots ?? this.isLoadingSlots,
       isConfirmed: isConfirmed ?? this.isConfirmed,
       employees: employees ?? this.employees,
+      availability: availability ?? this.availability,
       availableSlots: availableSlots ?? this.availableSlots,
       companyId: companyId ?? this.companyId,
       serviceId: serviceId ?? this.serviceId,
@@ -100,12 +110,14 @@ class BookingState {
       currentStep: currentStep,
       selectedEmployee: null,
       noPreference: false,
-      selectedDate: selectedDate,
-      selectedSlot: selectedSlot,
+      selectedDate: null,
+      selectedSlot: null,
       isLoading: isLoading,
+      isLoadingSlots: false,
       isConfirmed: isConfirmed,
       employees: employees,
-      availableSlots: availableSlots,
+      availability: const [],
+      availableSlots: const [],
       companyId: companyId,
       serviceId: serviceId,
       serviceName: serviceName,
@@ -140,6 +152,14 @@ class BookingNotifier extends StateNotifier<BookingState> {
       // Fetch employees from API
       final employees = await _companyDatasource.getEmployees(companyId);
 
+      // Filter employees by service
+      final filteredEmployees = serviceId != null
+          ? employees
+              .where((e) =>
+                  e.serviceIds.isEmpty || e.serviceIds.contains(serviceId))
+              .toList()
+          : employees;
+
       // Fetch company detail to resolve service info
       final company = await _companyDatasource.getCompanyDetail(companyId);
 
@@ -160,47 +180,39 @@ class BookingNotifier extends StateNotifier<BookingState> {
         }
       }
 
-      // Load slots for today
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final slots = await _loadSlotsForDate(companyId, today, serviceId);
+      // Load availability (14 days) — no employee selected yet (sans préférence)
+      final availability = await _bookingDatasource.getAvailability(
+        companyId: companyId,
+        serviceId: serviceId,
+      );
 
       state = state.copyWith(
-        employees: employees,
-        availableSlots: slots,
+        employees: filteredEmployees,
+        availability: availability,
         serviceId: serviceId,
         serviceName: serviceName ?? 'Service',
         servicePrice: servicePrice ?? 0.0,
         serviceDuration: serviceDuration ?? 30,
-        selectedDate: today,
-        noPreference: true, // "Sans préférence" selected by default
+        noPreference: true,
         isLoading: false,
       );
+
+      // Auto-select first available date
+      final firstAvailable = availability
+          .where((d) => d.isAvailable)
+          .firstOrNull;
+      if (firstAvailable != null) {
+        final dateObj = DateTime.tryParse(firstAvailable.date);
+        if (dateObj != null) selectDate(dateObj);
+      }
     } catch (e, stack) {
       // ignore: avoid_print
       print('Booking init error: $e\n$stack');
-      // Fallback: still show UI with empty data
       state = state.copyWith(
         isLoading: false,
         serviceId: serviceId,
       );
     }
-  }
-
-  Future<List<AvailableSlotModel>> _loadSlotsForDate(
-    String companyId,
-    DateTime date,
-    String? serviceId,
-  ) async {
-    final dateStr =
-        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    return _bookingDatasource.getSlots(
-      companyId: companyId,
-      date: dateStr,
-      employeeId:
-          state.noPreference ? null : state.selectedEmployee?.id,
-      serviceId: serviceId,
-    );
   }
 
   // ---- Employee step ----
@@ -210,12 +222,12 @@ class BookingNotifier extends StateNotifier<BookingState> {
           selectedEmployee: employee,
           noPreference: false,
         );
-    _refreshSlots();
+    _refreshAvailability();
   }
 
   void selectNoPreference() {
     state = state.clearEmployeeSelection().copyWith(noPreference: true);
-    _refreshSlots();
+    _refreshAvailability();
   }
 
   // ---- Date/time step ----
@@ -224,8 +236,9 @@ class BookingNotifier extends StateNotifier<BookingState> {
     state = state.copyWith(
       selectedDate: date,
       selectedSlot: null,
+      availableSlots: const [],
     );
-    _refreshSlots();
+    _loadSlotsForDate(date);
   }
 
   void selectSlot(AvailableSlotModel slot) {
@@ -233,27 +246,55 @@ class BookingNotifier extends StateNotifier<BookingState> {
   }
 
   List<AvailableSlotModel> slotsForSelectedDate() {
-    if (state.selectedDate == null) return [];
-    final d = state.selectedDate!;
-    return state.availableSlots
-        .where((s) =>
-            s.dateTime.year == d.year &&
-            s.dateTime.month == d.month &&
-            s.dateTime.day == d.day)
-        .toList();
+    return state.availableSlots;
   }
 
-  Future<void> _refreshSlots() async {
-    if (state.companyId == null || state.selectedDate == null) return;
+  Future<void> _refreshAvailability() async {
+    if (state.companyId == null) return;
     try {
-      final slots = await _loadSlotsForDate(
-        state.companyId!,
-        state.selectedDate!,
-        state.serviceId,
+      final availability = await _bookingDatasource.getAvailability(
+        companyId: state.companyId!,
+        employeeId:
+            state.noPreference ? null : state.selectedEmployee?.id,
+        serviceId: state.serviceId,
       );
-      state = state.copyWith(availableSlots: slots, selectedSlot: null);
+      state = state.copyWith(
+        availability: availability,
+        availableSlots: const [],
+        selectedDate: null,
+        selectedSlot: null,
+      );
+
+      // Auto-select first available date
+      final firstAvailable = availability
+          .where((d) => d.isAvailable)
+          .firstOrNull;
+      if (firstAvailable != null) {
+        final dateObj = DateTime.tryParse(firstAvailable.date);
+        if (dateObj != null) selectDate(dateObj);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _loadSlotsForDate(DateTime date) async {
+    if (state.companyId == null) return;
+    state = state.copyWith(isLoadingSlots: true);
+    try {
+      final dateStr =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final slots = await _bookingDatasource.getSlots(
+        companyId: state.companyId!,
+        date: dateStr,
+        employeeId:
+            state.noPreference ? null : state.selectedEmployee?.id,
+        serviceId: state.serviceId,
+      );
+      state = state.copyWith(
+        availableSlots: slots,
+        isLoadingSlots: false,
+      );
     } catch (_) {
-      // Keep current slots on error
+      state = state.copyWith(isLoadingSlots: false);
     }
   }
 
@@ -294,7 +335,6 @@ class BookingNotifier extends StateNotifier<BookingState> {
     }
   }
 
-  /// Format DateTime as Y-m-dTH:i:s (no milliseconds) for the Laravel API.
   String _formatDateTime(DateTime dt) {
     final y = dt.year.toString();
     final m = dt.month.toString().padLeft(2, '0');

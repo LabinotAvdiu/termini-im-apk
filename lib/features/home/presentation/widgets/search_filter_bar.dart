@@ -70,9 +70,38 @@ class _SearchFilterBarState extends ConsumerState<SearchFilterBar>
 
   String _dateLabel(BuildContext context, DateTime? date) {
     if (date == null) return context.l10n.filterDateLabel;
-    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    final dayName = days[date.weekday - 1];
-    return '$dayName ${date.day}/${date.month}';
+    return '${_shortDay(context, date.weekday)} ${date.day}/${date.month}';
+  }
+
+  static String _shortDay(BuildContext context, int weekday) {
+    final l = context.l10n;
+    return switch (weekday) {
+      DateTime.monday => l.dayShortMon,
+      DateTime.tuesday => l.dayShortTue,
+      DateTime.wednesday => l.dayShortWed,
+      DateTime.thursday => l.dayShortThu,
+      DateTime.friday => l.dayShortFri,
+      DateTime.saturday => l.dayShortSat,
+      _ => l.dayShortSun,
+    };
+  }
+
+  static String _shortMonth(BuildContext context, int month) {
+    final l = context.l10n;
+    return switch (month) {
+      1 => l.monthShortJan,
+      2 => l.monthShortFeb,
+      3 => l.monthShortMar,
+      4 => l.monthShortApr,
+      5 => l.monthShortMay,
+      6 => l.monthShortJun,
+      7 => l.monthShortJul,
+      8 => l.monthShortAug,
+      9 => l.monthShortSep,
+      10 => l.monthShortOct,
+      11 => l.monthShortNov,
+      _ => l.monthShortDec,
+    };
   }
 
   @override
@@ -536,7 +565,7 @@ class _DateSelector extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  _formatDate(selectedDate!),
+                  _formatDate(context, selectedDate!),
                   style: AppTextStyles.body.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -568,30 +597,32 @@ class _DateSelector extends StatelessWidget {
             ),
           ),
 
-        // Inline calendar
+        // Inline calendar — force English Material locale so day letters are
+        // uppercase (M T W T F S S) and month names start with a capital.
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
           clipBehavior: Clip.antiAlias,
-          child: CalendarDatePicker(
-            initialDate: selectedDate ?? today,
-            firstDate: today,
-            lastDate: today.add(const Duration(days: 90)),
-            onDateChanged: onDateChanged,
+          child: Localizations.override(
+            context: context,
+            locale: const Locale('en'),
+            child: CalendarDatePicker(
+              initialDate: selectedDate ?? today,
+              firstDate: today,
+              lastDate: today.add(const Duration(days: 90)),
+              onDateChanged: onDateChanged,
+            ),
           ),
         ),
       ],
     );
   }
 
-  String _formatDate(DateTime dt) {
-    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    const months = [
-      'jan', 'fév', 'mar', 'avr', 'mai', 'jun',
-      'jul', 'aoû', 'sep', 'oct', 'nov', 'déc',
-    ];
-    return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]} ${dt.year}';
+  String _formatDate(BuildContext context, DateTime dt) {
+    final day = _SearchFilterBarState._shortDay(context, dt.weekday);
+    final month = _SearchFilterBarState._shortMonth(context, dt.month);
+    return '$day ${dt.day} $month ${dt.year}';
   }
 }

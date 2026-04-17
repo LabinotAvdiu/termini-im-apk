@@ -6,6 +6,10 @@ class UserModel {
   final String? phone;
   final String? profileImageUrl;
   final bool emailVerified;
+  // Present when the user belongs to a company: 'owner' or 'employee'.
+  // Null for regular (client) accounts.
+  final String? companyRole;
+  final String? locale;
 
   const UserModel({
     required this.id,
@@ -15,6 +19,8 @@ class UserModel {
     this.phone,
     this.profileImageUrl,
     this.emailVerified = false,
+    this.locale,
+    this.companyRole,
   });
 
   /// Deserialises from the Laravel UserResource JSON shape:
@@ -35,6 +41,8 @@ class UserModel {
       phone:           json['phone'] as String?,
       profileImageUrl: json['profileImageUrl'] as String?,
       emailVerified:   json['emailVerified'] as bool? ?? false,
+      companyRole:     json['companyRole'] as String?,
+      locale:          json['locale'] as String?,
     );
   }
 
@@ -47,6 +55,7 @@ class UserModel {
       'phone':           phone,
       'profileImageUrl': profileImageUrl,
       'emailVerified':   emailVerified,
+      'companyRole':     companyRole,
     };
   }
 
@@ -60,6 +69,7 @@ class UserModel {
     String? phone,
     String? profileImageUrl,
     bool? emailVerified,
+    String? companyRole,
   }) {
     return UserModel(
       id:              id              ?? this.id,
@@ -69,6 +79,7 @@ class UserModel {
       phone:           phone           ?? this.phone,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       emailVerified:   emailVerified   ?? this.emailVerified,
+      companyRole:     companyRole     ?? this.companyRole,
     );
   }
 }

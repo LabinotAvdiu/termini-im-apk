@@ -69,7 +69,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iAmUser => 'I\'m a client';
 
   @override
+  String get iAmUserSubtitle => 'Find and book your beauty appointments';
+
+  @override
   String get iAmCompany => 'I\'m a professional';
+
+  @override
+  String get iAmCompanySubtitle => 'Manage your salon and your bookings';
 
   @override
   String get chooseRole => 'Choose your profile';
@@ -209,6 +215,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get english => 'English';
 
   @override
+  String get albanian => 'Shqip';
+
+  @override
   String get logout => 'Logout';
 
   @override
@@ -257,7 +266,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterCityLabel => 'City / Salon';
 
   @override
-  String get filterCityHint => 'E.g.: Paris, Salon Élégance...';
+  String get filterCityHint => 'E.g.: Prishtina, Salon Elegance...';
 
   @override
   String get filterCitySalonLabel => 'City or salon name';
@@ -352,6 +361,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please verify your email to be able to book appointments.';
 
   @override
+  String get security => 'Security';
+
+  @override
   String get yourInfo => 'Your information';
 
   @override
@@ -363,6 +375,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get signupSubtitle => 'Create your account in a few seconds';
+
+  @override
+  String get companyNameHint => 'My Salon';
+
+  @override
   String get companyNameRequired => 'Company name is required';
 
   @override
@@ -372,7 +390,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get city => 'City';
 
   @override
-  String get cityHint => 'E.g.: Paris, Lyon...';
+  String get cityHint => 'E.g.: Prishtina, Prizren...';
 
   @override
   String get cityDescription =>
@@ -387,4 +405,417 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cityRequired => 'City is required';
+
+  @override
+  String get findYourSalon => 'Find your perfect salon';
+
+  @override
+  String get loginToBook => 'Log in to book';
+
+  @override
+  String get loginToBookMessage =>
+      'To book an appointment, you need an account.';
+
+  @override
+  String get continueWithoutAccount => 'Continue without account';
+
+  @override
+  String get welcome => 'Welcome';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get myAppointments => 'My Appointments';
+
+  @override
+  String get upcoming => 'Upcoming';
+
+  @override
+  String get past => 'Past';
+
+  @override
+  String get noUpcomingAppointments => 'No upcoming appointments';
+
+  @override
+  String get noPastAppointments => 'No past appointments';
+
+  @override
+  String get appointmentConfirmed => 'Confirmed';
+
+  @override
+  String get appointmentPending => 'Pending';
+
+  @override
+  String get appointmentCompleted => 'Completed';
+
+  @override
+  String get appointmentCancelled => 'Cancelled';
+
+  @override
+  String get mySalon => 'My Salon';
+
+  @override
+  String get companyInfo => 'Salon information';
+
+  @override
+  String get servicesAndCategories => 'Services & Categories';
+
+  @override
+  String get team => 'Team';
+
+  @override
+  String get openingHours => 'Opening Hours';
+
+  @override
+  String get addCategory => 'Add category';
+
+  @override
+  String get addService => 'Add service';
+
+  @override
+  String get inviteEmployee => 'Invite employee';
+
+  @override
+  String get createEmployee => 'Create employee account';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get categoryName => 'Category name';
+
+  @override
+  String get serviceDuration => 'Duration (minutes)';
+
+  @override
+  String get servicePrice => 'Price (€)';
+
+  @override
+  String get employeeEmail => 'Employee email';
+
+  @override
+  String get specialties => 'Specialties';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get assignedServices => 'Assigned services';
+
+  @override
+  String get noServicesAssigned => 'No services assigned';
+
+  @override
+  String get myPlanning => 'My Schedule';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get walkIn => 'Walk-in';
+
+  @override
+  String get addWalkIn => 'Add client';
+
+  @override
+  String get nextAppointment => 'Next appointment';
+
+  @override
+  String get noAppointmentsToday => 'No appointments today';
+
+  @override
+  String get clientFirstName => 'Client first name';
+
+  @override
+  String get clientLastName => 'Client last name (optional)';
+
+  @override
+  String get clientPhone => 'Phone (optional)';
+
+  @override
+  String get scheduleSettings => 'Schedule';
+
+  @override
+  String get myWorkHours => 'My work hours';
+
+  @override
+  String companyHoursHint(String hours) {
+    return 'Salon: $hours';
+  }
+
+  @override
+  String get breaks => 'Breaks';
+
+  @override
+  String get addBreak => 'Add break';
+
+  @override
+  String get breakLabel => 'Label (optional)';
+
+  @override
+  String get daysOff => 'Days off';
+
+  @override
+  String get addDayOff => 'Add day off';
+
+  @override
+  String get reason => 'Reason (optional)';
+
+  @override
+  String get everyDay => 'Every day';
+
+  @override
+  String get breakSlot => 'Break';
+
+  @override
+  String get working => 'Working';
+
+  @override
+  String get notWorking => 'Not working';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get dayOff => 'Day off';
+
+  @override
+  String get youDontWorkToday => 'You don\'t work this day';
+
+  @override
+  String get loginSubtitle => 'Sign in to your account';
+
+  @override
+  String get bookingAppBarTitle => 'Book Appointment';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get bookingSuccessMessage =>
+      'Your appointment has been booked successfully. You will receive a confirmation notification.';
+
+  @override
+  String get bookingConfirmationSubtitle =>
+      'Review the details before confirming.';
+
+  @override
+  String get yourAppointment => 'Your appointment';
+
+  @override
+  String get reminderNote =>
+      'A reminder will be sent 24h before your appointment. Cancellation is possible up to 2h before.';
+
+  @override
+  String get hairdresser => 'Stylist';
+
+  @override
+  String get noPreferenceShort => 'No pref.';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get selectDateHint => 'Select a date above.';
+
+  @override
+  String get noSlotsAvailable => 'No available slots\nfor this date.';
+
+  @override
+  String get slotStatusDayOff => 'Day off';
+
+  @override
+  String get slotStatusNotWorking => 'Absent';
+
+  @override
+  String get slotStatusFull => 'Full';
+
+  @override
+  String get ourServices => 'Our services';
+
+  @override
+  String get orDivider => 'or';
+
+  @override
+  String resultsFound(int count, String plural) {
+    return '$count result$plural found';
+  }
+
+  @override
+  String salonsNearby(int count, String plural) {
+    return '$count salon$plural near you';
+  }
+
+  @override
+  String phoneCopied(String phone) {
+    return 'Number copied: $phone';
+  }
+
+  @override
+  String get selectServiceRequired => 'Please select a service';
+
+  @override
+  String get walkInSuccess => 'Client added successfully';
+
+  @override
+  String get walkInError => 'Error adding client';
+
+  @override
+  String get todayLabel => 'Today';
+
+  @override
+  String get previousDay => 'Previous day';
+
+  @override
+  String get nextDay => 'Next day';
+
+  @override
+  String get noBreaksConfigured => 'No breaks configured';
+
+  @override
+  String get noLeavePlanned => 'No leave planned';
+
+  @override
+  String get noServicesConfigured => 'No services configured';
+
+  @override
+  String get dayOfWeekLabel => 'Day of the week';
+
+  @override
+  String get startTimeLabel => 'Start';
+
+  @override
+  String get endTimeLabel => 'End';
+
+  @override
+  String employeeScheduleHint(String hours) {
+    return 'Schedule: $hours';
+  }
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get monthJan => 'January';
+
+  @override
+  String get monthFeb => 'February';
+
+  @override
+  String get monthMar => 'March';
+
+  @override
+  String get monthApr => 'April';
+
+  @override
+  String get monthMay => 'May';
+
+  @override
+  String get monthJun => 'June';
+
+  @override
+  String get monthJul => 'July';
+
+  @override
+  String get monthAug => 'August';
+
+  @override
+  String get monthSep => 'September';
+
+  @override
+  String get monthOct => 'October';
+
+  @override
+  String get monthNov => 'November';
+
+  @override
+  String get monthDec => 'December';
+
+  @override
+  String get monthShortJan => 'Jan';
+
+  @override
+  String get monthShortFeb => 'Feb';
+
+  @override
+  String get monthShortMar => 'Mar';
+
+  @override
+  String get monthShortApr => 'Apr';
+
+  @override
+  String get monthShortMay => 'May';
+
+  @override
+  String get monthShortJun => 'Jun';
+
+  @override
+  String get monthShortJul => 'Jul';
+
+  @override
+  String get monthShortAug => 'Aug';
+
+  @override
+  String get monthShortSep => 'Sep';
+
+  @override
+  String get monthShortOct => 'Oct';
+
+  @override
+  String get monthShortNov => 'Nov';
+
+  @override
+  String get monthShortDec => 'Dec';
+
+  @override
+  String get dayShortMon => 'Mon';
+
+  @override
+  String get dayShortTue => 'Tue';
+
+  @override
+  String get dayShortWed => 'Wed';
+
+  @override
+  String get dayShortThu => 'Thu';
+
+  @override
+  String get dayShortFri => 'Fri';
+
+  @override
+  String get dayShortSat => 'Sat';
+
+  @override
+  String get dayShortSun => 'Sun';
 }
