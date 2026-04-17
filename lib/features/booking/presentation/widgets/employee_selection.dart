@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/extensions.dart';
 import '../providers/booking_provider.dart';
 
 class EmployeeSelection extends ConsumerWidget {
@@ -18,7 +19,7 @@ class EmployeeSelection extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Coiffeur(se)',
+          context.l10n.hairdresser,
           style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -32,7 +33,7 @@ class EmployeeSelection extends ConsumerWidget {
             itemBuilder: (context, index) {
               if (index == 0) {
                 return _CompactEmployeeChip(
-                  label: 'Sans préf.',
+                  label: context.l10n.noPreferenceShort,
                   isSelected: state.noPreference,
                   icon: Icons.shuffle_rounded,
                   onTap: notifier.selectNoPreference,

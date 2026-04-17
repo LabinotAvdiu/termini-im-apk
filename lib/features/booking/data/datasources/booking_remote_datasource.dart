@@ -4,13 +4,42 @@ import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/available_slot_model.dart';
 import '../models/booking_model.dart';
+import '../models/day_availability_model.dart';
 
 class BookingRemoteDatasource {
   final DioClient _client;
 
   const BookingRemoteDatasource({required DioClient client}) : _client = client;
 
-  /// Fetch available time slots for a company on a given date.
+  /// Fetch 14-day availability for a company.
+  Future<List<DayAvailability>> getAvailability({
+    required String companyId,
+    String? employeeId,
+    String? serviceId,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{
+        if (employeeId != null) 'employee_id': employeeId,
+        if (serviceId != null) 'service_id': serviceId,
+      };
+
+      final response = await _client.get(
+        ApiConstants.companyAvailability(companyId),
+        queryParameters: queryParams,
+      );
+
+      final body = response.data as Map<String, dynamic>;
+      final data = body['data'] as List<dynamic>? ?? [];
+
+      return data
+          .map((e) => DayAvailability.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  /// Fetch available time slots for a company on a specific date.
   Future<List<AvailableSlotModel>> getSlots({
     required String companyId,
     required String date,
