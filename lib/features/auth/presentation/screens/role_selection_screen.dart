@@ -139,7 +139,7 @@ class _RoleCardsSection extends StatelessWidget {
           _RoleCard(
             icon: Icons.person_rounded,
             title: context.l10n.iAmUser,
-            subtitle: 'Trouvez et réservez vos rendez-vous beauté',
+            subtitle: context.l10n.iAmUserSubtitle,
             role: 'user',
             accentColor: const Color(0xFF9D97FF),
           ),
@@ -149,7 +149,7 @@ class _RoleCardsSection extends StatelessWidget {
           _RoleCard(
             icon: Icons.storefront_rounded,
             title: context.l10n.iAmCompany,
-            subtitle: 'Gérez votre salon et vos réservations',
+            subtitle: context.l10n.iAmCompanySubtitle,
             role: 'company',
             accentColor: const Color(0xFFFF8E8E),
           ),
@@ -289,9 +289,9 @@ class _BottomLoginLink extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () => context.goNamed(RouteNames.login),
-            child: const Text(
-              'Connectez-vous',
-              style: TextStyle(
+            child: Text(
+              context.l10n.loginNow,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,

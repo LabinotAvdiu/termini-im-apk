@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository.dart';
 
-enum UserRole { user, company }
+enum UserRole { user, company, employee }
 
 // ---------------------------------------------------------------------------
 // State
@@ -20,6 +26,8 @@ class AuthState {
   final UserRole? role;
   final String? token;
   final bool rememberMe;
+  // True when the user chose to browse without logging in.
+  final bool isGuest;
 
   const AuthState({
     this.isAuthenticated = false,
@@ -29,7 +37,13 @@ class AuthState {
     this.role,
     this.token,
     this.rememberMe = true, // default: remember the user
+    this.isGuest = false,
   });
+
+  /// Convenience getters for tab-layout decisions in MainShell.
+  bool get isOwner    => role == UserRole.company;
+  bool get isEmployee => role == UserRole.employee;
+  bool get isClient   => role == UserRole.user;
 
   AuthState copyWith({
     bool? isAuthenticated,
@@ -39,6 +53,7 @@ class AuthState {
     UserRole? role,
     String? token,
     bool? rememberMe,
+    bool? isGuest,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -50,6 +65,7 @@ class AuthState {
       role: role ?? this.role,
       token: token ?? this.token,
       rememberMe: rememberMe ?? this.rememberMe,
+      isGuest: isGuest ?? this.isGuest,
     );
   }
 }
@@ -66,11 +82,36 @@ class AuthNotifier extends StateNotifier<AuthState> {
         super(const AuthState());
 
   // ---------------------------------------------------------------------------
+  // Role resolution
+  // ---------------------------------------------------------------------------
+
+  /// Maps the API role string + optional companyRole field to [UserRole].
+  ///
+  /// - 'company' top-level role + companyRole == 'employee' → [UserRole.employee]
+  /// - 'company' top-level role (owner or unspecified)      → [UserRole.company]
+  /// - anything else                                        → [UserRole.user]
+  static UserRole _resolveRole(String apiRole, UserModel? user) {
+    if (apiRole == 'company') {
+      if (user?.companyRole == 'employee') return UserRole.employee;
+      return UserRole.company;
+    }
+    return UserRole.user;
+  }
+
+  // ---------------------------------------------------------------------------
   // Remember-me toggle (called from login screen checkbox)
   // ---------------------------------------------------------------------------
 
   void toggleRememberMe() {
     state = state.copyWith(rememberMe: !state.rememberMe);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Guest mode — browse without authenticating
+  // ---------------------------------------------------------------------------
+
+  void enterGuestMode() {
+    state = state.copyWith(isGuest: true, error: null);
   }
 
   // ---------------------------------------------------------------------------
@@ -85,7 +126,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isAuthenticated: true,
         token: session.token,
-        role: session.role == 'company' ? UserRole.company : UserRole.user,
+        role: _resolveRole(session.role, state.user),
         error: null,
       );
     } catch (_) {
@@ -114,7 +155,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: response.role == 'company' ? UserRole.company : UserRole.user,
+        role: _resolveRole(response.role, response.user),
         error: null,
       );
     } on ApiException catch (e) {
@@ -171,7 +212,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: response.role == 'company' ? UserRole.company : UserRole.user,
+        role: _resolveRole(response.role, response.user),
         error: null,
       );
     } on ApiException catch (e) {
@@ -194,12 +235,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> loginWithGoogle() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      // TODO: obtain idToken via google_sign_in package then pass it here.
-      // final googleUser = await GoogleSignIn().signIn();
-      // final auth = await googleUser!.authentication;
-      // final idToken = auth.idToken!;
-      throw UnimplementedError(
-        'Google Sign-In: intégrez google_sign_in pour obtenir l\'idToken.',
+      // 1. Trigger Google Sign-In native flow
+      final googleSignIn = GoogleSignIn();
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        // User cancelled
+        state = state.copyWith(isLoading: false);
+        return;
+      }
+      final auth = await googleUser.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null) throw Exception('Google ID token manquant');
+
+      // 2. Send idToken to backend
+      final response = await _repository.googleLogin(
+        idToken: idToken,
+        rememberMe: state.rememberMe,
+      );
+
+      state = state.copyWith(
+        isAuthenticated: true,
+        isLoading: false,
+        token: response.token,
+        user: response.user,
+        role: _resolveRole(response.role, response.user),
+        error: null,
       );
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e.message);
@@ -215,11 +275,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> loginWithFacebook() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      // TODO: obtain accessToken via flutter_facebook_auth then pass it here.
-      // final result = await FacebookAuth.instance.login();
-      // final accessToken = result.accessToken!.token;
-      throw UnimplementedError(
-        'Facebook Login: intégrez flutter_facebook_auth pour obtenir l\'accessToken.',
+      final result = await FacebookAuth.instance.login(
+        permissions: ['email', 'public_profile'],
+      );
+      if (result.status == LoginStatus.cancelled) {
+        state = state.copyWith(isLoading: false);
+        return;
+      }
+      if (result.status != LoginStatus.success) {
+        throw Exception(result.message ?? 'Facebook login échoué');
+      }
+      final accessToken = result.accessToken!.tokenString;
+
+      final response = await _repository.facebookLogin(
+        accessToken: accessToken,
+        rememberMe: state.rememberMe,
+      );
+
+      state = state.copyWith(
+        isAuthenticated: true,
+        isLoading: false,
+        token: response.token,
+        user: response.user,
+        role: _resolveRole(response.role, response.user),
+        error: null,
       );
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e.message);
@@ -274,6 +353,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Logout — server revocation + local clear
   // ---------------------------------------------------------------------------
 
+  // ---------------------------------------------------------------------------
+  // Update user data in state (after profile edit)
+  // ---------------------------------------------------------------------------
+
+  void updateUser(UserModel user) {
+    state = state.copyWith(user: user);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Logout — server revocation + local clear
+  // ---------------------------------------------------------------------------
+
   Future<void> logout() async {
     try {
       await _repository.logout();
@@ -282,6 +373,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     // Reset to initial state while preserving the rememberMe preference so
     // the checkbox default stays coherent on the next login screen visit.
+    // isGuest is cleared so the user lands back on /landing.
     state = AuthState(rememberMe: state.rememberMe);
   }
 }
@@ -296,4 +388,55 @@ final authStateProvider =
   return AuthNotifier(repository: repository);
 });
 
-final localeProvider = StateProvider<Locale>((ref) => const Locale('fr'));
+// ---------------------------------------------------------------------------
+// Locale — persisted StateNotifier
+// ---------------------------------------------------------------------------
+
+/// Manages the app locale with persistence in [FlutterSecureStorage].
+///
+/// On creation it is initialised to 'fr'. Call [load] once on app start to
+/// read the persisted value, then [setLocale] to change it.
+/// [setLocale] optionally syncs the change to the API when the user is
+/// authenticated (pass the [AuthRepository] and the locale string).
+class LocaleNotifier extends StateNotifier<Locale> {
+  final FlutterSecureStorage _storage;
+
+  LocaleNotifier(this._storage) : super(const Locale('sq'));
+
+  /// Reads the persisted locale from secure storage and applies it.
+  /// Call once from main() / app start — before the first frame if possible.
+  Future<void> load() async {
+    final stored = await _storage.read(key: AppConstants.localeKey);
+    if (stored == 'en' || stored == 'fr' || stored == 'sq') {
+      state = Locale(stored!);
+    }
+  }
+
+  /// Changes the locale, persists it, and optionally syncs to the backend.
+  Future<void> setLocale(
+    String languageCode, {
+    AuthRepository? repository,
+  }) async {
+    if (state.languageCode == languageCode) return;
+
+    state = Locale(languageCode);
+    await _storage.write(key: AppConstants.localeKey, value: languageCode);
+
+    if (repository != null) {
+      // Fire-and-forget: best-effort API sync — swallow errors silently.
+      unawaited(
+        repository
+            .updateProfile(data: {'locale': languageCode})
+            .then((_) {}, onError: (_) {}),
+      );
+    }
+  }
+}
+
+final localeProvider =
+    StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+  // Do NOT watch authRepositoryProvider here — that would recreate the notifier
+  // (and reset the locale) whenever the auth state changes.
+  const storage = FlutterSecureStorage();
+  return LocaleNotifier(storage);
+});

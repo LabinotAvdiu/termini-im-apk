@@ -217,14 +217,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       text: context.l10n.continueWithGoogle,
                       isLoading: isLoading,
                       onPressed: isLoading ? null : _loginWithGoogle,
-                      icon: _GoogleIcon(),
+                      icon: const _GoogleIcon(),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     AppSocialButton(
                       text: context.l10n.continueWithFacebook,
                       isLoading: isLoading,
                       onPressed: isLoading ? null : _loginWithFacebook,
-                      icon: _FacebookIcon(),
+                      icon: const _FacebookIcon(),
                     ),
                   ],
 
@@ -402,7 +402,7 @@ class _SignupHeader extends StatelessWidget {
         const SizedBox(height: AppSpacing.xs),
 
         Text(
-          'Créez votre compte en quelques secondes',
+          context.l10n.signupSubtitle,
           style: AppTextStyles.bodySmall,
         ),
       ],
@@ -463,7 +463,7 @@ class _UserSignupFormCard extends StatelessWidget {
                   child: AppTextField(
                     controller: firstNameController,
                     label: context.l10n.firstName,
-                    hint: 'Jean',
+                    hint: 'Arben',
                     prefixIcon: Icons.badge_outlined,
                     validator: (v) => Validators.required(
                       v,
@@ -476,7 +476,7 @@ class _UserSignupFormCard extends StatelessWidget {
                   child: AppTextField(
                     controller: lastNameController,
                     label: context.l10n.lastName,
-                    hint: 'Dupont',
+                    hint: 'Krasniqi',
                     prefixIcon: Icons.badge_outlined,
                     validator: (v) => Validators.required(
                       v,
@@ -505,7 +505,7 @@ class _UserSignupFormCard extends StatelessWidget {
             AppTextField(
               controller: phoneController,
               label: context.l10n.phone,
-              hint: '+33 6 00 00 00 00',
+              hint: '044 123 456',
               prefixIcon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               validator: (v) => Validators.required(
@@ -740,7 +740,7 @@ class _CompanyStep1 extends StatelessWidget {
                   child: AppTextField(
                     controller: firstNameController,
                     label: context.l10n.firstName,
-                    hint: 'Jean',
+                    hint: 'Arben',
                     prefixIcon: Icons.badge_outlined,
                     validator: (v) => Validators.required(
                       v,
@@ -753,7 +753,7 @@ class _CompanyStep1 extends StatelessWidget {
                   child: AppTextField(
                     controller: lastNameController,
                     label: context.l10n.lastName,
-                    hint: 'Dupont',
+                    hint: 'Krasniqi',
                     prefixIcon: Icons.badge_outlined,
                     validator: (v) => Validators.required(
                       v,
@@ -782,7 +782,7 @@ class _CompanyStep1 extends StatelessWidget {
             AppTextField(
               controller: phoneController,
               label: context.l10n.phone,
-              hint: '+33 6 00 00 00 00',
+              hint: '044 123 456',
               prefixIcon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               validator: (v) => Validators.required(
@@ -889,7 +889,7 @@ class _CompanyStep2 extends StatelessWidget {
             AppTextField(
               controller: companyNameController,
               label: context.l10n.companyName,
-              hint: 'Mon Salon',
+              hint: context.l10n.companyNameHint,
               prefixIcon: Icons.storefront_outlined,
               validator: (v) => Validators.required(
                 v,
@@ -901,7 +901,7 @@ class _CompanyStep2 extends StatelessWidget {
             AppTextField(
               controller: addressController,
               label: context.l10n.address,
-              hint: '12 Rue de la Paix, Paris',
+              hint: 'Rruga Nënë Tereza 12, Prishtinë',
               prefixIcon: Icons.location_on_outlined,
               validator: (v) => Validators.required(
                 v,
@@ -1084,7 +1084,7 @@ class _SecurityDivider extends StatelessWidget {
         Padding(
           padding:
               const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Text('Sécurité', style: AppTextStyles.caption),
+          child: Text(context.l10n.security, style: AppTextStyles.caption),
         ),
         const Expanded(child: Divider(color: AppColors.divider)),
       ],
@@ -1172,9 +1172,9 @@ class _LoginLink extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () => context.goNamed(RouteNames.login),
-          child: const Text(
-            'Connectez-vous',
-            style: TextStyle(
+          child: Text(
+            context.l10n.loginNow,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
@@ -1187,48 +1187,155 @@ class _LoginLink extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Social brand icons
+// Social brand icons — rendered via CustomPainter (no external packages)
 // ---------------------------------------------------------------------------
+
+/// Official Google multicolor "G" logo painted on a 24x24 canvas.
 class _GoogleIcon extends StatelessWidget {
+  const _GoogleIcon();
+
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 20,
-      height: 20,
-      child: Text(
-        'G',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: Color(0xFF4285F4),
-          height: 1.4,
-        ),
-      ),
+    return CustomPaint(
+      size: const Size(24, 24),
+      painter: _GoogleLogoPainter(),
     );
   }
 }
 
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r = size.width / 2;
+
+    // Clip to circle
+    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r)));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.white);
+
+    // Segment angles (degrees → radians): Red, Yellow, Green, Blue
+    const double toRad = 3.14159265 / 180.0;
+    final segments = [
+      [-21.0, 90.0, const Color(0xFFEA4335)],  // Red
+      [69.0,  90.0, const Color(0xFFFBBC05)],  // Yellow
+      [159.0, 90.0, const Color(0xFF34A853)],  // Green
+      [249.0, 90.0, const Color(0xFF4285F4)],  // Blue
+    ];
+
+    final strokeWidth = r * 0.38;
+    final innerR = r - strokeWidth;
+
+    for (final seg in segments) {
+      final paint = Paint()
+        ..color = seg[2] as Color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth;
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: innerR + strokeWidth / 2),
+        (seg[0] as double) * toRad,
+        (seg[1] as double) * toRad,
+        false,
+        paint,
+      );
+    }
+
+    // White cutout inner circle to form ring
+    canvas.drawCircle(
+      Offset(cx, cy),
+      innerR - 0.5,
+      Paint()..color = Colors.white,
+    );
+
+    // Blue horizontal bar (the crossbar of the G)
+    final barPaint = Paint()
+      ..color = const Color(0xFF4285F4)
+      ..style = PaintingStyle.fill;
+
+    final barTop = cy - strokeWidth * 0.38;
+    final barBottom = cy + strokeWidth * 0.38;
+    final barLeft = cx - 0.5;
+    final barRight = cx + innerR + 0.5;
+
+    canvas.save();
+    canvas.clipRect(Rect.fromLTRB(cx, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTRB(barLeft, barTop, barRight, barBottom), barPaint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Official Facebook "f" logo: blue rounded square with white f.
 class _FacebookIcon extends StatelessWidget {
+  const _FacebookIcon();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 20,
-      height: 20,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1877F2),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Text(
-        'f',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: Colors.white,
-          height: 1.4,
-        ),
-      ),
+    return CustomPaint(
+      size: const Size(24, 24),
+      painter: _FacebookLogoPainter(),
     );
   }
+}
+
+class _FacebookLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rr = size.width * 0.22;
+
+    // Blue rounded-square background
+    final bgPaint = Paint()..color = const Color(0xFF1877F2);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Radius.circular(rr),
+      ),
+      bgPaint,
+    );
+
+    // White "f" glyph via path
+    final w = size.width;
+    final h = size.height;
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    // Stem
+    final stemW = w * 0.13;
+    final stemLeft = w * 0.425;
+    final stemTop = h * 0.33;
+    canvas.drawRect(
+      Rect.fromLTWH(stemLeft, stemTop, stemW, h * 0.56),
+      paint,
+    );
+
+    // Crossbar
+    canvas.drawRect(
+      Rect.fromLTWH(w * 0.28, h * 0.48, w * 0.42, h * 0.10),
+      paint,
+    );
+
+    // Rounded cap on top of stem
+    final capPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stemW
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCircle(
+        center: Offset(stemLeft + stemW * 2.2, stemTop),
+        radius: stemW * 1.5,
+      ),
+      3.14159,
+      3.14159,
+      false,
+      capPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

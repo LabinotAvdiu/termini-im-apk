@@ -35,11 +35,12 @@ class AuthResponse {
     // Unwrap the `data` envelope that all Laravel responses use
     final data = (json['data'] ?? json) as Map<String, dynamic>;
 
+    final userJson = data['user'] as Map<String, dynamic>;
     return AuthResponse(
       token:        data['token'] as String,
       refreshToken: data['refresh_token'] as String?,
-      user:         UserModel.fromJson(data['user'] as Map<String, dynamic>),
-      role:         (data['role'] as String?) ?? 'user',
+      user:         UserModel.fromJson(userJson),
+      role:         (data['role'] as String?) ?? (userJson['role'] as String?) ?? 'user',
     );
   }
 }
@@ -247,6 +248,28 @@ class AuthRemoteDatasource {
       await _client.post(
         ApiConstants.resendVerification,
         data: {'email': email},
+      );
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Change password — PUT /auth/change-password
+  // ---------------------------------------------------------------------------
+  Future<void> changePassword({
+    required String currentPassword,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      await _client.put(
+        '/auth/change-password',
+        data: {
+          'current_password': currentPassword,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
       );
     } on DioException catch (e) {
       throw _mapDioException(e);
