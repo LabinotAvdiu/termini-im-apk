@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/router/route_names.dart';
@@ -8,6 +9,27 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../data/models/company_card_model.dart';
+
+String _shortDayName(BuildContext context, DateTime date) {
+  final l = context.l10n;
+  switch (date.weekday) {
+    case DateTime.monday:
+      return l.dayShortMon;
+    case DateTime.tuesday:
+      return l.dayShortTue;
+    case DateTime.wednesday:
+      return l.dayShortWed;
+    case DateTime.thursday:
+      return l.dayShortThu;
+    case DateTime.friday:
+      return l.dayShortFri;
+    case DateTime.saturday:
+      return l.dayShortSat;
+    case DateTime.sunday:
+    default:
+      return l.dayShortSun;
+  }
+}
 
 /// The main listing card shown on the Home screen.
 ///
@@ -20,13 +42,13 @@ import '../../data/models/company_card_model.dart';
 ///   │           APRÈS-MIDI[Mer.15][Jeu.16]...  │
 ///   │  Plus d'informations       [Prendre RDV] │
 ///   └─────────────────────────────────────────┘
-class CompanyCard extends StatelessWidget {
+class CompanyCard extends ConsumerWidget {
   final CompanyCardModel company;
 
   const CompanyCard({super.key, required this.company});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -126,31 +148,35 @@ class CompanyCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Text link — "Plus d'informations"
-                  TextButton(
+                  // "Plus d'informations" styled button
+                  OutlinedButton(
                     onPressed: () => context.goNamed(
                       RouteNames.companyDetail,
                       pathParameters: {'id': company.id},
                     ),
-                    style: TextButton.styleFrom(
+                    style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(48, 48),
+                      side: const BorderSide(color: AppColors.primary, width: 1),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                      ),
+                      minimumSize: const Size(0, 36),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
                       context.l10n.moreInfo,
-                      style: AppTextStyles.bodySmall.copyWith(
+                      style: AppTextStyles.buttonSmall.copyWith(
                         color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.primary,
                       ),
                     ),
                   ),
 
                   // CTA — "Prendre RDV"
-                  _BookButton(companyId: company.id),
+                  _BookButton(companyId: company.id, ref: ref),
                 ],
               ),
             ),
@@ -363,7 +389,7 @@ class _SlotChip extends StatelessWidget {
         ),
       ),
       child: Text(
-        slot.label,
+        '${_shortDayName(context, slot.date)} ${slot.date.day}',
         style: AppTextStyles.caption.copyWith(
           color: slot.available ? AppColors.primary : AppColors.textHint,
           fontWeight: slot.available ? FontWeight.w600 : FontWeight.w400,
@@ -379,15 +405,19 @@ class _SlotChip extends StatelessWidget {
 
 class _BookButton extends StatelessWidget {
   final String companyId;
-  const _BookButton({required this.companyId});
+  final WidgetRef ref;
+
+  const _BookButton({required this.companyId, required this.ref});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.goNamed(
-        RouteNames.companyDetail,
-        pathParameters: {'id': companyId},
-      ),
+      onPressed: () {
+        context.goNamed(
+          RouteNames.companyDetail,
+          pathParameters: {'id': companyId},
+        );
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
