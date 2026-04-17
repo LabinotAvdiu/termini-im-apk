@@ -300,24 +300,6 @@ class _RatingRow extends StatelessWidget {
           '(${context.l10n.reviews(company.reviewCount)})',
           style: AppTextStyles.caption,
         ),
-        const SizedBox(width: AppSpacing.xs),
-        // Middle dot separator
-        Text(
-          '·',
-          style: AppTextStyles.caption.copyWith(
-            color: AppColors.textHint,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        // Price level
-        Text(
-          company.priceLevelDisplay,
-          style: AppTextStyles.caption.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
       ],
     );
   }

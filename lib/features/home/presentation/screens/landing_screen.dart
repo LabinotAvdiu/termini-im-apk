@@ -286,7 +286,7 @@ class _BrandHeader extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'Takimi IM',
+          'Termini im',
           style: AppTextStyles.h1.copyWith(
             color: Colors.white,
             letterSpacing: -0.5,

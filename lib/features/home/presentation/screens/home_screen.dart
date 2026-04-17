@@ -128,7 +128,7 @@ class _HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
           ),
           Text(
-            context.l10n.appName,
+            'Termini im',
             style: AppTextStyles.h3.copyWith(
               color: AppColors.textPrimary,
               letterSpacing: -0.3,

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../data/models/company_detail_model.dart';
 import '../providers/company_detail_provider.dart';
 import '../widgets/photo_gallery.dart';
 import '../widgets/service_category_section.dart';
@@ -147,12 +149,27 @@ class _CompanyBody extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _CompanyInfoCard extends StatelessWidget {
-  final dynamic company; // CompanyDetailModel
+  final CompanyDetailModel company;
 
   const _CompanyInfoCard({required this.company});
 
+  Future<void> _dialPhone(BuildContext context, String phone) async {
+    final cleaned = phone.replaceAll(RegExp(r'\s+'), '');
+    final uri = Uri.parse('tel:$cleaned');
+    final ok = await launchUrl(uri);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(phone)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasPhone = company.phone != null && company.phone!.isNotEmpty;
+    final hasPhoneSecondary =
+        company.phoneSecondary != null && company.phoneSecondary!.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.fromLTRB(
         AppSpacing.md,
@@ -176,18 +193,9 @@ class _CompanyInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Name + price level row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  company.name as String,
-                  style: AppTextStyles.h2,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              _PriceLevelBadge(level: company.priceLevel as int),
-            ],
+          Text(
+            company.name,
+            style: AppTextStyles.h2,
           ),
 
           const SizedBox(height: AppSpacing.sm),
@@ -203,7 +211,7 @@ class _CompanyInfoCard extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  company.address as String,
+                  company.address,
                   style: AppTextStyles.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -212,6 +220,54 @@ class _CompanyInfoCard extends StatelessWidget {
             ],
           ),
 
+          // Primary phone
+          if (hasPhone) ...[
+            const SizedBox(height: AppSpacing.xs),
+            GestureDetector(
+              onTap: () => _dialPhone(context, company.phone!),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.phone_outlined,
+                    size: 15,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    company.phone!,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          // Secondary phone
+          if (hasPhoneSecondary) ...[
+            const SizedBox(height: AppSpacing.xs),
+            GestureDetector(
+              onTap: () => _dialPhone(context, company.phoneSecondary!),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.phone_outlined,
+                    size: 15,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    company.phoneSecondary!,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
           const SizedBox(height: AppSpacing.sm),
           const Divider(),
           const SizedBox(height: AppSpacing.sm),
@@ -219,10 +275,10 @@ class _CompanyInfoCard extends StatelessWidget {
           // Rating row
           Row(
             children: [
-              _StarRating(rating: company.rating as double),
+              _StarRating(rating: company.rating),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                (company.rating as double).toStringAsFixed(1),
+                company.rating.toStringAsFixed(1),
                 style: AppTextStyles.subtitle.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
@@ -230,57 +286,12 @@ class _CompanyInfoCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                context.l10n.reviews(company.reviewCount as int),
+                context.l10n.reviews(company.reviewCount),
                 style: AppTextStyles.bodySmall,
               ),
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PriceLevelBadge extends StatelessWidget {
-  final int level;
-
-  const _PriceLevelBadge({required this.level});
-
-  @override
-  Widget build(BuildContext context) {
-    final filled = '€' * level;
-    final empty = '€' * (3 - level);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: 4,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-      ),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: filled,
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            TextSpan(
-              text: empty,
-              style: const TextStyle(
-                color: AppColors.border,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -5,7 +5,11 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../appointments/presentation/screens/appointments_screen.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../company/presentation/providers/company_dashboard_provider.dart';
+import '../../../company/presentation/providers/pending_count_provider.dart';
 import '../../../company/presentation/screens/company_dashboard_screen.dart';
+import '../../../company/presentation/screens/company_planning_screen.dart';
+import '../../../company/presentation/screens/pending_approvals_screen.dart';
 import '../../../employee_schedule/presentation/screens/employee_schedule_screen.dart';
 import '../../../employee_schedule/presentation/screens/schedule_settings_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
@@ -36,19 +40,41 @@ class _MainShellState extends ConsumerState<MainShell> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
+    final companyBookingMode = authState.isOwner
+        ? ref.watch(companyDashboardProvider.select(
+            (s) => s.company?.bookingMode ?? 'employee_based'))
+        : 'employee_based';
+    final isCapacityOwner =
+        authState.isOwner && companyBookingMode == 'capacity_based';
+    final pendingCount =
+        isCapacityOwner ? ref.watch(pendingCountProvider) : 0;
 
-    // Owner:    Search, Mon Salon, Mon Planning, Horaires, Mes RDV
-    // Employee: Search, Mon Planning, Horaires, Mes RDV
-    // Client:   Search, Mes RDV
+    // Owner (employee_based): Search, Mon Salon, Mon Planning, Horaires
+    // Owner (capacity_based): Search, Mon Salon, Mon Planning, Demandes
+    // Employee:               Search, Mon Planning, Horaires
+    // Client / guest:         Search, Mes RDV
+    final isClient = authState.isClient || authState.isGuest;
     final pages = <Widget>[
       const HomeScreen(),
       if (authState.isOwner) const CompanyDashboardScreen(),
-      if (authState.isOwner || authState.isEmployee)
+      if ((authState.isOwner && !isCapacityOwner) || authState.isEmployee)
         const EmployeeScheduleScreen(),
-      if (authState.isOwner || authState.isEmployee)
+      if (isCapacityOwner) const _LazyPage(child: CompanyPlanningScreen()),
+      if ((authState.isOwner && !isCapacityOwner) || authState.isEmployee)
         const _LazyPage(child: ScheduleSettingsScreen()),
-      const AppointmentsScreen(),
+      if (isCapacityOwner) const _LazyPage(child: PendingApprovalsScreen()),
+      if (isClient) const AppointmentsScreen(),
     ];
+
+    // Right after signup for an owner → land on the Mon Salon tab (index 1).
+    if (authState.justSignedUp && authState.isOwner && _selectedIndex == 0) {
+      _selectedIndex = 1;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(authStateProvider.notifier).clearJustSignedUp();
+        }
+      });
+    }
 
     final safeIndex = _selectedIndex.clamp(0, pages.length - 1);
 
@@ -61,6 +87,9 @@ class _MainShellState extends ConsumerState<MainShell> {
         selectedIndex: safeIndex,
         isOwner: authState.isOwner,
         isEmployee: authState.isEmployee,
+        isCapacityOwner: isCapacityOwner,
+        isClient: isClient,
+        pendingCount: pendingCount,
         onTap: _onTabTapped,
       ),
     );
@@ -75,12 +104,18 @@ class _ShellBottomNav extends StatelessWidget {
   final int selectedIndex;
   final bool isOwner;
   final bool isEmployee;
+  final bool isCapacityOwner;
+  final bool isClient;
+  final int pendingCount;
   final ValueChanged<int> onTap;
 
   const _ShellBottomNav({
     required this.selectedIndex,
     required this.isOwner,
     required this.isEmployee,
+    required this.isCapacityOwner,
+    required this.isClient,
+    required this.pendingCount,
     required this.onTap,
   });
 
@@ -111,8 +146,8 @@ class _ShellBottomNav extends StatelessWidget {
       idx++;
     }
 
-    // Tab: Mon Planning (owner + employee)
-    if (isOwner || isEmployee) {
+    // Tab: Mon Planning (employee_based owner + employee)
+    if ((isOwner && !isCapacityOwner) || isEmployee) {
       final planningIdx = idx;
       items.add(_NavItem(
         icon: Icons.view_timeline_rounded,
@@ -123,8 +158,20 @@ class _ShellBottomNav extends StatelessWidget {
       idx++;
     }
 
-    // Tab: Horaires (owner + employee)
-    if (isOwner || isEmployee) {
+    // Tab: Mon Planning (capacity_based owner)
+    if (isCapacityOwner) {
+      final planningIdx = idx;
+      items.add(_NavItem(
+        icon: Icons.view_timeline_rounded,
+        label: context.l10n.myPlanning,
+        selected: selectedIndex == planningIdx,
+        onTap: () => onTap(planningIdx),
+      ));
+      idx++;
+    }
+
+    // Tab: Horaires (employee_based owner + employee)
+    if ((isOwner && !isCapacityOwner) || isEmployee) {
       final horaireIdx = idx;
       items.add(_NavItem(
         icon: Icons.schedule_rounded,
@@ -135,8 +182,21 @@ class _ShellBottomNav extends StatelessWidget {
       idx++;
     }
 
-    // Tab: Mes RDV (everyone)
-    {
+    // Tab: Demandes (capacity_based owner only)
+    if (isCapacityOwner) {
+      final pendingIdx = idx;
+      items.add(_NavItem(
+        icon: Icons.pending_actions_rounded,
+        label: context.l10n.pendingApprovalsShort,
+        selected: selectedIndex == pendingIdx,
+        badgeCount: pendingCount,
+        onTap: () => onTap(pendingIdx),
+      ));
+      idx++;
+    }
+
+    // Tab: Mes RDV (client / guest only)
+    if (isClient) {
       final rdvIdx = idx;
       items.add(_NavItem(
         icon: Icons.calendar_month_rounded,
@@ -201,6 +261,7 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool selected;
+  final int badgeCount;
   final VoidCallback onTap;
 
   const _NavItem({
@@ -208,7 +269,42 @@ class _NavItem extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.badgeCount = 0,
   });
+
+  Widget _iconWithBadge(IconData iconData, Color color) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(iconData, color: color, size: 24),
+        if (badgeCount > 0)
+          Positioned(
+            top: -6,
+            right: -8,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              constraints:
+                  const BoxConstraints(minWidth: 18, minHeight: 18),
+              decoration: BoxDecoration(
+                color: AppColors.error,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white, width: 1.5),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                badgeCount > 9 ? '9+' : '$badgeCount',
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +327,7 @@ class _NavItem extends StatelessWidget {
                 scale: selected ? 1.1 : 1.0,
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOutBack,
-                child: Icon(icon, color: color, size: 24),
+                child: _iconWithBadge(icon, color),
               ),
               const SizedBox(height: 3),
               AnimatedDefaultTextStyle(

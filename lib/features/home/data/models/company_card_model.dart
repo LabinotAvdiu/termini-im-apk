@@ -60,6 +60,7 @@ class CompanyCardModel {
 
   final List<DaySlot> morningSlots;
   final List<DaySlot> afternoonSlots;
+  final String bookingMode;
 
   const CompanyCardModel({
     required this.id,
@@ -71,6 +72,7 @@ class CompanyCardModel {
     required this.priceLevel,
     required this.morningSlots,
     required this.afternoonSlots,
+    this.bookingMode = 'employee_based',
   });
 
   /// Convenience getter — returns "€", "€€", "€€€" or "€€€€"
@@ -98,6 +100,9 @@ class CompanyCardModel {
       afternoonSlots: availability
           .map((item) => DaySlot.fromAvailabilityItem(item, useMorning: false))
           .toList(),
+      bookingMode: json['bookingMode'] as String? ??
+          json['booking_mode'] as String? ??
+          'employee_based',
     );
   }
 }

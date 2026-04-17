@@ -4,6 +4,7 @@ import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/my_company_model.dart';
+import '../models/planning_appointment_model.dart';
 
 /// Remote datasource for all authenticated owner operations on /my-company.
 class MyCompanyRemoteDatasource {
@@ -186,6 +187,155 @@ class MyCompanyRemoteDatasource {
   Future<void> removeEmployee(String id) async {
     try {
       await _client.delete(ApiConstants.myCompanyEmployee(id));
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ── Booking settings ──────────────────────────────────────────────────────
+
+  Future<void> updateBookingSettings(String bookingMode) async {
+    try {
+      await _client.put(
+        ApiConstants.myCompanyBookingSettings,
+        data: {'booking_mode': bookingMode},
+      );
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ── Company breaks ────────────────────────────────────────────────────────
+
+  Future<List<CompanyBreakModel>> getBreaks() async {
+    try {
+      final response = await _client.get(ApiConstants.myCompanyBreaks);
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data
+          .map((e) => CompanyBreakModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<CompanyBreakModel> createBreak(Map<String, dynamic> data) async {
+    try {
+      final response =
+          await _client.post(ApiConstants.myCompanyBreaks, data: data);
+      final body = response.data as Map<String, dynamic>;
+      return CompanyBreakModel.fromJson(
+          (body['data'] ?? body) as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<void> deleteBreak(String id) async {
+    try {
+      await _client.delete(ApiConstants.myCompanyBreak(id));
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ── Capacity overrides ────────────────────────────────────────────────────
+
+  Future<List<CapacityOverrideModel>> getCapacityOverrides() async {
+    try {
+      final response =
+          await _client.get(ApiConstants.myCompanyCapacityOverrides);
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data
+          .map((e) =>
+              CapacityOverrideModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<CapacityOverrideModel> createCapacityOverride(
+      Map<String, dynamic> data) async {
+    try {
+      final response = await _client.post(
+          ApiConstants.myCompanyCapacityOverrides,
+          data: data);
+      final body = response.data as Map<String, dynamic>;
+      return CapacityOverrideModel.fromJson(
+          (body['data'] ?? body) as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<void> deleteCapacityOverride(String id) async {
+    try {
+      await _client.delete(ApiConstants.myCompanyCapacityOverride(id));
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ── Company planning appointments ────────────────────────────────────────
+
+  Future<List<PlanningAppointmentModel>> listCompanyAppointments(
+    String date, {
+    List<String> statuses = const ['confirmed', 'pending'],
+  }) async {
+    try {
+      final url = ApiConstants.myCompanyAppointments(date, statuses);
+      final response = await _client.get(url);
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data
+          .map((e) =>
+              PlanningAppointmentModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ── Walk-in (owner creates confirmed appointment on-the-spot) ────────────
+
+  Future<Map<String, dynamic>> storeCompanyWalkIn(
+      Map<String, dynamic> data) async {
+    try {
+      final response = await _client.post(
+        ApiConstants.myCompanyWalkIn,
+        data: data,
+      );
+      final body = response.data as Map<String, dynamic>;
+      return (body['data'] ?? body) as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ── Pending appointments ──────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getPendingAppointments() async {
+    try {
+      final response =
+          await _client.get(ApiConstants.myCompanyPendingAppointments);
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data.cast<Map<String, dynamic>>();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<void> updateAppointmentStatus(
+      String id, String status) async {
+    try {
+      await _client.put(
+        ApiConstants.myCompanyAppointmentStatus(id),
+        data: {'status': status},
+      );
     } on DioException catch (e) {
       throw _mapDioException(e);
     }

@@ -327,17 +327,33 @@ class _SlotGrid extends StatelessWidget {
       runSpacing: AppSpacing.sm,
       children: slots.map((slot) {
         final selected = _isSelected(slot);
+        final hasCapacity = slot.remaining != null;
+        final isLow = hasCapacity && slot.remaining! <= 2;
+
         return GestureDetector(
           onTap: () => onSlotTap(slot),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            width: 72,
-            height: 40,
+            padding: EdgeInsets.symmetric(
+              horizontal: hasCapacity ? AppSpacing.sm : 0,
+              vertical: hasCapacity ? AppSpacing.xs : 0,
+            ),
+            constraints: const BoxConstraints(
+              minWidth: 72,
+              minHeight: 40,
+            ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color:
-                  selected ? AppColors.slotSelected : AppColors.slotAvailable,
+              color: selected
+                  ? AppColors.slotSelected
+                  : AppColors.slotAvailable,
               borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              border: isLow && !selected
+                  ? Border.all(
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                      width: 1,
+                    )
+                  : null,
               boxShadow: selected
                   ? [
                       BoxShadow(
@@ -348,13 +364,33 @@ class _SlotGrid extends StatelessWidget {
                     ]
                   : null,
             ),
-            child: Text(
-              _formatTime(slot.dateTime),
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: selected ? Colors.white : AppColors.primary,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _formatTime(slot.dateTime),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? Colors.white : AppColors.primary,
+                  ),
+                ),
+                if (hasCapacity) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    context.l10n.spotsRemaining(slot.remaining!),
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w500,
+                      color: selected
+                          ? Colors.white.withValues(alpha: 0.85)
+                          : isLow
+                              ? const Color(0xFFF59E0B)
+                              : AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         );

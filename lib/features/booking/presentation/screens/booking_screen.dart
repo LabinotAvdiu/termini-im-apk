@@ -71,12 +71,15 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   void _showSuccessDialog() {
+    final isCapacityBased =
+        ref.read(bookingProvider).bookingMode == 'capacity_based';
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (_) => _BookingSuccessDialog(
+        isPending: isCapacityBased,
         onDone: () {
-          Navigator.of(context).pop(); // close dialog
+          Navigator.of(context).pop();
           context.go('/home');
         },
       ),
@@ -190,25 +193,28 @@ class _EmployeeAndTimeStepState extends ConsumerState<_EmployeeAndTimeStep> {
 
   @override
   Widget build(BuildContext context) {
+    final bookingMode = ref.watch(
+      bookingProvider.select((s) => s.bookingMode),
+    );
+    final isCapacityBased = bookingMode == 'capacity_based';
+
     return Column(
       children: [
-        // Employee selection (compact horizontal chips)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            0,
+        if (!isCapacityBased) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              0,
+            ),
+            child: const EmployeeSelection(),
           ),
-          child: const EmployeeSelection(),
-        ),
-
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          child: Divider(height: AppSpacing.lg),
-        ),
-
-        // Time slot selection (takes remaining space)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Divider(height: AppSpacing.lg),
+          ),
+        ],
         const Expanded(child: TimeSlotSelection()),
       ],
     );
@@ -399,8 +405,9 @@ class _LoadingView extends StatelessWidget {
 
 class _BookingSuccessDialog extends StatefulWidget {
   final VoidCallback onDone;
+  final bool isPending;
 
-  const _BookingSuccessDialog({required this.onDone});
+  const _BookingSuccessDialog({required this.onDone, this.isPending = false});
 
   @override
   State<_BookingSuccessDialog> createState() => _BookingSuccessDialogState();
@@ -449,25 +456,33 @@ class _BookingSuccessDialogState extends State<_BookingSuccessDialog>
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.12),
+                  color: widget.isPending
+                      ? AppColors.primary.withValues(alpha: 0.12)
+                      : AppColors.success.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.success,
+                child: Icon(
+                  widget.isPending
+                      ? Icons.hourglass_top_rounded
+                      : Icons.check_circle_rounded,
+                  color: widget.isPending ? AppColors.primary : AppColors.success,
                   size: 48,
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              context.l10n.bookingConfirmed,
+              widget.isPending
+                  ? context.l10n.bookingPendingTitle
+                  : context.l10n.bookingConfirmed,
               style: AppTextStyles.h3,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              context.l10n.bookingSuccessMessage,
+              widget.isPending
+                  ? context.l10n.bookingPendingMessage
+                  : context.l10n.bookingSuccessMessage,
               style: AppTextStyles.bodySmall,
               textAlign: TextAlign.center,
             ),

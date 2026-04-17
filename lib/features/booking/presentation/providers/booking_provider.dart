@@ -38,6 +38,7 @@ class BookingState {
   final String? serviceName;
   final double? servicePrice;
   final int? serviceDuration;
+  final String bookingMode;
 
   const BookingState({
     this.currentStep = 0,
@@ -56,6 +57,7 @@ class BookingState {
     this.serviceName,
     this.servicePrice,
     this.serviceDuration,
+    this.bookingMode = 'employee_based',
   });
 
   bool get canProceedStep0 =>
@@ -84,6 +86,7 @@ class BookingState {
     String? serviceName,
     double? servicePrice,
     int? serviceDuration,
+    String? bookingMode,
   }) {
     return BookingState(
       currentStep: currentStep ?? this.currentStep,
@@ -102,6 +105,7 @@ class BookingState {
       serviceName: serviceName ?? this.serviceName,
       servicePrice: servicePrice ?? this.servicePrice,
       serviceDuration: serviceDuration ?? this.serviceDuration,
+      bookingMode: bookingMode ?? this.bookingMode,
     );
   }
 
@@ -123,6 +127,7 @@ class BookingState {
       serviceName: serviceName,
       servicePrice: servicePrice,
       serviceDuration: serviceDuration,
+      bookingMode: bookingMode,
     );
   }
 }
@@ -186,6 +191,8 @@ class BookingNotifier extends StateNotifier<BookingState> {
         serviceId: serviceId,
       );
 
+      final isCapacityBased = company.bookingMode == 'capacity_based';
+
       state = state.copyWith(
         employees: filteredEmployees,
         availability: availability,
@@ -193,7 +200,8 @@ class BookingNotifier extends StateNotifier<BookingState> {
         serviceName: serviceName ?? 'Service',
         servicePrice: servicePrice ?? 0.0,
         serviceDuration: serviceDuration ?? 30,
-        noPreference: true,
+        noPreference: isCapacityBased ? true : true,
+        bookingMode: company.bookingMode,
         isLoading: false,
       );
 

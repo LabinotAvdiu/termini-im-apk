@@ -169,6 +169,7 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
     required String name,
     required int durationMinutes,
     required double price,
+    int? maxConcurrent,
   }) async {
     try {
       final created = await _datasource.createService({
@@ -176,6 +177,7 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
         'name': name,
         'duration': durationMinutes,
         'price': price,
+        if (maxConcurrent != null) 'max_concurrent': maxConcurrent,
       });
       final categories = state.company?.categories.map((c) {
             if (c.id != categoryId) return c;
@@ -199,12 +201,14 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
     required String name,
     required int durationMinutes,
     required double price,
+    int? maxConcurrent,
   }) async {
     try {
       final updated = await _datasource.updateService(serviceId, {
         'name': name,
         'duration': durationMinutes,
         'price': price,
+        if (maxConcurrent != null) 'max_concurrent': maxConcurrent,
       });
       final categories = state.company?.categories.map((c) {
             if (c.id != categoryId) return c;

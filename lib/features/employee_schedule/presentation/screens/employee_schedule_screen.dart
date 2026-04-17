@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -347,8 +347,46 @@ class _TimelineGrid extends StatefulWidget {
 }
 
 class _TimelineGridState extends State<_TimelineGrid> {
-  // Track which appointment card is expanded.
   String? _expandedApptId;
+  final GlobalKey _expandedKey = GlobalKey();
+  double _expandedExtra = 0;
+
+  void _scheduleHeightMeasure() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final ctx = _expandedKey.currentContext;
+      if (ctx == null) {
+        if (_expandedExtra != 0) setState(() => _expandedExtra = 0);
+        return;
+      }
+      final box = ctx.findRenderObject() as RenderBox?;
+      if (box == null || !box.hasSize) return;
+      final detailH = box.size.height;
+      if (detailH != _expandedExtra) {
+        setState(() => _expandedExtra = detailH);
+      }
+    });
+  }
+
+  _GridEvent? get _expandedEvent => _expandedApptId == null
+      ? null
+      : widget.events.where((e) => e.appointment?.id == _expandedApptId).firstOrNull;
+
+  double _shiftBelow(int row) {
+    final ev = _expandedEvent;
+    if (ev == null) return 0;
+    return row >= ev.startRow + ev.rowSpan ? _expandedExtra : 0;
+  }
+
+  Widget _animated({required double top, required Widget child}) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: top),
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeInOut,
+      builder: (_, t, c) => Positioned(top: t, left: 0, right: 0, child: c!),
+      child: child,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -356,8 +394,6 @@ class _TimelineGridState extends State<_TimelineGrid> {
       return const SizedBox.shrink();
     }
 
-    // Build a set of row indices that are covered by an event so we can
-    // suppress the free-slot tap overlay on those rows.
     final coveredRows = <int>{};
     for (final event in widget.events) {
       for (var i = event.startRow; i < event.startRow + event.rowSpan; i++) {
@@ -365,23 +401,28 @@ class _TimelineGridState extends State<_TimelineGrid> {
       }
     }
 
-    final totalHeight = widget.rows.length * _kRowHeight;
+    final naturalHeight = widget.rows.length * _kRowHeight;
+    final totalHeight = naturalHeight + _expandedExtra;
+
+    final expandedEv = _expandedEvent;
+    final expandedBottomRow = expandedEv != null
+        ? expandedEv.startRow + expandedEv.rowSpan
+        : -1;
 
     return SizedBox(
       height: totalHeight,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Left gutter: time labels ───────────────────────────────────
           SizedBox(
             width: _kTimeColumnWidth,
             height: totalHeight,
             child: Stack(
+              clipBehavior: Clip.none,
               children: widget.rows.map((row) {
-                return Positioned(
-                  top: row.index * _kRowHeight,
-                  left: 0,
-                  right: 0,
+                final top = row.index * _kRowHeight + _shiftBelow(row.index);
+                return _animated(
+                  top: top,
                   child: SizedBox(
                     height: _kRowHeight,
                     child: row.isHour
@@ -396,7 +437,6 @@ class _TimelineGridState extends State<_TimelineGrid> {
                               ),
                             ),
                           )
-                        // Quarter-hour tick: small dash aligned top-left
                         : Align(
                             alignment: Alignment.topLeft,
                             child: Container(
@@ -414,64 +454,70 @@ class _TimelineGridState extends State<_TimelineGrid> {
 
           const SizedBox(width: AppSpacing.sm),
 
-          // ── Right content: grid lines + events + tap targets ──────────
           Expanded(
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
-                // Background grid lines
                 CustomPaint(
                   size: Size(double.infinity, totalHeight),
-                  painter: _GridLinePainter(rowCount: widget.rows.length),
+                  painter: _GridLinePainter(
+                    rowCount: widget.rows.length,
+                    expandedBottomRow: expandedBottomRow,
+                    expandedExtra: _expandedExtra,
+                  ),
                 ),
 
-                // Free-slot tap targets (beneath events in z-order)
                 ...widget.rows
                     .where((r) => !coveredRows.contains(r.index))
-                    .map((row) => Positioned(
-                          top: row.index * _kRowHeight,
-                          left: 0,
-                          right: 0,
-                          height: _kRowHeight,
-                          child: _FreeSlotTapTarget(
-                            time: row.time,
-                            onTap: () => widget.onTapFreeSlot(row.time),
-                          ),
-                        )),
+                    .map((row) {
+                  final top = row.index * _kRowHeight + _shiftBelow(row.index);
+                  return _animated(
+                    top: top,
+                    child: SizedBox(
+                      height: _kRowHeight,
+                      child: _FreeSlotTapTarget(
+                        time: row.time,
+                        onTap: () => widget.onTapFreeSlot(row.time),
+                      ),
+                    ),
+                  );
+                }),
 
-                // Events (breaks and appointments)
                 ...widget.events.map((event) {
-                  final top    = event.startRow * _kRowHeight;
+                  final naturalTop = event.startRow * _kRowHeight;
                   final height = event.rowSpan * _kRowHeight;
+                  final shift = _shiftBelow(event.startRow);
 
                   if (event.type == _EventType.breakSlot) {
-                    return Positioned(
-                      top:    top,
-                      left:   0,
-                      right:  0,
-                      height: height,
-                      child:  _BreakCard(
-                        label: event.breakLabel,
+                    return _animated(
+                      top: naturalTop + shift,
+                      child: SizedBox(
                         height: height,
+                        child: _BreakCard(
+                          label: event.breakLabel,
+                          height: height,
+                        ),
                       ),
                     );
                   }
 
-                  final appt      = event.appointment!;
+                  final appt = event.appointment!;
                   final isExpanded = _expandedApptId == appt.id;
 
-                  return Positioned(
-                    top:   top,
-                    left:  0,
-                    right: 0,
-                    // When expanded, let it grow beyond its natural height;
-                    // clamp to at least the natural height.
+                  return _animated(
+                    top: naturalTop + shift,
                     child: _AppointmentCard(
+                      expandedDetailKey: isExpanded ? _expandedKey : null,
                       appointment: appt,
                       naturalHeight: height,
                       isExpanded: isExpanded,
-                      onToggle: () => setState(() {
-                        _expandedApptId = isExpanded ? null : appt.id;
-                      }),
+                      onToggle: () {
+                        setState(() {
+                          _expandedApptId = isExpanded ? null : appt.id;
+                          _expandedExtra = 0;
+                        });
+                        _scheduleHeightMeasure();
+                      },
                     ),
                   );
                 }),
@@ -490,8 +536,14 @@ class _TimelineGridState extends State<_TimelineGrid> {
 
 class _GridLinePainter extends CustomPainter {
   final int rowCount;
+  final int expandedBottomRow;
+  final double expandedExtra;
 
-  const _GridLinePainter({required this.rowCount});
+  const _GridLinePainter({
+    required this.rowCount,
+    this.expandedBottomRow = -1,
+    this.expandedExtra = 0,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -504,21 +556,26 @@ class _GridLinePainter extends CustomPainter {
       ..strokeWidth = 0.5;
 
     for (var i = 0; i < rowCount; i++) {
-      final y     = i * _kRowHeight;
-      // Hour lines every 4 rows (4 × 15 min = 60 min).
+      final shift = (expandedExtra > 0 && i >= expandedBottomRow)
+          ? expandedExtra
+          : 0.0;
+      final y = i * _kRowHeight + shift;
       final paint = (i % 4 == 0) ? hourPaint : quarterPaint;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
-    // Draw the final bottom line.
+    final finalShift = expandedExtra > 0 ? expandedExtra : 0.0;
     canvas.drawLine(
-      Offset(0, rowCount * _kRowHeight),
-      Offset(size.width, rowCount * _kRowHeight),
+      Offset(0, rowCount * _kRowHeight + finalShift),
+      Offset(size.width, rowCount * _kRowHeight + finalShift),
       hourPaint,
     );
   }
 
   @override
-  bool shouldRepaint(_GridLinePainter old) => old.rowCount != rowCount;
+  bool shouldRepaint(_GridLinePainter old) =>
+      old.rowCount != rowCount ||
+      old.expandedBottomRow != expandedBottomRow ||
+      old.expandedExtra != expandedExtra;
 }
 
 // ---------------------------------------------------------------------------
@@ -603,12 +660,14 @@ class _AppointmentCard extends StatelessWidget {
   final double naturalHeight;
   final bool isExpanded;
   final VoidCallback onToggle;
+  final Key? expandedDetailKey;
 
   const _AppointmentCard({
     required this.appointment,
     required this.naturalHeight,
     required this.isExpanded,
     required this.onToggle,
+    this.expandedDetailKey,
   });
 
   @override
@@ -711,10 +770,12 @@ class _AppointmentCard extends StatelessWidget {
               ],
             ),
 
-            // ── Expanded detail ─────────────────────────────────────────
             AnimatedCrossFade(
               firstChild: const SizedBox.shrink(),
-              secondChild: _AppointmentDetail(appointment: appointment),
+              secondChild: _AppointmentDetail(
+                key: expandedDetailKey,
+                appointment: appointment,
+              ),
               crossFadeState: isExpanded
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
@@ -734,7 +795,7 @@ class _AppointmentCard extends StatelessWidget {
 class _AppointmentDetail extends StatelessWidget {
   final ScheduleAppointment appointment;
 
-  const _AppointmentDetail({required this.appointment});
+  const _AppointmentDetail({super.key, required this.appointment});
 
   @override
   Widget build(BuildContext context) {
@@ -787,21 +848,21 @@ class _PhoneRow extends StatelessWidget {
 
   const _PhoneRow({required this.phone});
 
-  void _copyPhone(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: phone));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.l10n.phoneCopied(phone)),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  Future<void> _dialPhone(BuildContext context) async {
+    final cleaned = phone.replaceAll(RegExp(r'\s+'), '');
+    final uri = Uri.parse('tel:$cleaned');
+    final ok = await launchUrl(uri);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(phone)),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _copyPhone(context),
+      onTap: () => _dialPhone(context),
       child: Row(
         children: [
           const Icon(Icons.phone_rounded, size: 13, color: AppColors.primary),
@@ -814,7 +875,7 @@ class _PhoneRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.xs),
-          const Icon(Icons.copy_rounded, size: 11, color: AppColors.primary),
+          const Icon(Icons.phone_forwarded_rounded, size: 11, color: AppColors.primary),
         ],
       ),
     );

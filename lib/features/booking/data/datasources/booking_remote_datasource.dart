@@ -63,6 +63,7 @@ class BookingRemoteDatasource {
 
       return data
           .map((e) => AvailableSlotModel.fromJson(e as Map<String, dynamic>))
+          .where((slot) => slot.available)
           .toList();
     } on DioException catch (e) {
       throw _mapDioException(e);

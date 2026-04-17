@@ -1132,8 +1132,8 @@ class _AddBreakDialogState extends State<_AddBreakDialog> {
                     ...List.generate(
                       7,
                       (i) => DropdownMenuItem<int?>(
-                        value: i + 1,
-                        child: Text(_dayName(i + 1, context)),
+                        value: i,
+                        child: Text(_dayName(i, context)),
                       ),
                     ),
                   ],
@@ -1308,7 +1308,7 @@ class _AddDayOffDialogState extends State<_AddDayOffDialog> {
             AppTextField(
               controller: _reasonCtrl,
               label: context.l10n.reason,
-              hint: 'Ex: Congé annuel',
+              hint: context.l10n.dayOffReasonHint,
               prefixIcon: Icons.notes_rounded,
               maxLines: 2,
             ),

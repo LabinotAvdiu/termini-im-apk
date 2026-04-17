@@ -54,6 +54,22 @@ abstract class ApiConstants {
   static String myCompanyService(String id)   => '/my-company/services/$id';
   static String myCompanyEmployee(String id)  => '/my-company/employees/$id';
 
+  static const String myCompanyBookingSettings  = '/my-company/booking-settings';
+  static const String myCompanyBreaks           = '/my-company/breaks';
+  static const String myCompanyCapacityOverrides = '/my-company/capacity-overrides';
+  static const String myCompanyPendingAppointments = '/my-company/appointments/pending';
+  static const String myCompanyWalkIn = '/my-company/walk-in';
+  static String myCompanyAppointments(String date, List<String> statuses) {
+    final statusParam = statuses.join(',');
+    return '/my-company/appointments?date=$date&status=$statusParam';
+  }
+
+  static String myCompanyAppointmentStatus(String id) =>
+      '/my-company/appointments/$id/status';
+  static String myCompanyBreak(String id) => '/my-company/breaks/$id';
+  static String myCompanyCapacityOverride(String id) =>
+      '/my-company/capacity-overrides/$id';
+
   // ---------------------------------------------------------------------------
   // My Schedule (authenticated employee endpoints)
   // ---------------------------------------------------------------------------

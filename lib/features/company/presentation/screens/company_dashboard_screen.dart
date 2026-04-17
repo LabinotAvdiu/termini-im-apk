@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -72,8 +74,14 @@ class _CompanyDashboardScreenState
                               const SizedBox(height: AppSpacing.md),
                               _ServicesCard(company: state.company!),
                               const SizedBox(height: AppSpacing.md),
-                              _TeamCard(company: state.company!),
-                              const SizedBox(height: AppSpacing.md),
+                              if (state.company!.bookingMode == 'capacity_based') ...[
+                                _CapacitySectionCard(company: state.company!),
+                                const SizedBox(height: AppSpacing.md),
+                              ],
+                              if (state.company!.bookingMode == 'employee_based') ...[
+                                _TeamCard(company: state.company!),
+                                const SizedBox(height: AppSpacing.md),
+                              ],
                               _OpeningHoursCard(company: state.company!),
                             ],
                           ]),
@@ -281,6 +289,8 @@ class _CompanyInfoCard extends ConsumerWidget {
     final addressCtrl = TextEditingController(text: company.address);
     final cityCtrl = TextEditingController(text: company.city);
     final phoneCtrl = TextEditingController(text: company.phone);
+    final phoneSecondaryCtrl =
+        TextEditingController(text: company.phoneSecondary ?? '');
     final descCtrl = TextEditingController(text: company.description ?? '');
 
     showDialog<void>(
@@ -290,8 +300,10 @@ class _CompanyInfoCard extends ConsumerWidget {
         addressCtrl: addressCtrl,
         cityCtrl: cityCtrl,
         phoneCtrl: phoneCtrl,
+        phoneSecondaryCtrl: phoneSecondaryCtrl,
         descCtrl: descCtrl,
         onSave: () async {
+          final secondaryRaw = phoneSecondaryCtrl.text.trim();
           final ok = await ref
               .read(companyDashboardProvider.notifier)
               .updateCompanyInfo({
@@ -299,6 +311,7 @@ class _CompanyInfoCard extends ConsumerWidget {
             'address': addressCtrl.text.trim(),
             'city': cityCtrl.text.trim(),
             'phone': phoneCtrl.text.trim(),
+            'phone_secondary': secondaryRaw.isEmpty ? null : secondaryRaw,
             'description': descCtrl.text.trim(),
           });
           if (ctx.mounted) Navigator.of(ctx).pop();
@@ -348,6 +361,7 @@ class _CompanyEditDialog extends StatelessWidget {
   final TextEditingController addressCtrl;
   final TextEditingController cityCtrl;
   final TextEditingController phoneCtrl;
+  final TextEditingController phoneSecondaryCtrl;
   final TextEditingController descCtrl;
   final VoidCallback onSave;
 
@@ -356,6 +370,7 @@ class _CompanyEditDialog extends StatelessWidget {
     required this.addressCtrl,
     required this.cityCtrl,
     required this.phoneCtrl,
+    required this.phoneSecondaryCtrl,
     required this.descCtrl,
     required this.onSave,
   });
@@ -401,6 +416,17 @@ class _CompanyEditDialog extends StatelessWidget {
                 label: context.l10n.phone,
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
+                hint: '044 123 456',
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: AppTextField(
+                controller: phoneSecondaryCtrl,
+                label: context.l10n.phoneSecondary,
+                prefixIcon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+                hint: '044 123 456',
               ),
             ),
             Padding(
@@ -587,6 +613,11 @@ class _ServicesCard extends ConsumerWidget {
         text: service != null ? service.durationMinutes.toString() : '');
     final priceCtrl = TextEditingController(
         text: service != null ? service.price.toStringAsFixed(2) : '');
+    final maxCtrl = TextEditingController(
+        text: service?.maxConcurrent?.toString() ?? '');
+    final isCapacity =
+        ref.read(companyDashboardProvider).company?.bookingMode ==
+            'capacity_based';
 
     showDialog<void>(
       context: context,
@@ -628,6 +659,16 @@ class _ServicesCard extends ConsumerWidget {
                       const TextInputType.numberWithOptions(decimal: true),
                 ),
               ),
+              if (isCapacity)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: AppTextField(
+                    controller: maxCtrl,
+                    label: context.l10n.maxConcurrent,
+                    prefixIcon: Icons.people_outline_rounded,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
             ],
           ),
         ),
@@ -646,6 +687,9 @@ class _ServicesCard extends ConsumerWidget {
               final price =
                   double.tryParse(priceCtrl.text.trim().replaceAll(',', '.')) ??
                       0.0;
+              final maxConcurrent = isCapacity
+                  ? int.tryParse(maxCtrl.text.trim())
+                  : null;
               if (name.isEmpty || duration <= 0) return;
 
               bool ok;
@@ -657,6 +701,7 @@ class _ServicesCard extends ConsumerWidget {
                       name: name,
                       durationMinutes: duration,
                       price: price,
+                      maxConcurrent: maxConcurrent,
                     );
               } else {
                 ok = await ref
@@ -667,6 +712,7 @@ class _ServicesCard extends ConsumerWidget {
                       name: name,
                       durationMinutes: duration,
                       price: price,
+                      maxConcurrent: maxConcurrent,
                     );
               }
               if (ctx.mounted) Navigator.of(ctx).pop();
@@ -675,6 +721,46 @@ class _ServicesCard extends ConsumerWidget {
               }
             },
             child: Text(context.l10n.saveChanges),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Capacity section card (capacity_based mode only)
+// ---------------------------------------------------------------------------
+
+class _CapacitySectionCard extends StatelessWidget {
+  final MyCompanyModel company;
+
+  const _CapacitySectionCard({required this.company});
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      title: context.l10n.capacitySettingsTitle,
+      icon: Icons.tune_rounded,
+      trailing: IconButton(
+        icon: const Icon(Icons.arrow_forward_ios_rounded,
+            size: 16, color: AppColors.primary),
+        tooltip: context.l10n.capacitySettingsTitle,
+        onPressed: () => context.goNamed(RouteNames.capacitySettings),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.tune_rounded,
+                size: 20, color: AppColors.textSecondary),
+            title: Text(
+              context.l10n.capacitySettingsTitle,
+              style: AppTextStyles.body,
+            ),
+            trailing: const Icon(Icons.chevron_right_rounded,
+                size: 20, color: AppColors.textHint),
+            onTap: () => context.goNamed(RouteNames.capacitySettings),
           ),
         ],
       ),
