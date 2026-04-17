@@ -7,4 +7,5 @@ abstract class AppConstants {
   static const String rememberMeKey = 'remember_me';
   static const String lastRefreshKey = 'last_refresh_at';
   static const int sessionMaxDays = 90; // 3 months
+  static const String localeKey = 'app_locale';
 }
