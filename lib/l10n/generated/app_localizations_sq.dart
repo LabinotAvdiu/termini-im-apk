@@ -9,7 +9,7 @@ class AppLocalizationsSq extends AppLocalizations {
   AppLocalizationsSq([String locale = 'sq']) : super(locale);
 
   @override
-  String get appName => 'Takimi IM';
+  String get appName => 'Termini im';
 
   @override
   String get login => 'Kyçu';
@@ -81,7 +81,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get chooseRole => 'Zgjidhni profilin tuaj';
 
   @override
-  String get chooseRoleSubtitle => 'Si dëshironi ta përdorni Takimi IM?';
+  String get chooseRoleSubtitle => 'Si dëshironi ta përdorni Termini im?';
 
   @override
   String get searchPlaceholder => 'Kërko një sallon...';
@@ -230,6 +230,9 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get emailInvalid => 'Email i pavlefshëm';
+
+  @override
+  String get emailAlreadyUsed => 'Ky email është tashmë në përdorim';
 
   @override
   String get passwordRequired => 'Fjalëkalimi është i detyrueshëm';
@@ -568,6 +571,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get reason => 'Arsyeja (opsionale)';
 
   @override
+  String get dayOffReasonHint => 'P.sh.: Pushim vjetor';
+
+  @override
   String get everyDay => 'Çdo ditë';
 
   @override
@@ -705,6 +711,9 @@ class AppLocalizationsSq extends AppLocalizations {
   }
 
   @override
+  String get phoneSecondary => 'Telefon i dytë';
+
+  @override
   String get descriptionLabel => 'Përshkrimi';
 
   @override
@@ -820,4 +829,102 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get dayShortSun => 'Die';
+
+  @override
+  String get bookingModeTitle => 'Mënyra e rezervimit';
+
+  @override
+  String get bookingModeCapacityBasedTitle => 'Një pikë pritjeje';
+
+  @override
+  String get bookingModeCapacityBasedShort =>
+      'Ideale nëse i menaxhoni vetë të gjitha takimet';
+
+  @override
+  String get bookingModeCapacityBasedDescription =>
+      'Ju menaxhoni të gjitha takimet. Cakto kapacitetin për shërbim (p.sh. 3 prerje njëkohësisht). Klientët shohin vetëm orare.';
+
+  @override
+  String get bookingModeEmployeeBasedTitle => 'Secili menaxhon vet';
+
+  @override
+  String get bookingModeEmployeeBasedShort => 'Secili punonjës ka orarin e vet';
+
+  @override
+  String get bookingModeEmployeeBasedDescription =>
+      'Secili punonjës ka oraret e veta. Klientët zgjedhin profesionistin gjatë rezervimit.';
+
+  @override
+  String get settingsEditableLater =>
+      'Të gjitha këto cilësime mund të ndryshohen më vonë.';
+
+  @override
+  String get maxConcurrent => 'Takime të njëkohshme max';
+
+  @override
+  String get capacitySettingsTitle => 'Kapaciteti & pushimet';
+
+  @override
+  String get reducedCapacityDays => 'Ditë me kapacitet të reduktuar';
+
+  @override
+  String spotsRemaining(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString vende',
+      one: '1 vend',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingApprovals => 'Kërkesa në pritje';
+
+  @override
+  String get pendingApprovalsShort => 'Kërkesat';
+
+  @override
+  String get approve => 'Prano';
+
+  @override
+  String get reject => 'Refuzo';
+
+  @override
+  String get bookingPendingTitle => 'Kërkesa u dërgua';
+
+  @override
+  String get bookingPendingMessage =>
+      'Kërkesa juaj u dërgua. Salloni do të konfirmojë ose refuzojë së shpejti.';
+
+  @override
+  String changeBookingModeWarning(String mode) {
+    return 'Kalo në $mode. Takimet ekzistuese do të ruhen. Vazhdo?';
+  }
+
+  @override
+  String get confirmAppointment => 'Konfirmo';
+
+  @override
+  String get rejectAppointment => 'Refuzo';
+
+  @override
+  String get cancelAppointment => 'Anulo takimin';
+
+  @override
+  String get confirmRejectTitle => 'Refuzo këtë takim?';
+
+  @override
+  String get confirmCancelTitle => 'Anulo këtë takim?';
+
+  @override
+  String get cancelAppointmentBody => 'Ky veprim do të lirojë orarin.';
+
+  @override
+  String get actionFailed => 'Veprimi dështoi. Provo përsëri.';
 }

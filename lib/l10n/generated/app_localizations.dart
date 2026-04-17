@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In fr, this message translates to:
-  /// **'Takimi IM'**
+  /// **'Termini im'**
   String get appName;
 
   /// No description provided for @login.
@@ -247,7 +247,7 @@ abstract class AppLocalizations {
   /// No description provided for @chooseRoleSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Comment souhaitez-vous utiliser Takimi IM ?'**
+  /// **'Comment souhaitez-vous utiliser Termini im ?'**
   String get chooseRoleSubtitle;
 
   /// No description provided for @searchPlaceholder.
@@ -537,6 +537,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Email invalide'**
   String get emailInvalid;
+
+  /// No description provided for @emailAlreadyUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cet email est déjà utilisé'**
+  String get emailAlreadyUsed;
 
   /// No description provided for @passwordRequired.
   ///
@@ -1186,6 +1192,12 @@ abstract class AppLocalizations {
   /// **'Motif (optionnel)'**
   String get reason;
 
+  /// No description provided for @dayOffReasonHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex: Congé annuel'**
+  String get dayOffReasonHint;
+
   /// No description provided for @everyDay.
   ///
   /// In fr, this message translates to:
@@ -1438,6 +1450,12 @@ abstract class AppLocalizations {
   /// **'Horaires : {hours}'**
   String employeeScheduleHint(String hours);
 
+  /// No description provided for @phoneSecondary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone secondaire'**
+  String get phoneSecondary;
+
   /// No description provided for @descriptionLabel.
   ///
   /// In fr, this message translates to:
@@ -1671,6 +1689,162 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'dim.'**
   String get dayShortSun;
+
+  /// No description provided for @bookingModeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode de réservation'**
+  String get bookingModeTitle;
+
+  /// No description provided for @bookingModeCapacityBasedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un seul accueil'**
+  String get bookingModeCapacityBasedTitle;
+
+  /// No description provided for @bookingModeCapacityBasedShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Idéal si vous gérez seul tous les RDV'**
+  String get bookingModeCapacityBasedShort;
+
+  /// No description provided for @bookingModeCapacityBasedDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous gérez tous les rendez-vous. Définissez une capacité par service (ex: 3 coupes simultanées). Les clients voient uniquement des créneaux.'**
+  String get bookingModeCapacityBasedDescription;
+
+  /// No description provided for @bookingModeEmployeeBasedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chacun gère ses RDV'**
+  String get bookingModeEmployeeBasedTitle;
+
+  /// No description provided for @bookingModeEmployeeBasedShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque employé a son propre planning'**
+  String get bookingModeEmployeeBasedShort;
+
+  /// No description provided for @bookingModeEmployeeBasedDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque employé a son propre planning. Les clients choisissent leur coiffeur au moment de la réservation.'**
+  String get bookingModeEmployeeBasedDescription;
+
+  /// No description provided for @settingsEditableLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous ces paramètres peuvent être modifiés plus tard.'**
+  String get settingsEditableLater;
+
+  /// No description provided for @maxConcurrent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendez-vous simultanés max'**
+  String get maxConcurrent;
+
+  /// No description provided for @capacitySettingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité & pauses'**
+  String get capacitySettingsTitle;
+
+  /// No description provided for @reducedCapacityDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jours à capacité réduite'**
+  String get reducedCapacityDays;
+
+  /// No description provided for @spotsRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count,plural,=1{1 place} other{{count} places}}'**
+  String spotsRemaining(num count);
+
+  /// No description provided for @pendingApprovals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes en attente'**
+  String get pendingApprovals;
+
+  /// No description provided for @pendingApprovalsShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes'**
+  String get pendingApprovalsShort;
+
+  /// No description provided for @approve.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accepter'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get reject;
+
+  /// No description provided for @bookingPendingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande envoyée'**
+  String get bookingPendingTitle;
+
+  /// No description provided for @bookingPendingMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre demande a été envoyée. Le salon va confirmer ou refuser dans les meilleurs délais.'**
+  String get bookingPendingMessage;
+
+  /// No description provided for @changeBookingModeWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basculer vers {mode}. Les rendez-vous déjà réservés seront conservés. Continuer ?'**
+  String changeBookingModeWarning(String mode);
+
+  /// No description provided for @confirmAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get confirmAppointment;
+
+  /// No description provided for @rejectAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get rejectAppointment;
+
+  /// No description provided for @cancelAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler le rendez-vous'**
+  String get cancelAppointment;
+
+  /// No description provided for @confirmRejectTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser ce rendez-vous ?'**
+  String get confirmRejectTitle;
+
+  /// No description provided for @confirmCancelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler ce rendez-vous ?'**
+  String get confirmCancelTitle;
+
+  /// No description provided for @cancelAppointmentBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette action libérera le créneau.'**
+  String get cancelAppointmentBody;
+
+  /// No description provided for @actionFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'action. Réessayez.'**
+  String get actionFailed;
 }
 
 class _AppLocalizationsDelegate

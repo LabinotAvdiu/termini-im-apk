@@ -1,6 +1,6 @@
 {
   "@@locale": "fr",
-  "appName": "Takimi IM",
+  "appName": "Termini im",
   "login": "Connexion",
   "signup": "Inscription",
   "email": "Email",
@@ -24,7 +24,7 @@
   "iAmCompany": "Je suis un professionnel",
   "iAmCompanySubtitle": "Gérez votre salon et vos réservations",
   "chooseRole": "Choisissez votre profil",
-  "chooseRoleSubtitle": "Comment souhaitez-vous utiliser Takimi IM ?",
+  "chooseRoleSubtitle": "Comment souhaitez-vous utiliser Termini im ?",
   "searchPlaceholder": "Rechercher un salon...",
   "filterMen": "Homme",
   "filterWomen": "Femme",
@@ -87,6 +87,7 @@
   "profile": "Profil",
   "emailRequired": "L'email est requis",
   "emailInvalid": "Email invalide",
+  "emailAlreadyUsed": "Cet email est déjà utilisé",
   "passwordRequired": "Le mot de passe est requis",
   "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
   "passwordNeedsUpper": "Doit contenir au moins une majuscule",
@@ -212,6 +213,7 @@
   "daysOff": "Jours de congé",
   "addDayOff": "Ajouter un jour de congé",
   "reason": "Motif (optionnel)",
+  "dayOffReasonHint": "Ex: Congé annuel",
   "everyDay": "Tous les jours",
   "breakSlot": "Pause",
   "working": "Travaille",
@@ -276,6 +278,7 @@
       "hours": { "type": "String" }
     }
   },
+  "phoneSecondary": "Téléphone secondaire",
   "descriptionLabel": "Description",
   "monday": "Lundi",
   "tuesday": "Mardi",
@@ -314,5 +317,41 @@
   "dayShortThu": "jeu.",
   "dayShortFri": "ven.",
   "dayShortSat": "sam.",
-  "dayShortSun": "dim."
+  "dayShortSun": "dim.",
+  "bookingModeTitle": "Mode de réservation",
+  "bookingModeCapacityBasedTitle": "Un seul accueil",
+  "bookingModeCapacityBasedShort": "Idéal si vous gérez seul tous les RDV",
+  "bookingModeCapacityBasedDescription": "Vous gérez tous les rendez-vous. Définissez une capacité par service (ex: 3 coupes simultanées). Les clients voient uniquement des créneaux.",
+  "bookingModeEmployeeBasedTitle": "Chacun gère ses RDV",
+  "bookingModeEmployeeBasedShort": "Chaque employé a son propre planning",
+  "bookingModeEmployeeBasedDescription": "Chaque employé a son propre planning. Les clients choisissent leur coiffeur au moment de la réservation.",
+  "settingsEditableLater": "Tous ces paramètres peuvent être modifiés plus tard.",
+  "maxConcurrent": "Rendez-vous simultanés max",
+  "capacitySettingsTitle": "Capacité & pauses",
+  "reducedCapacityDays": "Jours à capacité réduite",
+  "spotsRemaining": "{count,plural,=1{1 place} other{{count} places}}",
+  "@spotsRemaining": {
+    "placeholders": {
+      "count": { "type": "num", "format": "compact" }
+    }
+  },
+  "pendingApprovals": "Demandes en attente",
+  "pendingApprovalsShort": "Demandes",
+  "approve": "Accepter",
+  "reject": "Refuser",
+  "bookingPendingTitle": "Demande envoyée",
+  "bookingPendingMessage": "Votre demande a été envoyée. Le salon va confirmer ou refuser dans les meilleurs délais.",
+  "changeBookingModeWarning": "Basculer vers {mode}. Les rendez-vous déjà réservés seront conservés. Continuer ?",
+  "@changeBookingModeWarning": {
+    "placeholders": {
+      "mode": { "type": "String" }
+    }
+  },
+  "confirmAppointment": "Confirmer",
+  "rejectAppointment": "Refuser",
+  "cancelAppointment": "Annuler le rendez-vous",
+  "confirmRejectTitle": "Refuser ce rendez-vous ?",
+  "confirmCancelTitle": "Annuler ce rendez-vous ?",
+  "cancelAppointmentBody": "Cette action libérera le créneau.",
+  "actionFailed": "Échec de l'action. Réessayez."
 }

@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Takimi IM';
+  String get appName => 'Termini im';
 
   @override
   String get login => 'Login';
@@ -81,7 +81,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseRole => 'Choose your profile';
 
   @override
-  String get chooseRoleSubtitle => 'How would you like to use Takimi IM?';
+  String get chooseRoleSubtitle => 'How would you like to use Termini im?';
 
   @override
   String get searchPlaceholder => 'Search for a salon...';
@@ -231,6 +231,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emailInvalid => 'Invalid email';
+
+  @override
+  String get emailAlreadyUsed => 'This email is already in use';
 
   @override
   String get passwordRequired => 'Password is required';
@@ -566,6 +569,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reason => 'Reason (optional)';
 
   @override
+  String get dayOffReasonHint => 'E.g.: Annual leave';
+
+  @override
   String get everyDay => 'Every day';
 
   @override
@@ -703,6 +709,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get phoneSecondary => 'Secondary phone';
+
+  @override
   String get descriptionLabel => 'Description';
 
   @override
@@ -818,4 +827,103 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dayShortSun => 'Sun';
+
+  @override
+  String get bookingModeTitle => 'Booking mode';
+
+  @override
+  String get bookingModeCapacityBasedTitle => 'Single front desk';
+
+  @override
+  String get bookingModeCapacityBasedShort =>
+      'Best if you handle all appointments alone';
+
+  @override
+  String get bookingModeCapacityBasedDescription =>
+      'You handle all appointments. Set a capacity per service (e.g. 3 haircuts at once). Clients only see time slots.';
+
+  @override
+  String get bookingModeEmployeeBasedTitle => 'Each employee manages';
+
+  @override
+  String get bookingModeEmployeeBasedShort =>
+      'Each employee keeps their own schedule';
+
+  @override
+  String get bookingModeEmployeeBasedDescription =>
+      'Each employee has their own schedule. Clients pick their professional when booking.';
+
+  @override
+  String get settingsEditableLater =>
+      'All these settings can be changed later.';
+
+  @override
+  String get maxConcurrent => 'Max concurrent appointments';
+
+  @override
+  String get capacitySettingsTitle => 'Capacity & breaks';
+
+  @override
+  String get reducedCapacityDays => 'Reduced-capacity days';
+
+  @override
+  String spotsRemaining(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString spots',
+      one: '1 spot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingApprovals => 'Pending requests';
+
+  @override
+  String get pendingApprovalsShort => 'Requests';
+
+  @override
+  String get approve => 'Accept';
+
+  @override
+  String get reject => 'Refuse';
+
+  @override
+  String get bookingPendingTitle => 'Request sent';
+
+  @override
+  String get bookingPendingMessage =>
+      'Your request has been sent. The salon will confirm or refuse shortly.';
+
+  @override
+  String changeBookingModeWarning(String mode) {
+    return 'Switch to $mode. Existing appointments will be kept. Continue?';
+  }
+
+  @override
+  String get confirmAppointment => 'Confirm';
+
+  @override
+  String get rejectAppointment => 'Refuse';
+
+  @override
+  String get cancelAppointment => 'Cancel appointment';
+
+  @override
+  String get confirmRejectTitle => 'Refuse this appointment?';
+
+  @override
+  String get confirmCancelTitle => 'Cancel this appointment?';
+
+  @override
+  String get cancelAppointmentBody => 'This will free the time slot.';
+
+  @override
+  String get actionFailed => 'Action failed. Try again.';
 }

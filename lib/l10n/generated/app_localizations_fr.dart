@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appName => 'Takimi IM';
+  String get appName => 'Termini im';
 
   @override
   String get login => 'Connexion';
@@ -82,7 +82,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chooseRoleSubtitle =>
-      'Comment souhaitez-vous utiliser Takimi IM ?';
+      'Comment souhaitez-vous utiliser Termini im ?';
 
   @override
   String get searchPlaceholder => 'Rechercher un salon...';
@@ -232,6 +232,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get emailInvalid => 'Email invalide';
+
+  @override
+  String get emailAlreadyUsed => 'Cet email est déjà utilisé';
 
   @override
   String get passwordRequired => 'Le mot de passe est requis';
@@ -568,6 +571,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reason => 'Motif (optionnel)';
 
   @override
+  String get dayOffReasonHint => 'Ex: Congé annuel';
+
+  @override
   String get everyDay => 'Tous les jours';
 
   @override
@@ -705,6 +711,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get phoneSecondary => 'Téléphone secondaire';
+
+  @override
   String get descriptionLabel => 'Description';
 
   @override
@@ -820,4 +829,103 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dayShortSun => 'dim.';
+
+  @override
+  String get bookingModeTitle => 'Mode de réservation';
+
+  @override
+  String get bookingModeCapacityBasedTitle => 'Un seul accueil';
+
+  @override
+  String get bookingModeCapacityBasedShort =>
+      'Idéal si vous gérez seul tous les RDV';
+
+  @override
+  String get bookingModeCapacityBasedDescription =>
+      'Vous gérez tous les rendez-vous. Définissez une capacité par service (ex: 3 coupes simultanées). Les clients voient uniquement des créneaux.';
+
+  @override
+  String get bookingModeEmployeeBasedTitle => 'Chacun gère ses RDV';
+
+  @override
+  String get bookingModeEmployeeBasedShort =>
+      'Chaque employé a son propre planning';
+
+  @override
+  String get bookingModeEmployeeBasedDescription =>
+      'Chaque employé a son propre planning. Les clients choisissent leur coiffeur au moment de la réservation.';
+
+  @override
+  String get settingsEditableLater =>
+      'Tous ces paramètres peuvent être modifiés plus tard.';
+
+  @override
+  String get maxConcurrent => 'Rendez-vous simultanés max';
+
+  @override
+  String get capacitySettingsTitle => 'Capacité & pauses';
+
+  @override
+  String get reducedCapacityDays => 'Jours à capacité réduite';
+
+  @override
+  String spotsRemaining(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString places',
+      one: '1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingApprovals => 'Demandes en attente';
+
+  @override
+  String get pendingApprovalsShort => 'Demandes';
+
+  @override
+  String get approve => 'Accepter';
+
+  @override
+  String get reject => 'Refuser';
+
+  @override
+  String get bookingPendingTitle => 'Demande envoyée';
+
+  @override
+  String get bookingPendingMessage =>
+      'Votre demande a été envoyée. Le salon va confirmer ou refuser dans les meilleurs délais.';
+
+  @override
+  String changeBookingModeWarning(String mode) {
+    return 'Basculer vers $mode. Les rendez-vous déjà réservés seront conservés. Continuer ?';
+  }
+
+  @override
+  String get confirmAppointment => 'Confirmer';
+
+  @override
+  String get rejectAppointment => 'Refuser';
+
+  @override
+  String get cancelAppointment => 'Annuler le rendez-vous';
+
+  @override
+  String get confirmRejectTitle => 'Refuser ce rendez-vous ?';
+
+  @override
+  String get confirmCancelTitle => 'Annuler ce rendez-vous ?';
+
+  @override
+  String get cancelAppointmentBody => 'Cette action libérera le créneau.';
+
+  @override
+  String get actionFailed => 'Échec de l\'action. Réessayez.';
 }

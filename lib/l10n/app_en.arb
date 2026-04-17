@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Takimi IM",
+  "appName": "Termini im",
   "login": "Login",
   "signup": "Sign Up",
   "email": "Email",
@@ -24,7 +24,7 @@
   "iAmCompany": "I'm a professional",
   "iAmCompanySubtitle": "Manage your salon and your bookings",
   "chooseRole": "Choose your profile",
-  "chooseRoleSubtitle": "How would you like to use Takimi IM?",
+  "chooseRoleSubtitle": "How would you like to use Termini im?",
   "searchPlaceholder": "Search for a salon...",
   "filterMen": "Men",
   "filterWomen": "Women",
@@ -87,6 +87,7 @@
   "profile": "Profile",
   "emailRequired": "Email is required",
   "emailInvalid": "Invalid email",
+  "emailAlreadyUsed": "This email is already in use",
   "passwordRequired": "Password is required",
   "passwordTooShort": "Password must be at least 8 characters",
   "passwordNeedsUpper": "Must contain at least one uppercase letter",
@@ -212,6 +213,7 @@
   "daysOff": "Days off",
   "addDayOff": "Add day off",
   "reason": "Reason (optional)",
+  "dayOffReasonHint": "E.g.: Annual leave",
   "everyDay": "Every day",
   "breakSlot": "Break",
   "working": "Working",
@@ -276,6 +278,7 @@
       "hours": { "type": "String" }
     }
   },
+  "phoneSecondary": "Secondary phone",
   "descriptionLabel": "Description",
   "monday": "Monday",
   "tuesday": "Tuesday",
@@ -314,5 +317,41 @@
   "dayShortThu": "Thu",
   "dayShortFri": "Fri",
   "dayShortSat": "Sat",
-  "dayShortSun": "Sun"
+  "dayShortSun": "Sun",
+  "bookingModeTitle": "Booking mode",
+  "bookingModeCapacityBasedTitle": "Single front desk",
+  "bookingModeCapacityBasedShort": "Best if you handle all appointments alone",
+  "bookingModeCapacityBasedDescription": "You handle all appointments. Set a capacity per service (e.g. 3 haircuts at once). Clients only see time slots.",
+  "bookingModeEmployeeBasedTitle": "Each employee manages",
+  "bookingModeEmployeeBasedShort": "Each employee keeps their own schedule",
+  "bookingModeEmployeeBasedDescription": "Each employee has their own schedule. Clients pick their professional when booking.",
+  "settingsEditableLater": "All these settings can be changed later.",
+  "maxConcurrent": "Max concurrent appointments",
+  "capacitySettingsTitle": "Capacity & breaks",
+  "reducedCapacityDays": "Reduced-capacity days",
+  "spotsRemaining": "{count,plural,=1{1 spot} other{{count} spots}}",
+  "@spotsRemaining": {
+    "placeholders": {
+      "count": { "type": "num", "format": "compact" }
+    }
+  },
+  "pendingApprovals": "Pending requests",
+  "pendingApprovalsShort": "Requests",
+  "approve": "Accept",
+  "reject": "Refuse",
+  "bookingPendingTitle": "Request sent",
+  "bookingPendingMessage": "Your request has been sent. The salon will confirm or refuse shortly.",
+  "changeBookingModeWarning": "Switch to {mode}. Existing appointments will be kept. Continue?",
+  "@changeBookingModeWarning": {
+    "placeholders": {
+      "mode": { "type": "String" }
+    }
+  },
+  "confirmAppointment": "Confirm",
+  "rejectAppointment": "Refuse",
+  "cancelAppointment": "Cancel appointment",
+  "confirmRejectTitle": "Refuse this appointment?",
+  "confirmCancelTitle": "Cancel this appointment?",
+  "cancelAppointmentBody": "This will free the time slot.",
+  "actionFailed": "Action failed. Try again."
 }

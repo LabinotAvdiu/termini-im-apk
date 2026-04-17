@@ -1,6 +1,6 @@
 {
   "@@locale": "sq",
-  "appName": "Takimi IM",
+  "appName": "Termini im",
   "login": "Kyçu",
   "signup": "Regjistrohu",
   "email": "Email",
@@ -24,7 +24,7 @@
   "iAmCompany": "Jam profesionist",
   "iAmCompanySubtitle": "Menaxhoni sallonin dhe rezervimet tuaja",
   "chooseRole": "Zgjidhni profilin tuaj",
-  "chooseRoleSubtitle": "Si dëshironi ta përdorni Takimi IM?",
+  "chooseRoleSubtitle": "Si dëshironi ta përdorni Termini im?",
   "searchPlaceholder": "Kërko një sallon...",
   "filterMen": "Burra",
   "filterWomen": "Gra",
@@ -87,6 +87,7 @@
   "profile": "Profili",
   "emailRequired": "Email-i është i detyrueshëm",
   "emailInvalid": "Email i pavlefshëm",
+  "emailAlreadyUsed": "Ky email është tashmë në përdorim",
   "passwordRequired": "Fjalëkalimi është i detyrueshëm",
   "passwordTooShort": "Fjalëkalimi duhet të ketë së paku 8 karaktere",
   "passwordNeedsUpper": "Duhet të përmbajë të paktën një shkronjë të madhe",
@@ -212,6 +213,7 @@
   "daysOff": "Ditët e pushimit",
   "addDayOff": "Shto ditë pushimi",
   "reason": "Arsyeja (opsionale)",
+  "dayOffReasonHint": "P.sh.: Pushim vjetor",
   "everyDay": "Çdo ditë",
   "breakSlot": "Pushim",
   "working": "Punon",
@@ -276,6 +278,7 @@
       "hours": { "type": "String" }
     }
   },
+  "phoneSecondary": "Telefon i dytë",
   "descriptionLabel": "Përshkrimi",
   "monday": "E Hënë",
   "tuesday": "E Martë",
@@ -314,5 +317,41 @@
   "dayShortThu": "Enj",
   "dayShortFri": "Pre",
   "dayShortSat": "Sht",
-  "dayShortSun": "Die"
+  "dayShortSun": "Die",
+  "bookingModeTitle": "Mënyra e rezervimit",
+  "bookingModeCapacityBasedTitle": "Një pikë pritjeje",
+  "bookingModeCapacityBasedShort": "Ideale nëse i menaxhoni vetë të gjitha takimet",
+  "bookingModeCapacityBasedDescription": "Ju menaxhoni të gjitha takimet. Cakto kapacitetin për shërbim (p.sh. 3 prerje njëkohësisht). Klientët shohin vetëm orare.",
+  "bookingModeEmployeeBasedTitle": "Secili menaxhon vet",
+  "bookingModeEmployeeBasedShort": "Secili punonjës ka orarin e vet",
+  "bookingModeEmployeeBasedDescription": "Secili punonjës ka oraret e veta. Klientët zgjedhin profesionistin gjatë rezervimit.",
+  "settingsEditableLater": "Të gjitha këto cilësime mund të ndryshohen më vonë.",
+  "maxConcurrent": "Takime të njëkohshme max",
+  "capacitySettingsTitle": "Kapaciteti & pushimet",
+  "reducedCapacityDays": "Ditë me kapacitet të reduktuar",
+  "spotsRemaining": "{count,plural,=1{1 vend} other{{count} vende}}",
+  "@spotsRemaining": {
+    "placeholders": {
+      "count": { "type": "num", "format": "compact" }
+    }
+  },
+  "pendingApprovals": "Kërkesa në pritje",
+  "pendingApprovalsShort": "Kërkesat",
+  "approve": "Prano",
+  "reject": "Refuzo",
+  "bookingPendingTitle": "Kërkesa u dërgua",
+  "bookingPendingMessage": "Kërkesa juaj u dërgua. Salloni do të konfirmojë ose refuzojë së shpejti.",
+  "changeBookingModeWarning": "Kalo në {mode}. Takimet ekzistuese do të ruhen. Vazhdo?",
+  "@changeBookingModeWarning": {
+    "placeholders": {
+      "mode": { "type": "String" }
+    }
+  },
+  "confirmAppointment": "Konfirmo",
+  "rejectAppointment": "Refuzo",
+  "cancelAppointment": "Anulo takimin",
+  "confirmRejectTitle": "Refuzo këtë takim?",
+  "confirmCancelTitle": "Anulo këtë takim?",
+  "cancelAppointmentBody": "Ky veprim do të lirojë orarin.",
+  "actionFailed": "Veprimi dështoi. Provo përsëri."
 }

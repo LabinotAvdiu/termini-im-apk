@@ -77,7 +77,7 @@ class _HeaderSection extends StatelessWidget {
               ),
             ),
             child: const Icon(
-              Icons.calendar_month_rounded,
+              Icons.content_cut_rounded,
               color: Colors.white,
               size: 42,
             ),
@@ -86,7 +86,7 @@ class _HeaderSection extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
 
           const Text(
-            'Takimi IM',
+            'Termini im',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w800,
