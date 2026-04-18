@@ -1308,4 +1308,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get genderSelectorLabel => 'I am';
+
+  @override
+  String get genderSelectorHint =>
+      'Used to pre-filter salons. You can change it anytime.';
+
+  @override
+  String get myProfile => 'My profile';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get takePhoto => 'Take a photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get removePhotoConfirm => 'Remove your profile photo?';
+
+  @override
+  String get avatarUploading => 'Uploading…';
+
+  @override
+  String get avatarUploadError => 'Photo upload failed.';
+
+  @override
+  String get cropPhotoTitle => 'Crop photo';
 }

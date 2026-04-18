@@ -499,5 +499,17 @@
       "total": { "type": "String" }
     }
   },
-  "close": "Mbyll"
+  "close": "Mbyll",
+  "genderSelectorLabel": "Unë jam",
+  "genderSelectorHint": "Përdoret për të para-filtruar sallonet. Mund ta ndryshoni në çdo kohë.",
+
+  "myProfile": "Profili im",
+  "changePhoto": "Ndrysho foton",
+  "takePhoto": "Bëj një foto",
+  "chooseFromGallery": "Zgjidh nga galeria",
+  "removePhoto": "Fshi foton",
+  "removePhotoConfirm": "Të fshijmë foton e profilit?",
+  "avatarUploading": "Duke ngarkuar\u2026",
+  "avatarUploadError": "Ngarkimi i fotos dështoi.",
+  "cropPhotoTitle": "Prite foton"
 }

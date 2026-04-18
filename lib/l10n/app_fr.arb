@@ -499,5 +499,17 @@
       "total": { "type": "String" }
     }
   },
-  "close": "Fermer"
+  "close": "Fermer",
+  "genderSelectorLabel": "Je suis",
+  "genderSelectorHint": "Sert à pré-filtrer les salons. Vous pourrez changer à tout moment.",
+
+  "myProfile": "Mon profil",
+  "changePhoto": "Changer la photo",
+  "takePhoto": "Prendre une photo",
+  "chooseFromGallery": "Choisir dans la galerie",
+  "removePhoto": "Supprimer la photo",
+  "removePhotoConfirm": "Voulez-vous vraiment supprimer votre photo de profil ?",
+  "avatarUploading": "Envoi en cours\u2026",
+  "avatarUploadError": "Échec de l'envoi de la photo.",
+  "cropPhotoTitle": "Recadrer la photo"
 }

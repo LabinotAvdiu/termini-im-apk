@@ -2547,6 +2547,72 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Fermer'**
   String get close;
+
+  /// No description provided for @genderSelectorLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je suis'**
+  String get genderSelectorLabel;
+
+  /// No description provided for @genderSelectorHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sert à pré-filtrer les salons. Vous pourrez changer à tout moment.'**
+  String get genderSelectorHint;
+
+  /// No description provided for @myProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon profil'**
+  String get myProfile;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la photo'**
+  String get changePhoto;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir dans la galerie'**
+  String get chooseFromGallery;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la photo'**
+  String get removePhoto;
+
+  /// No description provided for @removePhotoConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voulez-vous vraiment supprimer votre photo de profil ?'**
+  String get removePhotoConfirm;
+
+  /// No description provided for @avatarUploading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi en cours…'**
+  String get avatarUploading;
+
+  /// No description provided for @avatarUploadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'envoi de la photo.'**
+  String get avatarUploadError;
+
+  /// No description provided for @cropPhotoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recadrer la photo'**
+  String get cropPhotoTitle;
 }
 
 class _AppLocalizationsDelegate

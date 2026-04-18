@@ -52,6 +52,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   double? _latitude;
   double? _longitude;
 
+  /// Personal gender of the registrant — 'men' / 'women' / null.
+  /// Drives the default home filter after signup (see home_providers).
+  String? _gender;
+
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
 
@@ -165,6 +169,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           phone: _phoneController.text.trim(),
           role: userRole,
           city: _cityController.text.trim(),
+          gender: _gender,
           companyName: _isCompany ? _companyNameController.text.trim().titleCase : null,
           address: _isCompany ? _addressController.text.trim() : null,
           bookingMode: _isCompany ? _bookingMode : null,
@@ -245,6 +250,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     _CompanySignupForm(
                       currentStep: _currentStep,
                       isLoading: isLoading,
+                      gender: _gender,
+                      onGenderChanged: (g) => setState(() => _gender = g),
                       step1FormKey: _step1FormKey,
                       step2FormKey: _step2FormKey,
                       step4FormKey: _step4FormKey,
@@ -303,6 +310,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       onToggleConfirmPassword: () => setState(() =>
                           _confirmPasswordVisible = !_confirmPasswordVisible),
                       onSubmit: _submit,
+                      gender: _gender,
+                      onGenderChanged: (g) => setState(() => _gender = g),
                     ),
 
                   // ---- Social section (user only) ----
@@ -539,6 +548,10 @@ class _UserSignupFormCard extends StatelessWidget {
   final VoidCallback onToggleConfirmPassword;
   final VoidCallback onSubmit;
 
+  // Personal gender (optional) — drives the default home gender filter.
+  final String? gender;
+  final ValueChanged<String?> onGenderChanged;
+
   const _UserSignupFormCard({
     required this.formKey,
     required this.isLoading,
@@ -556,6 +569,8 @@ class _UserSignupFormCard extends StatelessWidget {
     required this.onTogglePassword,
     required this.onToggleConfirmPassword,
     required this.onSubmit,
+    required this.gender,
+    required this.onGenderChanged,
   });
 
   @override
@@ -658,6 +673,12 @@ class _UserSignupFormCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
 
+            _GenderSelector(
+              value: gender,
+              onChanged: onGenderChanged,
+            ),
+            const SizedBox(height: AppSpacing.md),
+
             _SecurityDivider(),
             const SizedBox(height: AppSpacing.md),
 
@@ -741,6 +762,10 @@ class _CompanySignupForm extends StatelessWidget {
   final VoidCallback onSubmit;
   final void Function(PlaceDetails details) onPlaceSelected;
 
+  // Personal gender of the owner — drives the home filter after signup.
+  final String? gender;
+  final ValueChanged<String?> onGenderChanged;
+
   const _CompanySignupForm({
     required this.currentStep,
     required this.isLoading,
@@ -772,6 +797,8 @@ class _CompanySignupForm extends StatelessWidget {
     required this.onBackFromStep4,
     required this.onSubmit,
     required this.onPlaceSelected,
+    required this.gender,
+    required this.onGenderChanged,
   });
 
   @override
@@ -807,6 +834,8 @@ class _CompanySignupForm extends StatelessWidget {
             cityController: cityController,
             firstNameController: firstNameController,
             lastNameController: lastNameController,
+            gender: gender,
+            onGenderChanged: onGenderChanged,
             onNext: onNext,
           ),
         1 => _CompanyStep2(
@@ -855,6 +884,8 @@ class _CompanyStep1 extends StatelessWidget {
   final TextEditingController cityController;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
+  final String? gender;
+  final ValueChanged<String?> onGenderChanged;
   final VoidCallback onNext;
 
   const _CompanyStep1({
@@ -867,6 +898,8 @@ class _CompanyStep1 extends StatelessWidget {
     required this.cityController,
     required this.firstNameController,
     required this.lastNameController,
+    required this.gender,
+    required this.onGenderChanged,
     required this.onNext,
   });
 
@@ -946,6 +979,11 @@ class _CompanyStep1 extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
+
+            _GenderSelector(
+              value: gender,
+              onChanged: onGenderChanged,
+            ),
 
             const SizedBox(height: AppSpacing.lg),
 
@@ -1785,4 +1823,144 @@ class _FacebookLogoPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ---------------------------------------------------------------------------
+// Gender selector — segmented editorial control (optional, nullable)
+// ---------------------------------------------------------------------------
+/// Personal gender picker. Tapping the active choice clears the selection
+/// (maps to null on the backend → "prefer not to say"). Visually aligns with
+/// the other form fields: same label style, same corner radius as AppTextField.
+class _GenderSelector extends StatelessWidget {
+  final String? value;
+  final ValueChanged<String?> onChanged;
+
+  const _GenderSelector({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Match the AppTextField label style for visual consistency with the
+        // other form inputs.
+        Text(
+          context.l10n.genderSelectorLabel,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          children: [
+            Expanded(
+              child: _GenderChoice(
+                selected: value == 'men',
+                label: context.l10n.filterMen,
+                icon: Icons.male_rounded,
+                onTap: () => onChanged(value == 'men' ? null : 'men'),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _GenderChoice(
+                selected: value == 'women',
+                label: context.l10n.filterWomen,
+                icon: Icons.female_rounded,
+                onTap: () => onChanged(value == 'women' ? null : 'women'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.xs),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, size: 12, color: AppColors.textHint),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  context.l10n.genderSelectorHint,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textHint,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GenderChoice extends StatelessWidget {
+  final bool selected;
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _GenderChoice({
+    required this.selected,
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      decoration: BoxDecoration(
+        color: selected
+            ? AppColors.primary.withValues(alpha: 0.08)
+            : AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: selected
+              ? AppColors.primary
+              : AppColors.border.withValues(alpha: 0.6),
+          width: selected ? 1.5 : 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: 14,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color: selected ? AppColors.primary : AppColors.textHint,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: selected
+                        ? AppColors.primary
+                        : AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

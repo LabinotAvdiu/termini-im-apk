@@ -1311,4 +1311,38 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get close => 'Mbyll';
+
+  @override
+  String get genderSelectorLabel => 'Unë jam';
+
+  @override
+  String get genderSelectorHint =>
+      'Përdoret për të para-filtruar sallonet. Mund ta ndryshoni në çdo kohë.';
+
+  @override
+  String get myProfile => 'Profili im';
+
+  @override
+  String get changePhoto => 'Ndrysho foton';
+
+  @override
+  String get takePhoto => 'Bëj një foto';
+
+  @override
+  String get chooseFromGallery => 'Zgjidh nga galeria';
+
+  @override
+  String get removePhoto => 'Fshi foton';
+
+  @override
+  String get removePhotoConfirm => 'Të fshijmë foton e profilit?';
+
+  @override
+  String get avatarUploading => 'Duke ngarkuar…';
+
+  @override
+  String get avatarUploadError => 'Ngarkimi i fotos dështoi.';
+
+  @override
+  String get cropPhotoTitle => 'Prite foton';
 }

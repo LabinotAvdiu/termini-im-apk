@@ -11,6 +11,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
@@ -311,39 +312,57 @@ class _DesktopGreeting extends ConsumerWidget {
     ];
     final dateStr = '${now.day} ${months[now.month - 1]} ${now.year}';
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final initials = [
+      user?.firstName.trim() ?? '',
+      user?.lastName.trim() ?? '',
+    ].where((w) => w.isNotEmpty).take(2).map((w) => w[0].toUpperCase()).join();
+    final avatarUrl = user?.thumbnailUrl ?? user?.profileImageUrl;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          '${l.greetingHello},',
-          style: AppTextStyles.overline.copyWith(
-            color: AppColors.textHint,
-            letterSpacing: 2,
-          ),
+        // Avatar 56×56 desktop
+        AvatarDisplay(
+          photoUrl: avatarUrl,
+          initials: initials,
+          size: 56,
         ),
-        const SizedBox(height: AppSpacing.xs),
-        RichText(
-          text: TextSpan(
-            style: GoogleFonts.fraunces(
-              fontSize: 56,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textPrimary,
-              height: 0.95,
-              letterSpacing: -1.5,
-            ),
-            children: [
-              TextSpan(text: firstName),
-              const TextSpan(
-                text: '.',
-                style: TextStyle(color: AppColors.primary),
+        const SizedBox(width: AppSpacing.md),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${l.greetingHello},',
+              style: AppTextStyles.overline.copyWith(
+                color: AppColors.textHint,
+                letterSpacing: 2,
               ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          dateStr,
-          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            RichText(
+              text: TextSpan(
+                style: GoogleFonts.fraunces(
+                  fontSize: 56,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textPrimary,
+                  height: 0.95,
+                  letterSpacing: -1.5,
+                ),
+                children: [
+                  TextSpan(text: firstName),
+                  const TextSpan(
+                    text: '.',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              dateStr,
+              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+            ),
+          ],
         ),
       ],
     );

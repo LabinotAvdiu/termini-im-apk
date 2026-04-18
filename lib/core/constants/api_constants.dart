@@ -93,6 +93,11 @@ abstract class ApiConstants {
   static String myCompanyGalleryPhoto(String id) => '/my-company/gallery/$id';
 
   // ---------------------------------------------------------------------------
+  // Avatar (user profile photo)
+  // ---------------------------------------------------------------------------
+  static const String meAvatar = '/me/avatar';
+
+  // ---------------------------------------------------------------------------
   // Notifications push
   // ---------------------------------------------------------------------------
   static const String myDevices                  = '/me/devices';

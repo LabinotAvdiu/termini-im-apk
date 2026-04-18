@@ -1315,4 +1315,39 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get close => 'Fermer';
+
+  @override
+  String get genderSelectorLabel => 'Je suis';
+
+  @override
+  String get genderSelectorHint =>
+      'Sert à pré-filtrer les salons. Vous pourrez changer à tout moment.';
+
+  @override
+  String get myProfile => 'Mon profil';
+
+  @override
+  String get changePhoto => 'Changer la photo';
+
+  @override
+  String get takePhoto => 'Prendre une photo';
+
+  @override
+  String get chooseFromGallery => 'Choisir dans la galerie';
+
+  @override
+  String get removePhoto => 'Supprimer la photo';
+
+  @override
+  String get removePhotoConfirm =>
+      'Voulez-vous vraiment supprimer votre photo de profil ?';
+
+  @override
+  String get avatarUploading => 'Envoi en cours…';
+
+  @override
+  String get avatarUploadError => 'Échec de l\'envoi de la photo.';
+
+  @override
+  String get cropPhotoTitle => 'Recadrer la photo';
 }

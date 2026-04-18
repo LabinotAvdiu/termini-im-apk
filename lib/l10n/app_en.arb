@@ -499,5 +499,17 @@
       "total": { "type": "String" }
     }
   },
-  "close": "Close"
+  "close": "Close",
+  "genderSelectorLabel": "I am",
+  "genderSelectorHint": "Used to pre-filter salons. You can change it anytime.",
+
+  "myProfile": "My profile",
+  "changePhoto": "Change photo",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
+  "removePhoto": "Remove photo",
+  "removePhotoConfirm": "Remove your profile photo?",
+  "avatarUploading": "Uploading\u2026",
+  "avatarUploadError": "Photo upload failed.",
+  "cropPhotoTitle": "Crop photo"
 }
