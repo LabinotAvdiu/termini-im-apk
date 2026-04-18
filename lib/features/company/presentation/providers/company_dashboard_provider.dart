@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/dio_provider.dart';
 import '../../data/datasources/my_company_remote_datasource.dart';
+import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 
 // ---------------------------------------------------------------------------
@@ -24,11 +27,25 @@ class CompanyDashboardState {
   /// Tracks which category IDs are expanded in the services section.
   final Set<String> expandedCategories;
 
+  /// Gallery photos — loaded independently from the main company data.
+  final List<GalleryPhotoModel> galleryPhotos;
+  final bool galleryLoading;
+  final bool galleryUploading;
+
+  /// Upload progress 0.0 – 1.0, null when not uploading.
+  final double? galleryUploadProgress;
+  final String? galleryError;
+
   const CompanyDashboardState({
     this.company,
     this.isLoading = false,
     this.error,
     this.expandedCategories = const {},
+    this.galleryPhotos = const [],
+    this.galleryLoading = false,
+    this.galleryUploading = false,
+    this.galleryUploadProgress,
+    this.galleryError,
   });
 
   CompanyDashboardState copyWith({
@@ -36,6 +53,11 @@ class CompanyDashboardState {
     bool? isLoading,
     String? error,
     Set<String>? expandedCategories,
+    List<GalleryPhotoModel>? galleryPhotos,
+    bool? galleryLoading,
+    bool? galleryUploading,
+    Object? galleryUploadProgress = _gallerySentinel,
+    Object? galleryError = _gallerySentinel,
   }) =>
       CompanyDashboardState(
         company: company ?? this.company,
@@ -43,8 +65,19 @@ class CompanyDashboardState {
         // Pass null explicitly to clear the error field.
         error: error,
         expandedCategories: expandedCategories ?? this.expandedCategories,
+        galleryPhotos: galleryPhotos ?? this.galleryPhotos,
+        galleryLoading: galleryLoading ?? this.galleryLoading,
+        galleryUploading: galleryUploading ?? this.galleryUploading,
+        galleryUploadProgress: galleryUploadProgress == _gallerySentinel
+            ? this.galleryUploadProgress
+            : galleryUploadProgress as double?,
+        galleryError: galleryError == _gallerySentinel
+            ? this.galleryError
+            : galleryError as String?,
       );
 }
+
+const Object _gallerySentinel = Object();
 
 // ---------------------------------------------------------------------------
 // Notifier
@@ -62,16 +95,18 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
   Future<void> load() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      // Load company info, categories, and employees in parallel
+      // Load company info, categories, employees and gallery in parallel.
       final results = await Future.wait([
         _datasource.getMyCompany(),
         _datasource.getCategories(),
         _datasource.getEmployees(),
+        _datasource.listGallery(),
       ]);
 
       final company = results[0] as MyCompanyModel;
       final categories = results[1] as List<MyCategoryModel>;
       final employees = results[2] as List<MyEmployeeModel>;
+      final gallery = results[3] as List<GalleryPhotoModel>;
 
       state = state.copyWith(
         isLoading: false,
@@ -79,6 +114,8 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
           categories: categories,
           employees: employees,
         ),
+        galleryPhotos: gallery,
+        galleryError: null,
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -338,6 +375,103 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
       return true;
     } catch (e) {
       state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  // ── Gallery ───────────────────────────────────────────────────────────────
+
+  Future<void> loadGallery() async {
+    state = state.copyWith(galleryLoading: true, galleryError: null);
+    try {
+      final photos = await _datasource.listGallery();
+      state = state.copyWith(
+        galleryPhotos: photos,
+        galleryLoading: false,
+        galleryError: null,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        galleryLoading: false,
+        galleryError: e.toString(),
+      );
+    }
+  }
+
+  Future<bool> uploadPhoto({
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    state = state.copyWith(
+      galleryUploading: true,
+      galleryUploadProgress: 0.0,
+      galleryError: null,
+    );
+    try {
+      final photo = await _datasource.uploadGalleryPhoto(
+        bytes: bytes,
+        filename: filename,
+        onSendProgress: (sent, total) {
+          if (total > 0) {
+            state = state.copyWith(
+              galleryUploadProgress: sent / total,
+            );
+          }
+        },
+      );
+      state = state.copyWith(
+        galleryPhotos: [...state.galleryPhotos, photo]
+          ..sort((a, b) => a.position.compareTo(b.position)),
+        galleryUploading: false,
+        galleryUploadProgress: null,
+        galleryError: null,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        galleryUploading: false,
+        galleryUploadProgress: null,
+        galleryError: e.toString(),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> deleteGalleryPhoto(String id) async {
+    try {
+      await _datasource.deleteGalleryPhoto(id);
+      state = state.copyWith(
+        galleryPhotos:
+            state.galleryPhotos.where((p) => p.id != id).toList(),
+        galleryError: null,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(galleryError: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> reorderGalleryPhotos(List<GalleryPhotoModel> reordered) async {
+    // Optimistic update: reflect new order immediately in UI.
+    final updated = reordered
+        .asMap()
+        .entries
+        .map((e) => e.value.copyWith(position: e.key))
+        .toList();
+    state = state.copyWith(galleryPhotos: updated, galleryError: null);
+
+    try {
+      await _datasource.reorderGalleryPhotos(
+        reordered.map((p) => p.id).toList(),
+      );
+      return true;
+    } catch (e) {
+      // Revert on failure.
+      state = state.copyWith(
+        galleryPhotos: state.galleryPhotos,
+        galleryError: e.toString(),
+      );
       return false;
     }
   }

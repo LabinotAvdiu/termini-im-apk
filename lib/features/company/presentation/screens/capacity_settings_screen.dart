@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -174,7 +175,10 @@ class _CapacitySettingsScreenState
               backgroundColor: AppColors.surface,
               onRefresh: () =>
                   ref.read(_capacitySettingsProvider.notifier).load(),
-              child: ListView(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.md),
                 children: [
                   if (company != null)
@@ -201,6 +205,8 @@ class _CapacitySettingsScreenState
                   ),
                   const SizedBox(height: AppSpacing.xxl),
                 ],
+                  ),
+                ),
               ),
             ),
     );
@@ -704,7 +710,7 @@ class _AddOverrideDialogState extends State<_AddOverrideDialog> {
 }
 
 // ---------------------------------------------------------------------------
-// Shared card wrapper
+// Shared card wrapper — editorial: 1px border, overline + Fraunces heading
 // ---------------------------------------------------------------------------
 
 class _SettingsCard extends StatelessWidget {
@@ -726,10 +732,11 @@ class _SettingsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: const [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 8,
+            blurRadius: 6,
             offset: Offset(0, 2),
           ),
         ],
@@ -739,25 +746,44 @@ class _SettingsCard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md, AppSpacing.md, AppSpacing.sm, 0),
+                AppSpacing.md, AppSpacing.md, AppSpacing.sm, AppSpacing.xs),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, size: 16, color: AppColors.secondary),
-                const SizedBox(width: AppSpacing.xs),
                 Expanded(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.body.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.secondary,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(icon, size: 12, color: AppColors.textHint),
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            title.toUpperCase(),
+                            style: AppTextStyles.overline.copyWith(
+                              letterSpacing: 1.6,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        title,
+                        style: GoogleFonts.fraunces(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.17,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 ?trailing,
               ],
             ),
           ),
-          const Divider(height: 12),
+          const Divider(height: 1, color: AppColors.divider),
           child,
           const SizedBox(height: AppSpacing.xs),
         ],

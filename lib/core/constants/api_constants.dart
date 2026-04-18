@@ -1,5 +1,17 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 abstract class ApiConstants {
-  static const String baseUrl = 'http://localhost:8080/api';
+  // Android emulator reaches the host machine via 10.0.2.2 — localhost on the
+  // emulator points to the emulator itself. Web and other platforms use localhost.
+  static final String baseUrl = _resolveBaseUrl();
+
+  static String _resolveBaseUrl() {
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:8080/api';
+    }
+    return 'http://localhost:8080/api';
+  }
 
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
@@ -32,6 +44,11 @@ abstract class ApiConstants {
   static String companyEmployees(String id) => '/companies/$id/employees';
   static String companySlots(String id)     => '/companies/$id/slots';
   static String companyAvailability(String id) => '/companies/$id/availability';
+
+  // ---------------------------------------------------------------------------
+  // Favorites
+  // ---------------------------------------------------------------------------
+  static String companyFavorite(String id) => '/companies/$id/favorite';
 
   // ---------------------------------------------------------------------------
   // Bookings
@@ -69,6 +86,17 @@ abstract class ApiConstants {
   static String myCompanyBreak(String id) => '/my-company/breaks/$id';
   static String myCompanyCapacityOverride(String id) =>
       '/my-company/capacity-overrides/$id';
+
+  // Gallery
+  static const String myCompanyGallery         = '/my-company/gallery';
+  static const String myCompanyGalleryReorder  = '/my-company/gallery/reorder';
+  static String myCompanyGalleryPhoto(String id) => '/my-company/gallery/$id';
+
+  // ---------------------------------------------------------------------------
+  // Notifications push
+  // ---------------------------------------------------------------------------
+  static const String myDevices                  = '/me/devices';
+  static const String myNotificationPreferences  = '/me/notification-preferences';
 
   // ---------------------------------------------------------------------------
   // My Schedule (authenticated employee endpoints)

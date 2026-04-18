@@ -31,16 +31,31 @@ dependencies:
   google_sign_in: ^6.2.2
   flutter_facebook_auth: ^7.1.1
 
+  # Fonts
+  google_fonts: ^6.2.1
+
   # UI
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
   flutter_rating_bar: ^4.0.1
   smooth_page_indicator: ^1.2.0
 
+  # Media
+  image_picker: ^1.1.2
+
+  # Notifications push — Firebase + local
+  firebase_core: ^3.13.1
+  firebase_messaging: ^15.2.5
+  flutter_local_notifications: ^18.0.1
+
+  # Permission (bannière notification si refusée)
+  permission_handler: ^11.4.0
+
   # Utilities
   freezed_annotation: 2.4.4
   json_annotation: ^4.9.0
   url_launcher: ^6.3.2
+  flutter_svg: ^2.2.4
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +65,7 @@ dev_dependencies:
   freezed: ^2.5.8
   json_serializable: ^6.9.4
   riverpod_generator: ^2.6.3
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   generate: true
@@ -58,3 +74,21 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/branding/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/branding/launcher-icon.png"
+  adaptive_icon_background: "#171311"
+  adaptive_icon_foreground: "assets/branding/launcher-icon-fg.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/branding/launcher-icon.png"
+    background_color: "#171311"
+    theme_color: "#7A2232"
+  windows:
+    generate: true
+    image_path: "assets/branding/launcher-icon.png"
+    icon_size: 256

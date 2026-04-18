@@ -1,0 +1,3531 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Termini im — Prishtina Editorial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ───────────────────────── Core ───────────────────────── */
+      :root {
+        /* palette — Prishtina Editorial */
+        --ivory: #f7f2ea;
+        --ivory-2: #efe6d5;
+        --bone: #e8dcc8;
+        --ink: #171311;
+        --ink-2: #332c29;
+        --muted: #716059;
+        --line: #d9cab3;
+        --burgundy: #7a2232;
+        --burgundy-deep: #511522;
+        --gold: #c89b47;
+        --coral: #d25a3c;
+        --sage: #6f7e55;
+        --cream-card: #fcf7ee;
+
+        --radius-xs: 4px;
+        --radius-s: 10px;²
+        --radius-m: 18px;
+        --radius-l: 32px;
+
+        --font-display: "Fraunces", "Instrument Serif", Georgia, serif;
+        --font-body: "Instrument Sans", -apple-system, sans-serif;
+
+        --shadow-s: 0 2px 10px rgba(23, 19, 17, 0.06);
+        --shadow-m: 0 14px 36px rgba(23, 19, 17, 0.08);
+        --shadow-l: 0 40px 80px -20px rgba(23, 19, 17, 0.25);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        background: var(--ivory);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        scroll-behavior: smooth;
+      }
+
+      /* grain texture overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2000;
+        opacity: 0.35;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-display);
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      em,
+      .italic {
+        font-family: "Instrument Serif", serif;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        border: 0;
+        background: none;
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+      }
+
+      /* ───────────────────────── Page chrome ───────────────────────── */
+      .page-wrap {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 64px 40px 140px;
+      }
+      @media (max-width: 720px) {
+        .page-wrap { padding: 28px 16px 64px; }
+      }
+
+      .brandbar {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 32px;
+        align-items: center;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 80px;
+      }
+      .brandbar .mark {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brandbar .mark .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--burgundy);
+      }
+      .brandbar .mark h1 {
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        font-variation-settings: "SOFT" 50;
+      }
+      .brandbar .mark h1 em {
+        color: var(--burgundy);
+      }
+      .brandbar .tagline {
+        font-size: 13px;
+        color: var(--muted);
+        max-width: 520px;
+        justify-self: center;
+      }
+      .brandbar .chip {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--ink);
+        color: var(--ivory);
+        border-radius: 999px;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .brandbar .chip .pulse {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--coral);
+        box-shadow: 0 0 0 0 rgba(210, 90, 60, 0.6);
+        animation: pulse 1.8s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(210, 90, 60, 0.6); }
+        50% { box-shadow: 0 0 0 6px rgba(210, 90, 60, 0); }
+      }
+
+      /* Section headers */
+      .sec-head {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 32px;
+        align-items: end;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 44px;
+      }
+      .sec-head .num {
+        font-family: var(--font-display);
+        font-size: 100px;
+        line-height: 0.9;
+        font-weight: 300;
+        color: var(--ink);
+        font-variation-settings: "SOFT" 70, "WONK" 1;
+      }
+      .sec-head .num em {
+        color: var(--burgundy);
+      }
+      .sec-head .title {
+        text-align: right;
+        max-width: 480px;
+      }
+      .sec-head .title .over {
+        font-family: var(--font-body);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .sec-head .title h2 {
+        font-size: 36px;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      .sec-head .title p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 10px;
+      }
+      @media (max-width: 720px) {
+        .sec-head { grid-template-columns: 1fr; }
+        .sec-head .num { font-size: 64px; }
+        .sec-head .title { text-align: left; }
+        .sec-head .title h2 { font-size: 26px; }
+      }
+
+      /* ───────────────────────── Mobile frame ───────────────────────── */
+      .mobile-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 44px 36px;
+        margin-bottom: 120px;
+      }
+
+      .phone {
+        position: relative;
+        width: 320px;
+        height: 680px;
+        border-radius: 44px;
+        padding: 14px;
+        background: linear-gradient(145deg, #1a1512 0%, #2a2320 100%);
+        box-shadow: var(--shadow-l);
+        margin: 0 auto;
+      }
+      .phone::before {
+        /* island */
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 96px;
+        height: 24px;
+        background: #000;
+        border-radius: 999px;
+        z-index: 10;
+      }
+      .phone .screen {
+        width: 100%;
+        height: 100%;
+        background: var(--ivory);
+        border-radius: 32px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .phone-caption {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .phone-caption .n {
+        font-family: var(--font-display);
+        font-size: 13px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+      .phone-caption h4 {
+        font-size: 18px;
+        margin-top: 4px;
+      }
+
+      /* status bar */
+      .statusbar {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 28px 2px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      /* shared mobile app header (tiny) */
+      .m-appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 20px 14px;
+      }
+      .m-appbar .m-brand {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .m-appbar .m-brand .md {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--burgundy);
+      }
+      .m-appbar .m-brand span {
+        font-family: var(--font-display);
+        font-size: 15px;
+        letter-spacing: -0.02em;
+      }
+      .m-appbar .m-brand span em {
+        color: var(--burgundy);
+      }
+      .m-appbar .m-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .m-iconbtn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        color: var(--ink);
+      }
+      .m-iconbtn svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* bottom tab bar */
+      .m-tabs {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 10px 18px 24px;
+        background: rgba(247, 242, 234, 0.92);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-around;
+      }
+      .m-tab {
+        display: grid;
+        place-items: center;
+        gap: 4px;
+        font-size: 10px;
+        color: var(--muted);
+        padding: 4px 10px;
+      }
+      .m-tab.active {
+        color: var(--burgundy);
+        font-weight: 600;
+      }
+      .m-tab svg {
+        width: 20px;
+        height: 20px;
+      }
+      .m-tab.active .dot {
+        position: absolute;
+        top: -2px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--burgundy);
+      }
+
+      /* ───────────────────────── M1 · Landing / Search ───────────────────────── */
+      .m1-hero {
+        background: linear-gradient(165deg, var(--burgundy-deep) 0%, var(--burgundy) 55%, #9c3145 100%);
+        padding: 10px 20px 44px;
+        color: var(--ivory);
+        border-bottom-left-radius: 34px;
+        border-bottom-right-radius: 34px;
+        position: relative;
+        overflow: hidden;
+      }
+      .m1-hero::after {
+        content: "";
+        position: absolute;
+        right: -50px;
+        top: -50px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(200, 155, 71, 0.45), transparent 70%);
+      }
+      .m1-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .m1-top span {
+        font-family: var(--font-display);
+        font-size: 14px;
+      }
+      .m1-top .globe {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: grid;
+        place-items: center;
+      }
+      .m1-hero h1 {
+        color: var(--ivory);
+        font-family: var(--font-display);
+        font-size: 38px;
+        line-height: 1;
+        letter-spacing: -0.025em;
+        margin-top: 28px;
+        font-variation-settings: "SOFT" 80, "WONK" 1;
+      }
+      .m1-hero h1 em {
+        font-family: "Instrument Serif", serif;
+        font-style: italic;
+        color: var(--gold);
+      }
+      .m1-hero .sub {
+        font-size: 13px;
+        opacity: 0.72;
+        margin-top: 10px;
+        max-width: 240px;
+      }
+
+      .m1-search {
+        margin: -22px 18px 0;
+        background: var(--cream-card);
+        border-radius: 22px;
+        padding: 14px;
+        box-shadow: var(--shadow-m);
+        position: relative;
+        z-index: 3;
+      }
+      .m1-search .row {
+        display: flex;
+        gap: 10px;
+        padding: 8px 10px;
+        border-bottom: 1px dashed var(--line);
+      }
+      .m1-search .row:last-child { border: 0; }
+      .m1-search .row svg {
+        width: 14px;
+        height: 14px;
+        color: var(--burgundy);
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+      .m1-search .row div { flex: 1; }
+      .m1-search label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+      .m1-search .val {
+        font-family: var(--font-display);
+        font-size: 15px;
+        color: var(--ink);
+      }
+      .m1-search button.go {
+        width: 100%;
+        margin-top: 8px;
+        padding: 13px;
+        background: var(--ink);
+        color: var(--ivory);
+        border-radius: 14px;
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s;
+      }
+      .m1-search button.go:hover { transform: translateY(-1px); }
+
+      .m1-results-head {
+        padding: 28px 20px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+      }
+      .m1-results-head h3 {
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+      .m1-results-head small {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .m1-card {
+        margin: 0 18px 14px;
+        background: var(--cream-card);
+        border-radius: 22px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        border: 1px solid rgba(217, 202, 179, 0.5);
+        transition: transform 0.25s;
+      }
+      .m1-card:hover { transform: translateY(-2px); }
+      .m1-card .img {
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+      .m1-card .img .rank {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-family: var(--font-display);
+        font-size: 11px;
+        color: var(--ivory);
+        background: rgba(23, 19, 17, 0.6);
+        padding: 3px 8px;
+        border-radius: 999px;
+        backdrop-filter: blur(10px);
+      }
+      .m1-card .body {
+        padding: 12px 14px;
+      }
+      .m1-card h4 {
+        font-size: 15px;
+        letter-spacing: -0.01em;
+      }
+      .m1-card .addr {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+      .m1-card .meta {
+        margin-top: 8px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .m1-card .meta .rating {
+        color: var(--burgundy);
+        font-weight: 600;
+      }
+      .m1-card .slots {
+        margin-top: 10px;
+        display: flex;
+        gap: 6px;
+      }
+      .m1-card .slots span {
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: var(--ivory-2);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--ink-2);
+      }
+      .m1-card .slots span.hot {
+        background: var(--burgundy);
+        color: var(--ivory);
+      }
+
+      /* ───────────────────────── M2 · Company detail ───────────────────────── */
+      .m2-hero {
+        height: 280px;
+        background: url("https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80")
+          center/cover;
+        position: relative;
+      }
+      .m2-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(23, 19, 17, 0.7) 100%);
+      }
+      .m2-hero .backbtn,
+      .m2-hero .heartbtn {
+        position: absolute;
+        top: 56px;
+        z-index: 5;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(247, 242, 234, 0.9);
+        backdrop-filter: blur(8px);
+        display: grid;
+        place-items: center;
+        color: var(--ink);
+      }
+      .m2-hero .backbtn { left: 16px; }
+      .m2-hero .heartbtn { right: 16px; }
+
+      .m2-info {
+        background: var(--ivory);
+        border-top-left-radius: 28px;
+        border-top-right-radius: 28px;
+        margin-top: -28px;
+        padding: 22px 20px 10px;
+        position: relative;
+      }
+      .m2-info .over {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--burgundy);
+        font-weight: 600;
+      }
+      .m2-info h2 {
+        font-size: 28px;
+        letter-spacing: -0.025em;
+        margin-top: 6px;
+        font-variation-settings: "SOFT" 100, "WONK" 1;
+      }
+      .m2-info .stats {
+        margin-top: 14px;
+        display: flex;
+        gap: 18px;
+        padding: 14px 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .m2-info .stat {
+        flex: 1;
+        text-align: left;
+      }
+      .m2-info .stat .v {
+        font-family: var(--font-display);
+        font-size: 22px;
+        color: var(--ink);
+      }
+      .m2-info .stat .v em {
+        color: var(--burgundy);
+      }
+      .m2-info .stat .l {
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .m2-svc-head {
+        padding: 22px 20px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+      }
+      .m2-svc-head h3 {
+        font-size: 22px;
+      }
+      .m2-svc-head span {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .m2-service {
+        margin: 0 20px 10px;
+        padding: 14px;
+        background: var(--cream-card);
+        border-radius: 16px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid rgba(217, 202, 179, 0.5);
+      }
+      .m2-service h5 {
+        font-family: var(--font-display);
+        font-size: 16px;
+        letter-spacing: -0.01em;
+      }
+      .m2-service .meta {
+        display: flex;
+        gap: 8px;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .m2-service .meta .price {
+        color: var(--burgundy);
+        font-weight: 700;
+      }
+      .m2-service button {
+        padding: 8px 14px;
+        background: var(--ink);
+        color: var(--ivory);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+      }
+
+      /* ───────────────────────── M3 · Booking step ───────────────────────── */
+      .m3-header {
+        padding: 18px 20px 16px;
+        background: var(--ivory);
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .m3-header .back {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+      }
+      .m3-header .title {
+        flex: 1;
+      }
+      .m3-header .over {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .m3-header h4 {
+        font-size: 17px;
+        letter-spacing: -0.01em;
+        margin-top: 2px;
+      }
+      .m3-steps {
+        padding: 0 20px 14px;
+        display: flex;
+        gap: 6px;
+      }
+      .m3-steps .bar {
+        height: 3px;
+        flex: 1;
+        border-radius: 2px;
+        background: var(--line);
+      }
+      .m3-steps .bar.on {
+        background: var(--burgundy);
+      }
+
+      .m3-summary {
+        margin: 14px 20px;
+        padding: 16px;
+        background: var(--burgundy-deep);
+        color: var(--ivory);
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .m3-summary::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(200, 155, 71, 0.35), transparent 70%);
+      }
+      .m3-summary .l {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .m3-summary h5 {
+        font-family: var(--font-display);
+        font-size: 18px;
+        margin-top: 4px;
+      }
+      .m3-summary .meta {
+        margin-top: 8px;
+        font-size: 11px;
+        opacity: 0.72;
+        display: flex;
+        gap: 10px;
+      }
+
+      .m3-day-strip {
+        padding: 0 20px 14px;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+      }
+      .m3-day-strip .day {
+        min-width: 52px;
+        padding: 10px 8px;
+        border-radius: 14px;
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        text-align: center;
+      }
+      .m3-day-strip .day.active {
+        background: var(--ink);
+        color: var(--ivory);
+        border-color: var(--ink);
+      }
+      .m3-day-strip .day.full {
+        opacity: 0.3;
+      }
+      .m3-day-strip .day .d {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .m3-day-strip .day .n {
+        font-family: var(--font-display);
+        font-size: 20px;
+        line-height: 1;
+        margin-top: 4px;
+      }
+
+      .m3-section {
+        padding: 8px 20px;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      .m3-slots {
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .m3-slot {
+        padding: 12px 4px;
+        border-radius: 12px;
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        text-align: center;
+      }
+      .m3-slot.full {
+        opacity: 0.35;
+        text-decoration: line-through;
+      }
+      .m3-slot.active {
+        background: var(--ink);
+        color: var(--ivory);
+        border-color: var(--ink);
+      }
+      .m3-slot .t {
+        font-family: var(--font-display);
+        font-size: 15px;
+        line-height: 1;
+      }
+      .m3-slot .r {
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 4px;
+        letter-spacing: 0.05em;
+      }
+      .m3-slot.active .r {
+        color: var(--gold);
+      }
+
+      .m3-cta {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        bottom: 80px;
+      }
+      .m3-cta button {
+        width: 100%;
+        padding: 16px;
+        background: var(--ink);
+        color: var(--ivory);
+        border-radius: 14px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+      .m3-cta .arr {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--ink);
+        display: grid;
+        place-items: center;
+      }
+
+      /* ───────────────────────── M4 · Dashboard owner ───────────────────────── */
+      .m4-salute {
+        padding: 20px 20px 6px;
+      }
+      .m4-salute .hi {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .m4-salute h3 {
+        font-size: 26px;
+        letter-spacing: -0.02em;
+        margin-top: 4px;
+      }
+      .m4-salute h3 em {
+        color: var(--burgundy);
+      }
+
+      .m4-kpis {
+        margin: 14px 20px 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .m4-kpi {
+        padding: 14px;
+        background: var(--cream-card);
+        border-radius: 16px;
+        border: 1px solid rgba(217, 202, 179, 0.5);
+      }
+      .m4-kpi.dark {
+        background: var(--ink);
+        color: var(--ivory);
+        border-color: var(--ink);
+      }
+      .m4-kpi .l {
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .m4-kpi.dark .l {
+        color: var(--gold);
+      }
+      .m4-kpi .v {
+        font-family: var(--font-display);
+        font-size: 28px;
+        margin-top: 4px;
+        letter-spacing: -0.02em;
+      }
+      .m4-kpi .delta {
+        font-size: 10px;
+        color: var(--sage);
+        margin-top: 4px;
+      }
+
+      .m4-pending {
+        margin: 16px 20px 0;
+        padding: 14px 16px;
+        background: var(--burgundy);
+        color: var(--ivory);
+        border-radius: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .m4-pending .n {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--ink);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-size: 18px;
+      }
+      .m4-pending .txt {
+        flex: 1;
+      }
+      .m4-pending .t {
+        font-family: var(--font-display);
+        font-size: 15px;
+      }
+      .m4-pending .s {
+        font-size: 11px;
+        opacity: 0.75;
+      }
+
+      .m4-qa {
+        padding: 18px 20px 10px;
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-style: italic;
+        color: var(--muted);
+      }
+      .m4-tiles {
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .m4-tile {
+        padding: 14px;
+        background: var(--cream-card);
+        border-radius: 14px;
+        border: 1px solid var(--line);
+      }
+      .m4-tile svg {
+        width: 20px;
+        height: 20px;
+        color: var(--burgundy);
+      }
+      .m4-tile .tl {
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .m4-tile .sb {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      /* ───────────────────────── M5 · Planning timeline ───────────────────────── */
+      .m5-header {
+        padding: 18px 20px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--ivory);
+        border-bottom: 1px solid var(--line);
+      }
+      .m5-header .dateblock {
+        text-align: center;
+        flex: 1;
+      }
+      .m5-header .dateblock .dow {
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .m5-header .dateblock h4 {
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+      .m5-header .dateblock h4 em {
+        color: var(--burgundy);
+      }
+      .m5-header .arr {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+      }
+      .m5-modes {
+        padding: 10px 20px;
+        display: flex;
+        gap: 6px;
+        background: var(--ivory);
+      }
+      .m5-mode {
+        flex: 1;
+        text-align: center;
+        padding: 8px 0;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-radius: 10px;
+      }
+      .m5-mode.active {
+        background: var(--ink);
+        color: var(--ivory);
+        font-weight: 600;
+      }
+
+      .m5-timeline {
+        padding: 6px 10px 90px;
+        height: calc(100% - 160px);
+        overflow: hidden;
+        position: relative;
+      }
+      .m5-row {
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        padding: 2px 0;
+        gap: 6px;
+      }
+      .m5-row .hr {
+        font-family: var(--font-display);
+        font-size: 10px;
+        color: var(--muted);
+        padding-top: 2px;
+      }
+      .m5-row .cell {
+        height: 38px;
+        border-top: 1px dashed var(--line);
+        position: relative;
+      }
+      .m5-row .cell::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 19px;
+        height: 1px;
+        background: var(--line);
+        opacity: 0.35;
+      }
+      .m5-appt {
+        position: absolute;
+        left: 0;
+        right: 4px;
+        border-left: 3px solid;
+        border-radius: 10px;
+        padding: 6px 8px;
+        background: var(--cream-card);
+        box-shadow: var(--shadow-s);
+      }
+      .m5-appt h6 {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .m5-appt .sv {
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .m5-appt.conf {
+        border-color: var(--burgundy);
+      }
+      .m5-appt.pend {
+        border-color: var(--gold);
+      }
+      .m5-appt.rej {
+        border-color: var(--muted);
+        opacity: 0.5;
+      }
+      .m5-appt.conf .sv {
+        color: var(--burgundy);
+      }
+
+      .m5-add {
+        position: absolute;
+        bottom: 84px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--ivory);
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow-m);
+      }
+      .m5-add svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* ───────────────────────── DESKTOP ───────────────────────── */
+      .desk-wrap {
+        margin-bottom: 120px;
+      }
+      .desk-frame {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow-l);
+        background: var(--ivory);
+      }
+      .desk-tabs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 18px;
+        background: var(--ivory-2);
+        border-bottom: 1px solid var(--line);
+      }
+      .desk-tabs .dots span {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--line);
+        margin-right: 6px;
+      }
+      .desk-tabs .dots span:first-child { background: #e16b5c; }
+      .desk-tabs .dots span:nth-child(2) { background: #d4a74a; }
+      .desk-tabs .dots span:nth-child(3) { background: #6f7e55; }
+      .desk-tabs .urlbar {
+        background: var(--cream-card);
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        flex: 1;
+        max-width: 420px;
+        margin-left: 28px;
+      }
+      .desk-tabs .urlbar strong {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      /* Desktop app header (shared) */
+      .d-topbar {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 36px;
+        align-items: center;
+        padding: 20px 36px;
+        border-bottom: 1px solid var(--line);
+      }
+      .d-topbar .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-family: var(--font-display);
+        font-size: 20px;
+      }
+      .d-topbar .brand .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--burgundy);
+      }
+      .d-topbar .brand em { color: var(--burgundy); }
+      .d-topbar nav {
+        display: flex;
+        gap: 28px;
+      }
+      .d-topbar nav a {
+        font-size: 13px;
+        color: var(--muted);
+        position: relative;
+      }
+      .d-topbar nav a.active {
+        color: var(--ink);
+      }
+      .d-topbar nav a.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -18px;
+        height: 2px;
+        background: var(--burgundy);
+      }
+      .d-topbar .right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .d-topbar .lang {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      .d-topbar .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--burgundy), var(--gold));
+        color: var(--ivory);
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        font-size: 13px;
+      }
+
+      /* D1 Landing hero */
+      .d1-hero {
+        padding: 80px 36px 60px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 48px;
+        align-items: end;
+        position: relative;
+      }
+      .d1-hero::before {
+        content: "01";
+        position: absolute;
+        right: 30px;
+        top: 24px;
+        font-family: var(--font-display);
+        font-size: 110px;
+        color: var(--bone);
+        font-weight: 300;
+        line-height: 1;
+      }
+      .d1-hero .lead .over {
+        font-family: var(--font-body);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .d1-hero .lead h1 {
+        font-size: 96px;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        margin-top: 14px;
+        font-variation-settings: "SOFT" 80, "WONK" 1;
+      }
+      .d1-hero .lead h1 em {
+        color: var(--burgundy);
+      }
+      .d1-hero .lead p {
+        margin-top: 22px;
+        font-size: 18px;
+        color: var(--muted);
+        max-width: 420px;
+        line-height: 1.5;
+      }
+      .d1-hero .side img {
+        width: 100%;
+        border-radius: var(--radius-l);
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
+      }
+
+      .d1-searchbar {
+        margin: 0 36px;
+        padding: 10px;
+        background: var(--ivory);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        box-shadow: var(--shadow-m);
+        align-items: center;
+      }
+      .d1-searchbar .field {
+        padding: 10px 22px;
+        border-right: 1px solid var(--line);
+      }
+      .d1-searchbar .field:last-of-type {
+        border-right: 0;
+      }
+      .d1-searchbar label {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .d1-searchbar .val {
+        font-family: var(--font-display);
+        font-size: 16px;
+      }
+      .d1-searchbar .go {
+        background: var(--ink);
+        color: var(--ivory);
+        padding: 16px 32px;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+
+      .d1-results {
+        padding: 60px 36px 40px;
+      }
+      .d1-resHead {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 36px;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+      .d1-resHead .small {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .d1-resHead h2 {
+        font-size: 32px;
+        letter-spacing: -0.02em;
+      }
+      .d1-resHead .sort {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .d1-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .d1-card {
+        border-radius: var(--radius-m);
+        background: var(--cream-card);
+        overflow: hidden;
+        border: 1px solid rgba(217, 202, 179, 0.5);
+        transition: transform 0.3s;
+      }
+      .d1-card:hover { transform: translateY(-4px); }
+      .d1-card .img {
+        aspect-ratio: 16 / 10;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+      .d1-card .img .tag {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--ivory);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .d1-card .img .rating {
+        position: absolute;
+        bottom: 14px;
+        left: 14px;
+        padding: 6px 12px;
+        background: rgba(23, 19, 17, 0.7);
+        backdrop-filter: blur(8px);
+        color: var(--ivory);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .d1-card .body {
+        padding: 22px;
+      }
+      .d1-card h4 {
+        font-size: 22px;
+        letter-spacing: -0.015em;
+      }
+      .d1-card .addr {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .d1-card .slots {
+        margin-top: 18px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .d1-card .slots span {
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: var(--ivory);
+        border: 1px solid var(--line);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .d1-card .slots span.hot {
+        background: var(--ink);
+        color: var(--ivory);
+        border-color: var(--ink);
+      }
+      .d1-card .foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 14px;
+        border-top: 1px dashed var(--line);
+      }
+      .d1-card .foot .link {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .d1-card .foot .cta {
+        padding: 10px 18px;
+        background: var(--burgundy);
+        color: var(--ivory);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+      }
+
+      /* D2 Company detail */
+      .d2-gallery {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 14px;
+        padding: 28px 36px;
+        height: 560px;
+      }
+      .d2-gallery > div {
+        background-size: cover;
+        background-position: center;
+        border-radius: var(--radius-m);
+      }
+      .d2-gallery .main {
+        grid-row: span 2;
+      }
+
+      .d2-body {
+        padding: 30px 36px;
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 60px;
+      }
+      .d2-main .over {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--burgundy);
+        font-weight: 600;
+      }
+      .d2-main h2 {
+        font-size: 72px;
+        letter-spacing: -0.03em;
+        line-height: 0.96;
+        margin-top: 10px;
+      }
+      .d2-main h2 em {
+        color: var(--burgundy);
+      }
+      .d2-main .lede {
+        font-family: "Instrument Serif", serif;
+        font-style: italic;
+        font-size: 20px;
+        color: var(--ink-2);
+        margin-top: 24px;
+        max-width: 540px;
+        line-height: 1.5;
+      }
+      .d2-main .stats {
+        margin-top: 36px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding: 28px 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .d2-main .stat {
+        border-right: 1px solid var(--line);
+        padding-right: 24px;
+      }
+      .d2-main .stat:last-child {
+        border: 0;
+      }
+      .d2-main .stat .v {
+        font-family: var(--font-display);
+        font-size: 34px;
+        letter-spacing: -0.02em;
+      }
+      .d2-main .stat .v em {
+        color: var(--burgundy);
+      }
+      .d2-main .stat .l {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .d2-services h3 {
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        margin-bottom: 16px;
+      }
+      .d2-svc {
+        padding: 18px 0;
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+        align-items: start;
+      }
+      .d2-svc:last-child {
+        border-bottom: 1px solid var(--line);
+      }
+      .d2-svc h4 {
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+      .d2-svc p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .d2-svc .r {
+        text-align: right;
+      }
+      .d2-svc .price {
+        font-family: var(--font-display);
+        font-size: 22px;
+        color: var(--burgundy);
+      }
+      .d2-svc .dur {
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .d2-svc button {
+        margin-top: 8px;
+        padding: 8px 16px;
+        background: var(--ink);
+        color: var(--ivory);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .d2-booking {
+        background: var(--ink);
+        color: var(--ivory);
+        border-radius: var(--radius-m);
+        padding: 32px;
+        position: sticky;
+        top: 24px;
+        height: fit-content;
+      }
+      .d2-booking .over {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .d2-booking h3 {
+        color: var(--ivory);
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        margin-top: 8px;
+      }
+      .d2-booking .contact {
+        margin-top: 20px;
+        font-size: 14px;
+        line-height: 1.7;
+        opacity: 0.78;
+      }
+      .d2-booking .cta {
+        margin-top: 22px;
+        width: 100%;
+        padding: 16px;
+        background: var(--gold);
+        color: var(--ink);
+        border-radius: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+
+      /* D3 Planning timeline desktop */
+      .d3-shell {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 820px;
+      }
+      .d3-side {
+        background: var(--ink);
+        color: var(--ivory);
+        padding: 32px 26px;
+      }
+      .d3-side .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-family: var(--font-display);
+        font-size: 18px;
+        color: var(--ivory);
+      }
+      .d3-side .brand em { color: var(--gold); }
+      .d3-side .brand .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+      .d3-side nav {
+        margin-top: 38px;
+        display: grid;
+        gap: 4px;
+      }
+      .d3-side nav a {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        color: rgba(247, 242, 234, 0.7);
+      }
+      .d3-side nav a svg {
+        width: 16px;
+        height: 16px;
+      }
+      .d3-side nav a.active {
+        background: rgba(247, 242, 234, 0.08);
+        color: var(--ivory);
+        position: relative;
+      }
+      .d3-side nav a.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        background: var(--gold);
+        border-radius: 2px;
+      }
+      .d3-side nav a .badge {
+        margin-left: auto;
+        background: var(--coral);
+        color: var(--ivory);
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .d3-main {
+        padding: 36px 42px;
+      }
+      .d3-head {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        gap: 24px;
+        align-items: end;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--line);
+      }
+      .d3-head .over {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .d3-head h2 {
+        font-size: 42px;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+      .d3-head h2 em { color: var(--burgundy); }
+      .d3-head .modes {
+        display: flex;
+        gap: 4px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px;
+      }
+      .d3-head .modes button {
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+      }
+      .d3-head .modes button.on {
+        background: var(--ink);
+        color: var(--ivory);
+      }
+      .d3-head .add {
+        padding: 10px 22px;
+        background: var(--burgundy);
+        color: var(--ivory);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .d3-grid {
+        margin-top: 20px;
+        position: relative;
+        height: 640px;
+        overflow: hidden;
+      }
+      .d3-hours {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 60px;
+      }
+      .d3-hours .hr {
+        height: 80px;
+        font-family: var(--font-display);
+        font-size: 11px;
+        color: var(--muted);
+        padding-top: 4px;
+      }
+      .d3-canvas {
+        margin-left: 60px;
+        position: relative;
+        border-left: 1px solid var(--line);
+        height: 100%;
+      }
+      .d3-canvas .hline {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--line);
+      }
+      .d3-canvas .qline {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--line);
+        opacity: 0.3;
+      }
+      .d3-evt {
+        position: absolute;
+        border-radius: 14px;
+        padding: 10px 14px;
+        background: var(--cream-card);
+        border-left: 4px solid;
+        box-shadow: var(--shadow-s);
+        overflow: hidden;
+      }
+      .d3-evt h5 {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .d3-evt .meta {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .d3-evt .t {
+        font-size: 11px;
+        color: var(--burgundy);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .d3-evt.conf { border-color: var(--burgundy); }
+      .d3-evt.pend { border-color: var(--gold); background: #fbf5e6; }
+      .d3-evt.full { border-color: var(--sage); }
+      .d3-evt .status {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 9px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .d3-evt.conf .status {
+        background: rgba(122, 34, 50, 0.1);
+        color: var(--burgundy);
+      }
+      .d3-evt.pend .status {
+        background: rgba(200, 155, 71, 0.15);
+        color: var(--gold);
+      }
+
+      /* D4 Owner dashboard desktop */
+      .d4-hero {
+        padding: 48px 42px 36px;
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 60px;
+        align-items: end;
+        border-bottom: 1px solid var(--line);
+      }
+      .d4-hero .txt .over {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .d4-hero .txt h1 {
+        font-size: 86px;
+        letter-spacing: -0.035em;
+        line-height: 0.95;
+        margin-top: 16px;
+      }
+      .d4-hero .txt h1 em {
+        color: var(--burgundy);
+      }
+      .d4-hero .txt p {
+        font-family: "Instrument Serif", serif;
+        font-style: italic;
+        font-size: 20px;
+        margin-top: 22px;
+        max-width: 500px;
+        color: var(--ink-2);
+      }
+      .d4-hero .card {
+        background: var(--ink);
+        color: var(--ivory);
+        padding: 28px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .d4-hero .card::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(200, 155, 71, 0.35), transparent 70%);
+      }
+      .d4-hero .card .l {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .d4-hero .card .v {
+        font-family: var(--font-display);
+        font-size: 64px;
+        line-height: 1;
+        margin-top: 10px;
+        letter-spacing: -0.03em;
+      }
+      .d4-hero .card .s {
+        margin-top: 16px;
+        font-size: 13px;
+        opacity: 0.75;
+      }
+      .d4-hero .card button {
+        margin-top: 22px;
+        padding: 12px 22px;
+        background: var(--gold);
+        color: var(--ink);
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .d4-kpigrid {
+        padding: 36px 42px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+      }
+      .d4-kpi {
+        padding: 22px;
+        background: var(--cream-card);
+        border-radius: 16px;
+        border: 1px solid rgba(217, 202, 179, 0.5);
+      }
+      .d4-kpi .l {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .d4-kpi .v {
+        font-family: var(--font-display);
+        font-size: 38px;
+        margin-top: 6px;
+        letter-spacing: -0.02em;
+      }
+      .d4-kpi .delta {
+        font-size: 11px;
+        margin-top: 6px;
+        color: var(--sage);
+      }
+      .d4-kpi .delta.down { color: var(--coral); }
+
+      .d4-2col {
+        padding: 20px 42px 48px;
+        display: grid;
+        grid-template-columns: 2fr 1.2fr;
+        gap: 28px;
+      }
+      .d4-bigcard,
+      .d4-smallcard {
+        background: var(--cream-card);
+        border-radius: 20px;
+        padding: 28px;
+        border: 1px solid rgba(217, 202, 179, 0.5);
+      }
+      .d4-bigcard h3, .d4-smallcard h3 {
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+      .d4-bigcard .sub, .d4-smallcard .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .d4-req {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+      }
+      .d4-reqrow {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        gap: 18px;
+        align-items: center;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: var(--ivory);
+      }
+      .d4-reqrow .ini {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--burgundy), var(--gold));
+        color: var(--ivory);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .d4-reqrow .n {
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .d4-reqrow .meta {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .d4-reqrow .time {
+        font-family: var(--font-display);
+        font-size: 16px;
+        color: var(--burgundy);
+      }
+      .d4-reqrow .acts {
+        display: flex;
+        gap: 6px;
+      }
+      .d4-reqrow .acts .acc,
+      .d4-reqrow .acts .rej {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+      }
+      .d4-reqrow .acts .acc {
+        background: var(--sage);
+        color: var(--ivory);
+      }
+      .d4-reqrow .acts .rej {
+        background: var(--ivory-2);
+        color: var(--burgundy);
+      }
+
+      /* D5 Booking flow */
+      .d5-shell {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        min-height: 780px;
+      }
+      .d5-main {
+        padding: 48px 42px;
+      }
+      .d5-steps {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .d5-step {
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        border: 1px solid var(--line);
+      }
+      .d5-step.on {
+        background: var(--ink);
+        color: var(--ivory);
+        border-color: var(--ink);
+      }
+      .d5-main h1 {
+        font-size: 56px;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-top: 32px;
+      }
+      .d5-main h1 em { color: var(--burgundy); }
+      .d5-month {
+        margin-top: 36px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+      }
+      .d5-month .dow {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 6px;
+        text-align: center;
+      }
+      .d5-month .d {
+        padding: 14px 8px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+      .d5-month .d .n {
+        font-family: var(--font-display);
+        font-size: 18px;
+      }
+      .d5-month .d .dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--burgundy);
+        margin: 4px auto 0;
+      }
+      .d5-month .d.active {
+        background: var(--ink);
+        color: var(--ivory);
+      }
+      .d5-month .d.full {
+        opacity: 0.3;
+      }
+      .d5-month .d.other {
+        color: var(--muted);
+        opacity: 0.4;
+      }
+
+      .d5-slots {
+        margin-top: 36px;
+      }
+      .d5-slots h3 {
+        font-size: 20px;
+      }
+      .d5-slotgrid {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .d5-slotgrid .s {
+        padding: 14px 6px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        text-align: center;
+        font-family: var(--font-display);
+        font-size: 15px;
+      }
+      .d5-slotgrid .s.active {
+        background: var(--ink);
+        color: var(--ivory);
+        border-color: var(--ink);
+      }
+      .d5-slotgrid .s.full { opacity: 0.3; text-decoration: line-through; }
+
+      .d5-side {
+        background: var(--burgundy-deep);
+        color: var(--ivory);
+        padding: 48px 32px;
+        position: relative;
+        overflow: hidden;
+      }
+      .d5-side::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: 60px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(200, 155, 71, 0.35), transparent 70%);
+      }
+      .d5-side .over {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .d5-side h2 {
+        color: var(--ivory);
+        font-size: 36px;
+        letter-spacing: -0.02em;
+        margin-top: 8px;
+      }
+      .d5-side .block {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(247, 242, 234, 0.12);
+      }
+      .d5-side .block .l {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+      .d5-side .block .v {
+        font-family: var(--font-display);
+        font-size: 18px;
+        margin-top: 6px;
+      }
+      .d5-side .block .v em { color: var(--gold); }
+      .d5-side .total {
+        margin-top: 40px;
+        padding: 24px 0;
+        border-top: 1px solid rgba(247, 242, 234, 0.12);
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+      }
+      .d5-side .total .l {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+      .d5-side .total .v {
+        font-family: var(--font-display);
+        font-size: 42px;
+        color: var(--gold);
+      }
+      .d5-side .cta {
+        margin-top: 14px;
+        width: 100%;
+        padding: 18px;
+        background: var(--gold);
+        color: var(--ink);
+        border-radius: 14px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+
+      /* ───────────────────────── footer / specs ───────────────────────── */
+      .specs {
+        margin-top: 100px;
+        padding-top: 60px;
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+      }
+      .specs h4 {
+        font-size: 13px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: var(--font-body);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+      }
+      .palette .sw {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        position: relative;
+      }
+      .palette .sw::after {
+        content: attr(data-n);
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .fontsample {
+        padding: 18px;
+        background: var(--cream-card);
+        border-radius: 14px;
+      }
+      .fontsample .big {
+        font-family: var(--font-display);
+        font-size: 44px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .fontsample .small {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      footer.pagefoot {
+        margin-top: 100px;
+        padding-top: 36px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page-wrap">
+      <!-- BRAND BAR -->
+      <header class="brandbar">
+        <div class="mark">
+          <span class="dot"></span>
+          <h1>Termini <em>im</em></h1>
+        </div>
+        <p class="tagline">
+          A design proposal in the <em>Prishtina Editorial</em> direction —
+          crafted for Kosovo's booking culture, balancing Ottoman warmth with
+          modern editorial clarity.
+        </p>
+        <span class="chip">
+          <span class="pulse"></span>
+          Proposal · 01
+        </span>
+      </header>
+
+      <!-- =========================== MOBILE =========================== -->
+      <section>
+        <div class="sec-head">
+          <div class="num">
+            0<em>1</em>
+          </div>
+          <div class="title">
+            <div class="over">In the palm of the hand</div>
+            <h2>
+              Mobile — <em>quiet intimacy,</em> one-thumb elegance.
+            </h2>
+            <p>
+              Five core screens, designed phone-first: bottom-sheet
+              interactions, serif headlines that breathe, and a warm ivory
+              canvas offset by the burgundy of a well-polished barber chair.
+            </p>
+          </div>
+        </div>
+
+        <div class="mobile-row">
+          <!-- ── M1 · Landing / Search ── -->
+          <div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar">
+                  <span>9:41</span>
+                  <span>●●● 100%</span>
+                </div>
+
+                <!-- hero -->
+                <div class="m1-hero">
+                  <div class="m1-top">
+                    <span>Termini <em class="italic">im</em></span>
+                    <div class="globe">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h1>Salons<br />de <em>Prishtina.</em></h1>
+                  <p class="sub">Trouvez un créneau aujourd'hui, en 15 secondes.</p>
+                </div>
+
+                <!-- search card -->
+                <div class="m1-search">
+                  <div class="row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                    <div>
+                      <label>Ville</label>
+                      <div class="val">Prishtinë · Qendër</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                      <rect x="3" y="5" width="18" height="16" rx="2" />
+                      <path d="M8 3v4M16 3v4M3 10h18" />
+                    </svg>
+                    <div>
+                      <label>Quand</label>
+                      <div class="val">Aujourd'hui · après-midi</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 21a8 8 0 0 1 16 0" />
+                    </svg>
+                    <div>
+                      <label>Qui</label>
+                      <div class="val">Homme · Coupe + barbe</div>
+                    </div>
+                  </div>
+                  <button class="go">Chercher un salon</button>
+                </div>
+
+                <!-- results header -->
+                <div class="m1-results-head">
+                  <h3>42 <em class="italic">salons</em></h3>
+                  <small>Triés par proximité</small>
+                </div>
+
+                <!-- card 1 -->
+                <div class="m1-card">
+                  <div class="img" style="background-image: url('https://images.unsplash.com/photo-1622287162716-f311baa1a2b8?w=400&q=80')">
+                    <span class="rank">01</span>
+                  </div>
+                  <div class="body">
+                    <h4>Barber Krasniqi</h4>
+                    <div class="addr">Rruga UÇK, 800 m</div>
+                    <div class="meta">
+                      <span class="rating">★ 4.9</span>
+                      <span>· 312 avis</span>
+                    </div>
+                    <div class="slots">
+                      <span>14:00</span>
+                      <span class="hot">14:30</span>
+                      <span>15:15</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- card 2 -->
+                <div class="m1-card">
+                  <div class="img" style="background-image: url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=400&q=80')">
+                    <span class="rank">02</span>
+                  </div>
+                  <div class="body">
+                    <h4>Sallon Elegance</h4>
+                    <div class="addr">Rr. Nënë Tereza, 1,2 km</div>
+                    <div class="meta">
+                      <span class="rating">★ 4.8</span>
+                      <span>· 204 avis</span>
+                    </div>
+                    <div class="slots">
+                      <span class="hot">14:15</span>
+                      <span>15:00</span>
+                      <span>16:30</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- tab bar -->
+                <div class="m-tabs">
+                  <div class="m-tab active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
+                    </svg>
+                    Recherche
+                  </div>
+                  <div class="m-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="5" width="18" height="16" rx="2" />
+                      <path d="M8 3v4M16 3v4M3 10h18" />
+                    </svg>
+                    Mes RDV
+                  </div>
+                  <div class="m-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
+                    </svg>
+                    Profil
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-caption">
+              <div class="n">01 · Landing · Client</div>
+              <h4>Le moteur de recherche éditorialisé</h4>
+            </div>
+          </div>
+
+          <!-- ── M2 · Company detail ── -->
+          <div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar">
+                  <span>9:41</span>
+                  <span>●●● 100%</span>
+                </div>
+
+                <div class="m2-hero">
+                  <div class="backbtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M15 18l-6-6 6-6" /></svg>
+                  </div>
+                  <div class="heartbtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" /></svg>
+                  </div>
+                </div>
+
+                <div class="m2-info">
+                  <div class="over">Barber · Coupe homme</div>
+                  <h2>Barber Krasniqi <em class="italic">&</em> fils</h2>
+                  <div class="stats">
+                    <div class="stat">
+                      <div class="v"><em>★</em>4.9</div>
+                      <div class="l">Note</div>
+                    </div>
+                    <div class="stat">
+                      <div class="v">312</div>
+                      <div class="l">Avis</div>
+                    </div>
+                    <div class="stat">
+                      <div class="v">12 <em>min</em></div>
+                      <div class="l">À pied</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="m2-svc-head">
+                  <h3>Nos <em class="italic">services</em></h3>
+                  <span>9 prestations</span>
+                </div>
+
+                <div class="m2-service">
+                  <div>
+                    <h5>Coupe signature</h5>
+                    <div class="meta">
+                      <span>35 min</span>
+                      <span>·</span>
+                      <span class="price">15 €</span>
+                    </div>
+                  </div>
+                  <button>Choisir</button>
+                </div>
+                <div class="m2-service">
+                  <div>
+                    <h5>Barbe à l'ancienne</h5>
+                    <div class="meta">
+                      <span>25 min</span>
+                      <span>·</span>
+                      <span class="price">12 €</span>
+                    </div>
+                  </div>
+                  <button>Choisir</button>
+                </div>
+                <div class="m2-service">
+                  <div>
+                    <h5>Rasage chaud</h5>
+                    <div class="meta">
+                      <span>30 min</span>
+                      <span>·</span>
+                      <span class="price">18 €</span>
+                    </div>
+                  </div>
+                  <button>Choisir</button>
+                </div>
+
+                <div class="m-tabs">
+                  <div class="m-tab active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
+                    </svg>
+                    Recherche
+                  </div>
+                  <div class="m-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="5" width="18" height="16" rx="2" />
+                      <path d="M8 3v4M16 3v4M3 10h18" />
+                    </svg>
+                    Mes RDV
+                  </div>
+                  <div class="m-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
+                    </svg>
+                    Profil
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-caption">
+              <div class="n">02 · Détail · Salon</div>
+              <h4>La vitrine éditoriale</h4>
+            </div>
+          </div>
+
+          <!-- ── M3 · Booking slot picker ── -->
+          <div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar">
+                  <span>9:41</span>
+                  <span>●●● 100%</span>
+                </div>
+
+                <div class="m3-header">
+                  <div class="back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M15 18l-6-6 6-6" /></svg>
+                  </div>
+                  <div class="title">
+                    <div class="over">Étape 2/3</div>
+                    <h4>Choisir un <em class="italic">créneau</em></h4>
+                  </div>
+                </div>
+                <div class="m3-steps">
+                  <div class="bar on"></div>
+                  <div class="bar on"></div>
+                  <div class="bar"></div>
+                </div>
+
+                <div class="m3-summary">
+                  <div class="l">Votre sélection</div>
+                  <h5>Coupe signature · Barber Krasniqi</h5>
+                  <div class="meta"><span>35 min</span><span>· 15 €</span><span>· Ven 18 avr</span></div>
+                </div>
+
+                <div class="m3-day-strip">
+                  <div class="day"><div class="d">Mer</div><div class="n">16</div></div>
+                  <div class="day full"><div class="d">Jeu</div><div class="n">17</div></div>
+                  <div class="day active"><div class="d">Ven</div><div class="n">18</div></div>
+                  <div class="day"><div class="d">Sam</div><div class="n">19</div></div>
+                  <div class="day"><div class="d">Dim</div><div class="n">20</div></div>
+                  <div class="day"><div class="d">Lun</div><div class="n">21</div></div>
+                </div>
+
+                <div class="m3-section"><em>Après-midi</em></div>
+                <div class="m3-slots">
+                  <div class="m3-slot full"><div class="t">13:00</div><div class="r">Complet</div></div>
+                  <div class="m3-slot"><div class="t">13:30</div><div class="r">3 places</div></div>
+                  <div class="m3-slot"><div class="t">14:00</div><div class="r">2 places</div></div>
+                  <div class="m3-slot active"><div class="t">14:30</div><div class="r">2 places</div></div>
+                  <div class="m3-slot"><div class="t">15:00</div><div class="r">1 place</div></div>
+                  <div class="m3-slot full"><div class="t">15:30</div><div class="r">Complet</div></div>
+                </div>
+
+                <div class="m3-cta">
+                  <button>
+                    Continuer
+                    <span class="arr">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="12" height="12"><path d="m9 18 6-6-6-6" /></svg>
+                    </span>
+                  </button>
+                </div>
+
+                <div class="m-tabs">
+                  <div class="m-tab active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
+                    </svg>
+                    Recherche
+                  </div>
+                  <div class="m-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="5" width="18" height="16" rx="2" />
+                      <path d="M8 3v4M16 3v4M3 10h18" />
+                    </svg>
+                    Mes RDV
+                  </div>
+                  <div class="m-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
+                    </svg>
+                    Profil
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-caption">
+              <div class="n">03 · Booking · Slot picker</div>
+              <h4>La réservation en 3 battements</h4>
+            </div>
+          </div>
+
+          <!-- ── M4 · Owner dashboard ── -->
+          <div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar">
+                  <span>9:41</span>
+                  <span>●●● 100%</span>
+                </div>
+                <div class="m-appbar">
+                  <div class="m-brand"><span class="md"></span><span>Termini <em>im</em></span></div>
+                  <div class="m-actions">
+                    <div class="m-iconbtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V10a6 6 0 1 0-12 0v4a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1" /></svg>
+                    </div>
+                    <div class="m-iconbtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="m4-salute">
+                  <div class="hi">Bonjour Arben</div>
+                  <h3>Barber <em>Krasniqi</em></h3>
+                </div>
+
+                <div class="m4-kpis">
+                  <div class="m4-kpi dark">
+                    <div class="l">Demandes</div>
+                    <div class="v">4</div>
+                    <div class="delta">à valider</div>
+                  </div>
+                  <div class="m4-kpi">
+                    <div class="l">RDV aujourd'hui</div>
+                    <div class="v">12</div>
+                    <div class="delta">+3 vs hier</div>
+                  </div>
+                  <div class="m4-kpi">
+                    <div class="l">Revenu sem.</div>
+                    <div class="v">640 €</div>
+                    <div class="delta">+12 %</div>
+                  </div>
+                  <div class="m4-kpi">
+                    <div class="l">Taux occup.</div>
+                    <div class="v">82 %</div>
+                    <div class="delta">+4 pts</div>
+                  </div>
+                </div>
+
+                <div class="m4-pending">
+                  <div class="n">4</div>
+                  <div class="txt">
+                    <div class="t">Demandes en attente</div>
+                    <div class="s">La plus ancienne : Ardit · 14h30</div>
+                  </div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+
+                <div class="m4-qa"><em>Raccourcis</em></div>
+                <div class="m4-tiles">
+                  <div class="m4-tile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+                    <div class="tl">Mon planning</div>
+                    <div class="sb">12 RDV aujourd'hui</div>
+                  </div>
+                  <div class="m4-tile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                    <div class="tl">Services</div>
+                    <div class="sb">9 prestations</div>
+                  </div>
+                </div>
+
+                <div class="m-tabs">
+                  <div class="m-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Recherche</div>
+                  <div class="m-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21V8l9-5 9 5v13H3z"/><path d="M9 21v-6h6v6"/></svg>Salon</div>
+                  <div class="m-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Planning</div>
+                  <div class="m-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Demandes</div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-caption">
+              <div class="n">04 · Dashboard · Owner</div>
+              <h4>Le tableau de bord éditorial</h4>
+            </div>
+          </div>
+
+          <!-- ── M5 · Planning ── -->
+          <div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar">
+                  <span>9:41</span>
+                  <span>●●● 100%</span>
+                </div>
+
+                <div class="m5-header">
+                  <div class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M15 18l-6-6 6-6"/></svg></div>
+                  <div class="dateblock">
+                    <div class="dow">Vendredi</div>
+                    <h4>18 <em>avril</em></h4>
+                  </div>
+                  <div class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+                <div class="m5-modes">
+                  <div class="m5-mode active">Jour</div>
+                  <div class="m5-mode">Semaine</div>
+                  <div class="m5-mode">Mois</div>
+                </div>
+
+                <div class="m5-timeline">
+                  <div class="m5-row"><div class="hr">09:00</div><div class="cell" style="position:relative">
+                    <div class="m5-appt conf" style="top:4px;height:56px;">
+                      <h6>Ardit Hoxha</h6>
+                      <div class="sv">Coupe · 9:00 – 9:45</div>
+                    </div>
+                  </div></div>
+                  <div class="m5-row"><div class="hr">10:00</div><div class="cell" style="position:relative">
+                    <div class="m5-appt pend" style="top:4px;height:38px;">
+                      <h6>Lirim B.</h6>
+                      <div class="sv">Barbe · pending</div>
+                    </div>
+                  </div></div>
+                  <div class="m5-row"><div class="hr">11:00</div><div class="cell"></div></div>
+                  <div class="m5-row"><div class="hr">12:00</div><div class="cell" style="position:relative">
+                    <div class="m5-appt conf" style="top:4px;height:30px;left:0;right:52%;">
+                      <h6>Shqipe</h6>
+                      <div class="sv">Couleur</div>
+                    </div>
+                    <div class="m5-appt conf" style="top:4px;height:30px;left:52%;right:4px;">
+                      <h6>Dea</h6>
+                      <div class="sv">Brushing</div>
+                    </div>
+                  </div></div>
+                  <div class="m5-row"><div class="hr">13:00</div><div class="cell"></div></div>
+                  <div class="m5-row"><div class="hr">14:00</div><div class="cell" style="position:relative">
+                    <div class="m5-appt conf" style="top:4px;height:56px;">
+                      <h6>Arben K.</h6>
+                      <div class="sv">Coupe + barbe · 14:00</div>
+                    </div>
+                  </div></div>
+                </div>
+
+                <div class="m5-add">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </div>
+
+                <div class="m-tabs">
+                  <div class="m-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Recherche</div>
+                  <div class="m-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21V8l9-5 9 5v13H3z"/><path d="M9 21v-6h6v6"/></svg>Salon</div>
+                  <div class="m-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Planning</div>
+                  <div class="m-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Demandes</div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-caption">
+              <div class="n">05 · Planning · Owner</div>
+              <h4>La journée en couches</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== DESKTOP =========================== -->
+      <section>
+        <div class="sec-head">
+          <div class="num">
+            0<em>2</em>
+          </div>
+          <div class="title">
+            <div class="over">On the bigger canvas</div>
+            <h2>
+              Desktop — <em>full-page editorial,</em> confident spacing.
+            </h2>
+            <p>
+              Five key screens repensés pour la largeur d'un écran : mises en
+              page éditoriales, grilles magazine, sidebar sombre pour l'espace
+              owner. Toujours la même main de compositeur, mais avec plus
+              d'air.
+            </p>
+          </div>
+        </div>
+
+        <!-- D1 · Landing -->
+        <div class="desk-wrap">
+          <div class="desk-frame">
+            <div class="desk-tabs">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="urlbar"><strong>termini.im</strong>/search?city=prishtine&gender=men</div>
+            </div>
+            <div class="d-topbar">
+              <div class="brand"><span class="dot"></span>Termini <em>im</em></div>
+              <nav>
+                <a href="#" class="active">Salons</a>
+                <a href="#">Pour les pros</a>
+                <a href="#">À propos</a>
+                <a href="#">Journal</a>
+              </nav>
+              <div class="right">
+                <div class="lang">🇦🇱 Shqip</div>
+                <div class="avatar">AK</div>
+              </div>
+            </div>
+
+            <div class="d1-hero">
+              <div class="lead">
+                <div class="over">Annuaire · Salons & Barbiers</div>
+                <h1>Prishtina<br />se <em>coiffe.</em></h1>
+                <p>
+                  Une sélection curatée de 240 salons à travers le Kosovo.
+                  Réservation instantanée, confirmation sous 2 minutes.
+                </p>
+              </div>
+              <div class="side">
+                <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80" alt="" />
+              </div>
+            </div>
+
+            <div class="d1-searchbar">
+              <div class="field">
+                <label>Où</label>
+                <div class="val">Prishtinë</div>
+              </div>
+              <div class="field">
+                <label>Quand</label>
+                <div class="val">Aujourd'hui, après-midi</div>
+              </div>
+              <div class="field">
+                <label>Service</label>
+                <div class="val">Coupe homme</div>
+              </div>
+              <button class="go">Rechercher</button>
+            </div>
+
+            <div class="d1-results">
+              <div class="d1-resHead">
+                <div>
+                  <div class="small">Résultats · Prishtinë</div>
+                  <h2>42 salons <em class="italic">à proximité</em></h2>
+                </div>
+                <div></div>
+                <div class="sort">Tri : Note · Distance · Prix</div>
+              </div>
+
+              <div class="d1-grid">
+                <div class="d1-card">
+                  <div class="img" style="background-image: url('https://images.unsplash.com/photo-1622287162716-f311baa1a2b8?w=700&q=80')">
+                    <span class="tag">★ 4.9</span>
+                    <span class="rating">312 avis</span>
+                  </div>
+                  <div class="body">
+                    <h4>Barber Krasniqi</h4>
+                    <div class="addr">Rruga UÇK · 800 m</div>
+                    <div class="slots">
+                      <span>14:00</span><span class="hot">14:30</span>
+                      <span>15:15</span><span>16:00</span>
+                    </div>
+                    <div class="foot">
+                      <span class="link">Voir la fiche →</span>
+                      <span class="cta">Prendre RDV</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d1-card">
+                  <div class="img" style="background-image: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=700&q=80')">
+                    <span class="tag">★ 4.8</span>
+                    <span class="rating">204 avis</span>
+                  </div>
+                  <div class="body">
+                    <h4>Sallon Elegance</h4>
+                    <div class="addr">Rr. Nënë Tereza · 1,2 km</div>
+                    <div class="slots">
+                      <span class="hot">14:15</span><span>15:00</span>
+                      <span>16:30</span><span>17:00</span>
+                    </div>
+                    <div class="foot">
+                      <span class="link">Voir la fiche →</span>
+                      <span class="cta">Prendre RDV</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d1-card">
+                  <div class="img" style="background-image: url('https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=700&q=80')">
+                    <span class="tag">★ 4.7</span>
+                    <span class="rating">158 avis</span>
+                  </div>
+                  <div class="body">
+                    <h4>Studio Petrit</h4>
+                    <div class="addr">Qafa · 600 m</div>
+                    <div class="slots">
+                      <span>13:45</span><span>14:30</span>
+                      <span class="hot">15:15</span><span>16:45</span>
+                    </div>
+                    <div class="foot">
+                      <span class="link">Voir la fiche →</span>
+                      <span class="cta">Prendre RDV</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption" style="margin-top: 18px">
+            <div class="n">D1 · Landing · Client · Desktop</div>
+            <h4>La recherche comme un magazine</h4>
+          </div>
+        </div>
+
+        <!-- D2 · Company detail -->
+        <div class="desk-wrap">
+          <div class="desk-frame">
+            <div class="desk-tabs">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="urlbar"><strong>termini.im</strong>/salon/barber-krasniqi</div>
+            </div>
+            <div class="d-topbar">
+              <div class="brand"><span class="dot"></span>Termini <em>im</em></div>
+              <nav>
+                <a href="#" class="active">Salons</a>
+                <a href="#">Pour les pros</a>
+                <a href="#">À propos</a>
+                <a href="#">Journal</a>
+              </nav>
+              <div class="right">
+                <div class="lang">🇦🇱 Shqip</div>
+                <div class="avatar">AK</div>
+              </div>
+            </div>
+
+            <div class="d2-gallery">
+              <div class="main" style="background-image: url('https://images.unsplash.com/photo-1622287162716-f311baa1a2b8?w=1200&q=80')"></div>
+              <div style="background-image: url('https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80')"></div>
+              <div style="background-image: url('https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&q=80')"></div>
+              <div style="background-image: url('https://images.unsplash.com/photo-1618454480611-f60e5e6e4c3a?w=600&q=80')"></div>
+              <div style="background-image: url('https://images.unsplash.com/photo-1593702288056-f9db2bed4cf6?w=600&q=80')"></div>
+            </div>
+
+            <div class="d2-body">
+              <div class="d2-main">
+                <div class="over">Barber · Coupe homme · Rasage</div>
+                <h2>Barber<br />Krasniqi <em class="italic">&</em> fils.</h2>
+                <p class="lede">
+                  Un barbier familial installé rue UÇK depuis 1998, fier de
+                  pratiquer la coupe sculptée au rasoir et le rasage chaud
+                  à l'ancienne. Trois générations, un seul savoir-faire.
+                </p>
+
+                <div class="stats">
+                  <div class="stat">
+                    <div class="v"><em>★</em>4.9</div>
+                    <div class="l">Note moyenne</div>
+                  </div>
+                  <div class="stat">
+                    <div class="v">312</div>
+                    <div class="l">Avis vérifiés</div>
+                  </div>
+                  <div class="stat">
+                    <div class="v">27 <em>ans</em></div>
+                    <div class="l">d'activité</div>
+                  </div>
+                  <div class="stat">
+                    <div class="v">9</div>
+                    <div class="l">Prestations</div>
+                  </div>
+                </div>
+
+                <div class="d2-services" style="margin-top:40px;">
+                  <h3>Services <em class="italic">proposés</em></h3>
+                  <div class="d2-svc">
+                    <div>
+                      <h4>Coupe signature</h4>
+                      <p>Coupe ciseaux + tondeuse, shampoing inclus, finition à la cire naturelle.</p>
+                    </div>
+                    <div class="r">
+                      <div class="price">15 €</div>
+                      <div class="dur">35 min</div>
+                      <button>Choisir</button>
+                    </div>
+                  </div>
+                  <div class="d2-svc">
+                    <div>
+                      <h4>Barbe à l'ancienne</h4>
+                      <p>Serviette chaude, rasoir à main levée, baume après-rasage.</p>
+                    </div>
+                    <div class="r">
+                      <div class="price">12 €</div>
+                      <div class="dur">25 min</div>
+                      <button>Choisir</button>
+                    </div>
+                  </div>
+                  <div class="d2-svc">
+                    <div>
+                      <h4>Rasage chaud · grand jeu</h4>
+                      <p>30 minutes d'exfoliation, serviette vapeur, rasage deux passes, soin à l'huile.</p>
+                    </div>
+                    <div class="r">
+                      <div class="price">18 €</div>
+                      <div class="dur">30 min</div>
+                      <button>Choisir</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <aside class="d2-booking">
+                <div class="over">Réserver · en 30 s</div>
+                <h3>Prenez <em class="italic">rendez-vous.</em></h3>
+                <div class="contact">
+                  Rruga UÇK 22, Prishtinë<br />
+                  044 123 456<br />
+                  Lundi — Samedi · 9h — 20h
+                </div>
+                <button class="cta">Voir les créneaux</button>
+              </aside>
+            </div>
+          </div>
+          <div class="phone-caption" style="margin-top: 18px">
+            <div class="n">D2 · Détail · Salon · Desktop</div>
+            <h4>Le salon comme une couverture</h4>
+          </div>
+        </div>
+
+        <!-- D3 · Owner planning -->
+        <div class="desk-wrap">
+          <div class="desk-frame">
+            <div class="desk-tabs">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="urlbar"><strong>termini.im</strong>/mon-salon/planning</div>
+            </div>
+
+            <div class="d3-shell">
+              <aside class="d3-side">
+                <div class="brand"><span class="dot"></span>Termini <em>im</em></div>
+                <nav>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21V8l9-5 9 5v13H3z"/><path d="M9 21v-6h6v6"/></svg>
+                    Tableau de bord
+                  </a>
+                  <a class="active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+                    Mon planning
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    Demandes
+                    <span class="badge">4</span>
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                    Services
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    Équipe
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    Horaires
+                  </a>
+                </nav>
+              </aside>
+
+              <main class="d3-main">
+                <div class="d3-head">
+                  <div>
+                    <div class="over">Vendredi · Semaine 16</div>
+                    <h2>18 <em class="italic">avril</em></h2>
+                  </div>
+                  <div></div>
+                  <div class="modes">
+                    <button>Jour</button>
+                    <button class="on">Semaine</button>
+                    <button>Mois</button>
+                  </div>
+                  <button class="add">+ Ajouter un RDV</button>
+                </div>
+
+                <div class="d3-grid">
+                  <div class="d3-hours">
+                    <div class="hr">09:00</div>
+                    <div class="hr">10:00</div>
+                    <div class="hr">11:00</div>
+                    <div class="hr">12:00</div>
+                    <div class="hr">13:00</div>
+                    <div class="hr">14:00</div>
+                    <div class="hr">15:00</div>
+                    <div class="hr">16:00</div>
+                  </div>
+                  <div class="d3-canvas">
+                    <!-- hour lines (every 80px) -->
+                    <div class="hline" style="top:80px"></div>
+                    <div class="hline" style="top:160px"></div>
+                    <div class="hline" style="top:240px"></div>
+                    <div class="hline" style="top:320px"></div>
+                    <div class="hline" style="top:400px"></div>
+                    <div class="hline" style="top:480px"></div>
+                    <div class="hline" style="top:560px"></div>
+                    <!-- quarter lines -->
+                    <div class="qline" style="top:20px"></div>
+                    <div class="qline" style="top:40px"></div>
+                    <div class="qline" style="top:60px"></div>
+                    <div class="qline" style="top:100px"></div>
+                    <div class="qline" style="top:120px"></div>
+                    <div class="qline" style="top:140px"></div>
+                    <div class="qline" style="top:180px"></div>
+                    <div class="qline" style="top:200px"></div>
+                    <div class="qline" style="top:220px"></div>
+                    <div class="qline" style="top:260px"></div>
+                    <div class="qline" style="top:280px"></div>
+                    <div class="qline" style="top:300px"></div>
+
+                    <!-- appointments -->
+                    <div class="d3-evt conf" style="top:0; left:1%; right:1%; height:60px;">
+                      <h5>Ardit Hoxha</h5>
+                      <div class="meta">Coupe signature · 9:00 – 9:45</div>
+                      <span class="status">Confirmé</span>
+                    </div>
+                    <div class="d3-evt pend" style="top:80px; left:1%; right:51%; height:40px;">
+                      <h5>Lirim B.</h5>
+                      <div class="meta">Barbe · 10:00 – 10:30</div>
+                      <span class="status">En attente</span>
+                    </div>
+                    <div class="d3-evt conf" style="top:80px; left:51%; right:1%; height:40px;">
+                      <h5>Besart K.</h5>
+                      <div class="meta">Coupe · 10:00 – 10:30</div>
+                    </div>
+
+                    <div class="d3-evt conf" style="top:240px; left:1%; right:1%; height:40px;">
+                      <h5>Shqipe D.</h5>
+                      <div class="meta">Couleur · 12:00 – 12:30</div>
+                    </div>
+                    <div class="d3-evt conf" style="top:400px; left:1%; right:1%; height:80px;">
+                      <h5>Arben Krasniqi</h5>
+                      <div class="meta">Coupe + barbe · 14:00 – 15:00</div>
+                      <span class="status">Confirmé</span>
+                    </div>
+                  </div>
+                </div>
+              </main>
+            </div>
+          </div>
+          <div class="phone-caption" style="margin-top: 18px">
+            <div class="n">D3 · Planning · Owner · Desktop</div>
+            <h4>L'agenda comme un tableau</h4>
+          </div>
+        </div>
+
+        <!-- D4 · Owner dashboard -->
+        <div class="desk-wrap">
+          <div class="desk-frame">
+            <div class="desk-tabs">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="urlbar"><strong>termini.im</strong>/mon-salon</div>
+            </div>
+
+            <div class="d3-shell">
+              <aside class="d3-side">
+                <div class="brand"><span class="dot"></span>Termini <em>im</em></div>
+                <nav>
+                  <a class="active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21V8l9-5 9 5v13H3z"/><path d="M9 21v-6h6v6"/></svg>
+                    Tableau de bord
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+                    Mon planning
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    Demandes
+                    <span class="badge">4</span>
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+                    Services
+                  </a>
+                  <a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    Équipe
+                  </a>
+                </nav>
+              </aside>
+
+              <main style="flex:1">
+                <div class="d4-hero">
+                  <div class="txt">
+                    <div class="over">Vendredi 18 avril · 09:14</div>
+                    <h1>Bonjour<br /><em class="italic">Arben,</em></h1>
+                    <p>
+                      Une belle journée s'annonce — 12 clients attendus et
+                      4 demandes à valider. Votre café est prêt.
+                    </p>
+                  </div>
+                  <div class="card">
+                    <div class="l">Demandes en attente</div>
+                    <div class="v">04</div>
+                    <div class="s">La plus ancienne : Ardit · il y a 12 min</div>
+                    <button>Voir les demandes →</button>
+                  </div>
+                </div>
+
+                <div class="d4-kpigrid">
+                  <div class="d4-kpi">
+                    <div class="l">Aujourd'hui</div>
+                    <div class="v">12</div>
+                    <div class="delta">+3 vs hier</div>
+                  </div>
+                  <div class="d4-kpi">
+                    <div class="l">Cette semaine</div>
+                    <div class="v">74</div>
+                    <div class="delta">+12 %</div>
+                  </div>
+                  <div class="d4-kpi">
+                    <div class="l">Revenu sem.</div>
+                    <div class="v">640 €</div>
+                    <div class="delta">+8 %</div>
+                  </div>
+                  <div class="d4-kpi">
+                    <div class="l">Taux occupation</div>
+                    <div class="v">82 %</div>
+                    <div class="delta down">-2 pts</div>
+                  </div>
+                </div>
+
+                <div class="d4-2col">
+                  <div class="d4-bigcard">
+                    <h3>Demandes <em class="italic">à traiter</em></h3>
+                    <div class="sub">4 demandes · commencées par les plus anciennes</div>
+                    <div class="d4-req">
+                      <div class="d4-reqrow">
+                        <div class="ini">AR</div>
+                        <div>
+                          <div class="n">Ardit Hoxha</div>
+                          <div class="meta">Coupe signature · 35 min · 15 €</div>
+                        </div>
+                        <div class="time">14:30</div>
+                        <div class="acts">
+                          <div class="acc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12l5 5L20 7"/></svg></div>
+                          <div class="rej"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 6l12 12M6 18L18 6"/></svg></div>
+                        </div>
+                      </div>
+                      <div class="d4-reqrow">
+                        <div class="ini">LB</div>
+                        <div>
+                          <div class="n">Lirim B.</div>
+                          <div class="meta">Barbe à l'ancienne · 25 min · 12 €</div>
+                        </div>
+                        <div class="time">15:00</div>
+                        <div class="acts">
+                          <div class="acc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12l5 5L20 7"/></svg></div>
+                          <div class="rej"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 6l12 12M6 18L18 6"/></svg></div>
+                        </div>
+                      </div>
+                      <div class="d4-reqrow">
+                        <div class="ini">SH</div>
+                        <div>
+                          <div class="n">Shqipe D.</div>
+                          <div class="meta">Coloration + brushing · 90 min · 45 €</div>
+                        </div>
+                        <div class="time">16:00</div>
+                        <div class="acts">
+                          <div class="acc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12l5 5L20 7"/></svg></div>
+                          <div class="rej"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 6l12 12M6 18L18 6"/></svg></div>
+                        </div>
+                      </div>
+                      <div class="d4-reqrow">
+                        <div class="ini">AK</div>
+                        <div>
+                          <div class="n">Arben K.</div>
+                          <div class="meta">Coupe + barbe · 60 min · 24 €</div>
+                        </div>
+                        <div class="time">16:30</div>
+                        <div class="acts">
+                          <div class="acc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12l5 5L20 7"/></svg></div>
+                          <div class="rej"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 6l12 12M6 18L18 6"/></svg></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d4-smallcard">
+                    <h3>Cette <em class="italic">semaine</em></h3>
+                    <div class="sub">Top 3 des services réservés</div>
+                    <div style="margin-top:18px;display:grid;gap:14px;">
+                      <div style="display:grid;grid-template-columns:1fr auto;gap:14px;">
+                        <div>
+                          <div style="font-weight:700;font-size:14px;">Coupe signature</div>
+                          <div style="font-size:11px;color:var(--muted);">38 réservations</div>
+                        </div>
+                        <div style="font-family:var(--font-display);font-size:20px;color:var(--burgundy);">570 €</div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:1fr auto;gap:14px;">
+                        <div>
+                          <div style="font-weight:700;font-size:14px;">Barbe à l'ancienne</div>
+                          <div style="font-size:11px;color:var(--muted);">21 réservations</div>
+                        </div>
+                        <div style="font-family:var(--font-display);font-size:20px;color:var(--burgundy);">252 €</div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:1fr auto;gap:14px;">
+                        <div>
+                          <div style="font-weight:700;font-size:14px;">Rasage chaud</div>
+                          <div style="font-size:11px;color:var(--muted);">15 réservations</div>
+                        </div>
+                        <div style="font-family:var(--font-display);font-size:20px;color:var(--burgundy);">270 €</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </main>
+            </div>
+          </div>
+          <div class="phone-caption" style="margin-top: 18px">
+            <div class="n">D4 · Dashboard · Owner · Desktop</div>
+            <h4>Le cockpit du salon</h4>
+          </div>
+        </div>
+
+        <!-- D5 · Booking flow -->
+        <div class="desk-wrap">
+          <div class="desk-frame">
+            <div class="desk-tabs">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="urlbar"><strong>termini.im</strong>/salon/barber-krasniqi/book?service=coupe-signature</div>
+            </div>
+            <div class="d-topbar">
+              <div class="brand"><span class="dot"></span>Termini <em>im</em></div>
+              <nav>
+                <a href="#" class="active">Salons</a>
+                <a href="#">Pour les pros</a>
+                <a href="#">À propos</a>
+              </nav>
+              <div class="right">
+                <div class="lang">🇦🇱 Shqip</div>
+                <div class="avatar">AK</div>
+              </div>
+            </div>
+
+            <div class="d5-shell">
+              <div class="d5-main">
+                <div class="d5-steps">
+                  <div class="d5-step">1 · Service</div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M9 18l6-6-6-6"/></svg>
+                  <div class="d5-step on">2 · Créneau</div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M9 18l6-6-6-6"/></svg>
+                  <div class="d5-step">3 · Confirmation</div>
+                </div>
+
+                <h1>Choisissez <em class="italic">votre<br />créneau.</em></h1>
+
+                <div class="d5-month">
+                  <div class="dow">Lun</div>
+                  <div class="dow">Mar</div>
+                  <div class="dow">Mer</div>
+                  <div class="dow">Jeu</div>
+                  <div class="dow">Ven</div>
+                  <div class="dow">Sam</div>
+                  <div class="dow">Dim</div>
+
+                  <div class="d other"><div class="n">31</div></div>
+                  <div class="d"><div class="n">1</div><div class="dot"></div></div>
+                  <div class="d"><div class="n">2</div><div class="dot"></div></div>
+                  <div class="d"><div class="n">3</div></div>
+                  <div class="d"><div class="n">4</div><div class="dot"></div></div>
+                  <div class="d"><div class="n">5</div></div>
+                  <div class="d"><div class="n">6</div></div>
+                  <div class="d"><div class="n">7</div></div>
+                  <div class="d"><div class="n">8</div><div class="dot"></div></div>
+                  <div class="d"><div class="n">9</div></div>
+                  <div class="d"><div class="n">10</div></div>
+                  <div class="d"><div class="n">11</div></div>
+                  <div class="d"><div class="n">12</div></div>
+                  <div class="d"><div class="n">13</div></div>
+                  <div class="d"><div class="n">14</div></div>
+                  <div class="d"><div class="n">15</div></div>
+                  <div class="d"><div class="n">16</div></div>
+                  <div class="d full"><div class="n">17</div></div>
+                  <div class="d active"><div class="n">18</div></div>
+                  <div class="d"><div class="n">19</div></div>
+                  <div class="d"><div class="n">20</div></div>
+                  <div class="d"><div class="n">21</div></div>
+                </div>
+
+                <div class="d5-slots">
+                  <h3 class="italic" style="font-style:italic;font-family:var(--font-display);">Après-midi · Vendredi 18</h3>
+                  <div class="d5-slotgrid">
+                    <div class="s full">13:00</div>
+                    <div class="s">13:30</div>
+                    <div class="s">14:00</div>
+                    <div class="s active">14:30</div>
+                    <div class="s">15:00</div>
+                    <div class="s full">15:30</div>
+                    <div class="s">16:00</div>
+                    <div class="s">16:30</div>
+                    <div class="s">17:00</div>
+                    <div class="s">17:30</div>
+                  </div>
+                </div>
+              </div>
+
+              <aside class="d5-side">
+                <div class="over">Récapitulatif</div>
+                <h2>Coupe<br /><em class="italic">signature.</em></h2>
+                <div class="block">
+                  <div class="l">Salon</div>
+                  <div class="v">Barber Krasniqi <em>& fils</em></div>
+                </div>
+                <div class="block">
+                  <div class="l">Date & heure</div>
+                  <div class="v">Ven 18 avr · <em>14:30</em></div>
+                </div>
+                <div class="block">
+                  <div class="l">Durée</div>
+                  <div class="v">35 <em>minutes</em></div>
+                </div>
+                <div class="total">
+                  <div class="l">Total</div>
+                  <div class="v">15 €</div>
+                </div>
+                <button class="cta">Confirmer le RDV</button>
+              </aside>
+            </div>
+          </div>
+          <div class="phone-caption" style="margin-top: 18px">
+            <div class="n">D5 · Booking · Client · Desktop</div>
+            <h4>La réservation en split-screen</h4>
+          </div>
+        </div>
+      </section>
+
+      <!-- SPECS -->
+      <section class="specs">
+        <div>
+          <h4>Palette · Prishtina Editorial</h4>
+          <div class="palette">
+            <div class="sw" data-n="ivory" style="background:#F7F2EA;color:#111;"></div>
+            <div class="sw" data-n="bone" style="background:#E8DCC8;color:#111;"></div>
+            <div class="sw" data-n="ink" style="background:#171311;"></div>
+            <div class="sw" data-n="burgundy" style="background:#7A2232;"></div>
+            <div class="sw" data-n="gold" style="background:#C89B47;"></div>
+          </div>
+        </div>
+        <div>
+          <h4>Typographie</h4>
+          <div class="fontsample">
+            <div class="big">Termini <em class="italic">im</em></div>
+            <div class="small">
+              Fraunces (variable serif) · Instrument Sans (body) ·
+              Instrument Serif (italic emphasis).
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4>Ton</h4>
+          <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+            Warm ivory base with burgundy as a primary accent — not generic
+            purple. Gold is reserved for premium moments (gold CTA on dark,
+            pending badge). Italic serifs italicize emotion; upright sans
+            handles data. Grain overlay warms the whole canvas.
+          </p>
+        </div>
+      </section>
+
+      <footer class="pagefoot">
+        <span>Termini im · Design proposal · Prishtina Editorial · 01</span>
+        <span>File: design-proposals/termini-editorial.html</span>
+      </footer>
+    </div>
+  </body>
+</html>

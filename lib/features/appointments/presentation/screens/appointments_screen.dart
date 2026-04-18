@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/route_names.dart';
@@ -35,7 +36,10 @@ class AppointmentsScreen extends ConsumerWidget {
                   backgroundColor: AppColors.surface,
                   onRefresh: () =>
                       ref.read(appointmentsProvider.notifier).refresh(),
-                  child: ListView(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 720),
+                      child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(
                       AppSpacing.md,
@@ -105,6 +109,8 @@ class AppointmentsScreen extends ConsumerWidget {
                           ),
                         ),
                     ],
+                      ),
+                    ),
                   ),
                 ),
     );
@@ -112,7 +118,7 @@ class AppointmentsScreen extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Section header
+// Section header — editorial overline style
 // ---------------------------------------------------------------------------
 
 class _SectionHeader extends StatelessWidget {
@@ -130,22 +136,13 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 4,
-          height: 18,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Icon(icon, size: 18, color: color),
+        Icon(icon, size: 14, color: color),
         const SizedBox(width: AppSpacing.xs),
         Text(
-          label,
-          style: AppTextStyles.subtitle.copyWith(
+          label.toUpperCase(),
+          style: AppTextStyles.overline.copyWith(
             color: color,
-            fontWeight: FontWeight.w600,
+            letterSpacing: 1.8,
           ),
         ),
       ],
@@ -202,14 +199,14 @@ class _AppointmentCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: appointment.companyPhotoUrl!,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
+                  placeholder: (_, _) => Container(
                     color: AppColors.primary.withValues(alpha: 0.08),
                     child: const Center(
                       child: Icon(Icons.storefront_rounded,
                           size: 32, color: AppColors.primary),
                     ),
                   ),
-                  errorWidget: (_, __, ___) => Container(
+                  errorWidget: (_, _, _) => Container(
                     color: AppColors.primary.withValues(alpha: 0.08),
                     child: const Center(
                       child: Icon(Icons.storefront_rounded,
@@ -239,10 +236,14 @@ class _AppointmentCard extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 appointment.companyName,
-                                style: AppTextStyles.h3.copyWith(
+                                style: GoogleFonts.fraunces(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
                                   color: isUpcoming
                                       ? AppColors.textPrimary
                                       : AppColors.textSecondary,
+                                  letterSpacing: -0.18,
+                                  height: 1.2,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -327,12 +328,13 @@ class _AppointmentCard extends StatelessWidget {
                       const Spacer(),
                       Text(
                         _formatTime(appointment.dateTime),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
+                        style: GoogleFonts.fraunces(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w400,
                           color: isUpcoming
                               ? AppColors.primary
                               : AppColors.textHint,
+                          letterSpacing: -0.5,
                         ),
                       ),
                     ],
@@ -433,17 +435,17 @@ class _StatusBadge extends StatelessWidget {
     final (label, bg, fg) = switch (status) {
       'confirmed' => (
           context.l10n.appointmentConfirmed,
-          AppColors.success.withValues(alpha: 0.12),
-          AppColors.success,
+          AppColors.primary.withValues(alpha: 0.10),
+          AppColors.primary,
         ),
       'pending' => (
           context.l10n.appointmentPending,
-          AppColors.warning.withValues(alpha: 0.12),
-          AppColors.warning,
+          AppColors.secondary.withValues(alpha: 0.15),
+          AppColors.secondaryDark,
         ),
       'completed' => (
           context.l10n.appointmentCompleted,
-          AppColors.textHint.withValues(alpha: 0.15),
+          AppColors.textHint.withValues(alpha: 0.12),
           AppColors.textSecondary,
         ),
       'cancelled' => (
@@ -453,22 +455,23 @@ class _StatusBadge extends StatelessWidget {
         ),
       _ => (
           status,
-          AppColors.textHint.withValues(alpha: 0.15),
+          AppColors.textHint.withValues(alpha: 0.12),
           AppColors.textSecondary,
         ),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        borderRadius: BorderRadius.circular(20), // pill shape
+        border: Border.all(color: fg.withValues(alpha: 0.20), width: 1),
       ),
       child: Text(
         label,
-        style: AppTextStyles.caption.copyWith(
+        style: AppTextStyles.overline.copyWith(
           color: fg,
-          fontWeight: FontWeight.w600,
+          letterSpacing: 0.8,
         ),
       ),
     );

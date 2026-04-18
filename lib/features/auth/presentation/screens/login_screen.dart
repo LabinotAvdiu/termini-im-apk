@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -10,6 +11,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/brand_logo.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../providers/auth_provider.dart';
 
@@ -23,7 +25,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: Remove default values before push
-  final _emailController = TextEditingController(text: 'test2@test.com');
+  // final _emailController = TextEditingController(text: 'karim@barbier-parisien.fr');
+  final _emailController = TextEditingController(text: 'donjeta@termini.im');
   final _passwordController = TextEditingController(text: 'Password1');
   bool _passwordVisible = false;
 
@@ -50,7 +53,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (error != null) {
       // Clear only the password field, keep the email
       _passwordController.clear();
-      context.showSnackBar(error, isError: true);
+      context.showErrorSnackBar(error);
     }
   }
 
@@ -58,14 +61,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     await ref.read(authStateProvider.notifier).loginWithGoogle();
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
-    if (error != null) context.showSnackBar(error, isError: true);
+    if (error != null) context.showErrorSnackBar(error);
   }
 
   Future<void> _loginWithFacebook() async {
     await ref.read(authStateProvider.notifier).loginWithFacebook();
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
-    if (error != null) context.showSnackBar(error, isError: true);
+    if (error != null) context.showErrorSnackBar(error);
   }
 
   // ---- Build ----
@@ -85,7 +88,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.xxl),
@@ -108,7 +114,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     rememberMe: authState.rememberMe,
                     onToggleRememberMe: () =>
                         ref.read(authStateProvider.notifier).toggleRememberMe(),
-                    errorMessage: authState.error,
+                    errorMessage: authState.error == null
+                        ? null
+                        : context.errorMessage(authState.error),
                   ),
 
                   const SizedBox(height: AppSpacing.lg),
@@ -140,6 +148,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   const SizedBox(height: AppSpacing.lg),
                 ],
+              ),
+                ),
               ),
             ),
           ),
@@ -206,44 +216,53 @@ class _LogoHeader extends StatelessWidget {
           width: 64,
           height: 64,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.primary, AppColors.primaryDark],
-            ),
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.35),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
-          child: const Icon(
-            Icons.content_cut_rounded,
-            color: Colors.white,
-            size: 32,
+          child: const Center(
+            child: BrandLogo(variant: BrandLogoVariant.burgundy, size: 64),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        const Text(
-          'Termini im',
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-            letterSpacing: -0.5,
+        // Uppercase overline
+        Text(
+          'TERMINI IM',
+          style: AppTextStyles.overline.copyWith(letterSpacing: 2.4),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        // Display serif headline
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: context.l10n.welcome,
+                style: GoogleFonts.fraunces(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textPrimary,
+                  height: 1.1,
+                  letterSpacing: -0.6,
+                ),
+              ),
+              TextSpan(
+                text: '.',
+                style: GoogleFonts.instrumentSerif(
+                  fontSize: 30,
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.secondary,
+                  height: 1.1,
+                ),
+              ),
+            ],
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
           context.l10n.loginSubtitle,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w400,
-          ),
+          style: AppTextStyles.bodySmall,
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -284,11 +303,12 @@ class _FormCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -298,6 +318,7 @@ class _FormCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Fraunces serif card title
             Text(
               context.l10n.login,
               style: AppTextStyles.h2,
@@ -360,10 +381,10 @@ class _FormCard extends StatelessWidget {
                 onTap: () => context.go('/forgot-password'),
                 child: Text(
                   context.l10n.forgotPassword,
-                  style: const TextStyle(
+                  style: GoogleFonts.instrumentSerif(
                     fontSize: 13,
+                    fontStyle: FontStyle.italic,
                     color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -486,8 +507,8 @@ class _OrDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
-            context.l10n.orContinueWith,
-            style: AppTextStyles.caption,
+            context.l10n.orContinueWith.toUpperCase(),
+            style: AppTextStyles.overline,
           ),
         ),
         const Expanded(child: Divider(color: AppColors.divider)),
@@ -507,16 +528,18 @@ class _SignupLink extends StatelessWidget {
       children: [
         Text(
           '${context.l10n.noAccount} ',
-          style: AppTextStyles.body,
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
         ),
         GestureDetector(
           onTap: () => context.goNamed(RouteNames.roleSelect),
           child: Text(
             context.l10n.signupNow,
-            style: const TextStyle(
+            style: GoogleFonts.instrumentSerif(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.italic,
               color: AppColors.primary,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.primary,
             ),
           ),
         ),
@@ -564,6 +587,7 @@ class _GoogleLogoPainter extends CustomPainter {
       [249.0, 90.0, const Color(0xFF4285F4)],  // Blue   (top-left → top-right)
     ];
 
+    // ignore: unused_local_variable
     final arcRect = Rect.fromCircle(center: Offset(cx, cy), radius: r);
     final strokeWidth = r * 0.38;
     final innerR = r - strokeWidth;

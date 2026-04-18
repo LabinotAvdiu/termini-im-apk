@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -138,10 +139,14 @@ class _ScheduleSettingsScreenState
               AppSpacing.md,
               AppSpacing.xxl,
             ),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // ── Section 1: Work hours ────────────────────────────────
-                _WorkHoursCard(
+            sliver: SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _WorkHoursCard(
                   editableHours: _editableHours,
                   companyHours: state.settings?.companyHours ?? [],
                   isSaving: state.isSavingHours,
@@ -176,10 +181,7 @@ class _ScheduleSettingsScreenState
                     }
                   },
                 ),
-
                 const SizedBox(height: AppSpacing.md),
-
-                // ── Section 2: Breaks ────────────────────────────────────
                 _BreaksCard(
                   breaks: state.settings?.breaks ?? [],
                   isAdding: state.isAddingBreak,
@@ -205,10 +207,7 @@ class _ScheduleSettingsScreenState
                     }
                   },
                 ),
-
                 const SizedBox(height: AppSpacing.md),
-
-                // ── Section 3: Days off ──────────────────────────────────
                 _DaysOffCard(
                   daysOff: state.settings?.daysOff ?? [],
                   isAdding: state.isAddingDayOff,
@@ -234,7 +233,10 @@ class _ScheduleSettingsScreenState
                     }
                   },
                 ),
-              ]),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -296,7 +298,7 @@ class _ScheduleSettingsScreenState
 }
 
 // ---------------------------------------------------------------------------
-// Page header
+// Page header — editorial: overline + Fraunces serif title
 // ---------------------------------------------------------------------------
 
 class _PageHeader extends StatelessWidget {
@@ -309,28 +311,29 @@ class _PageHeader extends StatelessWidget {
     return Container(
       color: AppColors.surface,
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
         AppSpacing.md,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            ),
-            child: const Icon(
-              Icons.schedule_rounded,
-              color: AppColors.primary,
-              size: 22,
+          Text(
+            'HORAIRES',
+            style: AppTextStyles.overline.copyWith(letterSpacing: 2.2),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            title,
+            style: GoogleFonts.fraunces(
+              fontSize: 26,
+              fontWeight: FontWeight.w400,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.52,
+              height: 1.1,
             ),
           ),
-          const SizedBox(width: AppSpacing.md),
-          Text(title, style: AppTextStyles.h3),
         ],
       ),
     );
@@ -338,7 +341,7 @@ class _PageHeader extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Section card container — shared card shell
+// Section card container — editorial: 1px border, overline + Fraunces heading
 // ---------------------------------------------------------------------------
 
 class _SectionCard extends StatelessWidget {
@@ -358,10 +361,11 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: const [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 8,
+            blurRadius: 6,
             offset: Offset(0, 2),
           ),
         ],
@@ -369,19 +373,29 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Section header
+          // Section header — overline label + Fraunces title
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,
               AppSpacing.md,
               AppSpacing.md,
-              AppSpacing.sm,
+              AppSpacing.xs,
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, size: 18, color: AppColors.primary),
-                const SizedBox(width: AppSpacing.sm),
-                Text(title, style: AppTextStyles.subtitle),
+                Row(
+                  children: [
+                    Icon(icon, size: 12, color: AppColors.textHint),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      title.toUpperCase(),
+                      style: AppTextStyles.overline.copyWith(letterSpacing: 1.6),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(title, style: AppTextStyles.h3),
               ],
             ),
           ),

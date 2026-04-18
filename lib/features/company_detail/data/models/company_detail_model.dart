@@ -11,6 +11,13 @@ class CompanyDetailModel {
   final String? phone;
   final String? phoneSecondary;
   final String bookingMode;
+  /// Salon's target gender — 'men' | 'women' | 'both'. Defaults to 'both'
+  /// when the backend doesn't specify.
+  final String gender;
+
+  /// Whether the authenticated user has marked this company as a favorite.
+  /// Defaults to `false` when unauthenticated or when the field is absent.
+  final bool isFavorite;
 
   const CompanyDetailModel({
     required this.id,
@@ -25,7 +32,43 @@ class CompanyDetailModel {
     this.phone,
     this.phoneSecondary,
     this.bookingMode = 'employee_based',
+    this.gender = 'both',
+    this.isFavorite = false,
   });
+
+  CompanyDetailModel copyWith({
+    String? id,
+    String? name,
+    String? address,
+    int? priceLevel,
+    double? rating,
+    int? reviewCount,
+    List<String>? photos,
+    List<ServiceCategoryModel>? categories,
+    List<EmployeeModel>? employees,
+    String? phone,
+    String? phoneSecondary,
+    String? bookingMode,
+    String? gender,
+    bool? isFavorite,
+  }) {
+    return CompanyDetailModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      priceLevel: priceLevel ?? this.priceLevel,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
+      photos: photos ?? this.photos,
+      categories: categories ?? this.categories,
+      employees: employees ?? this.employees,
+      phone: phone ?? this.phone,
+      phoneSecondary: phoneSecondary ?? this.phoneSecondary,
+      bookingMode: bookingMode ?? this.bookingMode,
+      gender: gender ?? this.gender,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 
   factory CompanyDetailModel.fromJson(Map<String, dynamic> json) {
     // Unwrap 'data' envelope if present
@@ -57,6 +100,8 @@ class CompanyDetailModel {
       bookingMode: data['bookingMode'] as String? ??
           data['booking_mode'] as String? ??
           'employee_based',
+      gender: (data['gender'] as String?) ?? 'both',
+      isFavorite: data['isFavorite'] as bool? ?? false,
     );
   }
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  TODO: Remplace ce fichier par le vrai GoogleService-Info.plist téléchargé depuis la Firebase Console.
+    1. Va sur https://console.firebase.google.com → ton projet → Paramètres → Tes applications
+    2. Ajoute une application iOS avec le bundle ID de ton app (voir ios/Runner.xcodeproj)
+    3. Télécharge GoogleService-Info.plist et remplace ce fichier
+    4. Dans Xcode : Runner → Build Phases → Copy Bundle Resources → vérifie que GoogleService-Info.plist est présent
+    5. Active APNS : App Store Connect → Certificates → crée un certificat APNs, importe-le dans Firebase Console
+-->
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>PLACEHOLDER</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>PLACEHOLDER</string>
+	<key>API_KEY</key>
+	<string>PLACEHOLDER</string>
+	<key>GCM_SENDER_ID</key>
+	<string>000000000000</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.hairspot.hairspot-mobile</string>
+	<key>PROJECT_ID</key>
+	<string>termini-im-placeholder</string>
+	<key>STORAGE_BUCKET</key>
+	<string>termini-im-placeholder.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:000000000000:ios:0000000000000000</string>
+</dict>
+</plist>

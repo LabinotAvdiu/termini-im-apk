@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -11,6 +12,8 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/place_autocomplete_field.dart';
+import '../../../../core/network/places_datasource.dart';
 import '../providers/auth_provider.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
@@ -45,6 +48,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   // Company-only controllers
   final _companyNameController = TextEditingController();
   final _addressController = TextEditingController();
+
+  double? _latitude;
+  double? _longitude;
 
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
@@ -154,14 +160,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
           passwordConfirmation: _confirmPasswordController.text,
-          firstName: _firstNameController.text.trim(),
-          lastName: _lastNameController.text.trim(),
+          firstName: _firstNameController.text.trim().titleCase,
+          lastName: _lastNameController.text.trim().titleCase,
           phone: _phoneController.text.trim(),
           role: userRole,
           city: _cityController.text.trim(),
-          companyName: _isCompany ? _companyNameController.text.trim() : null,
+          companyName: _isCompany ? _companyNameController.text.trim().titleCase : null,
           address: _isCompany ? _addressController.text.trim() : null,
           bookingMode: _isCompany ? _bookingMode : null,
+          latitude: _isCompany ? _latitude : null,
+          longitude: _isCompany ? _longitude : null,
+          locale: ref.read(localeProvider).languageCode,
         );
 
     if (!mounted) return;
@@ -169,7 +178,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (error != null) {
       _passwordController.clear();
       _confirmPasswordController.clear();
-      context.showSnackBar(error, isError: true);
+      context.showErrorSnackBar(error);
     }
   }
 
@@ -177,14 +186,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     await ref.read(authStateProvider.notifier).loginWithGoogle();
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
-    if (error != null) context.showSnackBar(error, isError: true);
+    if (error != null) context.showErrorSnackBar(error);
   }
 
   Future<void> _loginWithFacebook() async {
     await ref.read(authStateProvider.notifier).loginWithFacebook();
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
-    if (error != null) context.showSnackBar(error, isError: true);
+    if (error != null) context.showErrorSnackBar(error);
   }
 
   // ---- Build ----
@@ -202,7 +211,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.lg),
@@ -263,6 +275,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       onBackFromStep3: _goBackToCompanyStep,
                       onBackFromStep4: _goToStep2FromStep3,
                       onSubmit: _submit,
+                      onPlaceSelected: (details) => setState(() {
+                        _latitude = details.latitude;
+                        _longitude = details.longitude;
+                        if (details.city != null && details.city!.isNotEmpty) {
+                          _cityController.text = details.city!;
+                        }
+                      }),
                     )
                   else
                     _UserSignupFormCard(
@@ -313,6 +332,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
                   const SizedBox(height: AppSpacing.lg),
                 ],
+              ),
+                ),
               ),
             ),
           ),
@@ -471,6 +492,13 @@ class _SignupHeader extends StatelessWidget {
         ),
 
         const SizedBox(height: AppSpacing.sm),
+
+        // Uppercase overline above the display title
+        Text(
+          'CRÉER UN COMPTE',
+          style: AppTextStyles.overline.copyWith(letterSpacing: 2.0),
+        ),
+        const SizedBox(height: AppSpacing.xs),
 
         Text(
           context.l10n.signup,
@@ -711,6 +739,7 @@ class _CompanySignupForm extends StatelessWidget {
   final VoidCallback onBackFromStep3;
   final VoidCallback onBackFromStep4;
   final VoidCallback onSubmit;
+  final void Function(PlaceDetails details) onPlaceSelected;
 
   const _CompanySignupForm({
     required this.currentStep,
@@ -742,6 +771,7 @@ class _CompanySignupForm extends StatelessWidget {
     required this.onBackFromStep3,
     required this.onBackFromStep4,
     required this.onSubmit,
+    required this.onPlaceSelected,
   });
 
   @override
@@ -786,6 +816,7 @@ class _CompanySignupForm extends StatelessWidget {
             addressController: addressController,
             onBack: onBack,
             onNext: onNextFromStep2,
+            onPlaceSelected: onPlaceSelected,
           ),
         2 => _CompanyStep3BookingMode(
             key: const ValueKey('step3'),
@@ -916,35 +947,6 @@ class _CompanyStep1 extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            AppTextField(
-              controller: cityController,
-              label: context.l10n.cityCompany,
-              hint: context.l10n.cityHint,
-              prefixIcon: Icons.location_city_outlined,
-              validator: (v) => Validators.required(
-                v,
-                message: context.l10n.cityRequired,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Padding(
-              padding: const EdgeInsets.only(left: AppSpacing.xs),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, size: 12, color: AppColors.textHint),
-                  const SizedBox(width: AppSpacing.xs),
-                  Expanded(
-                    child: Text(
-                      context.l10n.cityCompanyDescription,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textHint,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: AppSpacing.lg),
 
             AppButton(
@@ -968,6 +970,7 @@ class _CompanyStep2 extends StatelessWidget {
   final TextEditingController addressController;
   final VoidCallback onBack;
   final VoidCallback onNext;
+  final void Function(PlaceDetails details) onPlaceSelected;
 
   const _CompanyStep2({
     super.key,
@@ -976,6 +979,7 @@ class _CompanyStep2 extends StatelessWidget {
     required this.addressController,
     required this.onBack,
     required this.onNext,
+    required this.onPlaceSelected,
   });
 
   @override
@@ -1005,11 +1009,11 @@ class _CompanyStep2 extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            AppTextField(
+            PlaceAutocompleteField(
               controller: addressController,
               label: context.l10n.address,
-              hint: 'Rruga Nënë Tereza 12, Prishtinë',
-              prefixIcon: Icons.location_on_outlined,
+              hint: context.l10n.addressHintExample,
+              onPlaceSelected: onPlaceSelected,
               validator: (v) => Validators.required(
                 v,
                 message: context.l10n.addressRequired,
@@ -1133,33 +1137,16 @@ class _CompanyStep3BookingMode extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: bookingMode == 'capacity_based'
-                  ? const [
-                      _ExplainBullet(
-                        text: 'Vous définissez une capacité par service (ex: 3 coupes en même temps).',
-                      ),
-                      _ExplainBullet(
-                        text: 'Les clients choisissent un créneau — pas d\'employé visible.',
-                      ),
-                      _ExplainBullet(
-                        text: 'Vous recevez chaque demande et l\'acceptez ou la refusez.',
-                      ),
-                      _ExplainBullet(
-                        text: 'Idéal si vous êtes seul ou si vous gérez la répartition des RDV vous-même.',
-                      ),
+                  ? [
+                      _ExplainBullet(text: context.l10n.capacityBasedHint1),
+                      _ExplainBullet(text: context.l10n.capacityBasedHint2),
+                      _ExplainBullet(text: context.l10n.capacityBasedHint3),
                     ]
-                  : const [
-                      _ExplainBullet(
-                        text: 'Chaque employé a son propre planning et ses horaires.',
-                      ),
-                      _ExplainBullet(
-                        text: 'Les clients choisissent leur coiffeur au moment du RDV (ou "Sans préférence").',
-                      ),
-                      _ExplainBullet(
-                        text: 'Chaque employé accepte ses pauses et jours de congé.',
-                      ),
-                      _ExplainBullet(
-                        text: 'Idéal pour un salon avec plusieurs coiffeurs indépendants.',
-                      ),
+                  : [
+                      _ExplainBullet(text: context.l10n.employeeBasedHint1),
+                      _ExplainBullet(text: context.l10n.employeeBasedHint2),
+                      _ExplainBullet(text: context.l10n.employeeBasedHint3),
+                      _ExplainBullet(text: context.l10n.employeeBasedHint4),
                     ],
             ),
           ),
@@ -1271,7 +1258,7 @@ class _BookingModeCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),
@@ -1432,7 +1419,7 @@ class _CompanyStep4Security extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Shared white card shell
+// Shared white card shell — editorial: 1px hair border, soft shadow
 // ---------------------------------------------------------------------------
 class _CardShell extends StatelessWidget {
   final Widget child;
@@ -1444,11 +1431,12 @@ class _CardShell extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -1459,7 +1447,7 @@ class _CardShell extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Step section label (icon + coloured title)
+// Step section label — uppercase overline with icon
 // ---------------------------------------------------------------------------
 class _StepSectionLabel extends StatelessWidget {
   final IconData icon;
@@ -1476,14 +1464,13 @@ class _StepSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: color),
+        Icon(icon, size: 14, color: color),
         const SizedBox(width: AppSpacing.xs),
         Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+          label.toUpperCase(),
+          style: AppTextStyles.overline.copyWith(
             color: color,
+            letterSpacing: 1.8,
           ),
         ),
       ],
@@ -1605,8 +1592,8 @@ class _OrDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
-            context.l10n.orContinueWith,
-            style: AppTextStyles.caption,
+            context.l10n.orContinueWith.toUpperCase(),
+            style: AppTextStyles.overline,
           ),
         ),
         const Expanded(child: Divider(color: AppColors.divider)),
@@ -1626,16 +1613,18 @@ class _LoginLink extends StatelessWidget {
       children: [
         Text(
           '${context.l10n.alreadyHaveAccount} ',
-          style: AppTextStyles.body,
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
         ),
         GestureDetector(
           onTap: () => context.goNamed(RouteNames.login),
           child: Text(
             context.l10n.loginNow,
-            style: const TextStyle(
+            style: GoogleFonts.instrumentSerif(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.italic,
               color: AppColors.primary,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.primary,
             ),
           ),
         ),

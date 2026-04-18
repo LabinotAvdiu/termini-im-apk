@@ -8,6 +8,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../favorites/presentation/providers/favorite_provider.dart';
+import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
 import '../../data/models/company_card_model.dart';
 
 String _shortDayName(BuildContext context, DateTime date) {
@@ -31,21 +33,11 @@ String _shortDayName(BuildContext context, DateTime date) {
   }
 }
 
-/// The main listing card shown on the Home screen.
-///
-/// Layout (matches reference spec):
-///   ┌─────────────────────────────────────────┐
-///   │ [PHOTO]   Name                           │
-///   │           📍 Address                     │
-///   │           ⭐ 4.9 (674 avis) · €€€        │
-///   │           MATIN     [Mer.15][Jeu.16]...  │
-///   │           APRÈS-MIDI[Mer.15][Jeu.16]...  │
-///   │  Plus d'informations       [Prendre RDV] │
-///   └─────────────────────────────────────────┘
 class CompanyCard extends ConsumerWidget {
   final CompanyCardModel company;
+  final int? rank;
 
-  const CompanyCard({super.key, required this.company});
+  const CompanyCard({super.key, required this.company, this.rank});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,28 +49,37 @@ class CompanyCard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        boxShadow: const [
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 16,
-            offset: Offset(0, 4),
+            color: const Color(0xFF171311).withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        child: Column(
+        child: InkWell(
+          onTap: () => context.goNamed(
+            RouteNames.companyDetail,
+            pathParameters: {'id': company.id},
+          ),
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Top section: photo + info ──────────────────────────────
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Left: photo (~35% of card width)
-                  _CompanyPhoto(photoUrl: company.photoUrl, name: company.name),
-
-                  // Right: info column
+                  _CompanyPhoto(
+                    photoUrl: company.photoUrl,
+                    name: company.name,
+                    rank: rank,
+                    isFavorite: company.isFavorite,
+                    companyId: company.id,
+                    companyName: company.name,
+                  ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(
@@ -90,40 +91,40 @@ class CompanyCard extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Company name
                           Text(
-                            company.name,
+                            company.name.titleCase,
                             style: AppTextStyles.h3,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: AppSpacing.xs),
-
-                          // Address
-                          _IconRow(
-                            icon: Icons.location_on_rounded,
-                            iconColor: AppColors.secondary,
-                            child: Text(
-                              company.address,
-                              style: AppTextStyles.bodySmall,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 13,
+                                color: AppColors.textHint,
+                              ),
+                              const SizedBox(width: 3),
+                              Expanded(
+                                child: Text(
+                                  company.address,
+                                  style: AppTextStyles.bodySmall,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: AppSpacing.xs),
-
-                          // Rating + reviews + price
                           _RatingRow(company: company),
                           const SizedBox(height: AppSpacing.sm),
-
-                          // Time slots — MATIN
                           _SlotRow(
                             label: context.l10n.morning,
                             slots: company.morningSlots,
                           ),
                           const SizedBox(height: AppSpacing.xs),
-
-                          // Time slots — APRÈS-MIDI
                           _SlotRow(
                             label: context.l10n.afternoon,
                             slots: company.afternoonSlots,
@@ -135,52 +136,59 @@ class CompanyCard extends ConsumerWidget {
                 ],
               ),
             ),
-
-            // ── Divider ────────────────────────────────────────────────
-            const Divider(height: 1, color: AppColors.divider),
-
-            // ── Bottom action bar ──────────────────────────────────────
+            Divider(height: 1, thickness: 1, color: AppColors.divider),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.sm,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // "Plus d'informations" styled button
-                  OutlinedButton(
-                    onPressed: () => context.goNamed(
-                      RouteNames.companyDetail,
-                      pathParameters: {'id': company.id},
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.primary, width: 1),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                      ),
-                      minimumSize: const Size(0, 36),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      context.l10n.moreInfo,
-                      style: AppTextStyles.buttonSmall.copyWith(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-
-                  // CTA — "Prendre RDV"
-                  _BookButton(companyId: company.id, ref: ref),
-                ],
+              child: Builder(
+                builder: (context) {
+                  final isMobile =
+                      MediaQuery.sizeOf(context).width < 600;
+                  return Row(
+                    mainAxisAlignment: isMobile
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (!isMobile)
+                        OutlinedButton(
+                          onPressed: () => context.goNamed(
+                            RouteNames.companyDetail,
+                            pathParameters: {'id': company.id},
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.textPrimary,
+                            side: const BorderSide(
+                              color: AppColors.border,
+                              width: 1,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AppSpacing.radiusMd),
+                            ),
+                            minimumSize: const Size(0, 36),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            context.l10n.moreInfo,
+                            style: AppTextStyles.buttonSmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      _BookButton(companyId: company.id, ref: ref),
+                    ],
+                  );
+                },
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -188,33 +196,145 @@ class CompanyCard extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Photo sub-widget
+// Photo with optional rank chip and favorite badge
 // ---------------------------------------------------------------------------
 
-class _CompanyPhoto extends StatelessWidget {
+class _CompanyPhoto extends ConsumerWidget {
   final String photoUrl;
   final String name;
+  final int? rank;
+  final bool isFavorite;
+  final String companyId;
+  final String companyName;
 
-  const _CompanyPhoto({required this.photoUrl, required this.name});
+  const _CompanyPhoto({
+    required this.photoUrl,
+    required this.name,
+    required this.isFavorite,
+    required this.companyId,
+    required this.companyName,
+    this.rank,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    // 35% of screen width, capped for large screens
-    final width = (MediaQuery.sizeOf(context).width * 0.35).clamp(100.0, 160.0);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width =
+        (MediaQuery.sizeOf(context).width * 0.35).clamp(100.0, 130.0);
 
     return SizedBox(
       width: width,
-      child: CachedNetworkImage(
-        imageUrl: photoUrl,
-        fit: BoxFit.cover,
-        // Shimmer skeleton while loading
-        placeholder: (context, url) => Shimmer.fromColors(
-          baseColor: AppColors.divider,
-          highlightColor: AppColors.background,
-          child: Container(color: AppColors.divider),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CachedNetworkImage(
+              imageUrl: photoUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Shimmer.fromColors(
+                baseColor: AppColors.divider,
+                highlightColor: AppColors.background,
+                child: Container(color: AppColors.divider),
+              ),
+              errorWidget: (context, url, error) =>
+                  _PhotoFallback(name: name),
+            ),
+          ),
+          if (rank != null)
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.textPrimary.withValues(alpha: 0.78),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  rank!.toString().padLeft(2, '0'),
+                  style: AppTextStyles.overline.copyWith(
+                    color: AppColors.background,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+
+          // Favorite badge — only shown when isFavorite is true
+          if (isFavorite)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: FavoriteBadge(
+                companyId: companyId,
+                companyName: companyName,
+                ref: ref,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Favorite badge overlay — 28×28 capsule, ivoire 92% + cœur bordeaux
+// ---------------------------------------------------------------------------
+
+class FavoriteBadge extends StatelessWidget {
+  final String companyId;
+  final String companyName;
+  final WidgetRef ref;
+
+  const FavoriteBadge({
+    required this.companyId,
+    required this.companyName,
+    required this.ref,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: context.l10n.favoriteBadgeTooltip,
+      button: true,
+      child: GestureDetector(
+        onTap: () async {
+          final confirmed = await showRemoveFavoriteDialog(
+            context,
+            companyName: companyName,
+          );
+          if (confirmed == true && context.mounted) {
+            final ok = await ref
+                .read(favoriteProvider.notifier)
+                .remove(companyId);
+            if (!context.mounted) return;
+            if (ok) {
+              context.showSnackBar(context.l10n.favoriteRemoved);
+            } else {
+              final err = ref.read(favoriteProvider).error;
+              context.showErrorSnackBar(err);
+            }
+          }
+        },
+        child: Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: AppColors.background.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x14000000),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.favorite_rounded,
+            color: AppColors.primary,
+            size: 16,
+          ),
         ),
-        // Fallback: gradient placeholder with initials
-        errorWidget: (context, url, error) => _PhotoFallback(name: name),
       ),
     );
   }
@@ -228,11 +348,11 @@ class _PhotoFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     final initials = name.isNotEmpty ? name[0].toUpperCase() : '?';
     return Container(
-      color: AppColors.primaryLight.withAlpha(60),
+      color: AppColors.ivoryAlt,
       child: Center(
         child: Text(
           initials,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 36,
             fontWeight: FontWeight.w700,
             color: AppColors.primary,
@@ -244,38 +364,7 @@ class _PhotoFallback extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Icon + content row
-// ---------------------------------------------------------------------------
-
-class _IconRow extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Widget child;
-
-  const _IconRow({
-    required this.icon,
-    required this.iconColor,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Icon(icon, size: 13, color: iconColor),
-        ),
-        const SizedBox(width: 3),
-        Expanded(child: child),
-      ],
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Rating row: ⭐ 4.9 (892 avis) · €€€€
+// Rating row
 // ---------------------------------------------------------------------------
 
 class _RatingRow extends StatelessWidget {
@@ -297,7 +386,7 @@ class _RatingRow extends StatelessWidget {
         ),
         const SizedBox(width: 3),
         Text(
-          '(${context.l10n.reviews(company.reviewCount)})',
+          '· ${context.l10n.reviews(company.reviewCount)}',
           style: AppTextStyles.caption,
         ),
       ],
@@ -306,7 +395,7 @@ class _RatingRow extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Slot row: MATIN  [Mer.15] [Jeu.16] …
+// Slot row
 // ---------------------------------------------------------------------------
 
 class _SlotRow extends StatelessWidget {
@@ -319,19 +408,17 @@ class _SlotRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Label (MATIN / APRÈS-MIDI) — fixed width for alignment
         SizedBox(
           width: 72,
           child: Text(
             label,
-            style: AppTextStyles.caption.copyWith(
+            style: AppTextStyles.overline.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.4,
+              color: AppColors.textHint,
+              letterSpacing: 0.6,
             ),
           ),
         ),
-        // Scrollable slot chips
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -351,7 +438,7 @@ class _SlotRow extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Single day slot chip: "Mer.15"
+// Slot chip
 // ---------------------------------------------------------------------------
 
 class _SlotChip extends StatelessWidget {
@@ -363,18 +450,21 @@ class _SlotChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: slot.available ? AppColors.slotAvailable : AppColors.background,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        color: slot.available ? AppColors.primary : AppColors.ivoryAlt,
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: slot.available ? AppColors.primary.withAlpha(80) : AppColors.border,
+          color: slot.available
+              ? AppColors.primary
+              : AppColors.border,
           width: 1,
         ),
       ),
       child: Text(
         '${_shortDayName(context, slot.date)} ${slot.date.day}',
         style: AppTextStyles.caption.copyWith(
-          color: slot.available ? AppColors.primary : AppColors.textHint,
+          color: slot.available ? AppColors.background : AppColors.textHint,
           fontWeight: slot.available ? FontWeight.w600 : FontWeight.w400,
+          letterSpacing: 0.3,
         ),
       ),
     );
@@ -382,7 +472,7 @@ class _SlotChip extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// "Prendre RDV" CTA button
+// Book CTA
 // ---------------------------------------------------------------------------
 
 class _BookButton extends StatelessWidget {
@@ -402,20 +492,21 @@ class _BookButton extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.background,
         elevation: 0,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
         ),
-        minimumSize: const Size(0, 40),
+        minimumSize: const Size(0, 36),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         ),
       ),
       child: Text(
         context.l10n.bookAppointment,
-        style: AppTextStyles.buttonSmall.copyWith(color: Colors.white),
+        style: AppTextStyles.buttonSmall.copyWith(color: AppColors.background),
       ),
     );
   }

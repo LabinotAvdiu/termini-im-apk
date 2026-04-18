@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_client.dart';
+import '../models/gallery_photo_model.dart';
 import '../models/my_company_model.dart';
 import '../models/planning_appointment_model.dart';
 
@@ -299,6 +302,31 @@ class MyCompanyRemoteDatasource {
     }
   }
 
+  Future<List<PlanningAppointmentModel>> listCompanyAppointmentsRange(
+    String start,
+    String end, {
+    List<String> statuses = const ['confirmed', 'pending'],
+  }) async {
+    try {
+      final response = await _client.get(
+        '/my-company/appointments',
+        queryParameters: {
+          'start': start,
+          'end': end,
+          if (statuses.isNotEmpty) 'status': statuses.join(','),
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data
+          .map((e) =>
+              PlanningAppointmentModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
   // ── Walk-in (owner creates confirmed appointment on-the-spot) ────────────
 
   Future<Map<String, dynamic>> storeCompanyWalkIn(
@@ -360,33 +388,71 @@ class MyCompanyRemoteDatasource {
     }
   }
 
+  // ── Gallery ───────────────────────────────────────────────────────────────
+
+  Future<List<GalleryPhotoModel>> listGallery() async {
+    try {
+      final response = await _client.get(ApiConstants.myCompanyGallery);
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data
+          .map((e) => GalleryPhotoModel.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => a.position.compareTo(b.position));
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  /// Uploads a gallery photo from raw bytes. Works on both mobile (dart:io
+  /// File can't be used on Flutter Web) and web (XFile.readAsBytes).
+  Future<GalleryPhotoModel> uploadGalleryPhoto({
+    required Uint8List bytes,
+    required String filename,
+    void Function(int sent, int total)? onSendProgress,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'photo': MultipartFile.fromBytes(
+          bytes,
+          filename: filename,
+        ),
+      });
+      final response = await _client.dio.post(
+        '${_client.dio.options.baseUrl}${ApiConstants.myCompanyGallery}',
+        data: formData,
+        // Do NOT set Content-Type manually — Dio adds the correct boundary.
+        onSendProgress: onSendProgress,
+      );
+      final body = response.data as Map<String, dynamic>;
+      return GalleryPhotoModel.fromJson(
+        (body['data'] ?? body) as Map<String, dynamic>,
+      );
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<void> deleteGalleryPhoto(String id) async {
+    try {
+      await _client.delete(ApiConstants.myCompanyGalleryPhoto(id));
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  Future<void> reorderGalleryPhotos(List<String> orderedIds) async {
+    try {
+      await _client.post(
+        ApiConstants.myCompanyGalleryReorder,
+        data: {'ids': orderedIds},
+      );
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
   // ── Error mapping ─────────────────────────────────────────────────────────
 
-  ApiException _mapDioException(DioException e) {
-    final wrapped = e.error;
-    if (wrapped is ApiException) return wrapped;
-    final statusCode = e.response?.statusCode;
-    String? msg;
-    final data = e.response?.data;
-    if (data is Map<String, dynamic>) {
-      msg = data['message'] as String?;
-    }
-    if (statusCode == 401) {
-      return UnauthorizedException(message: msg ?? 'Non autorisé');
-    }
-    if (statusCode == 404) {
-      return NotFoundException(message: msg ?? 'Salon introuvable');
-    }
-    if (statusCode != null && statusCode >= 500) {
-      return ServerException(message: msg ?? 'Erreur serveur');
-    }
-    if (e.type == DioExceptionType.connectionError ||
-        e.type == DioExceptionType.connectionTimeout) {
-      return const NetworkException();
-    }
-    return ApiException(
-      message: msg ?? e.message ?? 'Erreur inconnue',
-      statusCode: statusCode,
-    );
-  }
+  ApiException _mapDioException(DioException e) => mapDioException(e);
 }

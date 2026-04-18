@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -136,7 +137,10 @@ class _PendingApprovalsScreenState
                   ref.read(_pendingProvider.notifier).load(),
               child: state.appointments.isEmpty
                   ? _EmptyView()
-                  : ListView.separated(
+                  : Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 720),
+                        child: ListView.separated(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       itemCount: state.appointments.length,
                       separatorBuilder: (context, i) =>
@@ -165,6 +169,8 @@ class _PendingApprovalsScreenState
                           },
                         );
                       },
+                        ),
+                      ),
                     ),
             ),
     );
@@ -263,15 +269,24 @@ class _AppointmentTile extends StatelessWidget {
         ?? '';
     final hasPhone = phoneValue.isNotEmpty;
 
+    // Build initials from client name
+    final nameParts = (clientName.isNotEmpty ? clientName : 'C')
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .take(2)
+        .map((w) => w[0].toUpperCase())
+        .join();
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: const [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 8,
+            blurRadius: 6,
             offset: Offset(0, 2),
           ),
         ],
@@ -281,51 +296,74 @@ class _AppointmentTile extends StatelessWidget {
         children: [
           Row(
             children: [
+              // Client initials avatar
               Container(
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.secondary.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.secondary.withValues(alpha: 0.30),
+                    width: 1,
+                  ),
                 ),
-                child: const Icon(Icons.person_outline_rounded,
-                    size: 18, color: AppColors.primary),
+                child: Center(
+                  child: Text(
+                    nameParts,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.secondaryDark,
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      clientName.isNotEmpty ? clientName : 'Client',
+                      clientName.isNotEmpty ? clientName : context.l10n.clientFallback,
                       style: AppTextStyles.body
                           .copyWith(fontWeight: FontWeight.w600),
                     ),
                     if (serviceName.isNotEmpty)
-                      Text(serviceName,
-                          style: AppTextStyles.bodySmall
-                              .copyWith(color: AppColors.primary)),
+                      Text(
+                        serviceName,
+                        style: GoogleFonts.instrumentSerif(
+                          fontSize: 13,
+                          fontStyle: FontStyle.italic,
+                          color: AppColors.primary,
+                        ),
+                      ),
                   ],
                 ),
               ),
+              // Pending pill badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.radiusSm),
+                  color: AppColors.secondary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.secondary.withValues(alpha: 0.25),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   context.l10n.appointmentPending,
-                  style: const TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFFF59E0B),
-                      fontWeight: FontWeight.w600),
+                  style: AppTextStyles.overline.copyWith(
+                    color: AppColors.secondaryDark,
+                    letterSpacing: 0.8,
+                  ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.sm),
+          const Divider(height: 1, color: AppColors.divider),
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
@@ -361,36 +399,46 @@ class _AppointmentTile extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
+              // Ghost "Refuser" button
               Expanded(
                 child: OutlinedButton(
                   onPressed: onReject,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error),
+                    foregroundColor: AppColors.textSecondary,
+                    side: const BorderSide(color: AppColors.border, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(AppSpacing.radiusSm),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text(context.l10n.reject,
-                      style: const TextStyle(fontSize: 13)),
+                  child: Text(
+                    context.l10n.reject,
+                    style: AppTextStyles.buttonSmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
+              // Burgundy "Accepter" filled button
               Expanded(
                 child: FilledButton(
                   onPressed: onApprove,
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.success,
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(AppSpacing.radiusSm),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text(context.l10n.approve,
-                      style: const TextStyle(fontSize: 13)),
+                  child: Text(
+                    context.l10n.approve,
+                    style: AppTextStyles.buttonSmall.copyWith(
+                      color: AppColors.surface,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -404,26 +452,58 @@ class _AppointmentTile extends StatelessWidget {
 class _EmptyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: AppSpacing.xxl),
-              const Icon(Icons.check_circle_outline_rounded,
-                  size: 56, color: AppColors.success),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                context.l10n.noResults,
-                style: AppTextStyles.h3,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.xxl,
         ),
-      ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Gold circle with check icon
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.secondary.withValues(alpha: 0.25),
+                  width: 1,
+                ),
+              ),
+              child: const Icon(
+                Icons.check_rounded,
+                size: 32,
+                color: AppColors.secondaryDark,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            // Fraunces serif italic headline
+            Text(
+              context.l10n.pendingEmptyTitle,
+              style: GoogleFonts.fraunces(
+                fontSize: 22,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textPrimary,
+                height: 1.3,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            // Muted InstrumentSans subline
+            Text(
+              context.l10n.pendingEmptySubtitle,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textHint,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

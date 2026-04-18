@@ -94,25 +94,5 @@ class BookingRemoteDatasource {
     }
   }
 
-  ApiException _mapDioException(DioException e) {
-    final wrapped = e.error;
-    if (wrapped is ApiException) return wrapped;
-    final statusCode = e.response?.statusCode;
-    String? msg;
-    final data = e.response?.data;
-    if (data is Map<String, dynamic>) {
-      msg = data['message'] as String?;
-    }
-    if (statusCode != null && statusCode >= 500) {
-      return ServerException(message: msg ?? 'Erreur serveur');
-    }
-    if (e.type == DioExceptionType.connectionError ||
-        e.type == DioExceptionType.connectionTimeout) {
-      return const NetworkException();
-    }
-    return ApiException(
-      message: msg ?? e.message ?? 'Erreur inconnue',
-      statusCode: statusCode,
-    );
-  }
+  ApiException _mapDioException(DioException e) => mapDioException(e);
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 110" role="img" aria-label="Termini im">
+  <title>Termini im</title>
+  <desc>Logo principal de Termini im — wordmark horizontal. Fraunces Regular pour "Termini", Instrument Serif Italic pour "im" en bordeaux, point bordeaux signature.</desc>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&amp;family=Instrument+Serif:ital@1&amp;display=swap');
+      .fr { font-family: 'Fraunces', 'Times New Roman', Georgia, serif; font-weight: 400; font-style: normal; }
+      .ii { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+    </style>
+  </defs>
+  <g transform="translate(20, 72)">
+    <circle cx="0" cy="-19" r="7" fill="#7A2232"/>
+    <text x="18" y="0" class="fr" font-size="76" fill="#171311" letter-spacing="-2">Termini</text>
+    <text x="258" y="0" class="ii" font-size="82" fill="#7A2232">im</text>
+    <circle cx="355" cy="-3" r="4" fill="#171311"/>
+  </g>
+</svg>

@@ -104,6 +104,16 @@ class CompanyListNotifier extends StateNotifier<CompanyListState> {
       date: date,
     );
   }
+
+  /// Patches the [isFavorite] flag on a single card without a network call.
+  /// Used by [FavoriteNotifier] for optimistic UI updates and rollbacks.
+  /// No-op when [companyId] is not in the current list.
+  void patchFavorite({required String companyId, required bool isFavorite}) {
+    final updated = state.companies.map((c) {
+      return c.id == companyId ? c.copyWith(isFavorite: isFavorite) : c;
+    }).toList();
+    state = state.copyWith(companies: updated);
+  }
 }
 
 final companyListProvider =

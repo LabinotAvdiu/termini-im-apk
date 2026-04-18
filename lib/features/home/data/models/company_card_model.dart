@@ -62,6 +62,10 @@ class CompanyCardModel {
   final List<DaySlot> afternoonSlots;
   final String bookingMode;
 
+  /// Whether the authenticated user has marked this company as a favorite.
+  /// Defaults to `false` when unauthenticated or when the field is absent.
+  final bool isFavorite;
+
   const CompanyCardModel({
     required this.id,
     required this.name,
@@ -73,7 +77,36 @@ class CompanyCardModel {
     required this.morningSlots,
     required this.afternoonSlots,
     this.bookingMode = 'employee_based',
+    this.isFavorite = false,
   });
+
+  CompanyCardModel copyWith({
+    String? id,
+    String? name,
+    String? address,
+    String? photoUrl,
+    double? rating,
+    int? reviewCount,
+    int? priceLevel,
+    List<DaySlot>? morningSlots,
+    List<DaySlot>? afternoonSlots,
+    String? bookingMode,
+    bool? isFavorite,
+  }) {
+    return CompanyCardModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      photoUrl: photoUrl ?? this.photoUrl,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
+      priceLevel: priceLevel ?? this.priceLevel,
+      morningSlots: morningSlots ?? this.morningSlots,
+      afternoonSlots: afternoonSlots ?? this.afternoonSlots,
+      bookingMode: bookingMode ?? this.bookingMode,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 
   /// Convenience getter — returns "€", "€€", "€€€" or "€€€€"
   String get priceLevelDisplay => priceLevel.priceLevel;
@@ -103,6 +136,7 @@ class CompanyCardModel {
       bookingMode: json['bookingMode'] as String? ??
           json['booking_mode'] as String? ??
           'employee_based',
+      isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }
 }

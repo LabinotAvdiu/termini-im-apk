@@ -61,27 +61,5 @@ class CompanyRemoteDatasource {
     }
   }
 
-  ApiException _mapDioException(DioException e) {
-    final wrapped = e.error;
-    if (wrapped is ApiException) return wrapped;
-
-    final statusCode = e.response?.statusCode;
-    String? serverMessage;
-    final data = e.response?.data;
-    if (data is Map<String, dynamic>) {
-      serverMessage = data['message'] as String?;
-    }
-
-    if (statusCode != null && statusCode >= 500) {
-      return ServerException(message: serverMessage ?? 'Erreur serveur');
-    }
-    if (e.type == DioExceptionType.connectionError ||
-        e.type == DioExceptionType.connectionTimeout) {
-      return const NetworkException();
-    }
-    return ApiException(
-      message: serverMessage ?? e.message ?? 'Erreur inconnue',
-      statusCode: statusCode,
-    );
-  }
+  ApiException _mapDioException(DioException e) => mapDioException(e);
 }

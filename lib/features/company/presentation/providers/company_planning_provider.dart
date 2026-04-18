@@ -4,6 +4,12 @@ import '../../data/models/planning_appointment_model.dart';
 import 'company_dashboard_provider.dart';
 
 // ---------------------------------------------------------------------------
+// View mode enum
+// ---------------------------------------------------------------------------
+
+enum CompanyPlanningViewMode { day, week, month }
+
+// ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
 
@@ -13,6 +19,8 @@ class CompanyPlanningState {
   final bool isLoading;
   final bool isSubmittingWalkIn;
   final String? error;
+  final CompanyPlanningViewMode viewMode;
+  final Map<String, List<PlanningAppointmentModel>> rangeAppointments;
 
   const CompanyPlanningState({
     required this.selectedDate,
@@ -20,6 +28,8 @@ class CompanyPlanningState {
     this.isLoading = false,
     this.isSubmittingWalkIn = false,
     this.error,
+    this.viewMode = CompanyPlanningViewMode.day,
+    this.rangeAppointments = const {},
   });
 
   CompanyPlanningState copyWith({
@@ -28,6 +38,8 @@ class CompanyPlanningState {
     bool? isLoading,
     bool? isSubmittingWalkIn,
     String? error,
+    CompanyPlanningViewMode? viewMode,
+    Map<String, List<PlanningAppointmentModel>>? rangeAppointments,
   }) =>
       CompanyPlanningState(
         selectedDate: selectedDate ?? this.selectedDate,
@@ -35,6 +47,8 @@ class CompanyPlanningState {
         isLoading: isLoading ?? this.isLoading,
         isSubmittingWalkIn: isSubmittingWalkIn ?? this.isSubmittingWalkIn,
         error: error,
+        viewMode: viewMode ?? this.viewMode,
+        rangeAppointments: rangeAppointments ?? this.rangeAppointments,
       );
 }
 
@@ -56,6 +70,9 @@ class CompanyPlanningNotifier
     return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
   }
 
+  static String _toIso(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
   Future<void> load() async {
     if (!mounted) return;
     state = state.copyWith(isLoading: true, error: null);
@@ -73,22 +90,94 @@ class CompanyPlanningNotifier
     }
   }
 
-  void goToPreviousDay() {
-    final current = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
-    setDate(current.subtract(const Duration(days: 1)));
+  Future<void> loadRange(DateTime start, DateTime endInclusive) async {
+    if (!mounted) return;
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      final datasource = _ref.read(myCompanyDatasourceProvider);
+      final appts = await datasource.listCompanyAppointmentsRange(
+        _toIso(start),
+        _toIso(endInclusive),
+        statuses: const ['confirmed', 'pending'],
+      );
+      if (!mounted) return;
+      final map = <String, List<PlanningAppointmentModel>>{};
+      for (var d = start;
+          !d.isAfter(endInclusive);
+          d = d.add(const Duration(days: 1))) {
+        map[_toIso(d)] = const [];
+      }
+      for (final a in appts) {
+        final key = a.date;
+        map[key] = [...(map[key] ?? const []), a];
+      }
+      state = state.copyWith(isLoading: false, rangeAppointments: map);
+    } catch (e) {
+      if (!mounted) return;
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
   }
 
-  void goToNextDay() {
-    final current = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
-    setDate(current.add(const Duration(days: 1)));
+  void setViewMode(CompanyPlanningViewMode mode) {
+    if (!mounted) return;
+    state = state.copyWith(viewMode: mode);
+    _loadForCurrentMode();
   }
+
+  void _loadForCurrentMode() {
+    switch (state.viewMode) {
+      case CompanyPlanningViewMode.day:
+        load();
+      case CompanyPlanningViewMode.week:
+        final selected = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
+        final weekStart = _weekStart(selected);
+        loadRange(weekStart, weekStart.add(const Duration(days: 6)));
+      case CompanyPlanningViewMode.month:
+        final selected = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
+        final monthStart = DateTime(selected.year, selected.month, 1);
+        final monthEnd = DateTime(selected.year, selected.month + 1, 0);
+        loadRange(monthStart, monthEnd);
+    }
+  }
+
+  static DateTime _weekStart(DateTime date) {
+    return date.subtract(Duration(days: date.weekday - 1));
+  }
+
+  void goPrevious() {
+    final current = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
+    switch (state.viewMode) {
+      case CompanyPlanningViewMode.day:
+        setDate(current.subtract(const Duration(days: 1)));
+      case CompanyPlanningViewMode.week:
+        setDate(current.subtract(const Duration(days: 7)));
+      case CompanyPlanningViewMode.month:
+        setDate(DateTime(current.year, current.month - 1, 1));
+    }
+  }
+
+  void goNext() {
+    final current = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
+    switch (state.viewMode) {
+      case CompanyPlanningViewMode.day:
+        setDate(current.add(const Duration(days: 1)));
+      case CompanyPlanningViewMode.week:
+        setDate(current.add(const Duration(days: 7)));
+      case CompanyPlanningViewMode.month:
+        setDate(DateTime(current.year, current.month + 1, 1));
+    }
+  }
+
+  void goToPreviousDay() => goPrevious();
+
+  void goToNextDay() => goNext();
 
   void setDate(DateTime date) {
-    final iso =
-        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final iso = _toIso(date);
     if (!mounted) return;
     state = state.copyWith(selectedDate: iso, appointments: []);
-    load();
+    _loadForCurrentMode();
   }
 
   Future<bool> addWalkIn({
@@ -140,13 +229,40 @@ class CompanyPlanningNotifier
   Future<bool> _updateStatus(String id, String newStatus) async {
     if (!mounted) return false;
 
-    final previous = state.appointments;
-    final updated = previous.map((a) {
+    final previousAppointments = state.appointments;
+    final previousRange = state.rangeAppointments;
+
+    // Mirror the change into today's list.
+    final updatedAppointments = previousAppointments.map((a) {
       if (a.id == id) return a.copyWith(status: newStatus);
       return a;
     }).toList();
 
-    state = state.copyWith(appointments: updated);
+    // Mirror into the month-range map so month view reflects the change
+    // without waiting for a full reload.
+    final updatedRange = <String, List<PlanningAppointmentModel>>{};
+    previousRange.forEach((iso, list) {
+      final isCancellation =
+          newStatus == 'rejected' || newStatus == 'cancelled';
+      final newList = <PlanningAppointmentModel>[];
+      for (final a in list) {
+        if (a.id == id) {
+          if (isCancellation) {
+            // Drop it — the month view only shows active appointments.
+            continue;
+          }
+          newList.add(a.copyWith(status: newStatus));
+        } else {
+          newList.add(a);
+        }
+      }
+      updatedRange[iso] = newList;
+    });
+
+    state = state.copyWith(
+      appointments: updatedAppointments,
+      rangeAppointments: updatedRange,
+    );
 
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
@@ -154,7 +270,10 @@ class CompanyPlanningNotifier
       return true;
     } catch (_) {
       if (!mounted) return false;
-      state = state.copyWith(appointments: previous);
+      state = state.copyWith(
+        appointments: previousAppointments,
+        rangeAppointments: previousRange,
+      );
       return false;
     }
   }

@@ -63,7 +63,7 @@ class _AuthRequiredSheet extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF4A42E8), Color(0xFF9B59B6)],
+                colors: [Color(0xFF511522), Color(0xFF7A2232)],
               ),
               borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
               boxShadow: [
