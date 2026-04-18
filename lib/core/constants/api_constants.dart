@@ -1,5 +1,17 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 abstract class ApiConstants {
-  static const String baseUrl = 'http://localhost:8080/api';
+  // Android emulator reaches the host machine via 10.0.2.2 — localhost on the
+  // emulator points to the emulator itself. Web and other platforms use localhost.
+  static final String baseUrl = _resolveBaseUrl();
+
+  static String _resolveBaseUrl() {
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:8080/api';
+    }
+    return 'http://localhost:8080/api';
+  }
 
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
@@ -34,6 +46,11 @@ abstract class ApiConstants {
   static String companyAvailability(String id) => '/companies/$id/availability';
 
   // ---------------------------------------------------------------------------
+  // Favorites
+  // ---------------------------------------------------------------------------
+  static String companyFavorite(String id) => '/companies/$id/favorite';
+
+  // ---------------------------------------------------------------------------
   // Bookings
   // ---------------------------------------------------------------------------
   static const String bookings = '/bookings';
@@ -53,6 +70,33 @@ abstract class ApiConstants {
   static String myCompanyCategory(String id)  => '/my-company/categories/$id';
   static String myCompanyService(String id)   => '/my-company/services/$id';
   static String myCompanyEmployee(String id)  => '/my-company/employees/$id';
+
+  static const String myCompanyBookingSettings  = '/my-company/booking-settings';
+  static const String myCompanyBreaks           = '/my-company/breaks';
+  static const String myCompanyCapacityOverrides = '/my-company/capacity-overrides';
+  static const String myCompanyPendingAppointments = '/my-company/appointments/pending';
+  static const String myCompanyWalkIn = '/my-company/walk-in';
+  static String myCompanyAppointments(String date, List<String> statuses) {
+    final statusParam = statuses.join(',');
+    return '/my-company/appointments?date=$date&status=$statusParam';
+  }
+
+  static String myCompanyAppointmentStatus(String id) =>
+      '/my-company/appointments/$id/status';
+  static String myCompanyBreak(String id) => '/my-company/breaks/$id';
+  static String myCompanyCapacityOverride(String id) =>
+      '/my-company/capacity-overrides/$id';
+
+  // Gallery
+  static const String myCompanyGallery         = '/my-company/gallery';
+  static const String myCompanyGalleryReorder  = '/my-company/gallery/reorder';
+  static String myCompanyGalleryPhoto(String id) => '/my-company/gallery/$id';
+
+  // ---------------------------------------------------------------------------
+  // Notifications push
+  // ---------------------------------------------------------------------------
+  static const String myDevices                  = '/me/devices';
+  static const String myNotificationPreferences  = '/me/notification-preferences';
 
   // ---------------------------------------------------------------------------
   // My Schedule (authenticated employee endpoints)

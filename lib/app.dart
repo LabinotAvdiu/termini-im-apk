@@ -42,7 +42,7 @@ class _TakimiAppState extends ConsumerState<TakimiApp> {
       // ensuring GoRouter and all cached routes are re-rendered in the new
       // language — this is the missing piece that was preventing updates.
       key: ValueKey(locale.languageCode),
-      title: 'Takimi IM',
+      title: 'Termini im',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       locale: locale,

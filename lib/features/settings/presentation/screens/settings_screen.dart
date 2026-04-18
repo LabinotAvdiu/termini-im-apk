@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -11,6 +12,7 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -26,7 +28,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _phoneController;
   bool _isSaving = false;
   bool _hasChanges = false;
-  bool _notificationsEnabled = true;
 
   // Original values to detect changes
   late String _origFirstName;
@@ -98,7 +99,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      context.showSnackBar(e.toString(), isError: true);
+      context.showErrorSnackBar(e);
     }
   }
 
@@ -206,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               } catch (e) {
                 if (!mounted) return;
                 Navigator.of(ctx).pop();
-                context.showSnackBar(e.toString(), isError: true);
+                context.showErrorSnackBar(e);
               }
             },
             child: Text(context.l10n.saveChanges),
@@ -238,7 +239,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Column(
           children: [
             // Profile avatar
             _ProfileAvatar(
@@ -339,21 +343,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     onTap: _showLanguageSheet,
                   ),
-                  const Divider(height: 1, indent: 48),
-
-                  // Notifications
-                  _SettingsTile(
-                    icon: Icons.notifications_outlined,
-                    title: context.l10n.notifications,
-                    subtitle: context.l10n.notificationsSubtitle,
-                    trailing: Switch.adaptive(
-                      value: _notificationsEnabled,
-                      activeTrackColor: AppColors.primary,
-                      onChanged: (v) =>
-                          setState(() => _notificationsEnabled = v),
-                    ),
-                  ),
-                  const Divider(height: 1, indent: 48),
+                  const Divider(height: 1, color: AppColors.divider, indent: 48),
 
                   // Change password
                   _SettingsTile(
@@ -364,6 +354,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
             ),
+
+            // Section Notifications — uniquement pour owner et employee.
+            // Les clients (UserRole.user) n'ont pas de préférences configurables :
+            // leurs notifications sont toutes forcées côté serveur.
+            if (ref.watch(authStateProvider.select((s) => !s.isClient))) ...[
+              const SizedBox(height: AppSpacing.md),
+              const NotificationPreferencesSection(),
+            ],
 
             const SizedBox(height: AppSpacing.md),
 
@@ -376,20 +374,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   // Logout
                   _SettingsTile(
                     icon: Icons.logout_rounded,
-                    iconColor: AppColors.error,
+                    iconColor: AppColors.primary,
                     title: context.l10n.logout,
-                    titleColor: AppColors.error,
+                    titleColor: AppColors.primary,
                     onTap: _showLogoutDialog,
                   ),
-                  const Divider(height: 1, indent: 48),
+                  const Divider(height: 1, color: AppColors.divider, indent: 48),
 
                   // Delete account
                   _SettingsTile(
                     icon: Icons.delete_outline_rounded,
-                    iconColor: AppColors.error,
+                    iconColor: AppColors.primary,
                     title: context.l10n.deleteAccount,
                     subtitle: context.l10n.deleteAccountWarning,
-                    titleColor: AppColors.error,
+                    titleColor: AppColors.primary,
                     onTap: () {
                       // TODO: Implement delete account flow
                     },
@@ -400,6 +398,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
             const SizedBox(height: AppSpacing.xxl),
           ],
+            ),
+          ),
         ),
       ),
     );
@@ -431,13 +431,14 @@ class _ProfileAvatar extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 48,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.10),
               child: Text(
                 initials,
-                style: const TextStyle(
+                style: GoogleFonts.fraunces(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w400,
                   color: AppColors.primary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
+                  height: 1.0,
                 ),
               ),
             ),
@@ -469,7 +470,7 @@ class _ProfileAvatar extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Section card
+// Section card — editorial: 1px border, Fraunces section heading + overline
 // ---------------------------------------------------------------------------
 
 class _SectionCard extends StatelessWidget {
@@ -490,10 +491,11 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: const [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 8,
+            blurRadius: 6,
             offset: Offset(0, 2),
           ),
         ],
@@ -507,27 +509,33 @@ class _SectionCard extends StatelessWidget {
                 AppSpacing.md,
                 AppSpacing.md,
                 AppSpacing.md,
-                AppSpacing.sm,
+                AppSpacing.xs,
               ),
               child: Row(
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 18, color: AppColors.primary),
-                    const SizedBox(width: AppSpacing.sm),
+                    Icon(icon, size: 14, color: AppColors.textHint),
+                    const SizedBox(width: AppSpacing.xs),
                   ],
                   Text(
-                    title,
-                    style: AppTextStyles.subtitle.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    title.toUpperCase(),
+                    style: AppTextStyles.overline.copyWith(letterSpacing: 1.8),
                   ),
                 ],
               ),
             ),
+          if (title.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs,
+              ),
+              child: Text(title, style: AppTextStyles.h3),
+            ),
+          const Divider(height: 1, color: AppColors.divider),
           Padding(
             padding: EdgeInsets.fromLTRB(
               AppSpacing.md,
-              title.isEmpty ? AppSpacing.xs : 0,
+              AppSpacing.xs,
               AppSpacing.md,
               AppSpacing.md,
             ),

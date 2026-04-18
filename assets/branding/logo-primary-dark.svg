@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 110" role="img" aria-label="Termini im">
+  <title>Termini im — version sombre</title>
+  <desc>Logo Termini im sur fond encre, avec accent or pour le point de marque.</desc>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&amp;family=Instrument+Serif:ital@1&amp;display=swap');
+      .fr { font-family: 'Fraunces', 'Times New Roman', Georgia, serif; font-weight: 400; }
+      .ii { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+    </style>
+  </defs>
+  <rect width="440" height="110" fill="#171311"/>
+  <g transform="translate(20, 72)">
+    <circle cx="0" cy="-19" r="7" fill="#C89B47"/>
+    <text x="18" y="0" class="fr" font-size="76" fill="#F7F2EA" letter-spacing="-2">Termini</text>
+    <text x="258" y="0" class="ii" font-size="82" fill="#C89B47">im</text>
+    <circle cx="355" cy="-3" r="4" fill="#F7F2EA"/>
+  </g>
+</svg>

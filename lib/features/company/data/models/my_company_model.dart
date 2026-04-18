@@ -64,12 +64,14 @@ class MyServiceModel {
   final String name;
   final int durationMinutes;
   final double price;
+  final int? maxConcurrent;
 
   const MyServiceModel({
     required this.id,
     required this.name,
     required this.durationMinutes,
     required this.price,
+    this.maxConcurrent,
   });
 
   factory MyServiceModel.fromJson(Map<String, dynamic> json) {
@@ -78,6 +80,8 @@ class MyServiceModel {
       name: json['name'] as String? ?? '',
       durationMinutes: json['durationMinutes'] as int? ?? 30,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      maxConcurrent: json['maxConcurrent'] as int? ??
+          json['max_concurrent'] as int?,
     );
   }
 
@@ -86,6 +90,7 @@ class MyServiceModel {
         'name': name,
         'durationMinutes': durationMinutes,
         'price': price,
+        if (maxConcurrent != null) 'max_concurrent': maxConcurrent,
       };
 
   MyServiceModel copyWith({
@@ -93,14 +98,20 @@ class MyServiceModel {
     String? name,
     int? durationMinutes,
     double? price,
+    Object? maxConcurrent = _myServiceSentinel,
   }) =>
       MyServiceModel(
         id: id ?? this.id,
         name: name ?? this.name,
         durationMinutes: durationMinutes ?? this.durationMinutes,
         price: price ?? this.price,
+        maxConcurrent: maxConcurrent == _myServiceSentinel
+            ? this.maxConcurrent
+            : maxConcurrent as int?,
       );
 }
+
+const Object _myServiceSentinel = Object();
 
 // ---------------------------------------------------------------------------
 // Category (owns services)
@@ -246,12 +257,14 @@ class MyCompanyModel {
   final String address;
   final String city;
   final String phone;
+  final String? phoneSecondary;
   final String email;
   final String? description;
   final String? profileImageUrl;
   final List<MyCategoryModel> categories;
   final List<MyEmployeeModel> employees;
   final List<OpeningHourModel> openingHours;
+  final String bookingMode;
 
   const MyCompanyModel({
     required this.id,
@@ -259,12 +272,14 @@ class MyCompanyModel {
     required this.address,
     required this.city,
     required this.phone,
+    this.phoneSecondary,
     required this.email,
     this.description,
     this.profileImageUrl,
     this.categories = const [],
     this.employees = const [],
     this.openingHours = const [],
+    this.bookingMode = 'employee_based',
   });
 
   factory MyCompanyModel.fromJson(Map<String, dynamic> json) {
@@ -277,6 +292,8 @@ class MyCompanyModel {
       address: d['address'] as String? ?? '',
       city: d['city'] as String? ?? '',
       phone: d['phone'] as String? ?? '',
+      phoneSecondary: d['phoneSecondary'] as String? ??
+          d['phone_secondary'] as String?,
       email: d['email'] as String? ?? '',
       description: d['description'] as String?,
       profileImageUrl: d['profileImageUrl'] as String?,
@@ -292,6 +309,9 @@ class MyCompanyModel {
               ?.map((e) => OpeningHourModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      bookingMode: d['bookingMode'] as String? ??
+          d['booking_mode'] as String? ??
+          'employee_based',
     );
   }
 
@@ -301,6 +321,7 @@ class MyCompanyModel {
         'address': address,
         'city': city,
         'phone': phone,
+        'phone_secondary': phoneSecondary,
         'email': email,
         'description': description,
         'profileImageUrl': profileImageUrl,
@@ -315,12 +336,14 @@ class MyCompanyModel {
     String? address,
     String? city,
     String? phone,
+    Object? phoneSecondary = _sentinel,
     String? email,
     String? description,
     String? profileImageUrl,
     List<MyCategoryModel>? categories,
     List<MyEmployeeModel>? employees,
     List<OpeningHourModel>? openingHours,
+    String? bookingMode,
   }) =>
       MyCompanyModel(
         id: id ?? this.id,
@@ -328,11 +351,88 @@ class MyCompanyModel {
         address: address ?? this.address,
         city: city ?? this.city,
         phone: phone ?? this.phone,
+        phoneSecondary: phoneSecondary == _sentinel
+            ? this.phoneSecondary
+            : phoneSecondary as String?,
         email: email ?? this.email,
         description: description ?? this.description,
         profileImageUrl: profileImageUrl ?? this.profileImageUrl,
         categories: categories ?? this.categories,
         employees: employees ?? this.employees,
         openingHours: openingHours ?? this.openingHours,
+        bookingMode: bookingMode ?? this.bookingMode,
       );
+}
+
+// Sentinel used by copyWith to distinguish "not provided" from explicit null.
+const Object _sentinel = Object();
+
+// ---------------------------------------------------------------------------
+// Company break (capacity_based mode)
+// ---------------------------------------------------------------------------
+
+class CompanyBreakModel {
+  final String id;
+  final int? dayOfWeek;
+  final String startTime;
+  final String endTime;
+  final String? label;
+
+  const CompanyBreakModel({
+    required this.id,
+    this.dayOfWeek,
+    required this.startTime,
+    required this.endTime,
+    this.label,
+  });
+
+  factory CompanyBreakModel.fromJson(Map<String, dynamic> json) {
+    return CompanyBreakModel(
+      id: json['id']?.toString() ?? '',
+      dayOfWeek: json['dayOfWeek'] as int? ?? json['day_of_week'] as int?,
+      startTime: json['startTime'] as String? ?? json['start_time'] as String? ?? '',
+      endTime: json['endTime'] as String? ?? json['end_time'] as String? ?? '',
+      label: json['label'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'day_of_week': dayOfWeek,
+        'start_time': startTime,
+        'end_time': endTime,
+        if (label != null && label!.isNotEmpty) 'label': label,
+      };
+}
+
+// ---------------------------------------------------------------------------
+// Capacity override (reduced-capacity date)
+// ---------------------------------------------------------------------------
+
+class CapacityOverrideModel {
+  final String id;
+  final String date;
+  final int capacity;
+  final String? notes;
+
+  const CapacityOverrideModel({
+    required this.id,
+    required this.date,
+    required this.capacity,
+    this.notes,
+  });
+
+  factory CapacityOverrideModel.fromJson(Map<String, dynamic> json) {
+    return CapacityOverrideModel(
+      id: json['id']?.toString() ?? '',
+      date: json['date'] as String? ?? '',
+      capacity: json['capacity'] as int? ?? 1,
+      notes: json['notes'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'date': date,
+        'capacity': capacity,
+        if (notes != null && notes!.isNotEmpty) 'notes': notes,
+      };
 }

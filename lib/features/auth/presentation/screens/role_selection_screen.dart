@@ -6,6 +6,7 @@ import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/brand_logo.dart';
 
 class RoleSelectionScreen extends ConsumerWidget {
   const RoleSelectionScreen({super.key});
@@ -19,9 +20,9 @@ class RoleSelectionScreen extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF6C63FF),
-              Color(0xFF4A42E8),
-              Color(0xFF3A31C8),
+              Color(0xFF511522),
+              Color(0xFF7A2232),
+              Color(0xFF9E3D4F),
             ],
             stops: [0.0, 0.55, 1.0],
           ),
@@ -76,17 +77,15 @@ class _HeaderSection extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            child: const Icon(
-              Icons.calendar_month_rounded,
-              color: Colors.white,
-              size: 42,
+            child: const Center(
+              child: BrandLogo(variant: BrandLogoVariant.ivory, size: 64),
             ),
           ),
 
           const SizedBox(height: AppSpacing.md),
 
           const Text(
-            'Takimi IM',
+            'Termini im',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w800,
@@ -141,7 +140,7 @@ class _RoleCardsSection extends StatelessWidget {
             title: context.l10n.iAmUser,
             subtitle: context.l10n.iAmUserSubtitle,
             role: 'user',
-            accentColor: const Color(0xFF9D97FF),
+            accentColor: const Color(0xFFC89B47),
           ),
 
           const SizedBox(height: AppSpacing.md),

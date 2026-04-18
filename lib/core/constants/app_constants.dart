@@ -1,5 +1,5 @@
 abstract class AppConstants {
-  static const String appName = 'Takimi IM';
+  static const String appName = 'Termini im';
   static const int paginationSize = 20;
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';

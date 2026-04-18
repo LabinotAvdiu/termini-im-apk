@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Termini im">
+  <title>Termini im — monogramme encre</title>
+  <desc>Monogramme T de Termini im, version encre avec accent or.</desc>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&amp;display=swap');
+      .fr { font-family: 'Fraunces', 'Times New Roman', Georgia, serif; font-weight: 500; }
+    </style>
+  </defs>
+  <rect width="256" height="256" fill="#171311" rx="32"/>
+  <text x="128" y="187" class="fr" font-size="200" fill="#F7F2EA" text-anchor="middle" letter-spacing="-6">T</text>
+  <circle cx="193" cy="78" r="12" fill="#C89B47"/>
+</svg>

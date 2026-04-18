@@ -9,8 +9,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/notifications/notification_service.dart';
+import '../../../../core/platform/web_storage_stub.dart'
+    if (dart.library.html) '../../../../core/platform/web_storage_web.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository.dart';
+import '../../../notifications/data/repositories/notification_repository.dart'
+    show notificationRepositoryProvider;
 
 enum UserRole { user, company, employee }
 
@@ -21,13 +26,19 @@ enum UserRole { user, company, employee }
 class AuthState {
   final bool isAuthenticated;
   final bool isLoading;
-  final String? error;
+  /// The last error caught by the notifier. Either an [ApiException] (for
+  /// backend errors), a String (for legacy call sites) or null. UI code should
+  /// pass this to `context.errorMessage(error)` to get a localized message.
+  final Object? error;
   final UserModel? user;
   final UserRole? role;
   final String? token;
   final bool rememberMe;
   // True when the user chose to browse without logging in.
   final bool isGuest;
+  // One-shot flag set to true right after a successful signup; the shell
+  // consumes it to land a new owner on the "Mon Salon" tab, then clears it.
+  final bool justSignedUp;
 
   const AuthState({
     this.isAuthenticated = false,
@@ -38,6 +49,7 @@ class AuthState {
     this.token,
     this.rememberMe = true, // default: remember the user
     this.isGuest = false,
+    this.justSignedUp = false,
   });
 
   /// Convenience getters for tab-layout decisions in MainShell.
@@ -48,12 +60,13 @@ class AuthState {
   AuthState copyWith({
     bool? isAuthenticated,
     bool? isLoading,
-    String? error,
+    Object? error,
     UserModel? user,
     UserRole? role,
     String? token,
     bool? rememberMe,
     bool? isGuest,
+    bool? justSignedUp,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -66,6 +79,7 @@ class AuthState {
       token: token ?? this.token,
       rememberMe: rememberMe ?? this.rememberMe,
       isGuest: isGuest ?? this.isGuest,
+      justSignedUp: justSignedUp ?? this.justSignedUp,
     );
   }
 }
@@ -77,9 +91,36 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
 
+  // Référence lazy vers le repository notifications — injectée depuis le
+  // provider pour éviter une dépendance circulaire au moment de la création.
+  Future<void> Function(String token, String platform)? _deviceRegister;
+  Future<void> Function(String token)? _deviceUnregister;
+
+  void setDeviceCallbacks({
+    required Future<void> Function(String token, String platform) register,
+    required Future<void> Function(String token) unregister,
+  }) {
+    _deviceRegister = register;
+    _deviceUnregister = unregister;
+  }
+
   AuthNotifier({required AuthRepository repository})
       : _repository = repository,
         super(const AuthState());
+
+  // ---------------------------------------------------------------------------
+  // FCM token helpers — fire-and-forget, swallent les erreurs silencieusement
+  // ---------------------------------------------------------------------------
+
+  Future<void> _registerFcmToken() async {
+    if (_deviceRegister == null) return;
+    await NotificationService.registerToken(_deviceRegister!);
+  }
+
+  Future<void> _unregisterFcmToken() async {
+    if (_deviceUnregister == null) return;
+    await NotificationService.unregisterToken(_deviceUnregister!);
+  }
 
   // ---------------------------------------------------------------------------
   // Role resolution
@@ -158,15 +199,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
         role: _resolveRole(response.role, response.user),
         error: null,
       );
+      // Enregistre le token FCM après login réussi (fire-and-forget).
+      unawaited(_registerFcmToken());
     } on ApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.message,
+        error: e,
       );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: e,
       );
     }
   }
@@ -186,6 +229,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? city,
     String? companyName,
     String? address,
+    String? bookingMode,
+    double? latitude,
+    double? longitude,
+    String? locale,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -200,6 +247,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         'city': city,
         'company_name': companyName,
         'address': address,
+        if (bookingMode != null) 'booking_mode': bookingMode,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
+        if (locale != null) 'locale': locale,
       }..removeWhere((_, v) => v == null);
 
       final response = await _repository.register(
@@ -214,17 +265,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
         user: response.user,
         role: _resolveRole(response.role, response.user),
         error: null,
+        justSignedUp: true,
       );
+      // Enregistre le token FCM après signup réussi (fire-and-forget).
+      unawaited(_registerFcmToken());
     } on ApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.message,
+        error: e,
       );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: e,
       );
+    }
+  }
+
+  /// Called by the shell after consuming the one-shot flag.
+  void clearJustSignedUp() {
+    if (state.justSignedUp) {
+      state = state.copyWith(justSignedUp: false);
     }
   }
 
@@ -261,10 +322,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         role: _resolveRole(response.role, response.user),
         error: null,
       );
+      // Enregistre le token FCM après Google login réussi (fire-and-forget).
+      unawaited(_registerFcmToken());
     } on ApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: e);
     }
   }
 
@@ -300,10 +363,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         role: _resolveRole(response.role, response.user),
         error: null,
       );
+      // Enregistre le token FCM après Facebook login réussi (fire-and-forget).
+      unawaited(_registerFcmToken());
     } on ApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: e);
     }
   }
 
@@ -317,9 +382,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _repository.forgotPassword(email: email);
       state = state.copyWith(isLoading: false, error: null);
     } on ApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: e);
     }
   }
 
@@ -343,9 +408,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       state = state.copyWith(isLoading: false, error: null);
     } on ApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: e);
     }
   }
 
@@ -366,6 +431,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // ---------------------------------------------------------------------------
 
   Future<void> logout() async {
+    // 1. Retire le token FCM côté backend AVANT de vider le JWT.
+    //    Si ça échoue, on continue quand même (best-effort).
+    await _unregisterFcmToken();
+
     try {
       await _repository.logout();
     } catch (_) {
@@ -385,7 +454,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
 final authStateProvider =
     StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository: repository);
+  final notifier = AuthNotifier(repository: repository);
+
+  // Injecte les callbacks FCM depuis le repository notifications.
+  final notifRepo = ref.read(notificationRepositoryProvider);
+  notifier.setDeviceCallbacks(
+    register: (token, platform) =>
+        notifRepo.registerDevice(token: token, platform: platform),
+    unregister: (token) => notifRepo.unregisterDevice(token: token),
+  );
+
+  return notifier;
 });
 
 // ---------------------------------------------------------------------------
@@ -409,6 +488,11 @@ class LocaleNotifier extends StateNotifier<Locale> {
     final stored = await _storage.read(key: AppConstants.localeKey);
     if (stored == 'en' || stored == 'fr' || stored == 'sq') {
       state = Locale(stored!);
+      // Ensure the web splash has the up-to-date value for the next reload.
+      writeWebLocale(stored);
+    } else {
+      // Default is 'sq' — persist it so the splash matches the app from now on.
+      writeWebLocale(state.languageCode);
     }
   }
 
@@ -421,6 +505,9 @@ class LocaleNotifier extends StateNotifier<Locale> {
 
     state = Locale(languageCode);
     await _storage.write(key: AppConstants.localeKey, value: languageCode);
+    // Mirror to window.localStorage on web so the splash screen can pick it up
+    // on the next cold reload (no-op on mobile).
+    writeWebLocale(languageCode);
 
     if (repository != null) {
       // Fire-and-forget: best-effort API sync — swallow errors silently.

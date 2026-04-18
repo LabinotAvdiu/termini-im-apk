@@ -12,6 +12,8 @@ import '../../features/booking/presentation/screens/booking_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/shell/presentation/screens/main_shell.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/company/presentation/screens/capacity_settings_screen.dart';
+import '../../features/company/presentation/screens/pending_approvals_screen.dart';
 import 'route_names.dart';
 
 /// A [ChangeNotifier] that fires whenever the auth state changes.
@@ -116,6 +118,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: RouteNames.settings,
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/capacity-settings',
+        name: RouteNames.capacitySettings,
+        builder: (context, state) => const CapacitySettingsScreen(),
+      ),
+      GoRoute(
+        path: '/pending-approvals',
+        name: RouteNames.pendingApprovals,
+        builder: (context, state) => const PendingApprovalsScreen(),
       ),
       GoRoute(
         path: '/company/:id',

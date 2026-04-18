@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
     if (error != null) {
-      context.showSnackBar(error, isError: true);
+      context.showErrorSnackBar(error);
     } else {
       setState(() => _emailSent = true);
     }
@@ -90,7 +90,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
     if (error != null) {
-      context.showSnackBar(error, isError: true);
+      context.showErrorSnackBar(error);
     } else {
       // Navigate to login and show success message
       context.goNamed(RouteNames.login);
@@ -114,7 +114,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.lg),
@@ -172,6 +175,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                   const SizedBox(height: AppSpacing.lg),
                 ],
+              ),
+                ),
               ),
             ),
           ),
@@ -242,7 +247,7 @@ class _BackButton extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Header — icon + title + subtitle
+// Header — icon + title + subtitle — editorial style
 // ---------------------------------------------------------------------------
 
 class _Header extends StatelessWidget {
@@ -255,42 +260,33 @@ class _Header extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 64,
-          height: 64,
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.primary, AppColors.primaryDark],
-            ),
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.35),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
           child: Icon(
-            emailSent
-                ? Icons.lock_reset_rounded
-                : Icons.lock_open_rounded,
-            color: Colors.white,
-            size: 32,
+            emailSent ? Icons.lock_reset_rounded : Icons.lock_open_rounded,
+            color: AppColors.primary,
+            size: 28,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
+        // Overline
+        Text(
+          emailSent ? 'RÉINITIALISATION' : 'MOT DE PASSE',
+          style: AppTextStyles.overline.copyWith(letterSpacing: 2.2),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        // Fraunces display title
         Text(
           emailSent
               ? context.l10n.resetPasswordTitle
               : context.l10n.forgotPasswordTitle,
-          style: const TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-            letterSpacing: -0.5,
-          ),
+          style: AppTextStyles.h2,
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.xs),
         Padding(
@@ -300,11 +296,7 @@ class _Header extends StatelessWidget {
                 ? context.l10n.resetEmailSent
                 : context.l10n.forgotPasswordSubtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w400,
-            ),
+            style: AppTextStyles.bodySmall,
           ),
         ),
       ],
@@ -336,11 +328,12 @@ class _EmailCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -350,12 +343,12 @@ class _EmailCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(context.l10n.email, style: AppTextStyles.h2),
-            const SizedBox(height: AppSpacing.xs),
             Text(
-              context.l10n.forgotPasswordSubtitle,
-              style: AppTextStyles.bodySmall,
+              context.l10n.email.toUpperCase(),
+              style: AppTextStyles.overline.copyWith(letterSpacing: 1.8),
             ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(context.l10n.forgotPasswordSubtitle, style: AppTextStyles.h2.copyWith(fontSize: 20)),
             const SizedBox(height: AppSpacing.lg),
             AppTextField(
               controller: emailController,
@@ -420,11 +413,12 @@ class _ResetCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -434,7 +428,12 @@ class _ResetCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(context.l10n.resetPasswordTitle, style: AppTextStyles.h2),
+            Text(
+              'RÉINITIALISATION',
+              style: AppTextStyles.overline.copyWith(letterSpacing: 1.8),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(context.l10n.resetPasswordTitle, style: AppTextStyles.h2.copyWith(fontSize: 20)),
             const SizedBox(height: AppSpacing.xs),
             Text(
               context.l10n.resetEmailSent,

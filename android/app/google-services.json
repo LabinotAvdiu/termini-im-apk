@@ -1,0 +1,34 @@
+{
+  "//": "TODO: Remplace ce fichier par le vrai google-services.json téléchargé depuis la Firebase Console.",
+  "//2": "  1. Va sur https://console.firebase.google.com → ton projet → Paramètres du projet → Tes applications",
+  "//3": "  2. Ajoute une application Android avec le package 'com.hairspot.hairspot_mobile'",
+  "//4": "  3. Télécharge le fichier google-services.json et remplace celui-ci",
+  "//5": "  4. Active FCM dans Firebase Console → Cloud Messaging",
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "termini-im-placeholder",
+    "storage_bucket": "termini-im-placeholder.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "android_client_info": {
+          "package_name": "com.hairspot.hairspot_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "PLACEHOLDER_API_KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

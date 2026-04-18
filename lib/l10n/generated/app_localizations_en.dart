@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Takimi IM';
+  String get appName => 'Termini im';
 
   @override
   String get login => 'Login';
@@ -81,7 +81,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseRole => 'Choose your profile';
 
   @override
-  String get chooseRoleSubtitle => 'How would you like to use Takimi IM?';
+  String get chooseRoleSubtitle => 'How would you like to use Termini im?';
 
   @override
   String get searchPlaceholder => 'Search for a salon...';
@@ -233,6 +233,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailInvalid => 'Invalid email';
 
   @override
+  String get emailAlreadyUsed => 'This email is already in use';
+
+  @override
   String get passwordRequired => 'Password is required';
 
   @override
@@ -314,7 +317,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
-  String get notificationsSubtitle => 'Receive appointment reminders';
+  String get notificationsSubtitle =>
+      'Choose which notifications you want to receive';
+
+  @override
+  String get notifNewBookingLabel => 'New appointment';
+
+  @override
+  String get notifNewBookingDesc =>
+      'Notify me each time a new appointment is booked';
+
+  @override
+  String get notifQuietDayLabel => '1h reminder (quiet days)';
+
+  @override
+  String get notifQuietDayDesc =>
+      'Reminder 1h before when you have ≤ 2 appointments that day';
+
+  @override
+  String get notifPermissionBannerTitle => 'Notifications disabled';
+
+  @override
+  String get notifPermissionBannerBody =>
+      'Enable them in your device settings to get reminders.';
+
+  @override
+  String get openSettings => 'Open settings';
 
   @override
   String get deleteAccount => 'Delete account';
@@ -388,6 +416,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get city => 'City';
+
+  @override
+  String get searchWhen => 'When';
+
+  @override
+  String get searchWho => 'Who';
 
   @override
   String get cityHint => 'E.g.: Prishtina, Prizren...';
@@ -477,7 +511,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteEmployee => 'Invite employee';
 
   @override
-  String get createEmployee => 'Create employee account';
+  String get createEmployee => 'Create';
 
   @override
   String get closed => 'Closed';
@@ -566,6 +600,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reason => 'Reason (optional)';
 
   @override
+  String get dayOffReasonHint => 'E.g.: Annual leave';
+
+  @override
   String get everyDay => 'Every day';
 
   @override
@@ -585,6 +622,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get youDontWorkToday => 'You don\'t work this day';
+
+  @override
+  String get landingHeroSubtitle => 'Book your slot in seconds.';
 
   @override
   String get loginSubtitle => 'Sign in to your account';
@@ -680,6 +720,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextDay => 'Next day';
 
   @override
+  String get previousWeek => 'Previous week';
+
+  @override
+  String get nextWeek => 'Next week';
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
   String get noBreaksConfigured => 'No breaks configured';
 
   @override
@@ -701,6 +753,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String employeeScheduleHint(String hours) {
     return 'Schedule: $hours';
   }
+
+  @override
+  String get phoneSecondary => 'Secondary phone';
 
   @override
   String get descriptionLabel => 'Description';
@@ -818,4 +873,439 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dayShortSun => 'Sun';
+
+  @override
+  String get bookingModeTitle => 'Booking mode';
+
+  @override
+  String get bookingModeCapacityBasedTitle => 'Single front desk';
+
+  @override
+  String get bookingModeCapacityBasedShort =>
+      'Best if you handle all appointments alone';
+
+  @override
+  String get bookingModeCapacityBasedDescription =>
+      'You handle all appointments. Set a capacity per service (e.g. 3 haircuts at once). Clients only see time slots.';
+
+  @override
+  String get bookingModeEmployeeBasedTitle => 'Each employee manages';
+
+  @override
+  String get bookingModeEmployeeBasedShort =>
+      'Each employee keeps their own schedule';
+
+  @override
+  String get bookingModeEmployeeBasedDescription =>
+      'Each employee has their own schedule. Clients pick their professional when booking.';
+
+  @override
+  String get settingsEditableLater =>
+      'All these settings can be changed later.';
+
+  @override
+  String get maxConcurrent => 'Max concurrent appointments';
+
+  @override
+  String get capacitySettingsTitle => 'Capacity & breaks';
+
+  @override
+  String get reducedCapacityDays => 'Reduced-capacity days';
+
+  @override
+  String spotsRemaining(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString spots',
+      one: '1 spot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingEmptyTitle => 'All caught up.';
+
+  @override
+  String get pendingEmptySubtitle => 'No pending requests at the moment.';
+
+  @override
+  String get pendingApprovals => 'Pending requests';
+
+  @override
+  String get pendingApprovalsShort => 'Requests';
+
+  @override
+  String get approve => 'Accept';
+
+  @override
+  String get reject => 'Refuse';
+
+  @override
+  String get bookingPendingTitle => 'Request sent';
+
+  @override
+  String get bookingPendingMessage =>
+      'Your request has been sent. The salon will confirm or refuse shortly.';
+
+  @override
+  String changeBookingModeWarning(String mode) {
+    return 'Switch to $mode. Existing appointments will be kept. Continue?';
+  }
+
+  @override
+  String get confirmAppointment => 'Confirm';
+
+  @override
+  String get rejectAppointment => 'Refuse';
+
+  @override
+  String get cancelAppointment => 'Cancel appointment';
+
+  @override
+  String get confirmRejectTitle => 'Refuse this appointment?';
+
+  @override
+  String get confirmCancelTitle => 'Cancel this appointment?';
+
+  @override
+  String get cancelAppointmentBody => 'This will free the time slot.';
+
+  @override
+  String get actionFailed => 'Action failed. Try again.';
+
+  @override
+  String get viewDay => 'Day';
+
+  @override
+  String get viewWeek => 'Week';
+
+  @override
+  String get viewMonth => 'Month';
+
+  @override
+  String get errorNetwork =>
+      'Unable to reach the server. Check your connection.';
+
+  @override
+  String get errorUnauthorized => 'Session expired. Please sign in again.';
+
+  @override
+  String get errorNotFound => 'Not found.';
+
+  @override
+  String get errorServer => 'Server error. Please try again later.';
+
+  @override
+  String get errorUnknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get homeBrandTagline => 'Salons & Barbers · Prishtina';
+
+  @override
+  String get homeHeroOverline => 'Directory · Salons & Barbers';
+
+  @override
+  String get homeHeroTitlePrefix => 'Prishtina\nstyled ';
+
+  @override
+  String get homeHeroTitleItalic => 'just right.';
+
+  @override
+  String get homeHeroSubtitle =>
+      'A curated selection of salons across Kosovo.\nInstant booking, confirmation in under 2 minutes.';
+
+  @override
+  String get homeResultsOverline => 'Results · Prishtina';
+
+  @override
+  String get homeResultsOverlineSearch => 'Results · Search';
+
+  @override
+  String get homeSortLabel => 'Sort: Rating · Distance';
+
+  @override
+  String get landingHeroLine1 => 'Salons of';
+
+  @override
+  String get landingHeroLine2 => 'Kosovo';
+
+  @override
+  String get capacityBasedHint1 =>
+      'You define a capacity per service (e.g. 3 haircuts at the same time).';
+
+  @override
+  String get capacityBasedHint2 =>
+      'Clients choose a time slot — no employee is visible.';
+
+  @override
+  String get capacityBasedHint3 =>
+      'Perfect if you work alone or manage bookings yourself.';
+
+  @override
+  String get employeeBasedHint1 =>
+      'Each employee has their own schedule and opening hours.';
+
+  @override
+  String get employeeBasedHint2 =>
+      'Clients pick their stylist at booking (or \"No preference\").';
+
+  @override
+  String get employeeBasedHint3 =>
+      'Each employee manages their own breaks and days off.';
+
+  @override
+  String get employeeBasedHint4 =>
+      'Perfect for a salon with multiple independent stylists.';
+
+  @override
+  String get addressHintExample => 'Rruga Nënë Tereza 12, Prishtina';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get bookingDesktopChoose => 'Pick ';
+
+  @override
+  String get bookingDesktopChooseEm => 'your\ntime slot.';
+
+  @override
+  String get bookingDesktopConfirm => 'Confirm\n';
+
+  @override
+  String get bookingDesktopConfirmEm => 'your appointment.';
+
+  @override
+  String get saveSuccess => 'Changes saved';
+
+  @override
+  String get editCategoryTitle => 'Edit category';
+
+  @override
+  String get salonName => 'Salon name';
+
+  @override
+  String get editServiceTitle => 'Edit service';
+
+  @override
+  String get durationMinLabel => 'Duration (min)';
+
+  @override
+  String get priceEurLabel => 'Price (€)';
+
+  @override
+  String get maxCapacityLabel => 'Max capacity';
+
+  @override
+  String get createEmployeeTitle => 'Create employee';
+
+  @override
+  String get greetingHello => 'HELLO';
+
+  @override
+  String get dashboardKpiServices => 'SERVICES';
+
+  @override
+  String get dashboardKpiCategories => 'CATEGORIES';
+
+  @override
+  String get dashboardKpiTeam => 'TEAM';
+
+  @override
+  String get dashboardKpiMode => 'MODE';
+
+  @override
+  String get capacityMode => 'Capacity';
+
+  @override
+  String get editHoursTooltip => 'Edit hours';
+
+  @override
+  String get capacitySettingsDescription => 'Manage slots and maximum capacity';
+
+  @override
+  String get configureAction => 'Configure';
+
+  @override
+  String get walkInBadge => 'WALK-IN';
+
+  @override
+  String get callClient => 'Call client';
+
+  @override
+  String get authPromptTitle => 'Join Termini im';
+
+  @override
+  String get authPromptSubtitle => 'Sign in to book your favorite salons.';
+
+  @override
+  String get monthTotalOverline => 'Appointments this month';
+
+  @override
+  String get monthStatConfirmed => 'confirmed';
+
+  @override
+  String get monthStatPending => 'pending';
+
+  @override
+  String get monthStatRejected => 'rejected';
+
+  @override
+  String get appointmentSingular => 'appointment';
+
+  @override
+  String get appointmentPlural => 'appointments';
+
+  @override
+  String get emptyDayTitle => 'No appointments';
+
+  @override
+  String get emptyDaySubtitle => 'Nothing scheduled for this day.';
+
+  @override
+  String get clickToOpenDay => 'Click again to open the day.';
+
+  @override
+  String get tapAgain => 'Tap again';
+
+  @override
+  String get selectMonth => 'Choose a month';
+
+  @override
+  String get bookOverline => 'Book · in 30 s';
+
+  @override
+  String get bookSidebarTitle => 'Book your ';
+
+  @override
+  String get bookSidebarTitleEm => 'appointment.';
+
+  @override
+  String get bookSidebarHint => 'Pick a service to continue.';
+
+  @override
+  String get viewServices => 'View services';
+
+  @override
+  String get averageRating => 'Average rating';
+
+  @override
+  String get companyOverline => 'Barber · Men\'s cut';
+
+  @override
+  String get salonForMen => 'Salon for men';
+
+  @override
+  String get salonForWomen => 'Salon for women';
+
+  @override
+  String get salonUnisex => 'Salon · Men & Women';
+
+  @override
+  String get servicesOffered => 'offered';
+
+  @override
+  String get approvalsTitle => 'APPROVALS';
+
+  @override
+  String get approvalsPendingSuffix => ' pending';
+
+  @override
+  String approvalsConfirmedToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count confirmed today',
+      one: '$count confirmed today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allApprovedTitle => 'All caught up';
+
+  @override
+  String get allApprovedSubtitle => 'No appointments waiting for approval';
+
+  @override
+  String get clientFallback => 'Client';
+
+  @override
+  String get galleryEmpty => 'No photos yet. Add your first photo.';
+
+  @override
+  String get galleryAddPhoto => 'Add photo';
+
+  @override
+  String get galleryDelete => 'Delete photo';
+
+  @override
+  String get galleryDeleteConfirm => 'Delete this photo from your gallery?';
+
+  @override
+  String get galleryUploading => 'Uploading…';
+
+  @override
+  String get galleryUploadError => 'Upload failed. Please try again.';
+
+  @override
+  String get galleryReorderHint => 'Hold and drag to reorder';
+
+  @override
+  String get galleryOrderExplanation =>
+      'The photo order matches how your salon appears on its public page.';
+
+  @override
+  String get salonCoverPhotoHint =>
+      'The first photo of your gallery is shown on the search page.';
+
+  @override
+  String get favoriteAdded => 'Added to favorites';
+
+  @override
+  String get favoriteRemoved => 'Removed from favorites';
+
+  @override
+  String get removeFavoriteTitle => 'Remove from favorites?';
+
+  @override
+  String removeFavoriteConfirm(String name) {
+    return '$name will no longer be highlighted.';
+  }
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get favoriteBadgeTooltip => 'In your favorites';
+
+  @override
+  String get loginToFavorite => 'Log in to add to favorites';
+
+  @override
+  String photoCount(int count) {
+    return '$count photos';
+  }
+
+  @override
+  String get viewGallery => 'See gallery';
+
+  @override
+  String photoCountPlus(int count) {
+    return '+ $count';
+  }
+
+  @override
+  String galleryOf(String current, String total) {
+    return '$current — $total';
+  }
+
+  @override
+  String get close => 'Close';
 }

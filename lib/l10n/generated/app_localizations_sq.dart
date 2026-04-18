@@ -9,7 +9,7 @@ class AppLocalizationsSq extends AppLocalizations {
   AppLocalizationsSq([String locale = 'sq']) : super(locale);
 
   @override
-  String get appName => 'Takimi IM';
+  String get appName => 'Termini im';
 
   @override
   String get login => 'Kyçu';
@@ -81,7 +81,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get chooseRole => 'Zgjidhni profilin tuaj';
 
   @override
-  String get chooseRoleSubtitle => 'Si dëshironi ta përdorni Takimi IM?';
+  String get chooseRoleSubtitle => 'Si dëshironi ta përdorni Termini im?';
 
   @override
   String get searchPlaceholder => 'Kërko një sallon...';
@@ -232,6 +232,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get emailInvalid => 'Email i pavlefshëm';
 
   @override
+  String get emailAlreadyUsed => 'Ky email është tashmë në përdorim';
+
+  @override
   String get passwordRequired => 'Fjalëkalimi është i detyrueshëm';
 
   @override
@@ -316,7 +319,31 @@ class AppLocalizationsSq extends AppLocalizations {
   String get notifications => 'Njoftimet';
 
   @override
-  String get notificationsSubtitle => 'Merr njoftime për takimet';
+  String get notificationsSubtitle =>
+      'Zgjidhni njoftimet që dëshironi të merrni';
+
+  @override
+  String get notifNewBookingLabel => 'Takim i ri';
+
+  @override
+  String get notifNewBookingDesc => 'Njofto për çdo rezervim të ri';
+
+  @override
+  String get notifQuietDayLabel => 'Kujtesë 1h para (ditë të qeta)';
+
+  @override
+  String get notifQuietDayDesc =>
+      'Kujtesë 1 orë para nëse keni ≤ 2 takime atë ditë';
+
+  @override
+  String get notifPermissionBannerTitle => 'Njoftimet janë të çaktivizuara';
+
+  @override
+  String get notifPermissionBannerBody =>
+      'Aktivizojini në cilësimet e pajisjes për të marrë kujtesat.';
+
+  @override
+  String get openSettings => 'Hap cilësimet';
 
   @override
   String get deleteAccount => 'Fshi llogarinë';
@@ -390,6 +417,12 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get city => 'Qyteti';
+
+  @override
+  String get searchWhen => 'Kur';
+
+  @override
+  String get searchWho => 'Kush';
 
   @override
   String get cityHint => 'P.sh.: Prishtinë, Prizren...';
@@ -479,7 +512,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get inviteEmployee => 'Fto punonjës';
 
   @override
-  String get createEmployee => 'Krijo llogari punonjësi';
+  String get createEmployee => 'Krijo';
 
   @override
   String get closed => 'Mbyllur';
@@ -568,6 +601,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get reason => 'Arsyeja (opsionale)';
 
   @override
+  String get dayOffReasonHint => 'P.sh.: Pushim vjetor';
+
+  @override
   String get everyDay => 'Çdo ditë';
 
   @override
@@ -587,6 +623,9 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get youDontWorkToday => 'Nuk punoni këtë ditë';
+
+  @override
+  String get landingHeroSubtitle => 'Rezervoni vendin tuaj në disa sekonda.';
 
   @override
   String get loginSubtitle => 'Kyçuni në llogarinë tuaj';
@@ -682,6 +721,18 @@ class AppLocalizationsSq extends AppLocalizations {
   String get nextDay => 'Dita tjetër';
 
   @override
+  String get previousWeek => 'Java e mëparshme';
+
+  @override
+  String get nextWeek => 'Java tjetër';
+
+  @override
+  String get previousMonth => 'Muaji i mëparshëm';
+
+  @override
+  String get nextMonth => 'Muaji tjetër';
+
+  @override
   String get noBreaksConfigured => 'Asnjë pushim i konfiguruar';
 
   @override
@@ -703,6 +754,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String employeeScheduleHint(String hours) {
     return 'Oraret: $hours';
   }
+
+  @override
+  String get phoneSecondary => 'Telefon i dytë';
 
   @override
   String get descriptionLabel => 'Përshkrimi';
@@ -820,4 +874,441 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get dayShortSun => 'Die';
+
+  @override
+  String get bookingModeTitle => 'Mënyra e rezervimit';
+
+  @override
+  String get bookingModeCapacityBasedTitle => 'Një pikë pritjeje';
+
+  @override
+  String get bookingModeCapacityBasedShort =>
+      'Ideale nëse i menaxhoni vetë të gjitha takimet';
+
+  @override
+  String get bookingModeCapacityBasedDescription =>
+      'Ju menaxhoni të gjitha takimet. Cakto kapacitetin për shërbim (p.sh. 3 prerje njëkohësisht). Klientët shohin vetëm orare.';
+
+  @override
+  String get bookingModeEmployeeBasedTitle => 'Secili menaxhon vet';
+
+  @override
+  String get bookingModeEmployeeBasedShort => 'Secili punonjës ka orarin e vet';
+
+  @override
+  String get bookingModeEmployeeBasedDescription =>
+      'Secili punonjës ka oraret e veta. Klientët zgjedhin profesionistin gjatë rezervimit.';
+
+  @override
+  String get settingsEditableLater =>
+      'Të gjitha këto cilësime mund të ndryshohen më vonë.';
+
+  @override
+  String get maxConcurrent => 'Takime të njëkohshme max';
+
+  @override
+  String get capacitySettingsTitle => 'Kapaciteti & pushimet';
+
+  @override
+  String get reducedCapacityDays => 'Ditë me kapacitet të reduktuar';
+
+  @override
+  String spotsRemaining(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString vende',
+      one: '1 vend',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingEmptyTitle => 'Gjithçka është në rregull.';
+
+  @override
+  String get pendingEmptySubtitle => 'Nuk ka kërkesa në pritje për momentin.';
+
+  @override
+  String get pendingApprovals => 'Kërkesa në pritje';
+
+  @override
+  String get pendingApprovalsShort => 'Kërkesat';
+
+  @override
+  String get approve => 'Prano';
+
+  @override
+  String get reject => 'Refuzo';
+
+  @override
+  String get bookingPendingTitle => 'Kërkesa u dërgua';
+
+  @override
+  String get bookingPendingMessage =>
+      'Kërkesa juaj u dërgua. Salloni do të konfirmojë ose refuzojë së shpejti.';
+
+  @override
+  String changeBookingModeWarning(String mode) {
+    return 'Kalo në $mode. Takimet ekzistuese do të ruhen. Vazhdo?';
+  }
+
+  @override
+  String get confirmAppointment => 'Konfirmo';
+
+  @override
+  String get rejectAppointment => 'Refuzo';
+
+  @override
+  String get cancelAppointment => 'Anulo takimin';
+
+  @override
+  String get confirmRejectTitle => 'Refuzo këtë takim?';
+
+  @override
+  String get confirmCancelTitle => 'Anulo këtë takim?';
+
+  @override
+  String get cancelAppointmentBody => 'Ky veprim do të lirojë orarin.';
+
+  @override
+  String get actionFailed => 'Veprimi dështoi. Provo përsëri.';
+
+  @override
+  String get viewDay => 'Ditë';
+
+  @override
+  String get viewWeek => 'Javë';
+
+  @override
+  String get viewMonth => 'Muaj';
+
+  @override
+  String get errorNetwork =>
+      'Serveri nuk mund të arrihet. Kontrollo lidhjen tënde.';
+
+  @override
+  String get errorUnauthorized => 'Sesioni ka skaduar. Ri-identifikohu.';
+
+  @override
+  String get errorNotFound => 'Nuk u gjet.';
+
+  @override
+  String get errorServer => 'Gabim në server. Provo më vonë.';
+
+  @override
+  String get errorUnknown => 'Diçka shkoi keq. Provo përsëri.';
+
+  @override
+  String get homeBrandTagline => 'Sallone & Berberë · Prishtinë';
+
+  @override
+  String get homeHeroOverline => 'Direktori · Sallone & Berberë';
+
+  @override
+  String get homeHeroTitlePrefix => 'Kosova\nkrihet ';
+
+  @override
+  String get homeHeroTitleItalic => 'me stil.';
+
+  @override
+  String get homeHeroSubtitle =>
+      'Një përzgjedhje sallonesh në mbarë Kosovën.\nRezervim i menjëhershëm, konfirmim brenda 2 minutash.';
+
+  @override
+  String get homeResultsOverline => 'Rezultatet · Prishtinë';
+
+  @override
+  String get homeResultsOverlineSearch => 'Rezultatet · Kërkim';
+
+  @override
+  String get homeSortLabel => 'Renditja: Vlerësimi · Distanca';
+
+  @override
+  String get landingHeroLine1 => 'Sallonet e';
+
+  @override
+  String get landingHeroLine2 => 'Kosovës';
+
+  @override
+  String get capacityBasedHint1 =>
+      'Ju përcaktoni kapacitetin për shërbim (p.sh. 3 qethje njëkohësisht).';
+
+  @override
+  String get capacityBasedHint2 =>
+      'Klientët zgjedhin një orar — nuk shihet punonjësi.';
+
+  @override
+  String get capacityBasedHint3 =>
+      'Ideale nëse jeni vetëm ose menaxhoni vetë rezervimet.';
+
+  @override
+  String get employeeBasedHint1 =>
+      'Çdo punonjës ka orarin e vet dhe oraret e punës.';
+
+  @override
+  String get employeeBasedHint2 =>
+      'Klientët zgjedhin stilistin e tyre kur rezervojnë (ose \"Pa preferencë\").';
+
+  @override
+  String get employeeBasedHint3 =>
+      'Çdo punonjës menaxhon vetë pushimet dhe ditët e lira.';
+
+  @override
+  String get employeeBasedHint4 =>
+      'Ideale për një sallon me shumë stilistë të pavarur.';
+
+  @override
+  String get addressHintExample => 'Rruga Nënë Tereza 12, Prishtinë';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get bookingDesktopChoose => 'Zgjidh ';
+
+  @override
+  String get bookingDesktopChooseEm => 'orarin\ntënd.';
+
+  @override
+  String get bookingDesktopConfirm => 'Konfirmo\n';
+
+  @override
+  String get bookingDesktopConfirmEm => 'takimin tënd.';
+
+  @override
+  String get saveSuccess => 'Ndryshimet u ruajtën';
+
+  @override
+  String get editCategoryTitle => 'Redakto kategorinë';
+
+  @override
+  String get salonName => 'Emri i sallonit';
+
+  @override
+  String get editServiceTitle => 'Redakto shërbimin';
+
+  @override
+  String get durationMinLabel => 'Kohëzgjatja (min)';
+
+  @override
+  String get priceEurLabel => 'Çmimi (€)';
+
+  @override
+  String get maxCapacityLabel => 'Kapaciteti maks';
+
+  @override
+  String get createEmployeeTitle => 'Krijo punonjës';
+
+  @override
+  String get greetingHello => 'PËRSHËNDETJE';
+
+  @override
+  String get dashboardKpiServices => 'SHËRBIMET';
+
+  @override
+  String get dashboardKpiCategories => 'KATEGORITË';
+
+  @override
+  String get dashboardKpiTeam => 'EKIPI';
+
+  @override
+  String get dashboardKpiMode => 'MËNYRA';
+
+  @override
+  String get capacityMode => 'Kapaciteti';
+
+  @override
+  String get editHoursTooltip => 'Redakto oraret';
+
+  @override
+  String get capacitySettingsDescription =>
+      'Menaxhoni oraret dhe kapacitetin maksimal';
+
+  @override
+  String get configureAction => 'Konfiguro';
+
+  @override
+  String get walkInBadge => 'PA REZERVIM';
+
+  @override
+  String get callClient => 'Thirr klientin';
+
+  @override
+  String get authPromptTitle => 'Bashkohu me Termini im';
+
+  @override
+  String get authPromptSubtitle =>
+      'Kyçu për të rezervuar sallonet e tua të preferuara.';
+
+  @override
+  String get monthTotalOverline => 'Takime këtë muaj';
+
+  @override
+  String get monthStatConfirmed => 'të konfirmuara';
+
+  @override
+  String get monthStatPending => 'në pritje';
+
+  @override
+  String get monthStatRejected => 'të refuzuara';
+
+  @override
+  String get appointmentSingular => 'takim';
+
+  @override
+  String get appointmentPlural => 'takime';
+
+  @override
+  String get emptyDayTitle => 'Asnjë takim';
+
+  @override
+  String get emptyDaySubtitle => 'Asgjë e planifikuar për këtë ditë.';
+
+  @override
+  String get clickToOpenDay => 'Kliko përsëri për të hapur ditën.';
+
+  @override
+  String get tapAgain => 'Kliko përsëri';
+
+  @override
+  String get selectMonth => 'Zgjidh një muaj';
+
+  @override
+  String get bookOverline => 'Rezervo · në 30 s';
+
+  @override
+  String get bookSidebarTitle => 'Rezervo ';
+
+  @override
+  String get bookSidebarTitleEm => 'takimin tënd.';
+
+  @override
+  String get bookSidebarHint => 'Zgjidh një shërbim për të vazhduar.';
+
+  @override
+  String get viewServices => 'Shiko shërbimet';
+
+  @override
+  String get averageRating => 'Vlerësimi mesatar';
+
+  @override
+  String get companyOverline => 'Berber · Qethje burrash';
+
+  @override
+  String get salonForMen => 'Sallon për burra';
+
+  @override
+  String get salonForWomen => 'Sallon për gra';
+
+  @override
+  String get salonUnisex => 'Sallon · Burra & Gra';
+
+  @override
+  String get servicesOffered => 'të ofruara';
+
+  @override
+  String get approvalsTitle => 'MIRATIMET';
+
+  @override
+  String get approvalsPendingSuffix => ' në pritje';
+
+  @override
+  String approvalsConfirmedToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count të konfirmuara sot',
+      one: '$count e konfirmuar sot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allApprovedTitle => 'Gjithçka është miratuar';
+
+  @override
+  String get allApprovedSubtitle =>
+      'Asnjë takim nuk është në pritje të miratimit';
+
+  @override
+  String get clientFallback => 'Klient';
+
+  @override
+  String get galleryEmpty => 'Asnjë foto ende. Shto foton e parë.';
+
+  @override
+  String get galleryAddPhoto => 'Shto foto';
+
+  @override
+  String get galleryDelete => 'Fshi foton';
+
+  @override
+  String get galleryDeleteConfirm => 'Fshi këtë foto nga galeria juaj?';
+
+  @override
+  String get galleryUploading => 'Duke ngarkuar…';
+
+  @override
+  String get galleryUploadError => 'Ngarkimi dështoi. Provo sërish.';
+
+  @override
+  String get galleryReorderHint => 'Mbaj dhe tërhiq për të rirenditur';
+
+  @override
+  String get galleryOrderExplanation =>
+      'Radha e fotove përputhet me atë që shfaqet në faqen publike të sallonit tuaj.';
+
+  @override
+  String get salonCoverPhotoHint =>
+      'Fotoja e parë e galerisë tuaj shfaqet në faqen e kërkimit.';
+
+  @override
+  String get favoriteAdded => 'U shtua tek të preferuarat';
+
+  @override
+  String get favoriteRemoved => 'U hoq nga të preferuarat';
+
+  @override
+  String get removeFavoriteTitle => 'Hiq nga të preferuarat?';
+
+  @override
+  String removeFavoriteConfirm(String name) {
+    return '$name nuk do të jetë më i theksuar.';
+  }
+
+  @override
+  String get remove => 'Hiq';
+
+  @override
+  String get favoriteBadgeTooltip => 'Në të preferuarat tuaja';
+
+  @override
+  String get loginToFavorite => 'Kyçu për të shtuar tek të preferuarat';
+
+  @override
+  String photoCount(int count) {
+    return '$count foto';
+  }
+
+  @override
+  String get viewGallery => 'Shiko galerinë';
+
+  @override
+  String photoCountPlus(int count) {
+    return '+ $count';
+  }
+
+  @override
+  String galleryOf(String current, String total) {
+    return '$current — $total';
+  }
+
+  @override
+  String get close => 'Mbyll';
 }

@@ -67,6 +67,20 @@ class CompanyDetailNotifier extends StateNotifier<CompanyDetailState> {
     }
   }
 
+  /// Patches the favorite flag on the loaded company without a network call.
+  /// Used by [FavoriteNotifier] for optimistic UI updates and rollback.
+  /// No-op when [companyId] doesn't match the currently loaded company.
+  void setFavoriteIfLoaded({
+    required String companyId,
+    required bool isFavorite,
+  }) {
+    final company = state.company;
+    if (company == null || company.id != companyId) return;
+    state = state.copyWith(
+      company: company.copyWith(isFavorite: isFavorite),
+    );
+  }
+
   ServiceModel? findService(String serviceId) {
     if (state.company == null) return null;
     for (final cat in state.company!.categories) {

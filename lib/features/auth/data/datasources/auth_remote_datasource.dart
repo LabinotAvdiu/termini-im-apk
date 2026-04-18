@@ -74,6 +74,22 @@ class AuthRemoteDatasource {
   }
 
   // ---------------------------------------------------------------------------
+  // checkEmail — returns true if the email is available, false if taken
+  // ---------------------------------------------------------------------------
+  Future<bool> checkEmail(String email) async {
+    try {
+      final response = await _client.get(
+        '/auth/check-email',
+        queryParameters: {'email': email},
+      );
+      final data = response.data as Map<String, dynamic>;
+      return data['available'] as bool? ?? true;
+    } on DioException {
+      return true;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // register
   // ---------------------------------------------------------------------------
   Future<AuthResponse> register({
@@ -277,57 +293,7 @@ class AuthRemoteDatasource {
   }
 
   // ---------------------------------------------------------------------------
-  // Error mapping helper
+  // Error mapping helper — delegates to the shared mapper in api_exceptions.
   // ---------------------------------------------------------------------------
-  ApiException _mapDioException(DioException e) {
-    // The ApiInterceptor already wraps known status codes into typed exceptions
-    // carried in DioException.error. Unwrap them first.
-    final wrapped = e.error;
-    if (wrapped is ApiException) return wrapped;
-
-    final statusCode = e.response?.statusCode;
-
-    // Try to extract the server error message for user-facing display.
-    String? serverMessage;
-    final data = e.response?.data;
-    if (data is Map<String, dynamic>) {
-      serverMessage =
-          data['message'] as String? ?? data['error'] as String?;
-    }
-
-    switch (statusCode) {
-      case 401:
-        return UnauthorizedException(
-          message: serverMessage ?? 'Non autorisé',
-        );
-      case 422:
-        return ApiException(
-          message: serverMessage ?? 'Données invalides',
-          statusCode: 422,
-        );
-      case 423:
-        return ApiException(
-          message: serverMessage ?? 'Compte temporairement bloqué',
-          statusCode: 423,
-        );
-      case 404:
-        return NotFoundException(
-          message: serverMessage ?? 'Ressource introuvable',
-        );
-      case final code when code != null && code >= 500:
-        return ServerException(
-          message: serverMessage ?? 'Erreur serveur',
-        );
-      default:
-        if (e.type == DioExceptionType.connectionError ||
-            e.type == DioExceptionType.connectionTimeout ||
-            e.type == DioExceptionType.receiveTimeout) {
-          return const NetworkException();
-        }
-        return ApiException(
-          message: serverMessage ?? e.message ?? 'Erreur inconnue',
-          statusCode: statusCode,
-        );
-    }
-  }
+  ApiException _mapDioException(DioException e) => mapDioException(e);
 }

@@ -1,7 +1,24 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+
+/// Scroll behaviour that enables mouse + touch + stylus + trackpad drag.
+/// Flutter Web excludes mouse from PageView drag by default, so Chrome
+/// (including the mobile-emulation devtools) can't swipe the gallery.
+class _AllPointerDeviceDragBehavior extends MaterialScrollBehavior {
+  const _AllPointerDeviceDragBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.trackpad,
+        PointerDeviceKind.invertedStylus,
+      };
+}
 
 class PhotoGallery extends StatefulWidget {
   final List<String> photoUrls;
@@ -41,6 +58,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
           PageView.builder(
             controller: _controller,
             itemCount: widget.photoUrls.length,
+            scrollBehavior: const _AllPointerDeviceDragBehavior(),
             itemBuilder: (context, index) {
               return _GalleryPhoto(url: widget.photoUrls[index]);
             },

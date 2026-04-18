@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Termini im — aperçu du kit logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --ivory: #F7F2EA; --bone: #E8DCC8; --ink: #171311;
+    --burgundy: #7A2232; --gold: #C89B47;
+    --muted: #716059; --line: #D9CAB3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--ivory); color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif; padding: 60px 40px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 48px; }
+  header h1 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.02em;
+  }
+  header h1 em {
+    font-family: 'Instrument Serif', serif; font-style: italic; color: var(--burgundy);
+  }
+  header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .lbl {
+    font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; margin-bottom: 12px;
+  }
+  section { margin-bottom: 56px; }
+  section > .lbl { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .row-big { background: #FCF7EE; padding: 50px; border: 1px solid var(--line); margin-top: 14px; }
+  .row-big.dark { background: var(--ink); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 14px; }
+  .tile { aspect-ratio: 1; border: 1px solid var(--line); }
+  .tile img, .row-big img { max-width: 100%; height: auto; display: block; }
+  .row-big img { margin: 0 auto; max-height: 120px; }
+  .caption {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 13px; color: var(--muted); margin-top: 10px; text-align: center;
+  }
+  .favi-row {
+    display: flex; gap: 24px; align-items: center; margin-top: 14px;
+    padding: 30px; background: #FCF7EE; border: 1px solid var(--line);
+  }
+  .favi-row .f { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .favi-row small { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--muted); display: flex; justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Termini <em>im</em> — kit logo</h1>
+  <p>Aperçu local du kit · les polices Google Fonts sont chargées dynamiquement.</p>
+</header>
+
+<section>
+  <div class="lbl">A · Wordmark principal</div>
+  <div class="row-big"><img src="logo-primary.svg" alt="Logo Termini im"></div>
+  <div class="caption">logo-primary.svg · signature horizontale</div>
+</section>
+
+<section>
+  <div class="lbl">B · Version sombre</div>
+  <div class="row-big dark"><img src="logo-primary-dark.svg" alt="Logo Termini im sombre"></div>
+  <div class="caption">logo-primary-dark.svg · pour fonds sombres</div>
+</section>
+
+<section>
+  <div class="lbl">C · Monogrammes</div>
+  <div class="tiles">
+    <div class="tile"><img src="logo-monogram-ivory.svg" alt=""></div>
+    <div class="tile"><img src="logo-monogram-ink.svg" alt=""></div>
+    <div class="tile"><img src="logo-monogram-burgundy.svg" alt=""></div>
+  </div>
+  <div class="caption">ivoire · encre · bordeaux — pour app icon &amp; avatars</div>
+</section>
+
+<section>
+  <div class="lbl">D · Version empilée</div>
+  <div class="row-big"><img src="logo-stacked.svg" alt="Logo empilé" style="max-height: 200px;"></div>
+  <div class="caption">logo-stacked.svg · formats carrés &amp; print</div>
+</section>
+
+<section>
+  <div class="lbl">E · Favicon — test d'échelle</div>
+  <div class="favi-row">
+    <div class="f"><img src="favicon.svg" width="16" height="16" alt=""><small>16 PX</small></div>
+    <div class="f"><img src="favicon.svg" width="24" height="24" alt=""><small>24 PX</small></div>
+    <div class="f"><img src="favicon.svg" width="32" height="32" alt=""><small>32 PX</small></div>
+    <div class="f"><img src="favicon.svg" width="48" height="48" alt=""><small>48 PX</small></div>
+    <div class="f"><img src="favicon.svg" width="64" height="64" alt=""><small>64 PX</small></div>
+    <div class="f"><img src="favicon.svg" width="96" height="96" alt=""><small>96 PX</small></div>
+  </div>
+</section>
+
+<footer>
+  <span>Termini im · kit logo · Prishtina Editorial</span>
+  <span>7 fichiers SVG</span>
+</footer>
+</div>
+</body>
+</html>

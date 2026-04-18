@@ -1,46 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Termini im — Salons & Barbiers · Prishtina">
 
-  <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Termini-IM">
+  <meta name="apple-mobile-web-app-title" content="Termini im">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Termini-IM</title>
+  <title>Termini im</title>
   <link rel="manifest" href="manifest.json">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --ivory: #f7f2ea;
+      --bone: #e8dcc8;
+      --ink: #171311;
+      --muted: #716059;
+      --burgundy: #7a2232;
+      --gold: #c89b47;
+      --line: #d9cab3;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ───────── Editorial splash ───────── */
+    #splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--ivory);
+      z-index: 9999;
+      transition: opacity 420ms ease, visibility 420ms ease;
+      overflow: hidden;
+    }
+    #splash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* Grain overlay — same texture as the editorial mockup */
+    #splash::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.3;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* Soft burgundy radial glow top-right */
+    #splash::after {
+      content: "";
+      position: absolute;
+      top: -20%;
+      right: -20%;
+      width: 60vw;
+      height: 60vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(122, 34, 50, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .splash-overline {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .splash-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .splash-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--burgundy);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    .splash-title {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 44px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      font-variation-settings: "SOFT" 60;
+      line-height: 1;
+    }
+    .splash-title em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--burgundy);
+    }
+
+    .splash-tagline {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Thin editorial progress bar */
+    .splash-bar {
+      margin-top: 56px;
+      width: 140px;
+      height: 1px;
+      background: var(--line);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .splash-bar::after {
+      content: "";
+      position: absolute;
+      left: -40%;
+      top: 0;
+      bottom: 0;
+      width: 40%;
+      background: var(--burgundy);
+      animation: slide 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.78); }
+    }
+
+    @keyframes slide {
+      0% { left: -40%; }
+      60% { left: 100%; }
+      100% { left: 100%; }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div id="splash">
+    <div class="splash-overline">Termini im</div>
+    <div class="splash-brand">
+      <span class="splash-dot"></span>
+      <span class="splash-title" id="splash-title"></span>
+    </div>
+    <div class="splash-tagline" id="splash-tagline"></div>
+    <div class="splash-bar"></div>
+  </div>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
+  <script>
+    // Detect locale and localize the splash strings before Flutter loads.
+    (function () {
+      const strings = {
+        fr: { title: 'Kosova <em>se coiffe.</em>', tagline: 'Salons & Barbiers' },
+        en: { title: 'Kosovo <em>styled right.</em>', tagline: 'Salons & Barbers' },
+        sq: { title: 'Kosova <em>krihet me stil.</em>', tagline: 'Sallone & Berberë' }
+      };
+      // 1) saved app locale (set by the Flutter side on change) wins
+      // 2) then browser language, 3) finally fall back to Albanian
+      let saved = null;
+      try { saved = localStorage.getItem('termini_locale'); } catch (_) {}
+      const browserLang = (navigator.language || 'sq').slice(0, 2).toLowerCase();
+      const candidate = (saved || browserLang || 'sq').toLowerCase();
+      const lang = strings[candidate] ? candidate : 'sq';
+      document.documentElement.setAttribute('lang', lang);
+      document.getElementById('splash-title').innerHTML = strings[lang].title;
+      document.getElementById('splash-tagline').textContent = strings[lang].tagline;
+    })();
+  </script>
+
+  <!--
+    TODO: Firebase Web — remplace les PLACEHOLDER par les vraies valeurs depuis la Firebase Console.
+    Paramètres du projet → Général → Tes applications web → firebaseConfig
   -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+
+    const firebaseConfig = {
+      apiKey:            'PLACEHOLDER_API_KEY',
+      authDomain:        'termini-im-placeholder.firebaseapp.com',
+      projectId:         'termini-im-placeholder',
+      storageBucket:     'termini-im-placeholder.appspot.com',
+      messagingSenderId: '000000000000',
+      appId:             'PLACEHOLDER_APP_ID',
+    };
+
+    // N'initialise Firebase que si la config est renseignée (pas de crash en dev)
+    if (firebaseConfig.apiKey !== 'PLACEHOLDER_API_KEY') {
+      try {
+        initializeApp(firebaseConfig);
+      } catch (e) {
+        console.warn('[Termini] Firebase web init skipped:', e.message);
+      }
+    } else {
+      console.warn('[Termini] Firebase non configuré — remplace les PLACEHOLDER dans web/index.html');
+    }
+
+    // Enregistre le service worker FCM
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then((reg) => console.debug('[Termini] SW FCM enregistré', reg.scope))
+        .catch((err) => console.warn('[Termini] SW FCM échec:', err));
+    }
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Hide the splash once Flutter has painted its first frame.
+    (function () {
+      const splash = document.getElementById('splash');
+      if (!splash) return;
+      let removed = false;
+      const remove = () => {
+        if (removed) return;
+        removed = true;
+        splash.classList.add('fade-out');
+        setTimeout(() => splash.remove(), 500);
+      };
+      const observer = new MutationObserver(() => {
+        if (document.querySelector('flt-glass-pane, flt-scene-host')) {
+          remove();
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      // Fallback — never leave the splash hanging if the canvas selectors change.
+      setTimeout(remove, 12000);
+    })();
+  </script>
 </body>
 </html>
