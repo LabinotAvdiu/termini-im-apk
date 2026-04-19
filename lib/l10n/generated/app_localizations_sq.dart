@@ -1552,4 +1552,59 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get noReviewsYetOwner => 'Ende asnjë vlerësim.';
+
+  @override
+  String get rejectAppointmentTitle => 'Refuzo këtë rezervim?';
+
+  @override
+  String rejectAppointmentSubtitle(String client) {
+    return '$client do të njoftohet.';
+  }
+
+  @override
+  String get rejectAppointmentWarning =>
+      'Termini mbetet i bllokuar pas refuzimit. Për të liruar terminin dhe lejuar klientë të tjerë të rezervojnë, përdorni butonin \"Liro termin\" pas refuzimit.';
+
+  @override
+  String get rejectAppointmentReasonLabel => 'Arsyeja e refuzimit (opsionale)';
+
+  @override
+  String get rejectAppointmentButton => 'Refuzo';
+
+  @override
+  String get freeSlotButton => 'Liro termin';
+
+  @override
+  String get freeSlotConfirmTitle => 'Ta lirosh këtë termin?';
+
+  @override
+  String get freeSlotConfirmBody => 'Klienti nuk do të marrë njoftim të ri.';
+
+  @override
+  String get freeSlotDone => 'Termini u lirua';
+
+  @override
+  String get slotFreedBadge => 'Termin i liruar';
+
+  @override
+  String get rejectionReasonOwnerLabel => 'ARSYEJA E REFUZIMIT';
+
+  @override
+  String get rejectionReasonClientLabel => 'Arsyeja e sallonit';
+
+  @override
+  String get cancelAppointmentOwnerTitle => 'Anulo këtë rezervim?';
+
+  @override
+  String cancelAppointmentOwnerSubtitle(String client) {
+    return '$client do të njoftohet dhe termini do të lirohet.';
+  }
+
+  @override
+  String get cancelAppointmentOwnerWarning =>
+      'Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.';
+
+  @override
+  String get cancelAppointmentOwnerReasonLabel =>
+      'Arsyeja e anulimit (opsionale)';
 }

@@ -285,10 +285,10 @@ class MyCompanyRemoteDatasource {
   // ── Company planning appointments ────────────────────────────────────────
 
   /// Owner planning — fetch a single day.
-  /// Default status filter includes `no_show` and `cancelled` so the owner
-  /// keeps an honest record of what happened on the slot (otherwise the
-  /// appointment vanishes from the timeline as soon as it's marked no-show).
-  /// `rejected` stays out because a refused request never took place.
+  /// Default status filter covers every state that occupies or recently
+  /// occupied the slot, so the owner keeps an honest timeline. `rejected`
+  /// is included because it still blocks capacity and shows the motif +
+  /// the "Free the slot" action.
   Future<List<PlanningAppointmentModel>> listCompanyAppointments(
     String date, {
     List<String> statuses = const [
@@ -296,6 +296,7 @@ class MyCompanyRemoteDatasource {
       'pending',
       'no_show',
       'cancelled',
+      'rejected',
     ],
   }) async {
     try {
@@ -314,7 +315,7 @@ class MyCompanyRemoteDatasource {
 
   /// Owner planning — fetch a date range (week / month views). Same status
   /// default as `listCompanyAppointments` so the month grid counts reflect
-  /// the real activity including no-shows and cancellations.
+  /// the real activity including no-shows, cancellations and rejections.
   Future<List<PlanningAppointmentModel>> listCompanyAppointmentsRange(
     String start,
     String end, {
@@ -323,6 +324,7 @@ class MyCompanyRemoteDatasource {
       'pending',
       'no_show',
       'cancelled',
+      'rejected',
     ],
   }) async {
     try {
@@ -376,11 +378,18 @@ class MyCompanyRemoteDatasource {
   }
 
   Future<void> updateAppointmentStatus(
-      String id, String status) async {
+    String id,
+    String status, {
+    String? reason,
+  }) async {
     try {
+      final body = <String, dynamic>{'status': status};
+      if (reason != null && reason.trim().isNotEmpty) {
+        body['reason'] = reason.trim();
+      }
       await _client.put(
         ApiConstants.myCompanyAppointmentStatus(id),
-        data: {'status': status},
+        data: body,
       );
     } on DioException catch (e) {
       throw _mapDioException(e);

@@ -11,6 +11,7 @@ import '../../data/datasources/my_company_remote_datasource.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/pending_count_provider.dart';
 import '../widgets/pending_day_helpers.dart';
+import '../widgets/reject_appointment_dialog.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
@@ -58,7 +59,7 @@ class _PendingNotifier extends StateNotifier<_PendingState> {
     }
   }
 
-  Future<void> updateStatus(String id, String status) async {
+  Future<void> updateStatus(String id, String status, {String? reason}) async {
     if (!mounted) return;
     final previous = state.appointments
         .map((a) => a['id'].toString() == id
@@ -68,7 +69,7 @@ class _PendingNotifier extends StateNotifier<_PendingState> {
     state = state.copyWith(appointments: previous);
 
     try {
-      await _datasource.updateAppointmentStatus(id, status);
+      await _datasource.updateAppointmentStatus(id, status, reason: reason);
       if (!mounted) return;
       if (status == 'confirmed' || status == 'rejected') {
         state = state.copyWith(
@@ -194,12 +195,13 @@ class _PendingApprovalsScreenState
                                                   .notifier)
                                               .refresh());
                                     },
-                                    onReject: () {
+                                    onReject: (reason) {
                                       ref
                                           .read(_pendingProvider.notifier)
                                           .updateStatus(
                                               appt['id'].toString(),
-                                              'rejected')
+                                              'rejected',
+                                              reason: reason)
                                           .then((_) => ref
                                               .read(pendingCountProvider
                                                   .notifier)
@@ -239,7 +241,7 @@ bool _isAppointmentPast(Map<String, dynamic> a) {
 class _AppointmentTile extends StatelessWidget {
   final Map<String, dynamic> appointment;
   final VoidCallback onApprove;
-  final VoidCallback onReject;
+  final ValueChanged<String?> onReject;
 
   const _AppointmentTile({
     required this.appointment,
@@ -457,7 +459,16 @@ class _AppointmentTile extends StatelessWidget {
               // Ghost "Refuser" button
               Expanded(
                 child: OutlinedButton(
-                  onPressed: onReject,
+                  onPressed: () async {
+                    final result = await showRejectAppointmentDialog(
+                      context,
+                      clientName: clientName.isNotEmpty
+                          ? clientName
+                          : context.l10n.clientFallback,
+                    );
+                    if (result == null || !result.confirmed) return;
+                    onReject(result.reason);
+                  },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textSecondary,
                     side: const BorderSide(color: AppColors.border, width: 1),

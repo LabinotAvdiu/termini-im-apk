@@ -614,6 +614,13 @@ class _DesktopAppointmentCard extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.xs),
                   _DesktopNoShowExplanation(),
                 ],
+                if (appointment.status == 'rejected' &&
+                    (appointment.rejectionReason?.trim().isNotEmpty ??
+                        false)) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  _DesktopRejectionReasonClient(
+                      reason: appointment.rejectionReason!),
+                ],
               ],
             ),
           ),
@@ -895,6 +902,62 @@ class _DesktopNoShowExplanation extends StatelessWidget {
                 height: 1.4,
                 letterSpacing: 0,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rejection reason shown to the client on desktop (salon's motive)
+// ---------------------------------------------------------------------------
+
+class _DesktopRejectionReasonClient extends StatelessWidget {
+  final String reason;
+  const _DesktopRejectionReasonClient({required this.reason});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.format_quote_rounded,
+              size: 14, color: AppColors.primary.withValues(alpha: 0.75)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.rejectionReasonClientLabel.toUpperCase(),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary.withValues(alpha: 0.85),
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  reason,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textPrimary,
+                    height: 1.45,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

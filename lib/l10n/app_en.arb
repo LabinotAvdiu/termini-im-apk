@@ -631,5 +631,29 @@
   "reviewsReceivedCardTitle": "Reviews received",
   "averageRatingOutOf": "out of 5",
   "seeAllReviews": "See all →",
-  "noReviewsYetOwner": "No reviews yet."
+  "noReviewsYetOwner": "No reviews yet.",
+
+  "rejectAppointmentTitle": "Reject this booking?",
+  "rejectAppointmentSubtitle": "{client} will be notified.",
+  "@rejectAppointmentSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "rejectAppointmentWarning": "The slot remains blocked after rejection. To free the slot and allow other clients to book, use the \"Free the slot\" button after rejecting.",
+  "rejectAppointmentReasonLabel": "Reason for rejection (optional)",
+  "rejectAppointmentButton": "Reject",
+  "freeSlotButton": "Free the slot",
+  "freeSlotConfirmTitle": "Free this slot?",
+  "freeSlotConfirmBody": "The client will not receive another notification.",
+  "freeSlotDone": "Slot freed",
+  "slotFreedBadge": "Slot freed",
+  "rejectionReasonOwnerLabel": "REJECTION REASON",
+  "rejectionReasonClientLabel": "Salon's reason",
+
+  "cancelAppointmentOwnerTitle": "Cancel this booking?",
+  "cancelAppointmentOwnerSubtitle": "{client} will be notified and the slot will be freed.",
+  "@cancelAppointmentOwnerSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerWarning": "The slot will become available again and the client will be notified.",
+  "cancelAppointmentOwnerReasonLabel": "Reason for cancellation (optional)"
 }

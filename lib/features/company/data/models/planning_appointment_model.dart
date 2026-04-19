@@ -40,6 +40,10 @@ class PlanningAppointmentModel {
   final String? cancellationReason;
   /// ISO timestamp of the client-initiated cancellation (null otherwise).
   final String? cancelledByClientAt;
+  /// Reason the owner provided when rejecting the appointment (pending → rejected).
+  final String? rejectionReason;
+  /// ISO timestamp when the owner rejected the appointment (null otherwise).
+  final String? rejectedByOwnerAt;
 
   const PlanningAppointmentModel({
     required this.id,
@@ -56,6 +60,8 @@ class PlanningAppointmentModel {
     this.clientNoShowCount = 0,
     this.cancellationReason,
     this.cancelledByClientAt,
+    this.rejectionReason,
+    this.rejectedByOwnerAt,
   });
 
   String get clientFullName =>
@@ -89,7 +95,11 @@ class PlanningAppointmentModel {
     return dt.isBefore(now) && now.difference(dt).inHours < 24;
   }
 
-  PlanningAppointmentModel copyWith({String? status}) {
+  PlanningAppointmentModel copyWith({
+    String? status,
+    String? rejectionReason,
+    String? rejectedByOwnerAt,
+  }) {
     return PlanningAppointmentModel(
       id: id,
       date: date,
@@ -105,6 +115,8 @@ class PlanningAppointmentModel {
       clientNoShowCount: clientNoShowCount,
       cancellationReason: cancellationReason,
       cancelledByClientAt: cancelledByClientAt,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      rejectedByOwnerAt: rejectedByOwnerAt ?? this.rejectedByOwnerAt,
     );
   }
 
@@ -130,6 +142,10 @@ class PlanningAppointmentModel {
           json['cancellation_reason'] as String?,
       cancelledByClientAt: json['cancelledByClientAt'] as String? ??
           json['cancelled_by_client_at'] as String?,
+      rejectionReason: json['rejectionReason'] as String? ??
+          json['rejection_reason'] as String?,
+      rejectedByOwnerAt: json['rejectedByOwnerAt'] as String? ??
+          json['rejected_by_owner_at'] as String?,
     );
   }
 }

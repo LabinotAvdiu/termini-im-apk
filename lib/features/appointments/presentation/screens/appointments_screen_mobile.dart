@@ -473,6 +473,13 @@ class _AppointmentCard extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _NoShowExplanation(),
                 ],
+
+                // ── Rejection reason (shown by the salon) ────────
+                if (appointment.status == 'rejected' &&
+                    (appointment.rejectionReason?.trim().isNotEmpty ?? false)) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  _RejectionReasonClient(reason: appointment.rejectionReason!),
+                ],
               ],
             ),
           ),
@@ -529,6 +536,65 @@ class _NoShowExplanation extends StatelessWidget {
                 color: AppColors.textSecondary,
                 height: 1.4,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rejection reason shown to the client (salon's motive)
+// ---------------------------------------------------------------------------
+
+class _RejectionReasonClient extends StatelessWidget {
+  final String reason;
+  const _RejectionReasonClient({required this.reason});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.format_quote_rounded,
+            size: 16,
+            color: AppColors.primary.withValues(alpha: 0.75),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.rejectionReasonClientLabel.toUpperCase(),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary.withValues(alpha: 0.85),
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  reason,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textPrimary,
+                    height: 1.45,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

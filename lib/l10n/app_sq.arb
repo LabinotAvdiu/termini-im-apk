@@ -631,5 +631,29 @@
   "reviewsReceivedCardTitle": "Vlerësimet e marra",
   "averageRatingOutOf": "nga 5",
   "seeAllReviews": "Shiko të gjitha →",
-  "noReviewsYetOwner": "Ende asnjë vlerësim."
+  "noReviewsYetOwner": "Ende asnjë vlerësim.",
+
+  "rejectAppointmentTitle": "Refuzo këtë rezervim?",
+  "rejectAppointmentSubtitle": "{client} do të njoftohet.",
+  "@rejectAppointmentSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "rejectAppointmentWarning": "Termini mbetet i bllokuar pas refuzimit. Për të liruar terminin dhe lejuar klientë të tjerë të rezervojnë, përdorni butonin \"Liro termin\" pas refuzimit.",
+  "rejectAppointmentReasonLabel": "Arsyeja e refuzimit (opsionale)",
+  "rejectAppointmentButton": "Refuzo",
+  "freeSlotButton": "Liro termin",
+  "freeSlotConfirmTitle": "Ta lirosh këtë termin?",
+  "freeSlotConfirmBody": "Klienti nuk do të marrë njoftim të ri.",
+  "freeSlotDone": "Termini u lirua",
+  "slotFreedBadge": "Termin i liruar",
+  "rejectionReasonOwnerLabel": "ARSYEJA E REFUZIMIT",
+  "rejectionReasonClientLabel": "Arsyeja e sallonit",
+
+  "cancelAppointmentOwnerTitle": "Anulo këtë rezervim?",
+  "cancelAppointmentOwnerSubtitle": "{client} do të njoftohet dhe termini do të lirohet.",
+  "@cancelAppointmentOwnerSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerWarning": "Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.",
+  "cancelAppointmentOwnerReasonLabel": "Arsyeja e anulimit (opsionale)"
 }

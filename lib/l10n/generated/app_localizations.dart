@@ -2961,6 +2961,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vous n\'avez pas encore d\'avis.'**
   String get noReviewsYetOwner;
+
+  /// No description provided for @rejectAppointmentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser ce rendez-vous ?'**
+  String get rejectAppointmentTitle;
+
+  /// No description provided for @rejectAppointmentSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{client} sera prévenu(e).'**
+  String rejectAppointmentSubtitle(String client);
+
+  /// No description provided for @rejectAppointmentWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau reste bloqué après le refus. Pour libérer le créneau et permettre à d\'autres clients de réserver, utilisez le bouton « Libérer le créneau » après avoir refusé.'**
+  String get rejectAppointmentWarning;
+
+  /// No description provided for @rejectAppointmentReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du refus (facultatif)'**
+  String get rejectAppointmentReasonLabel;
+
+  /// No description provided for @rejectAppointmentButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get rejectAppointmentButton;
+
+  /// No description provided for @freeSlotButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libérer le créneau'**
+  String get freeSlotButton;
+
+  /// No description provided for @freeSlotConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libérer ce créneau ?'**
+  String get freeSlotConfirmTitle;
+
+  /// No description provided for @freeSlotConfirmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le client ne recevra pas de nouvelle notification.'**
+  String get freeSlotConfirmBody;
+
+  /// No description provided for @freeSlotDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneau libéré'**
+  String get freeSlotDone;
+
+  /// No description provided for @slotFreedBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneau libéré'**
+  String get slotFreedBadge;
+
+  /// No description provided for @rejectionReasonOwnerLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'MOTIF DU REFUS'**
+  String get rejectionReasonOwnerLabel;
+
+  /// No description provided for @rejectionReasonClientLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du salon'**
+  String get rejectionReasonClientLabel;
+
+  /// No description provided for @cancelAppointmentOwnerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler ce rendez-vous ?'**
+  String get cancelAppointmentOwnerTitle;
+
+  /// No description provided for @cancelAppointmentOwnerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{client} sera prévenu(e) et le créneau sera libéré.'**
+  String cancelAppointmentOwnerSubtitle(String client);
+
+  /// No description provided for @cancelAppointmentOwnerWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau redeviendra disponible à la réservation et le client sera notifié.'**
+  String get cancelAppointmentOwnerWarning;
+
+  /// No description provided for @cancelAppointmentOwnerReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif de l\'annulation (facultatif)'**
+  String get cancelAppointmentOwnerReasonLabel;
 }
 
 class _AppLocalizationsDelegate

@@ -3,13 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../data/models/my_company_model.dart';
+import '../widgets/cancel_appointment_owner_dialog.dart';
 import '../widgets/cancellation_reason_box.dart';
+import '../widgets/reject_appointment_dialog.dart';
+import '../widgets/rejection_reason_box.dart';
 import '../../data/models/planning_appointment_model.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/company_planning_provider.dart';
@@ -1380,11 +1384,11 @@ class _MonthDayCell extends StatelessWidget {
     final List<BoxShadow> shadows;
 
     if (isSelected) {
-      bgColor = AppColors.textPrimary;
+      bgColor = AppColors.primary;
       border = Border.all(color: AppColors.secondary, width: 2);
       shadows = [
         BoxShadow(
-          color: AppColors.textPrimary.withValues(alpha: 0.28),
+          color: AppColors.primary.withValues(alpha: 0.32),
           blurRadius: 10,
           offset: const Offset(0, 3),
         ),
@@ -2209,27 +2213,15 @@ class _PlanningAppointmentDetailSheetState
   }
 
   Future<void> _reject() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(context.l10n.confirmRejectTitle),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(context.l10n.cancel)),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.rejectAppointment,
-                style: const TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
+    final result = await showRejectAppointmentDialog(
+      context,
+      clientName: appt.clientFullName,
     );
-    if (confirmed != true || !mounted) return;
+    if (result == null || !result.confirmed || !mounted) return;
     setState(() => _loading = true);
     final ok = await ref
         .read(companyPlanningProvider.notifier)
-        .rejectAppointment(appt.id);
+        .rejectAppointment(appt.id, reason: result.reason);
     if (!mounted) return;
     setState(() => _loading = false);
     if (ok) {
@@ -2240,29 +2232,74 @@ class _PlanningAppointmentDetailSheetState
     }
   }
 
-  Future<void> _cancel() async {
+  Future<void> _freeSlot() async {
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierColor: Colors.black54,
       builder: (_) => AlertDialog(
-        title: Text(context.l10n.confirmCancelTitle),
-        content: Text(context.l10n.cancelAppointmentBodyOwner),
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
+        title: Text(
+          context.l10n.freeSlotConfirmTitle,
+          style: GoogleFonts.fraunces(
+            fontSize: 18,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.4,
+          ),
+        ),
+        content: Text(
+          context.l10n.freeSlotConfirmBody,
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(context.l10n.cancel)),
-          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
+          ),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.secondary,
+              side: BorderSide(color: AppColors.secondary.withValues(alpha: 0.6)),
+            ),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.cancelAppointment,
-                style: const TextStyle(color: AppColors.error)),
+            icon: const Icon(Icons.lock_open_rounded, size: 16),
+            label: Text(context.l10n.freeSlotButton),
           ),
         ],
       ),
     );
     if (confirmed != true || !mounted) return;
+    ref.read(uxPrefsProvider.notifier).lightImpact();
     setState(() => _loading = true);
     final ok = await ref
         .read(companyPlanningProvider.notifier)
-        .cancelAppointment(appt.id);
+        .freeRejectedSlot(appt.id);
+    if (!mounted) return;
+    setState(() => _loading = false);
+    if (ok) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.freeSlotDone)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.actionFailed)));
+    }
+  }
+
+  Future<void> _cancel() async {
+    final result = await showCancelAppointmentOwnerDialog(
+      context,
+      clientName: appt.clientFullName,
+    );
+    if (result == null || !result.confirmed || !mounted) return;
+    setState(() => _loading = true);
+    final ok = await ref
+        .read(companyPlanningProvider.notifier)
+        .cancelAppointment(appt.id, reason: result.reason);
     if (!mounted) return;
     setState(() => _loading = false);
     if (ok) {
@@ -2394,6 +2431,16 @@ class _PlanningAppointmentDetailSheetState
                   _NoShowBadge(count: appt.clientNoShowCount),
                   const SizedBox(height: AppSpacing.sm),
                 ],
+                // Rejection reason — visible when owner rejected (or when
+                // the slot was subsequently freed: rejected → cancelled).
+                if ((appt.status == 'rejected' || appt.status == 'cancelled') &&
+                    (appt.rejectionReason?.trim().isNotEmpty ?? false)) ...[
+                  RejectionReasonBox(
+                    reason: appt.rejectionReason!,
+                    showSlotFreedBadge: appt.status == 'cancelled',
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 // Client-initiated cancellation reason — visible whenever
                 // the client filled the optional motif. Owners use it to
                 // understand patterns (last-minute cancellations, recurring
@@ -2470,6 +2517,23 @@ class _PlanningAppointmentDetailSheetState
                         label: Text(context.l10n.markNoShow),
                       ),
                     ),
+                ] else if (appt.status == 'rejected') ...[
+                  // Slot is still blocked — offer to free it.
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _freeSlot,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.secondary,
+                        side: BorderSide(
+                            color: AppColors.secondary.withValues(alpha: 0.6)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.xs),
+                      ),
+                      icon: const Icon(Icons.lock_open_rounded, size: 18),
+                      label: Text(context.l10n.freeSlotButton),
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -2504,54 +2568,84 @@ class PlanningAppointmentDetail extends ConsumerWidget {
   }
 
   Future<void> _reject(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(context.l10n.confirmRejectTitle),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(context.l10n.cancel)),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.rejectAppointment,
-                style: const TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
+    final result = await showRejectAppointmentDialog(
+      context,
+      clientName: appointment.clientFullName,
     );
-    if (confirmed != true || !context.mounted) return;
+    if (result == null || !result.confirmed || !context.mounted) return;
     final ok = await ref
         .read(companyPlanningProvider.notifier)
-        .rejectAppointment(appointment.id);
+        .rejectAppointment(appointment.id, reason: result.reason);
     if (!ok && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.actionFailed)));
     }
   }
 
-  Future<void> _cancel(BuildContext context, WidgetRef ref) async {
+  Future<void> _freeSlot(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierColor: Colors.black54,
       builder: (_) => AlertDialog(
-        title: Text(context.l10n.confirmCancelTitle),
-        content: Text(context.l10n.cancelAppointmentBodyOwner),
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
+        title: Text(
+          context.l10n.freeSlotConfirmTitle,
+          style: GoogleFonts.fraunces(
+            fontSize: 18,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.4,
+          ),
+        ),
+        content: Text(
+          context.l10n.freeSlotConfirmBody,
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(context.l10n.cancel)),
-          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
+          ),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.secondary,
+              side: BorderSide(
+                  color: AppColors.secondary.withValues(alpha: 0.6)),
+            ),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.cancelAppointment,
-                style: const TextStyle(color: AppColors.error)),
+            icon: const Icon(Icons.lock_open_rounded, size: 16),
+            label: Text(context.l10n.freeSlotButton),
           ),
         ],
       ),
     );
     if (confirmed != true || !context.mounted) return;
+    ref.read(uxPrefsProvider.notifier).lightImpact();
     final ok = await ref
         .read(companyPlanningProvider.notifier)
-        .cancelAppointment(appointment.id);
+        .freeRejectedSlot(appointment.id);
+    if (!context.mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.freeSlotDone)));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.actionFailed)));
+    }
+  }
+
+  Future<void> _cancel(BuildContext context, WidgetRef ref) async {
+    final result = await showCancelAppointmentOwnerDialog(
+      context,
+      clientName: appointment.clientFullName,
+    );
+    if (result == null || !result.confirmed || !context.mounted) return;
+    final ok = await ref
+        .read(companyPlanningProvider.notifier)
+        .cancelAppointment(appointment.id, reason: result.reason);
     if (!ok && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.actionFailed)));
@@ -2611,10 +2705,36 @@ class PlanningAppointmentDetail extends ConsumerWidget {
           label:
               '${appointment.service.name}  •  ${appointment.service.durationMinutes} min  •  ${appointment.service.price.toStringAsFixed(0)} €',
         ),
+        if ((appointment.status == 'rejected' ||
+                appointment.status == 'cancelled') &&
+            (appointment.rejectionReason?.trim().isNotEmpty ?? false)) ...[
+          const SizedBox(height: AppSpacing.sm),
+          RejectionReasonBox(
+            reason: appointment.rejectionReason!,
+            showSlotFreedBadge: appointment.status == 'cancelled',
+          ),
+        ],
         if (appointment.status == 'cancelled' &&
             (appointment.cancellationReason?.trim().isNotEmpty ?? false)) ...[
           const SizedBox(height: AppSpacing.sm),
           CancellationReasonBox(reason: appointment.cancellationReason!),
+        ],
+        if (appointment.status == 'rejected') ...[
+          const SizedBox(height: AppSpacing.sm),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _freeSlot(context, ref),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.secondary,
+                side: BorderSide(
+                    color: AppColors.secondary.withValues(alpha: 0.6)),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              ),
+              icon: const Icon(Icons.lock_open_rounded, size: 16),
+              label: Text(context.l10n.freeSlotButton),
+            ),
+          ),
         ],
         if (appointment.status == 'pending' && !appointment.isPast) ...[
           const SizedBox(height: AppSpacing.sm),
@@ -2803,6 +2923,12 @@ class PlanningStatusBadge extends StatelessWidget {
       case 'pending':
         color = AppColors.warning;
         label = context.l10n.appointmentPending;
+      case 'rejected':
+        color = AppColors.error;
+        label = context.l10n.appointmentRejected;
+      case 'no_show':
+        color = AppColors.textHint;
+        label = context.l10n.appointmentNoShow;
       default:
         color = AppColors.textHint;
         label = context.l10n.appointmentCancelled;

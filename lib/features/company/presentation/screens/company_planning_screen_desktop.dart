@@ -11,7 +11,11 @@ import '../../data/models/my_company_model.dart';
 import '../../data/models/planning_appointment_model.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/company_planning_provider.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../widgets/cancellation_reason_box.dart';
+import '../widgets/cancel_appointment_owner_dialog.dart';
+import '../widgets/reject_appointment_dialog.dart';
+import '../widgets/rejection_reason_box.dart';
 import 'company_planning_screen_mobile.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
@@ -125,9 +129,9 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
     final l = context.l10n;
 
     final months = [
-      l.monthShortJan, l.monthShortFeb, l.monthShortMar, l.monthShortApr,
-      l.monthShortMay, l.monthShortJun, l.monthShortJul, l.monthShortAug,
-      l.monthShortSep, l.monthShortOct, l.monthShortNov, l.monthShortDec,
+      l.monthJan, l.monthFeb, l.monthMar, l.monthApr,
+      l.monthMay, l.monthJun, l.monthJul, l.monthAug,
+      l.monthSep, l.monthOct, l.monthNov, l.monthDec,
     ];
     final dayNames = [
       l.monday, l.tuesday, l.wednesday, l.thursday,
@@ -151,8 +155,14 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
         }
       case CompanyPlanningViewMode.month:
         formattedDate =
-            '${months[date.month - 1].toUpperCase()} ${date.year}';
+            '${_capitalize(months[date.month - 1])} ${date.year}';
     }
+
+    // Fixed width for the date label so the navigation chevrons stay anchored
+    // regardless of which day / month is displayed. The value is sized for the
+    // widest possible rendering across all three locales (FR/EN/SQ) plus a bit
+    // of breathing room so the calendar icon doesn't ride up against the text.
+    const double kDateLabelWidth = 340;
 
     return Container(
       color: AppColors.surface,
@@ -176,17 +186,29 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
                   CompanyPlanningViewMode.month => l.previousMonth,
                 },
               ),
-              GestureDetector(
-                onTap: onPickDate,
-                behavior: HitTestBehavior.opaque,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(formattedDate, style: AppTextStyles.h3),
-                    const SizedBox(width: AppSpacing.xs),
-                    const Icon(Icons.calendar_today_rounded,
-                        size: 16, color: AppColors.primary),
-                  ],
+              SizedBox(
+                width: kDateLabelWidth,
+                child: GestureDetector(
+                  onTap: onPickDate,
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          formattedDate,
+                          style: AppTextStyles.h3,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      const Icon(Icons.calendar_today_rounded,
+                          size: 16, color: AppColors.primary),
+                    ],
+                  ),
                 ),
               ),
               IconButton(
@@ -236,6 +258,9 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
       ),
     );
   }
+
+  String _capitalize(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
 
 // ---------------------------------------------------------------------------
@@ -668,20 +693,60 @@ class _DesktopApprovalsPanel extends ConsumerWidget {
                         itemCount: dayList.length,
                         separatorBuilder: (_, __) =>
                             const SizedBox(height: AppSpacing.sm),
-                        itemBuilder: (_, i) => _DayAppointmentCard(
+                        itemBuilder: (ctx, i) => _DayAppointmentCard(
                           appointment: dayList[i],
                           onConfirm: () => ref
                               .read(companyPlanningProvider.notifier)
                               .confirmAppointment(dayList[i].id),
-                          onReject: () => ref
-                              .read(companyPlanningProvider.notifier)
-                              .rejectAppointment(dayList[i].id),
-                          onCancel: () => ref
-                              .read(companyPlanningProvider.notifier)
-                              .cancelAppointment(dayList[i].id),
+                          onReject: () async {
+                            final result =
+                                await showRejectAppointmentDialog(
+                              ctx,
+                              clientName: dayList[i].clientFullName,
+                            );
+                            if (result == null || !result.confirmed) return;
+                            ref
+                                .read(companyPlanningProvider.notifier)
+                                .rejectAppointment(dayList[i].id,
+                                    reason: result.reason);
+                          },
+                          onCancel: () async {
+                            final result =
+                                await showCancelAppointmentOwnerDialog(
+                              ctx,
+                              clientName: dayList[i].clientFullName,
+                            );
+                            if (result == null || !result.confirmed) return;
+                            final ok = await ref
+                                .read(companyPlanningProvider.notifier)
+                                .cancelAppointment(dayList[i].id,
+                                    reason: result.reason);
+                            if (!ok && ctx.mounted) {
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                    content: Text(ctx.l10n.actionFailed)),
+                              );
+                            }
+                          },
                           onMarkNoShow: () => ref
                               .read(companyPlanningProvider.notifier)
                               .markNoShow(dayList[i].id),
+                          onFreeSlot: () async {
+                            ref
+                                .read(uxPrefsProvider.notifier)
+                                .lightImpact();
+                            final ok = await ref
+                                .read(companyPlanningProvider.notifier)
+                                .freeRejectedSlot(dayList[i].id);
+                            if (!ctx.mounted) return;
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: Text(ok
+                                    ? ctx.l10n.freeSlotDone
+                                    : ctx.l10n.actionFailed),
+                              ),
+                            );
+                          },
                         ),
                       ),
           ),
@@ -1052,12 +1117,13 @@ class _EmptyApprovals extends StatelessWidget {
 // Pending appointment card in approvals panel
 // ---------------------------------------------------------------------------
 
-class _DayAppointmentCard extends StatelessWidget {
+class _DayAppointmentCard extends ConsumerWidget {
   final PlanningAppointmentModel appointment;
   final VoidCallback onConfirm;
   final VoidCallback onReject;
   final VoidCallback onCancel;
   final VoidCallback onMarkNoShow;
+  final VoidCallback onFreeSlot;
 
   const _DayAppointmentCard({
     required this.appointment,
@@ -1065,10 +1131,11 @@ class _DayAppointmentCard extends StatelessWidget {
     required this.onReject,
     required this.onCancel,
     required this.onMarkNoShow,
+    required this.onFreeSlot,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isWalkIn = appointment.isWalkIn;
     final status = appointment.status;
     final isCancelled =
@@ -1227,6 +1294,17 @@ class _DayAppointmentCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           const Divider(height: 1, color: AppColors.divider),
 
+          // Rejection reason — shown on rejected (slot still blocked) or on
+          // cancelled cards that went through rejection first (slot freed).
+          if ((status == 'rejected' || status == 'cancelled') &&
+              (appointment.rejectionReason?.trim().isNotEmpty ?? false))
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: RejectionReasonBox(
+                reason: appointment.rejectionReason!,
+                showSlotFreedBadge: status == 'cancelled',
+              ),
+            ),
           // Client-initiated cancellation motif — shown on cancelled cards.
           if (status == 'cancelled' &&
               (appointment.cancellationReason?.trim().isNotEmpty ?? false))
@@ -1356,6 +1434,36 @@ class _DayAppointmentCard extends StatelessWidget {
                             ),
                     ),
             ),
+          // "Libérer le créneau" — only shown on rejected appointments.
+          if (status == 'rejected')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm, 0, AppSpacing.sm, AppSpacing.sm),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.secondary,
+                    side: BorderSide(
+                        color: AppColors.secondary.withValues(alpha: 0.6)),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    minimumSize: const Size(0, 32),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                  ),
+                  onPressed: onFreeSlot,
+                  icon: const Icon(Icons.lock_open_rounded, size: 14),
+                  label: Text(
+                    context.l10n.freeSlotButton,
+                    style: GoogleFonts.instrumentSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -1373,6 +1481,8 @@ class _StatusPill extends StatelessWidget {
     final (Color color, String label) = switch (status) {
       'confirmed' => (AppColors.primary, l.appointmentConfirmed),
       'pending' => (AppColors.warning, l.appointmentPending),
+      'rejected' => (AppColors.error, l.appointmentRejected),
+      'no_show' => (AppColors.textHint, l.appointmentNoShow),
       _ => (AppColors.textHint, l.appointmentCancelled),
     };
     return Container(

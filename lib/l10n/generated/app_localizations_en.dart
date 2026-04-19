@@ -1549,4 +1549,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noReviewsYetOwner => 'No reviews yet.';
+
+  @override
+  String get rejectAppointmentTitle => 'Reject this booking?';
+
+  @override
+  String rejectAppointmentSubtitle(String client) {
+    return '$client will be notified.';
+  }
+
+  @override
+  String get rejectAppointmentWarning =>
+      'The slot remains blocked after rejection. To free the slot and allow other clients to book, use the \"Free the slot\" button after rejecting.';
+
+  @override
+  String get rejectAppointmentReasonLabel => 'Reason for rejection (optional)';
+
+  @override
+  String get rejectAppointmentButton => 'Reject';
+
+  @override
+  String get freeSlotButton => 'Free the slot';
+
+  @override
+  String get freeSlotConfirmTitle => 'Free this slot?';
+
+  @override
+  String get freeSlotConfirmBody =>
+      'The client will not receive another notification.';
+
+  @override
+  String get freeSlotDone => 'Slot freed';
+
+  @override
+  String get slotFreedBadge => 'Slot freed';
+
+  @override
+  String get rejectionReasonOwnerLabel => 'REJECTION REASON';
+
+  @override
+  String get rejectionReasonClientLabel => 'Salon\'s reason';
+
+  @override
+  String get cancelAppointmentOwnerTitle => 'Cancel this booking?';
+
+  @override
+  String cancelAppointmentOwnerSubtitle(String client) {
+    return '$client will be notified and the slot will be freed.';
+  }
+
+  @override
+  String get cancelAppointmentOwnerWarning =>
+      'The slot will become available again and the client will be notified.';
+
+  @override
+  String get cancelAppointmentOwnerReasonLabel =>
+      'Reason for cancellation (optional)';
 }

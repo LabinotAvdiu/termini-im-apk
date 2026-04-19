@@ -631,5 +631,29 @@
   "reviewsReceivedCardTitle": "Avis reçus",
   "averageRatingOutOf": "sur 5",
   "seeAllReviews": "Voir tout →",
-  "noReviewsYetOwner": "Vous n'avez pas encore d'avis."
+  "noReviewsYetOwner": "Vous n'avez pas encore d'avis.",
+
+  "rejectAppointmentTitle": "Refuser ce rendez-vous ?",
+  "rejectAppointmentSubtitle": "{client} sera prévenu(e).",
+  "@rejectAppointmentSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "rejectAppointmentWarning": "Le créneau reste bloqué après le refus. Pour libérer le créneau et permettre à d'autres clients de réserver, utilisez le bouton « Libérer le créneau » après avoir refusé.",
+  "rejectAppointmentReasonLabel": "Motif du refus (facultatif)",
+  "rejectAppointmentButton": "Refuser",
+  "freeSlotButton": "Libérer le créneau",
+  "freeSlotConfirmTitle": "Libérer ce créneau ?",
+  "freeSlotConfirmBody": "Le client ne recevra pas de nouvelle notification.",
+  "freeSlotDone": "Créneau libéré",
+  "slotFreedBadge": "Créneau libéré",
+  "rejectionReasonOwnerLabel": "MOTIF DU REFUS",
+  "rejectionReasonClientLabel": "Motif du salon",
+
+  "cancelAppointmentOwnerTitle": "Annuler ce rendez-vous ?",
+  "cancelAppointmentOwnerSubtitle": "{client} sera prévenu(e) et le créneau sera libéré.",
+  "@cancelAppointmentOwnerSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerWarning": "Le créneau redeviendra disponible à la réservation et le client sera notifié.",
+  "cancelAppointmentOwnerReasonLabel": "Motif de l'annulation (facultatif)"
 }

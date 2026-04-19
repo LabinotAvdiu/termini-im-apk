@@ -251,16 +251,27 @@ class CompanyPlanningNotifier
   Future<bool> confirmAppointment(String id) =>
       _updateStatus(id, 'confirmed');
 
-  Future<bool> rejectAppointment(String id) =>
-      _updateStatus(id, 'rejected');
+  /// Reject a pending appointment, optionally providing a [reason] that will
+  /// be stored as [rejectionReason] on the resource and shown to the owner.
+  /// The slot stays blocked after rejection — use [freeRejectedSlot] to release it.
+  Future<bool> rejectAppointment(String id, {String? reason}) =>
+      _updateStatus(id, 'rejected', reason: reason);
 
-  Future<bool> cancelAppointment(String id) =>
+  /// Cancel an appointment as the owner (confirmed → cancelled).
+  /// Optionally pass a [reason] stored as [cancellation_reason].
+  Future<bool> cancelAppointment(String id, {String? reason}) =>
+      _updateStatus(id, 'cancelled', reason: reason);
+
+  /// Transition a previously-rejected appointment to cancelled, releasing the
+  /// capacity slot. No client notification is sent (backend contract).
+  /// The original [rejectionReason] is preserved by the backend.
+  Future<bool> freeRejectedSlot(String id) =>
       _updateStatus(id, 'cancelled');
 
   /// Feature 4 — Mark a client as no-show (owner only).
   Future<bool> markNoShow(String id) => _updateStatus(id, 'no_show');
 
-  Future<bool> _updateStatus(String id, String newStatus) async {
+  Future<bool> _updateStatus(String id, String newStatus, {String? reason}) async {
     if (!mounted) return false;
 
     final previousAppointments = state.appointments;
@@ -300,7 +311,7 @@ class CompanyPlanningNotifier
 
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
-      await datasource.updateAppointmentStatus(id, newStatus);
+      await datasource.updateAppointmentStatus(id, newStatus, reason: reason);
       return true;
     } catch (_) {
       if (!mounted) return false;

@@ -26,6 +26,10 @@ class AppointmentModel {
   final ReviewModel? review;
   final bool canReview;
 
+  // Feature 5 — Rejection with reason
+  final String? rejectionReason;
+  final String? rejectedByOwnerAt;
+
   const AppointmentModel({
     required this.id,
     required this.companyId,
@@ -44,6 +48,8 @@ class AppointmentModel {
     this.minutesUntilStart,
     this.review,
     this.canReview = false,
+    this.rejectionReason,
+    this.rejectedByOwnerAt,
   });
 
   AppointmentModel copyWith({
@@ -70,6 +76,8 @@ class AppointmentModel {
       minutesUntilStart: minutesUntilStart,
       review: review ?? this.review,
       canReview: canReview ?? this.canReview,
+      rejectionReason: rejectionReason,
+      rejectedByOwnerAt: rejectedByOwnerAt,
     );
   }
 
@@ -122,6 +130,10 @@ class AppointmentModel {
       canReview: data['canReview'] as bool? ??
           data['can_review'] as bool? ??
           false,
+      rejectionReason: data['rejectionReason'] as String? ??
+          data['rejection_reason'] as String?,
+      rejectedByOwnerAt: data['rejectedByOwnerAt'] as String? ??
+          data['rejected_by_owner_at'] as String?,
     );
   }
 }

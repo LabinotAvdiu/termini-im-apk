@@ -1558,4 +1558,60 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noReviewsYetOwner => 'Vous n\'avez pas encore d\'avis.';
+
+  @override
+  String get rejectAppointmentTitle => 'Refuser ce rendez-vous ?';
+
+  @override
+  String rejectAppointmentSubtitle(String client) {
+    return '$client sera prévenu(e).';
+  }
+
+  @override
+  String get rejectAppointmentWarning =>
+      'Le créneau reste bloqué après le refus. Pour libérer le créneau et permettre à d\'autres clients de réserver, utilisez le bouton « Libérer le créneau » après avoir refusé.';
+
+  @override
+  String get rejectAppointmentReasonLabel => 'Motif du refus (facultatif)';
+
+  @override
+  String get rejectAppointmentButton => 'Refuser';
+
+  @override
+  String get freeSlotButton => 'Libérer le créneau';
+
+  @override
+  String get freeSlotConfirmTitle => 'Libérer ce créneau ?';
+
+  @override
+  String get freeSlotConfirmBody =>
+      'Le client ne recevra pas de nouvelle notification.';
+
+  @override
+  String get freeSlotDone => 'Créneau libéré';
+
+  @override
+  String get slotFreedBadge => 'Créneau libéré';
+
+  @override
+  String get rejectionReasonOwnerLabel => 'MOTIF DU REFUS';
+
+  @override
+  String get rejectionReasonClientLabel => 'Motif du salon';
+
+  @override
+  String get cancelAppointmentOwnerTitle => 'Annuler ce rendez-vous ?';
+
+  @override
+  String cancelAppointmentOwnerSubtitle(String client) {
+    return '$client sera prévenu(e) et le créneau sera libéré.';
+  }
+
+  @override
+  String get cancelAppointmentOwnerWarning =>
+      'Le créneau redeviendra disponible à la réservation et le client sera notifié.';
+
+  @override
+  String get cancelAppointmentOwnerReasonLabel =>
+      'Motif de l\'annulation (facultatif)';
 }
