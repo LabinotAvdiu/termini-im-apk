@@ -11,6 +11,7 @@ import '../../../appointments/presentation/widgets/upcoming_appointment_banner.d
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart';
+import '../widgets/complete_profile_banner.dart';
 import '../widgets/search_filter_bar.dart';
 
 /// Mobile presentation for the home / search screen (M1 editorial design).
@@ -41,6 +42,9 @@ class HomeScreenMobile extends ConsumerWidget {
           slivers: [
             // Email verification banner
             SliverToBoxAdapter(child: _EmailVerificationBanner()),
+
+            // Profile completion nudge (gender / phone missing).
+            const SliverToBoxAdapter(child: CompleteProfileBanner()),
 
             // Feature 2 — Upcoming appointment reminder banner (auth users only)
             SliverToBoxAdapter(

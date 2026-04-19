@@ -12,6 +12,7 @@ import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/widgets/personal_gender_selector.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
 
@@ -34,6 +35,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late String _origFirstName;
   late String _origLastName;
   late String _origPhone;
+  String? _origGender;
+
+  /// Editable personal gender — 'men' / 'women' / null.
+  String? _gender;
 
   @override
   void initState() {
@@ -42,6 +47,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _origFirstName = user?.firstName ?? '';
     _origLastName = user?.lastName ?? '';
     _origPhone = user?.phone ?? '';
+    _origGender = user?.gender;
+    _gender = _origGender;
 
     _firstNameController = TextEditingController(text: _origFirstName);
     _lastNameController = TextEditingController(text: _origLastName);
@@ -60,7 +67,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void _checkChanges() {
     final changed = _firstNameController.text != _origFirstName ||
         _lastNameController.text != _origLastName ||
-        _phoneController.text != _origPhone;
+        _phoneController.text != _origPhone ||
+        _gender != _origGender;
     if (changed != _hasChanges) {
       setState(() => _hasChanges = changed);
     }
@@ -85,6 +93,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         'first_name': _firstNameController.text.trim(),
         'last_name': _lastNameController.text.trim(),
         'phone': _phoneController.text.trim(),
+        'gender': _gender,
       });
 
       if (!mounted) return;
@@ -95,6 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _origFirstName = _firstNameController.text;
       _origLastName = _lastNameController.text;
       _origPhone = _phoneController.text;
+      _origGender = _gender;
 
       setState(() {
         _isSaving = false;
@@ -350,6 +360,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       label: context.l10n.phone,
                       prefixIcon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
+                    ),
+
+                    const SizedBox(height: AppSpacing.md),
+
+                    PersonalGenderSelector(
+                      value: _gender,
+                      onChanged: (g) {
+                        setState(() => _gender = g);
+                        _checkChanges();
+                      },
                     ),
 
                     // Update button — only visible when changes detected

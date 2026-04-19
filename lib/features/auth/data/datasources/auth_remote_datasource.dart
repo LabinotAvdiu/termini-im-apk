@@ -24,23 +24,29 @@ class AuthResponse {
   final UserModel user;
   final String role; // 'user' | 'company'
 
+  /// True when the user authenticated as [role]='company' but the Company
+  /// record isn't provisioned yet (fresh social sign-up). The app should
+  /// route them straight to the business-info completion screen.
+  final bool needsCompanySetup;
+
   const AuthResponse({
     required this.token,
     this.refreshToken,
     required this.user,
     required this.role,
+    this.needsCompanySetup = false,
   });
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
-    // Unwrap the `data` envelope that all Laravel responses use
     final data = (json['data'] ?? json) as Map<String, dynamic>;
 
     final userJson = data['user'] as Map<String, dynamic>;
     return AuthResponse(
-      token:        data['token'] as String,
-      refreshToken: data['refresh_token'] as String?,
-      user:         UserModel.fromJson(userJson),
-      role:         (data['role'] as String?) ?? (userJson['role'] as String?) ?? 'user',
+      token:             data['token'] as String,
+      refreshToken:      data['refresh_token'] as String?,
+      user:              UserModel.fromJson(userJson),
+      role:              (data['role'] as String?) ?? (userJson['role'] as String?) ?? 'user',
+      needsCompanySetup: (data['needsCompanySetup'] as bool?) ?? false,
     );
   }
 }
@@ -109,11 +115,53 @@ class AuthRemoteDatasource {
   // ---------------------------------------------------------------------------
   // Google OAuth
   // ---------------------------------------------------------------------------
-  Future<AuthResponse> googleLogin({required String idToken}) async {
+  Future<AuthResponse> googleLogin({
+    required String idToken,
+    String? role, // 'user' | 'company' — only used for first-time creation
+  }) async {
     try {
       final response = await _client.post(
         ApiConstants.googleAuth,
-        data: {'id_token': idToken},
+        data: {
+          'id_token': idToken,
+          if (role != null) 'role': role,
+        },
+      );
+      return AuthResponse.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Complete company signup — called after a social auth where the user
+  // picked role=company but the Company record isn't created yet.
+  // ---------------------------------------------------------------------------
+  Future<AuthResponse> completeCompanySignup({
+    required String companyName,
+    required String address,
+    required String companyGender, // 'men' | 'women' | 'both'
+    String? city,
+    String? phone,
+    String? bookingMode, // 'employee_based' | 'capacity_based'
+    double? latitude,
+    double? longitude,
+  }) async {
+    try {
+      final response = await _client.post(
+        ApiConstants.completeCompany,
+        data: {
+          'company_name':   companyName,
+          'address':        address,
+          'company_gender': companyGender,
+          if (city != null) 'city': city,
+          if (phone != null) 'phone': phone,
+          if (bookingMode != null) 'booking_mode': bookingMode,
+          if (latitude != null && longitude != null) ...{
+            'latitude':  latitude,
+            'longitude': longitude,
+          },
+        },
       );
       return AuthResponse.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
@@ -129,6 +177,34 @@ class AuthRemoteDatasource {
       final response = await _client.post(
         ApiConstants.facebookAuth,
         data: {'access_token': accessToken},
+      );
+      return AuthResponse.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Apple OAuth
+  // ---------------------------------------------------------------------------
+  /// Send Apple's identity token to the backend. [firstName] / [lastName]
+  /// are only provided by Apple on the first sign-in; they're optional so
+  /// subsequent logins still resolve the existing account by its sub claim.
+  Future<AuthResponse> appleLogin({
+    required String identityToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final response = await _client.post(
+        ApiConstants.appleAuth,
+        data: {
+          'identity_token': identityToken,
+          if (authorizationCode != null) 'authorization_code': authorizationCode,
+          if (firstName != null) 'first_name': firstName,
+          if (lastName != null) 'last_name': lastName,
+        },
       );
       return AuthResponse.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
@@ -170,9 +246,9 @@ class AuthRemoteDatasource {
   Future<UserModel> getProfile() async {
     try {
       final response = await _client.get(ApiConstants.profile);
-      final data = (response.data as Map<String, dynamic>);
-      // Unwrap envelope if present
-      final userJson = (data['data']?['user'] ?? data) as Map<String, dynamic>;
+      final body = response.data as Map<String, dynamic>;
+      final envelope = (body['data'] ?? body) as Map<String, dynamic>;
+      final userJson = (envelope['user'] ?? envelope) as Map<String, dynamic>;
       return UserModel.fromJson(userJson);
     } on DioException catch (e) {
       throw _mapDioException(e);
@@ -190,8 +266,10 @@ class AuthRemoteDatasource {
         ApiConstants.profile,
         data: data,
       );
-      final body = (response.data as Map<String, dynamic>);
-      final userJson = (body['data']?['user'] ?? body) as Map<String, dynamic>;
+      final body = response.data as Map<String, dynamic>;
+      // Accept any of: `{data: {user: {...}}}`, `{data: {...}}`, `{...}`
+      final envelope = (body['data'] ?? body) as Map<String, dynamic>;
+      final userJson = (envelope['user'] ?? envelope) as Map<String, dynamic>;
       return UserModel.fromJson(userJson);
     } on DioException catch (e) {
       throw _mapDioException(e);

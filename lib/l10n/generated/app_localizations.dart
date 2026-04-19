@@ -214,6 +214,12 @@ abstract class AppLocalizations {
   /// **'Continuer avec Facebook'**
   String get continueWithFacebook;
 
+  /// No description provided for @continueWithApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Apple'**
+  String get continueWithApple;
+
   /// No description provided for @iAmUser.
   ///
   /// In fr, this message translates to:
@@ -2403,6 +2409,66 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Salon pour femmes'**
   String get salonForWomen;
+
+  /// No description provided for @salonClienteleLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clientèle du salon'**
+  String get salonClienteleLabel;
+
+  /// No description provided for @salonClienteleMen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hommes'**
+  String get salonClienteleMen;
+
+  /// No description provided for @salonClienteleWomen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Femmes'**
+  String get salonClienteleWomen;
+
+  /// No description provided for @salonClienteleBoth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les deux'**
+  String get salonClienteleBoth;
+
+  /// No description provided for @salonClienteleRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionne la clientèle du salon'**
+  String get salonClienteleRequired;
+
+  /// No description provided for @completeYourProfileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complète ton profil'**
+  String get completeYourProfileTitle;
+
+  /// No description provided for @completeProfileGenderPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute ton numéro et ton genre pour un meilleur service.'**
+  String get completeProfileGenderPhone;
+
+  /// No description provided for @completeProfileGenderOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute ton genre pour personnaliser les filtres.'**
+  String get completeProfileGenderOnly;
+
+  /// No description provided for @companySetupHeadline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Termine la configuration de ton salon'**
+  String get companySetupHeadline;
+
+  /// No description provided for @companySetupSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encore quelques infos pour activer ton espace propriétaire.'**
+  String get companySetupSubtitle;
 
   /// No description provided for @salonUnisex.
   ///

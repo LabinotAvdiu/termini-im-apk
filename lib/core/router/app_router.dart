@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/presentation/screens/company_setup_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
@@ -50,6 +51,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           currentPath == '/forgot-password';
 
       final isLandingRoute = currentPath == '/landing';
+      final isCompanySetupRoute = currentPath == '/company-setup';
 
       // Routes accessible without login: landing, auth routes, home, company detail.
       // Routes that require auth: /settings, /company/:id/book, /bookings.
@@ -61,8 +63,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Don't redirect while loading (prevents flash to login during signup/login)
       if (isLoading) return null;
 
+      // Authenticated company accounts without a Company record yet — force
+      // them through the business-info completion screen before anything else.
+      if (isLoggedIn && authState.needsCompanySetup && !isCompanySetupRoute) {
+        return '/company-setup';
+      }
+
       // Authenticated users on landing/auth screens → home
-      if (isLoggedIn && (isLandingRoute || isAuthRoute)) {
+      if (isLoggedIn &&
+          !authState.needsCompanySetup &&
+          (isLandingRoute || isAuthRoute || isCompanySetupRoute)) {
         return '/home';
       }
 
@@ -112,6 +122,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => editorialFadePage(
           key: state.pageKey,
           child: const ForgotPasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/company-setup',
+        name: RouteNames.companySetup,
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const CompanySetupScreen(),
         ),
       ),
       // ── /home — smart dispatch based on auth state ──────────────────

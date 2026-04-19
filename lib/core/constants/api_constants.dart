@@ -23,6 +23,8 @@ abstract class ApiConstants {
   static const String register            = '/auth/register';
   static const String googleAuth          = '/auth/google';
   static const String facebookAuth        = '/auth/facebook';
+  static const String appleAuth           = '/auth/apple';
+  static const String completeCompany     = '/auth/complete-company';
   static const String refreshToken        = '/auth/refresh';
   static const String logout              = '/auth/logout';
   static const String profile             = '/auth/profile';

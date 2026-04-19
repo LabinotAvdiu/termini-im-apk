@@ -16,6 +16,7 @@ import '../../data/models/company_card_model.dart';
 import '../../data/models/gender_filter.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart' show FavoriteBadge;
+import '../widgets/complete_profile_banner.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 /// Desktop (D1) editorial presentation for the home / search screen.
@@ -90,6 +91,9 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Profile completion nudge (gender / phone missing).
+                    const CompleteProfileBanner(),
+
                     // Hero
                     _DesktopHero(),
 

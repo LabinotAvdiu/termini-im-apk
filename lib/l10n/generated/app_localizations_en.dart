@@ -66,6 +66,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithFacebook => 'Continue with Facebook';
 
   @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
   String get iAmUser => 'I\'m a client';
 
   @override
@@ -1221,6 +1224,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salonForWomen => 'Salon for women';
+
+  @override
+  String get salonClienteleLabel => 'Salon clientele';
+
+  @override
+  String get salonClienteleMen => 'Men';
+
+  @override
+  String get salonClienteleWomen => 'Women';
+
+  @override
+  String get salonClienteleBoth => 'Both';
+
+  @override
+  String get salonClienteleRequired => 'Pick the salon\'s clientele';
+
+  @override
+  String get completeYourProfileTitle => 'Complete your profile';
+
+  @override
+  String get completeProfileGenderPhone =>
+      'Add your phone and gender for a better experience.';
+
+  @override
+  String get completeProfileGenderOnly =>
+      'Add your gender to personalise filters.';
+
+  @override
+  String get companySetupHeadline => 'Finish setting up your salon';
+
+  @override
+  String get companySetupSubtitle =>
+      'A few more details to activate your owner dashboard.';
 
   @override
   String get salonUnisex => 'Salon · Men & Women';

@@ -1,4 +1,4 @@
-package com.hairspot.hairspot_mobile
+package com.terminiim.app
 
 import io.flutter.embedding.android.FlutterActivity
 

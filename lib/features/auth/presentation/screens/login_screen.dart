@@ -30,6 +30,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController(text: 'Password1');
   bool _passwordVisible = false;
 
+  /// Which social provider is currently running — null / 'google' / 'facebook' /
+  /// 'apple'. Used so only the tapped button shows a spinner.
+  String? _loadingSocial;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -58,14 +62,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _loginWithGoogle() async {
-    await ref.read(authStateProvider.notifier).loginWithGoogle();
+    setState(() => _loadingSocial = 'google');
+    try {
+      await ref.read(authStateProvider.notifier).loginWithGoogle();
+    } finally {
+      if (mounted) setState(() => _loadingSocial = null);
+    }
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
     if (error != null) context.showErrorSnackBar(error);
   }
 
   Future<void> _loginWithFacebook() async {
-    await ref.read(authStateProvider.notifier).loginWithFacebook();
+    setState(() => _loadingSocial = 'facebook');
+    try {
+      await ref.read(authStateProvider.notifier).loginWithFacebook();
+    } finally {
+      if (mounted) setState(() => _loadingSocial = null);
+    }
+    if (!mounted) return;
+    final error = ref.read(authStateProvider).error;
+    if (error != null) context.showErrorSnackBar(error);
+  }
+
+  Future<void> _loginWithApple() async {
+    setState(() => _loadingSocial = 'apple');
+    try {
+      await ref.read(authStateProvider.notifier).loginWithApple();
+    } finally {
+      if (mounted) setState(() => _loadingSocial = null);
+    }
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
     if (error != null) context.showErrorSnackBar(error);
@@ -77,6 +103,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     final isLoading = authState.isLoading;
+    // Keep the email-submit button out of the social-login loading state:
+    // if the user taps Google, only the Google button should spin.
+    final submitLoading = isLoading && _loadingSocial == null;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -94,7 +123,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // ---- Back button → /landing ----
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: _LandingBackButton(),
+                  ),
+
+                  const SizedBox(height: AppSpacing.lg),
 
                   // ---- Logo + title ----
                   _LogoHeader(),
@@ -109,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     passwordVisible: _passwordVisible,
                     onTogglePassword: () =>
                         setState(() => _passwordVisible = !_passwordVisible),
-                    isLoading: isLoading,
+                    isLoading: submitLoading,
                     onSubmit: _submit,
                     rememberMe: authState.rememberMe,
                     onToggleRememberMe: () =>
@@ -126,10 +163,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   const SizedBox(height: AppSpacing.lg),
 
-                  // ---- Social buttons ----
+                  // ---- Social buttons (only the tapped one spins) ----
                   AppSocialButton(
                     text: context.l10n.continueWithGoogle,
-                    onPressed: isLoading ? null : _loginWithGoogle,
+                    isLoading: _loadingSocial == 'google',
+                    onPressed: _loadingSocial != null || isLoading
+                        ? null
+                        : _loginWithGoogle,
                     icon: const _GoogleIcon(),
                   ),
 
@@ -137,8 +177,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   AppSocialButton(
                     text: context.l10n.continueWithFacebook,
-                    onPressed: isLoading ? null : _loginWithFacebook,
+                    isLoading: _loadingSocial == 'facebook',
+                    onPressed: _loadingSocial != null || isLoading
+                        ? null
+                        : _loginWithFacebook,
                     icon: const _FacebookIcon(),
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  AppSocialButton(
+                    text: context.l10n.continueWithApple,
+                    isLoading: _loadingSocial == 'apple',
+                    onPressed: _loadingSocial != null || isLoading
+                        ? null
+                        : _loginWithApple,
+                    icon: const _AppleIcon(),
                   ),
 
                   const SizedBox(height: AppSpacing.xl),
@@ -173,6 +227,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Back button that jumps to /landing (clean nav — no stack push).
+// ---------------------------------------------------------------------------
+class _LandingBackButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.goNamed(RouteNames.landing),
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: AppColors.border, width: 1),
+        ),
+        child: const Icon(Icons.arrow_back_rounded,
+            size: 20, color: AppColors.textPrimary),
       ),
     );
   }
@@ -706,4 +783,16 @@ class _FacebookLogoPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ---------------------------------------------------------------------------
+// Apple glyph — monochrome Material icon for crisp rendering at any DPI.
+// ---------------------------------------------------------------------------
+class _AppleIcon extends StatelessWidget {
+  const _AppleIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.apple, size: 22, color: AppColors.textPrimary);
+  }
 }

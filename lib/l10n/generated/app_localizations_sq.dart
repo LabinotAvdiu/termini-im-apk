@@ -66,6 +66,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get continueWithFacebook => 'Vazhdo me Facebook';
 
   @override
+  String get continueWithApple => 'Vazhdo me Apple';
+
+  @override
   String get iAmUser => 'Jam klient';
 
   @override
@@ -1222,6 +1225,39 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get salonForWomen => 'Sallon për gra';
+
+  @override
+  String get salonClienteleLabel => 'Klientela e sallonit';
+
+  @override
+  String get salonClienteleMen => 'Burra';
+
+  @override
+  String get salonClienteleWomen => 'Gra';
+
+  @override
+  String get salonClienteleBoth => 'Të dyja';
+
+  @override
+  String get salonClienteleRequired => 'Zgjidh klientelën e sallonit';
+
+  @override
+  String get completeYourProfileTitle => 'Plotëso profilin tënd';
+
+  @override
+  String get completeProfileGenderPhone =>
+      'Shto numrin dhe gjininë për një shërbim më të mirë.';
+
+  @override
+  String get completeProfileGenderOnly =>
+      'Shto gjininë për të personalizuar filtrat.';
+
+  @override
+  String get companySetupHeadline => 'Mbaro konfigurimin e sallonit';
+
+  @override
+  String get companySetupSubtitle =>
+      'Edhe disa detaje për të aktivizuar hapësirën e pronarit.';
 
   @override
   String get salonUnisex => 'Sallon · Burra & Gra';
