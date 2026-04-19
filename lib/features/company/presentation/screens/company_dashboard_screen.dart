@@ -59,6 +59,8 @@ class _CompanyDashboardScreenState
     final phoneSecondaryCtrl =
         TextEditingController(text: company.phoneSecondary ?? '');
     final descCtrl = TextEditingController(text: company.description ?? '');
+    // Integer stepper — wrap in a ValueNotifier so the dialog rebuilds on ±.
+    final minCancelHoursNotifier = ValueNotifier<int>(company.minCancelHours);
 
     showDialog<void>(
       context: context,
@@ -69,6 +71,7 @@ class _CompanyDashboardScreenState
         phoneCtrl: phoneCtrl,
         phoneSecondaryCtrl: phoneSecondaryCtrl,
         descCtrl: descCtrl,
+        minCancelHours: minCancelHoursNotifier,
         onSave: () async {
           final secondaryRaw = phoneSecondaryCtrl.text.trim();
           final ok = await ref
@@ -80,6 +83,7 @@ class _CompanyDashboardScreenState
             'phone': phoneCtrl.text.trim(),
             'phone_secondary': secondaryRaw.isEmpty ? null : secondaryRaw,
             'description': descCtrl.text.trim(),
+            'min_cancel_hours': minCancelHoursNotifier.value,
           });
           if (ctx.mounted) Navigator.of(ctx).pop();
           if (ok && context.mounted) {
@@ -444,6 +448,7 @@ class _CompanyEditDialog extends StatelessWidget {
   final TextEditingController phoneCtrl;
   final TextEditingController phoneSecondaryCtrl;
   final TextEditingController descCtrl;
+  final ValueNotifier<int> minCancelHours;
   final VoidCallback onSave;
 
   const _CompanyEditDialog({
@@ -453,6 +458,7 @@ class _CompanyEditDialog extends StatelessWidget {
     required this.phoneCtrl,
     required this.phoneSecondaryCtrl,
     required this.descCtrl,
+    required this.minCancelHours,
     required this.onSave,
   });
 
@@ -474,6 +480,7 @@ class _CompanyEditDialog extends StatelessWidget {
             _field(phoneSecondaryCtrl, l.phoneSecondary, Icons.phone_outlined,
                 type: TextInputType.phone),
             _field(descCtrl, l.descriptionLabel, Icons.notes_outlined, maxLines: 3),
+            _MinCancelHoursStepper(notifier: minCancelHours),
           ],
         ),
       ),
@@ -677,6 +684,107 @@ class _CreateEmployeeDialog extends StatelessWidget {
           child: Text(l.saveChanges),
         ),
       ],
+    );
+  }
+}
+
+/// Stepper (-/+) éditorial pour le délai minimum d'annulation.
+/// Valeurs : 0..24 heures. 0 = pas de contrainte.
+class _MinCancelHoursStepper extends StatelessWidget {
+  final ValueNotifier<int> notifier;
+  const _MinCancelHoursStepper({required this.notifier});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: ValueListenableBuilder<int>(
+        valueListenable: notifier,
+        builder: (context, value, _) {
+          return Container(
+            padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFFD9CAB3)),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.timer_off_outlined,
+                    size: 20, color: Color(0xFF716059)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.minCancelHoursLabel,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF716059),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        value == 0
+                            ? l.minCancelHoursHint
+                            : '$value h',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF171311),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _StepBtn(
+                  icon: Icons.remove_rounded,
+                  onTap: value > 0 ? () => notifier.value = value - 1 : null,
+                ),
+                const SizedBox(width: 4),
+                _StepBtn(
+                  icon: Icons.add_rounded,
+                  onTap: value < 24 ? () => notifier.value = value + 1 : null,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _StepBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+  const _StepBtn({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+    return Material(
+      color: enabled
+          ? const Color(0xFF7A2232).withValues(alpha: 0.08)
+          : const Color(0xFFD9CAB3).withValues(alpha: 0.3),
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 36,
+          height: 36,
+          child: Icon(
+            icon,
+            size: 18,
+            color: enabled
+                ? const Color(0xFF7A2232)
+                : const Color(0xFF716059).withValues(alpha: 0.4),
+          ),
+        ),
+      ),
     );
   }
 }

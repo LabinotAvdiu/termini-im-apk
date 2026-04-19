@@ -476,6 +476,11 @@ class AppLocalizationsSq extends AppLocalizations {
   String get noPastAppointments => 'Asnjë takim i kaluar';
 
   @override
+  String seeMorePastAppointments(int count) {
+    return 'Shiko $count më shumë';
+  }
+
+  @override
   String get appointmentConfirmed => 'I konfirmuar';
 
   @override
@@ -486,6 +491,15 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get appointmentCancelled => 'I anuluar';
+
+  @override
+  String get appointmentRejected => 'I refuzuar';
+
+  @override
+  String get appointmentNoShow => 'Mungesë';
+
+  @override
+  String get appointmentNoShowDetail => 'Nuk u paraqitët në këtë takim.';
 
   @override
   String get mySalon => 'Salloni im';
@@ -652,7 +666,7 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get reminderNote =>
-      'Një kujtues do t\'ju dërgohet 24 orë para takimit. Anulimi është i mundur deri 2 orë para.';
+      'Një kujtues do t\'ju dërgohet 24 orë para takimit.';
 
   @override
   String get hairdresser => 'Stilisti';
@@ -974,9 +988,6 @@ class AppLocalizationsSq extends AppLocalizations {
   String get confirmCancelTitle => 'Anulo këtë takim?';
 
   @override
-  String get cancelAppointmentBody => 'Ky veprim do të lirojë orarin.';
-
-  @override
   String get actionFailed => 'Veprimi dështoi. Provo përsëri.';
 
   @override
@@ -1157,6 +1168,12 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get monthStatRejected => 'të refuzuara';
+
+  @override
+  String get monthStatCancelled => 'të anuluara';
+
+  @override
+  String get monthStatNoShow => 'mungesa';
 
   @override
   String get appointmentSingular => 'takim';
@@ -1345,4 +1362,194 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get cropPhotoTitle => 'Prite foton';
+
+  @override
+  String get experienceSection => 'Përvoja';
+
+  @override
+  String get hapticLabel => 'Dridhjet';
+
+  @override
+  String get hapticDesc => 'Dridhje të lehta gjatë ndërveprimit';
+
+  @override
+  String get soundsLabel => 'Zërat e ndërfaqes';
+
+  @override
+  String get soundsDesc => 'Çaktivizuar si parazgjedhje';
+
+  @override
+  String get animationsLabel => 'Animacionet';
+
+  @override
+  String get animationsDesc => 'Kalimet dhe efektet vizuale';
+
+  @override
+  String get cancelAppointmentTitle => 'Ta anulosh këtë takim?';
+
+  @override
+  String cancelAppointmentBody(String salon, String date) {
+    return '$salon · $date. Ky veprim është i pakthyeshëm.';
+  }
+
+  @override
+  String get cancelAppointmentBodyOwner =>
+      'Ky veprim do të lëshojë sllotin e kohës.';
+
+  @override
+  String get cancelReasonLabel => 'Arsyeja (opsionale)';
+
+  @override
+  String cancellableUntil(String date) {
+    return 'Mund të anulohet deri më $date';
+  }
+
+  @override
+  String get cancellationTooLate => 'Është vonë për të anuluar këtë takim.';
+
+  @override
+  String get minCancelHoursLabel => 'Afati minimal i anulimit (orë)';
+
+  @override
+  String get minCancelHoursHint => '0 = pa kufizim';
+
+  @override
+  String get minCancelHoursNone => 'Anulim pa kufizim';
+
+  @override
+  String minCancelHoursValue(int hours) {
+    return 'Mund të anulohet deri ${hours}h para';
+  }
+
+  @override
+  String get bookingCancelPolicyNone =>
+      'Mund ta anuloni këtë takim në çdo kohë.';
+
+  @override
+  String bookingCancelPolicyHours(int hours) {
+    return 'Mund ta anuloni deri ${hours}h para takimit.';
+  }
+
+  @override
+  String get upcomingReminderTitle => 'Takimi juaj po afrohet';
+
+  @override
+  String upcomingReminderBody(String salon, String duration) {
+    return '$salon · për $duration';
+  }
+
+  @override
+  String get upcomingReminderNow => 'tani';
+
+  @override
+  String inXHoursYMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}min';
+  }
+
+  @override
+  String get reviewsTitle => 'Vlerësime';
+
+  @override
+  String get reviewSubmitTitle => 'Vlerëso vizitën';
+
+  @override
+  String get reviewRatingLabel => 'Vlerësimi juaj';
+
+  @override
+  String get reviewCommentLabel => 'Mendimi juaj (opsional)';
+
+  @override
+  String get reviewCommentHint => 'Ndani përvojën tuaj…';
+
+  @override
+  String get reviewSubmit => 'Publiko vlerësimin';
+
+  @override
+  String get reviewSubmitted => 'Faleminderit! Vlerësimi juaj është publikuar.';
+
+  @override
+  String reviewsSeeAll(int count) {
+    return 'Shiko të gjitha ($count)';
+  }
+
+  @override
+  String get reviewsEmpty => 'Ende asnjë vlerësim';
+
+  @override
+  String get reviewsOnlyRatings =>
+      'Të gjitha vlerësimet janë lënë vetëm si notë, pa koment të shkruar.';
+
+  @override
+  String get cancellationReasonOwnerLabel => 'ARSYEJA E ANULIMIT';
+
+  @override
+  String get today => 'Sot';
+
+  @override
+  String get tomorrow => 'Nesër';
+
+  @override
+  String get reviewHideTitle => 'Ta fshehësh këtë vlerësim?';
+
+  @override
+  String get reviewHideReason => 'Arsyeja';
+
+  @override
+  String get reviewsReceived => 'Vlerësimet e marra';
+
+  @override
+  String get reviewHidden => 'Vlerësimi i fshehur';
+
+  @override
+  String reviewBadge(int rating) {
+    return '★ $rating/5';
+  }
+
+  @override
+  String get markNoShow => 'Shëno mungesë';
+
+  @override
+  String get noShowConfirmTitle => 'Ta shënosh si mungesë?';
+
+  @override
+  String noShowConfirmBody(String client) {
+    return '$client do të shënohet si i/e munguar. E dukshme në profilin e tij.';
+  }
+
+  @override
+  String noShowBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mungesa',
+      one: '1 mungesë',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noShowRegistered => 'Mungesa u regjistrua';
+
+  @override
+  String noShowTooltip(int count) {
+    return 'Ky klient ka munguar $count takime.';
+  }
+
+  @override
+  String get appointmentsDesktopTitle => 'Vizitat tuaja';
+
+  @override
+  String get appointmentsDesktopOverline => 'TAKIMET E MIA';
+
+  @override
+  String get reviewsReceivedCardTitle => 'Vlerësimet e marra';
+
+  @override
+  String get averageRatingOutOf => 'nga 5';
+
+  @override
+  String get seeAllReviews => 'Shiko të gjitha →';
+
+  @override
+  String get noReviewsYetOwner => 'Ende asnjë vlerësim.';
 }

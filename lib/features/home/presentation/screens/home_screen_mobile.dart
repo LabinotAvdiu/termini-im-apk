@@ -6,6 +6,8 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/auth_prompt_sheet.dart';
 import '../../../../core/widgets/language_sheet.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
+import '../../../appointments/presentation/widgets/upcoming_appointment_banner.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart';
@@ -40,6 +42,19 @@ class HomeScreenMobile extends ConsumerWidget {
             // Email verification banner
             SliverToBoxAdapter(child: _EmailVerificationBanner()),
 
+            // Feature 2 — Upcoming appointment reminder banner (auth users only)
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final isAuth = ref.watch(
+                    authStateProvider.select((s) => s.isAuthenticated),
+                  );
+                  if (!isAuth) return const SizedBox.shrink();
+                  return const UpcomingAppointmentBanner();
+                },
+              ),
+            ),
+
             // Sticky-ish filter bar + results label
             SliverToBoxAdapter(
               child: Column(
@@ -64,10 +79,16 @@ class HomeScreenMobile extends ConsumerWidget {
 
             // Company cards list
             if (companyState.isLoading && companies.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    child: const SkeletonCompanyCard(
+                      key: ValueKey('skeleton'),
+                    ),
+                  ),
+                  childCount: 5,
                 ),
               )
             else if (companies.isEmpty)
@@ -78,9 +99,13 @@ class HomeScreenMobile extends ConsumerWidget {
             else
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => CompanyCard(
-                    key: ValueKey(companies[index].id),
-                    company: companies[index],
+                  (context, index) => AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    child: CompanyCard(
+                      key: ValueKey(companies[index].id),
+                      company: companies[index],
+                    ),
                   ),
                   childCount: companies.length,
                 ),

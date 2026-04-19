@@ -475,6 +475,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPastAppointments => 'No past appointments';
 
   @override
+  String seeMorePastAppointments(int count) {
+    return 'Show $count more';
+  }
+
+  @override
   String get appointmentConfirmed => 'Confirmed';
 
   @override
@@ -485,6 +490,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appointmentCancelled => 'Cancelled';
+
+  @override
+  String get appointmentRejected => 'Rejected';
+
+  @override
+  String get appointmentNoShow => 'No-show';
+
+  @override
+  String get appointmentNoShowDetail =>
+      'You didn\'t show up for this appointment.';
 
   @override
   String get mySalon => 'My Salon';
@@ -651,7 +666,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderNote =>
-      'A reminder will be sent 24h before your appointment. Cancellation is possible up to 2h before.';
+      'A reminder will be sent 24h before your appointment.';
 
   @override
   String get hairdresser => 'Stylist';
@@ -974,9 +989,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmCancelTitle => 'Cancel this appointment?';
 
   @override
-  String get cancelAppointmentBody => 'This will free the time slot.';
-
-  @override
   String get actionFailed => 'Action failed. Try again.';
 
   @override
@@ -1155,6 +1167,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthStatRejected => 'rejected';
+
+  @override
+  String get monthStatCancelled => 'cancelled';
+
+  @override
+  String get monthStatNoShow => 'no-shows';
 
   @override
   String get appointmentSingular => 'appointment';
@@ -1342,4 +1360,193 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cropPhotoTitle => 'Crop photo';
+
+  @override
+  String get experienceSection => 'Experience';
+
+  @override
+  String get hapticLabel => 'Haptic feedback';
+
+  @override
+  String get hapticDesc => 'Subtle taps when you interact';
+
+  @override
+  String get soundsLabel => 'Interface sounds';
+
+  @override
+  String get soundsDesc => 'Off by default';
+
+  @override
+  String get animationsLabel => 'Animations';
+
+  @override
+  String get animationsDesc => 'Transitions and visual effects';
+
+  @override
+  String get cancelAppointmentTitle => 'Cancel this appointment?';
+
+  @override
+  String cancelAppointmentBody(String salon, String date) {
+    return '$salon · $date. This action cannot be undone.';
+  }
+
+  @override
+  String get cancelAppointmentBodyOwner => 'This will free up the time slot.';
+
+  @override
+  String get cancelReasonLabel => 'Reason (optional)';
+
+  @override
+  String cancellableUntil(String date) {
+    return 'Cancellable until $date';
+  }
+
+  @override
+  String get cancellationTooLate => 'Too late to cancel this booking.';
+
+  @override
+  String get minCancelHoursLabel => 'Minimum cancellation window (hours)';
+
+  @override
+  String get minCancelHoursHint => '0 = no restriction';
+
+  @override
+  String get minCancelHoursNone => 'Cancellation with no restriction';
+
+  @override
+  String minCancelHoursValue(int hours) {
+    return 'Cancellable up to ${hours}h before';
+  }
+
+  @override
+  String get bookingCancelPolicyNone =>
+      'You can cancel this appointment at any time.';
+
+  @override
+  String bookingCancelPolicyHours(int hours) {
+    return 'Cancellable up to ${hours}h before the appointment.';
+  }
+
+  @override
+  String get upcomingReminderTitle => 'Your appointment is coming up';
+
+  @override
+  String upcomingReminderBody(String salon, String duration) {
+    return '$salon · in $duration';
+  }
+
+  @override
+  String get upcomingReminderNow => 'now';
+
+  @override
+  String inXHoursYMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}min';
+  }
+
+  @override
+  String get reviewsTitle => 'Reviews';
+
+  @override
+  String get reviewSubmitTitle => 'Rate your visit';
+
+  @override
+  String get reviewRatingLabel => 'Your rating';
+
+  @override
+  String get reviewCommentLabel => 'Your review (optional)';
+
+  @override
+  String get reviewCommentHint => 'Share your experience…';
+
+  @override
+  String get reviewSubmit => 'Publish review';
+
+  @override
+  String get reviewSubmitted => 'Thanks! Your review is live.';
+
+  @override
+  String reviewsSeeAll(int count) {
+    return 'See all reviews ($count)';
+  }
+
+  @override
+  String get reviewsEmpty => 'No reviews yet';
+
+  @override
+  String get reviewsOnlyRatings =>
+      'All reviews are ratings only, without any written comment.';
+
+  @override
+  String get cancellationReasonOwnerLabel => 'CANCELLATION REASON';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get reviewHideTitle => 'Hide this review?';
+
+  @override
+  String get reviewHideReason => 'Reason';
+
+  @override
+  String get reviewsReceived => 'Reviews received';
+
+  @override
+  String get reviewHidden => 'Review hidden';
+
+  @override
+  String reviewBadge(int rating) {
+    return '★ $rating/5';
+  }
+
+  @override
+  String get markNoShow => 'Mark no-show';
+
+  @override
+  String get noShowConfirmTitle => 'Mark as no-show?';
+
+  @override
+  String noShowConfirmBody(String client) {
+    return '$client will be marked as absent. Visible on their profile.';
+  }
+
+  @override
+  String noShowBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count no-shows',
+      one: '1 no-show',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noShowRegistered => 'No-show recorded';
+
+  @override
+  String noShowTooltip(int count) {
+    return 'This client missed $count appointments.';
+  }
+
+  @override
+  String get appointmentsDesktopTitle => 'Your visits';
+
+  @override
+  String get appointmentsDesktopOverline => 'MY APPOINTMENTS';
+
+  @override
+  String get reviewsReceivedCardTitle => 'Reviews received';
+
+  @override
+  String get averageRatingOutOf => 'out of 5';
+
+  @override
+  String get seeAllReviews => 'See all →';
+
+  @override
+  String get noReviewsYetOwner => 'No reviews yet.';
 }

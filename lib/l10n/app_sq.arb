@@ -174,10 +174,17 @@
   "past": "Të kaluara",
   "noUpcomingAppointments": "Asnjë takim në vijim",
   "noPastAppointments": "Asnjë takim i kaluar",
+  "seeMorePastAppointments": "Shiko {count} më shumë",
+  "@seeMorePastAppointments": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "appointmentConfirmed": "I konfirmuar",
   "appointmentPending": "Në pritje",
   "appointmentCompleted": "I përfunduar",
   "appointmentCancelled": "I anuluar",
+  "appointmentRejected": "I refuzuar",
+  "appointmentNoShow": "Mungesë",
+  "appointmentNoShowDetail": "Nuk u paraqitët në këtë takim.",
   "mySalon": "Salloni im",
   "companyInfo": "Informacionet e sallonit",
   "servicesAndCategories": "Shërbimet & Kategoritë",
@@ -238,7 +245,7 @@
   "bookingSuccessMessage": "Takimi juaj u rezervua me sukses. Do të merrni një njoftim konfirmimi.",
   "bookingConfirmationSubtitle": "Kontrolloni detajet para se të konfirmoni.",
   "yourAppointment": "Takimi juaj",
-  "reminderNote": "Një kujtues do t'ju dërgohet 24 orë para takimit. Anulimi është i mundur deri 2 orë para.",
+  "reminderNote": "Një kujtues do t'ju dërgohet 24 orë para takimit.",
   "hairdresser": "Stilisti",
   "noPreferenceShort": "Pa pref.",
   "dateLabel": "Data",
@@ -368,7 +375,6 @@
   "cancelAppointment": "Anulo takimin",
   "confirmRejectTitle": "Refuzo këtë takim?",
   "confirmCancelTitle": "Anulo këtë takim?",
-  "cancelAppointmentBody": "Ky veprim do të lirojë orarin.",
   "actionFailed": "Veprimi dështoi. Provo përsëri.",
   "viewDay": "Ditë",
   "viewWeek": "Javë",
@@ -426,6 +432,8 @@
   "monthStatConfirmed": "të konfirmuara",
   "monthStatPending": "në pritje",
   "monthStatRejected": "të refuzuara",
+  "monthStatCancelled": "të anuluara",
+  "monthStatNoShow": "mungesa",
   "appointmentSingular": "takim",
   "appointmentPlural": "takime",
   "emptyDayTitle": "Asnjë takim",
@@ -511,5 +519,117 @@
   "removePhotoConfirm": "Të fshijmë foton e profilit?",
   "avatarUploading": "Duke ngarkuar\u2026",
   "avatarUploadError": "Ngarkimi i fotos dështoi.",
-  "cropPhotoTitle": "Prite foton"
+  "cropPhotoTitle": "Prite foton",
+  "experienceSection": "Përvoja",
+  "hapticLabel": "Dridhjet",
+  "hapticDesc": "Dridhje të lehta gjatë ndërveprimit",
+  "soundsLabel": "Zërat e ndërfaqes",
+  "soundsDesc": "Çaktivizuar si parazgjedhje",
+  "animationsLabel": "Animacionet",
+  "animationsDesc": "Kalimet dhe efektet vizuale",
+
+  "cancelAppointmentTitle": "Ta anulosh këtë takim?",
+  "cancelAppointmentBody": "{salon} · {date}. Ky veprim është i pakthyeshëm.",
+  "@cancelAppointmentBody": {
+    "placeholders": {
+      "salon": { "type": "String" },
+      "date":  { "type": "String" }
+    }
+  },
+  "cancelAppointmentBodyOwner": "Ky veprim do të lëshojë sllotin e kohës.",
+  "cancelReasonLabel": "Arsyeja (opsionale)",
+  "cancellableUntil": "Mund të anulohet deri më {date}",
+  "@cancellableUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "cancellationTooLate": "Është vonë për të anuluar këtë takim.",
+  "minCancelHoursLabel": "Afati minimal i anulimit (orë)",
+  "minCancelHoursHint": "0 = pa kufizim",
+  "minCancelHoursNone": "Anulim pa kufizim",
+  "minCancelHoursValue": "Mund të anulohet deri {hours}h para",
+  "@minCancelHoursValue": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "bookingCancelPolicyNone": "Mund ta anuloni këtë takim në çdo kohë.",
+  "bookingCancelPolicyHours": "Mund ta anuloni deri {hours}h para takimit.",
+  "@bookingCancelPolicyHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+
+  "upcomingReminderTitle": "Takimi juaj po afrohet",
+  "upcomingReminderBody": "{salon} · për {duration}",
+  "@upcomingReminderBody": {
+    "placeholders": {
+      "salon":    { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "upcomingReminderNow": "tani",
+  "inXHoursYMinutes": "{hours}h {minutes}min",
+  "@inXHoursYMinutes": {
+    "placeholders": {
+      "hours":   { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+
+  "reviewsTitle": "Vlerësime",
+  "reviewSubmitTitle": "Vlerëso vizitën",
+  "reviewRatingLabel": "Vlerësimi juaj",
+  "reviewCommentLabel": "Mendimi juaj (opsional)",
+  "reviewCommentHint": "Ndani përvojën tuaj…",
+  "reviewSubmit": "Publiko vlerësimin",
+  "reviewSubmitted": "Faleminderit! Vlerësimi juaj është publikuar.",
+  "reviewsSeeAll": "Shiko të gjitha ({count})",
+  "@reviewsSeeAll": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reviewsEmpty": "Ende asnjë vlerësim",
+  "reviewsOnlyRatings": "Të gjitha vlerësimet janë lënë vetëm si notë, pa koment të shkruar.",
+  "cancellationReasonOwnerLabel": "ARSYEJA E ANULIMIT",
+  "today": "Sot",
+  "tomorrow": "Nesër",
+  "reviewHideTitle": "Ta fshehësh këtë vlerësim?",
+  "reviewHideReason": "Arsyeja",
+  "reviewsReceived": "Vlerësimet e marra",
+  "reviewHidden": "Vlerësimi i fshehur",
+  "reviewBadge": "★ {rating}/5",
+  "@reviewBadge": {
+    "placeholders": {
+      "rating": { "type": "int" }
+    }
+  },
+
+  "markNoShow": "Shëno mungesë",
+  "noShowConfirmTitle": "Ta shënosh si mungesë?",
+  "noShowConfirmBody": "{client} do të shënohet si i/e munguar. E dukshme në profilin e tij.",
+  "@noShowConfirmBody": {
+    "placeholders": {
+      "client": { "type": "String" }
+    }
+  },
+  "noShowBadge": "{count, plural, =1{1 mungesë} other{{count} mungesa}}",
+  "@noShowBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noShowRegistered": "Mungesa u regjistrua",
+  "noShowTooltip": "Ky klient ka munguar {count} takime.",
+  "@noShowTooltip": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "appointmentsDesktopTitle": "Vizitat tuaja",
+  "appointmentsDesktopOverline": "TAKIMET E MIA",
+  "reviewsReceivedCardTitle": "Vlerësimet e marra",
+  "averageRatingOutOf": "nga 5",
+  "seeAllReviews": "Shiko të gjitha →",
+  "noReviewsYetOwner": "Ende asnjë vlerësim."
 }

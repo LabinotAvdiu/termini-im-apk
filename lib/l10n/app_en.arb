@@ -174,10 +174,17 @@
   "past": "Past",
   "noUpcomingAppointments": "No upcoming appointments",
   "noPastAppointments": "No past appointments",
+  "seeMorePastAppointments": "Show {count} more",
+  "@seeMorePastAppointments": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "appointmentConfirmed": "Confirmed",
   "appointmentPending": "Pending",
   "appointmentCompleted": "Completed",
   "appointmentCancelled": "Cancelled",
+  "appointmentRejected": "Rejected",
+  "appointmentNoShow": "No-show",
+  "appointmentNoShowDetail": "You didn't show up for this appointment.",
   "mySalon": "My Salon",
   "companyInfo": "Salon information",
   "servicesAndCategories": "Services & Categories",
@@ -238,7 +245,7 @@
   "bookingSuccessMessage": "Your appointment has been booked successfully. You will receive a confirmation notification.",
   "bookingConfirmationSubtitle": "Review the details before confirming.",
   "yourAppointment": "Your appointment",
-  "reminderNote": "A reminder will be sent 24h before your appointment. Cancellation is possible up to 2h before.",
+  "reminderNote": "A reminder will be sent 24h before your appointment.",
   "hairdresser": "Stylist",
   "noPreferenceShort": "No pref.",
   "dateLabel": "Date",
@@ -368,7 +375,6 @@
   "cancelAppointment": "Cancel appointment",
   "confirmRejectTitle": "Refuse this appointment?",
   "confirmCancelTitle": "Cancel this appointment?",
-  "cancelAppointmentBody": "This will free the time slot.",
   "actionFailed": "Action failed. Try again.",
   "viewDay": "Day",
   "viewWeek": "Week",
@@ -426,6 +432,8 @@
   "monthStatConfirmed": "confirmed",
   "monthStatPending": "pending",
   "monthStatRejected": "rejected",
+  "monthStatCancelled": "cancelled",
+  "monthStatNoShow": "no-shows",
   "appointmentSingular": "appointment",
   "appointmentPlural": "appointments",
   "emptyDayTitle": "No appointments",
@@ -511,5 +519,117 @@
   "removePhotoConfirm": "Remove your profile photo?",
   "avatarUploading": "Uploading\u2026",
   "avatarUploadError": "Photo upload failed.",
-  "cropPhotoTitle": "Crop photo"
+  "cropPhotoTitle": "Crop photo",
+  "experienceSection": "Experience",
+  "hapticLabel": "Haptic feedback",
+  "hapticDesc": "Subtle taps when you interact",
+  "soundsLabel": "Interface sounds",
+  "soundsDesc": "Off by default",
+  "animationsLabel": "Animations",
+  "animationsDesc": "Transitions and visual effects",
+
+  "cancelAppointmentTitle": "Cancel this appointment?",
+  "cancelAppointmentBody": "{salon} · {date}. This action cannot be undone.",
+  "@cancelAppointmentBody": {
+    "placeholders": {
+      "salon": { "type": "String" },
+      "date":  { "type": "String" }
+    }
+  },
+  "cancelAppointmentBodyOwner": "This will free up the time slot.",
+  "cancelReasonLabel": "Reason (optional)",
+  "cancellableUntil": "Cancellable until {date}",
+  "@cancellableUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "cancellationTooLate": "Too late to cancel this booking.",
+  "minCancelHoursLabel": "Minimum cancellation window (hours)",
+  "minCancelHoursHint": "0 = no restriction",
+  "minCancelHoursNone": "Cancellation with no restriction",
+  "minCancelHoursValue": "Cancellable up to {hours}h before",
+  "@minCancelHoursValue": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "bookingCancelPolicyNone": "You can cancel this appointment at any time.",
+  "bookingCancelPolicyHours": "Cancellable up to {hours}h before the appointment.",
+  "@bookingCancelPolicyHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+
+  "upcomingReminderTitle": "Your appointment is coming up",
+  "upcomingReminderBody": "{salon} · in {duration}",
+  "@upcomingReminderBody": {
+    "placeholders": {
+      "salon":    { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "upcomingReminderNow": "now",
+  "inXHoursYMinutes": "{hours}h {minutes}min",
+  "@inXHoursYMinutes": {
+    "placeholders": {
+      "hours":   { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+
+  "reviewsTitle": "Reviews",
+  "reviewSubmitTitle": "Rate your visit",
+  "reviewRatingLabel": "Your rating",
+  "reviewCommentLabel": "Your review (optional)",
+  "reviewCommentHint": "Share your experience…",
+  "reviewSubmit": "Publish review",
+  "reviewSubmitted": "Thanks! Your review is live.",
+  "reviewsSeeAll": "See all reviews ({count})",
+  "@reviewsSeeAll": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reviewsEmpty": "No reviews yet",
+  "reviewsOnlyRatings": "All reviews are ratings only, without any written comment.",
+  "cancellationReasonOwnerLabel": "CANCELLATION REASON",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "reviewHideTitle": "Hide this review?",
+  "reviewHideReason": "Reason",
+  "reviewsReceived": "Reviews received",
+  "reviewHidden": "Review hidden",
+  "reviewBadge": "★ {rating}/5",
+  "@reviewBadge": {
+    "placeholders": {
+      "rating": { "type": "int" }
+    }
+  },
+
+  "markNoShow": "Mark no-show",
+  "noShowConfirmTitle": "Mark as no-show?",
+  "noShowConfirmBody": "{client} will be marked as absent. Visible on their profile.",
+  "@noShowConfirmBody": {
+    "placeholders": {
+      "client": { "type": "String" }
+    }
+  },
+  "noShowBadge": "{count, plural, =1{1 no-show} other{{count} no-shows}}",
+  "@noShowBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noShowRegistered": "No-show recorded",
+  "noShowTooltip": "This client missed {count} appointments.",
+  "@noShowTooltip": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "appointmentsDesktopTitle": "Your visits",
+  "appointmentsDesktopOverline": "MY APPOINTMENTS",
+  "reviewsReceivedCardTitle": "Reviews received",
+  "averageRatingOutOf": "out of 5",
+  "seeAllReviews": "See all →",
+  "noReviewsYetOwner": "No reviews yet."
 }

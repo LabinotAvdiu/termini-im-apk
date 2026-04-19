@@ -1000,6 +1000,12 @@ abstract class AppLocalizations {
   /// **'Aucun rendez-vous passé'**
   String get noPastAppointments;
 
+  /// No description provided for @seeMorePastAppointments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir {count} de plus'**
+  String seeMorePastAppointments(int count);
+
   /// No description provided for @appointmentConfirmed.
   ///
   /// In fr, this message translates to:
@@ -1023,6 +1029,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Annulé'**
   String get appointmentCancelled;
+
+  /// No description provided for @appointmentRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusé'**
+  String get appointmentRejected;
+
+  /// No description provided for @appointmentNoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absent'**
+  String get appointmentNoShow;
+
+  /// No description provided for @appointmentNoShowDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne vous êtes pas présenté à ce rendez-vous.'**
+  String get appointmentNoShowDetail;
 
   /// No description provided for @mySalon.
   ///
@@ -1345,7 +1369,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderNote.
   ///
   /// In fr, this message translates to:
-  /// **'Un rappel vous sera envoyé 24h avant votre rendez-vous. L\'annulation est possible jusqu\'à 2h avant.'**
+  /// **'Un rappel vous sera envoyé 24h avant votre rendez-vous.'**
   String get reminderNote;
 
   /// No description provided for @hairdresser.
@@ -1930,12 +1954,6 @@ abstract class AppLocalizations {
   /// **'Annuler ce rendez-vous ?'**
   String get confirmCancelTitle;
 
-  /// No description provided for @cancelAppointmentBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Cette action libérera le créneau.'**
-  String get cancelAppointmentBody;
-
   /// No description provided for @actionFailed.
   ///
   /// In fr, this message translates to:
@@ -2278,6 +2296,18 @@ abstract class AppLocalizations {
   /// **'refusés'**
   String get monthStatRejected;
 
+  /// No description provided for @monthStatCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'annulés'**
+  String get monthStatCancelled;
+
+  /// No description provided for @monthStatNoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'absents'**
+  String get monthStatNoShow;
+
   /// No description provided for @appointmentSingular.
   ///
   /// In fr, this message translates to:
@@ -2613,6 +2643,324 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Recadrer la photo'**
   String get cropPhotoTitle;
+
+  /// No description provided for @experienceSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expérience'**
+  String get experienceSection;
+
+  /// No description provided for @hapticLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vibrations'**
+  String get hapticLabel;
+
+  /// No description provided for @hapticDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Petits retours tactiles sur les interactions'**
+  String get hapticDesc;
+
+  /// No description provided for @soundsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sons de l\'interface'**
+  String get soundsLabel;
+
+  /// No description provided for @soundsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivés par défaut'**
+  String get soundsDesc;
+
+  /// No description provided for @animationsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Animations'**
+  String get animationsLabel;
+
+  /// No description provided for @animationsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transitions et effets visuels'**
+  String get animationsDesc;
+
+  /// No description provided for @cancelAppointmentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler ce rendez-vous ?'**
+  String get cancelAppointmentTitle;
+
+  /// No description provided for @cancelAppointmentBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{salon} · {date}. Cette action est irréversible.'**
+  String cancelAppointmentBody(String salon, String date);
+
+  /// No description provided for @cancelAppointmentBodyOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette action libérera le créneau.'**
+  String get cancelAppointmentBodyOwner;
+
+  /// No description provided for @cancelReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif (facultatif)'**
+  String get cancelReasonLabel;
+
+  /// No description provided for @cancellableUntil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulable jusqu\'à {date}'**
+  String cancellableUntil(String date);
+
+  /// No description provided for @cancellationTooLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il est trop tard pour annuler ce rendez-vous.'**
+  String get cancellationTooLate;
+
+  /// No description provided for @minCancelHoursLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Délai minimum d\'annulation (heures)'**
+  String get minCancelHoursLabel;
+
+  /// No description provided for @minCancelHoursHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'0 = pas de contrainte'**
+  String get minCancelHoursHint;
+
+  /// No description provided for @minCancelHoursNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulation sans contrainte'**
+  String get minCancelHoursNone;
+
+  /// No description provided for @minCancelHoursValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulation jusqu\'à {hours}h avant'**
+  String minCancelHoursValue(int hours);
+
+  /// No description provided for @bookingCancelPolicyNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez annuler ce rendez-vous à tout moment.'**
+  String get bookingCancelPolicyNone;
+
+  /// No description provided for @bookingCancelPolicyHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulable jusqu\'à {hours} h avant le RDV.'**
+  String bookingCancelPolicyHours(int hours);
+
+  /// No description provided for @upcomingReminderTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre RDV approche'**
+  String get upcomingReminderTitle;
+
+  /// No description provided for @upcomingReminderBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{salon} · dans {duration}'**
+  String upcomingReminderBody(String salon, String duration);
+
+  /// No description provided for @upcomingReminderNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'maintenant'**
+  String get upcomingReminderNow;
+
+  /// No description provided for @inXHoursYMinutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'{hours}h {minutes}min'**
+  String inXHoursYMinutes(int hours, int minutes);
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis'**
+  String get reviewsTitle;
+
+  /// No description provided for @reviewSubmitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noter votre visite'**
+  String get reviewSubmitTitle;
+
+  /// No description provided for @reviewRatingLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre note'**
+  String get reviewRatingLabel;
+
+  /// No description provided for @reviewCommentLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre avis (facultatif)'**
+  String get reviewCommentLabel;
+
+  /// No description provided for @reviewCommentHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagez votre expérience…'**
+  String get reviewCommentHint;
+
+  /// No description provided for @reviewSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer mon avis'**
+  String get reviewSubmit;
+
+  /// No description provided for @reviewSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci ! Votre avis a été publié.'**
+  String get reviewSubmitted;
+
+  /// No description provided for @reviewsSeeAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir tous les avis ({count})'**
+  String reviewsSeeAll(int count);
+
+  /// No description provided for @reviewsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun avis pour l\'instant'**
+  String get reviewsEmpty;
+
+  /// No description provided for @reviewsOnlyRatings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les avis ont été laissés sous forme de note uniquement, sans commentaire.'**
+  String get reviewsOnlyRatings;
+
+  /// No description provided for @cancellationReasonOwnerLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'MOTIF DE L\'ANNULATION'**
+  String get cancellationReasonOwnerLabel;
+
+  /// No description provided for @today.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get today;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get tomorrow;
+
+  /// No description provided for @reviewHideTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer cet avis ?'**
+  String get reviewHideTitle;
+
+  /// No description provided for @reviewHideReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get reviewHideReason;
+
+  /// No description provided for @reviewsReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis reçus'**
+  String get reviewsReceived;
+
+  /// No description provided for @reviewHidden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis masqué'**
+  String get reviewHidden;
+
+  /// No description provided for @reviewBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'★ {rating}/5'**
+  String reviewBadge(int rating);
+
+  /// No description provided for @markNoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme absent'**
+  String get markNoShow;
+
+  /// No description provided for @noShowConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme absent ?'**
+  String get noShowConfirmTitle;
+
+  /// No description provided for @noShowConfirmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{client} sera marqué comme absent. Visible sur sa fiche.'**
+  String noShowConfirmBody(String client);
+
+  /// No description provided for @noShowBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 absence} other{{count} absences}}'**
+  String noShowBadge(int count);
+
+  /// No description provided for @noShowRegistered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absence enregistrée'**
+  String get noShowRegistered;
+
+  /// No description provided for @noShowTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce client a manqué {count} rendez-vous.'**
+  String noShowTooltip(int count);
+
+  /// No description provided for @appointmentsDesktopTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos visites'**
+  String get appointmentsDesktopTitle;
+
+  /// No description provided for @appointmentsDesktopOverline.
+  ///
+  /// In fr, this message translates to:
+  /// **'MES RENDEZ-VOUS'**
+  String get appointmentsDesktopOverline;
+
+  /// No description provided for @reviewsReceivedCardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis reçus'**
+  String get reviewsReceivedCardTitle;
+
+  /// No description provided for @averageRatingOutOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur 5'**
+  String get averageRatingOutOf;
+
+  /// No description provided for @seeAllReviews.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir tout →'**
+  String get seeAllReviews;
+
+  /// No description provided for @noReviewsYetOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas encore d\'avis.'**
+  String get noReviewsYetOwner;
 }
 
 class _AppLocalizationsDelegate

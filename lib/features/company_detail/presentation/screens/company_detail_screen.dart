@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../providers/company_detail_provider.dart';
 import 'company_detail_screen_mobile.dart';
 import 'company_detail_screen_desktop.dart';
@@ -71,8 +72,13 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: AppColors.primary),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 220),
+      switchInCurve: Curves.easeOutCubic,
+      child: const SingleChildScrollView(
+        key: ValueKey('detail-skeleton'),
+        child: SkeletonCompanyDetailMobile(),
+      ),
     );
   }
 }

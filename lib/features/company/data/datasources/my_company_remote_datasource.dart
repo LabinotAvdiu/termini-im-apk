@@ -284,9 +284,19 @@ class MyCompanyRemoteDatasource {
 
   // ── Company planning appointments ────────────────────────────────────────
 
+  /// Owner planning — fetch a single day.
+  /// Default status filter includes `no_show` and `cancelled` so the owner
+  /// keeps an honest record of what happened on the slot (otherwise the
+  /// appointment vanishes from the timeline as soon as it's marked no-show).
+  /// `rejected` stays out because a refused request never took place.
   Future<List<PlanningAppointmentModel>> listCompanyAppointments(
     String date, {
-    List<String> statuses = const ['confirmed', 'pending'],
+    List<String> statuses = const [
+      'confirmed',
+      'pending',
+      'no_show',
+      'cancelled',
+    ],
   }) async {
     try {
       final url = ApiConstants.myCompanyAppointments(date, statuses);
@@ -302,10 +312,18 @@ class MyCompanyRemoteDatasource {
     }
   }
 
+  /// Owner planning — fetch a date range (week / month views). Same status
+  /// default as `listCompanyAppointments` so the month grid counts reflect
+  /// the real activity including no-shows and cancellations.
   Future<List<PlanningAppointmentModel>> listCompanyAppointmentsRange(
     String start,
     String end, {
-    List<String> statuses = const ['confirmed', 'pending'],
+    List<String> statuses = const [
+      'confirmed',
+      'pending',
+      'no_show',
+      'cancelled',
+    ],
   }) async {
     try {
       final response = await _client.get(

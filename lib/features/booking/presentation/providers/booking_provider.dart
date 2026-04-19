@@ -39,6 +39,9 @@ class BookingState {
   final double? servicePrice;
   final int? serviceDuration;
   final String bookingMode;
+  /// Salon's cancellation policy — shown on the confirmation step so the
+  /// client knows their cancellation window upfront. `0` = no restriction.
+  final int minCancelHours;
 
   const BookingState({
     this.currentStep = 0,
@@ -58,16 +61,28 @@ class BookingState {
     this.servicePrice,
     this.serviceDuration,
     this.bookingMode = 'employee_based',
+    this.minCancelHours = 2,
   });
 
   bool get canProceedStep0 =>
       (noPreference || selectedEmployee != null) && selectedSlot != null;
   bool get canProceedStep1 => true;
 
-  String get employeeDisplayName {
-    if (noPreference) return 'Sans préférence';
-    return selectedEmployee?.name ?? 'Sans préférence';
+  /// Returns the selected employee's display name, or `null` when no specific
+  /// employee is chosen ("no preference" / capacity-based mode). UI code is
+  /// expected to handle the null case with its own localized fallback so this
+  /// getter stays free of any i18n concern.
+  String? get selectedEmployeeName {
+    if (noPreference) return null;
+    return selectedEmployee?.name;
   }
+
+  /// True when the employee selector is irrelevant — capacity-based salons
+  /// whose only "team member" is the owner themselves. In that case there is
+  /// no real choice to offer the client so the whole selector (and the summary
+  /// row) should be hidden.
+  bool get hideEmployeePicker =>
+      bookingMode == 'capacity_based' && employees.length <= 1;
 
   BookingState copyWith({
     int? currentStep,
@@ -87,6 +102,7 @@ class BookingState {
     double? servicePrice,
     int? serviceDuration,
     String? bookingMode,
+    int? minCancelHours,
   }) {
     return BookingState(
       currentStep: currentStep ?? this.currentStep,
@@ -106,6 +122,7 @@ class BookingState {
       servicePrice: servicePrice ?? this.servicePrice,
       serviceDuration: serviceDuration ?? this.serviceDuration,
       bookingMode: bookingMode ?? this.bookingMode,
+      minCancelHours: minCancelHours ?? this.minCancelHours,
     );
   }
 
@@ -202,6 +219,7 @@ class BookingNotifier extends StateNotifier<BookingState> {
         serviceDuration: serviceDuration ?? 30,
         noPreference: isCapacityBased ? true : true,
         bookingMode: company.bookingMode,
+        minCancelHours: company.minCancelHours,
         isLoading: false,
       );
 

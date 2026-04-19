@@ -51,10 +51,17 @@ abstract class ApiConstants {
   static String companyFavorite(String id) => '/companies/$id/favorite';
 
   // ---------------------------------------------------------------------------
-  // Bookings
+  // Bookings (client)
   // ---------------------------------------------------------------------------
   static const String bookings = '/bookings';
   static String bookingDetail(String id) => '/bookings/$id';
+  static String appointmentCancel(String id) => '/appointments/$id/cancel';
+  static String appointmentReview(String id) => '/appointments/$id/review';
+
+  // ---------------------------------------------------------------------------
+  // Reviews (public)
+  // ---------------------------------------------------------------------------
+  static String companyReviews(String id) => '/companies/$id/reviews';
 
   // ---------------------------------------------------------------------------
   // My Company (authenticated owner endpoints)
@@ -86,6 +93,11 @@ abstract class ApiConstants {
   static String myCompanyBreak(String id) => '/my-company/breaks/$id';
   static String myCompanyCapacityOverride(String id) =>
       '/my-company/capacity-overrides/$id';
+
+  // Reviews (owner)
+  static const String myCompanyReviews         = '/my-company/reviews';
+  static String myCompanyReviewHide(String id)   => '/my-company/reviews/$id/hide';
+  static String myCompanyReviewUnhide(String id) => '/my-company/reviews/$id/unhide';
 
   // Gallery
   static const String myCompanyGallery         = '/my-company/gallery';

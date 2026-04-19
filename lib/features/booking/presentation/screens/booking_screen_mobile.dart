@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../providers/booking_provider.dart';
 import '../widgets/step_indicator.dart';
 import '../widgets/employee_selection.dart';
@@ -331,7 +332,7 @@ class _MobileBottomNavBar extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Loading view (shared utility — also used by desktop)
+// Loading view — skeleton employés pour le premier chargement
 // ---------------------------------------------------------------------------
 
 class _LoadingView extends StatelessWidget {
@@ -339,8 +340,11 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: AppColors.primary),
+    return const SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(top: AppSpacing.md),
+        child: SkeletonBookingEmployees(),
+      ),
     );
   }
 }

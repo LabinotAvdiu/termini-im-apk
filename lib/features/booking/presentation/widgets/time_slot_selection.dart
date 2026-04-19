@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../../data/models/available_slot_model.dart';
 import '../../data/models/day_availability_model.dart';
 import '../providers/booking_provider.dart';
@@ -38,12 +40,7 @@ class TimeSlotSelection extends ConsumerWidget {
     final state = ref.watch(bookingProvider);
 
     if (state.isLoading && state.availability.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(AppSpacing.xl),
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-      );
+      return const SkeletonTimeSlots();
     }
 
     return Column(
@@ -68,8 +65,12 @@ class TimeSlotSelection extends ConsumerWidget {
                 day: day,
                 isSelected: isSelected,
                 onTap: day.isAvailable && dateObj != null
-                    ? () =>
-                        ref.read(bookingProvider.notifier).selectDate(dateObj)
+                    ? () {
+                        ref.read(uxPrefsProvider.notifier).selectionClick();
+                        ref
+                            .read(bookingProvider.notifier)
+                            .selectDate(dateObj);
+                      }
                     : null,
               );
             },
@@ -82,15 +83,14 @@ class TimeSlotSelection extends ConsumerWidget {
           child: state.selectedDate == null
               ? const _SelectDateHint()
               : state.isLoadingSlots
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator(color: AppColors.primary),
-                    )
+                  ? const SkeletonTimeSlots()
                   : _SlotsForDay(
                       slots: state.availableSlots,
                       selectedSlot: state.selectedSlot,
-                      onSlotTap: (slot) =>
-                          ref.read(bookingProvider.notifier).selectSlot(slot),
+                      onSlotTap: (slot) {
+                        ref.read(uxPrefsProvider.notifier).selectionClick();
+                        ref.read(bookingProvider.notifier).selectSlot(slot);
+                      },
                     ),
         ),
       ],

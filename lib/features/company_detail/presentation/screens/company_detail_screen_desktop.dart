@@ -15,6 +15,7 @@ import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
 import '../../data/models/company_detail_model.dart';
 import '../providers/company_detail_provider.dart';
+import '../widgets/desktop_reviews_section.dart';
 import '../widgets/gallery_lightbox.dart';
 
 /// D2 — Desktop/editorial presentation for the company detail screen.
@@ -789,6 +790,11 @@ class _DesktopMainColumn extends StatelessWidget {
             },
           ),
         ),
+
+        // ── Reviews section ──────────────────────────────────────────────
+        const SizedBox(height: 56),
+        DesktopReviewsSection(companyId: companyId),
+        const SizedBox(height: 24),
       ],
     );
   }

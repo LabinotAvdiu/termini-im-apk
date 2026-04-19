@@ -10,6 +10,8 @@ import '../../../../core/utils/extensions.dart';
 import '../../data/datasources/my_company_remote_datasource.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/pending_count_provider.dart';
+import '../widgets/pending_day_helpers.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // State
@@ -128,52 +130,105 @@ class _PendingApprovalsScreenState
         ),
       ),
       body: state.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
-          : RefreshIndicator(
-              color: AppColors.primary,
-              backgroundColor: AppColors.surface,
-              onRefresh: () =>
-                  ref.read(_pendingProvider.notifier).load(),
-              child: state.appointments.isEmpty
-                  ? _EmptyView()
-                  : Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 720),
-                        child: ListView.separated(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      itemCount: state.appointments.length,
-                      separatorBuilder: (context, i) =>
-                          const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, index) {
-                        final appt = state.appointments[index];
-                        return _AppointmentTile(
-                          appointment: appt,
-                          onApprove: () {
-                            ref
-                                .read(_pendingProvider.notifier)
-                                .updateStatus(
-                                    appt['id'].toString(), 'confirmed')
-                                .then((_) => ref
-                                    .read(pendingCountProvider.notifier)
-                                    .refresh());
-                          },
-                          onReject: () {
-                            ref
-                                .read(_pendingProvider.notifier)
-                                .updateStatus(
-                                    appt['id'].toString(), 'rejected')
-                                .then((_) => ref
-                                    .read(pendingCountProvider.notifier)
-                                    .refresh());
-                          },
-                        );
-                      },
+          ? const SkeletonPendingApprovals()
+          : Builder(
+              builder: (context) {
+                // Drop appointments whose start time has already passed — the
+                // owner can't usefully approve/reject a slot that's over.
+                final visible = state.appointments
+                    .where((a) => !_isAppointmentPast(a))
+                    .toList();
+
+                // Group by calendar day. Each bucket's items are sorted by
+                // startTime ASC; buckets themselves are sorted by date ASC
+                // so the next slot to decide on rises to the top.
+                final groups = groupPendingByDate(visible);
+
+                // Flatten into a (header, ...items) render list so a single
+                // ListView.builder handles layout + separators.
+                final rows = <PendingRow>[];
+                for (final entry in groups) {
+                  rows.add(PendingRow.header(entry.key));
+                  for (final appt in entry.value) {
+                    rows.add(PendingRow.appointment(appt));
+                  }
+                }
+
+                return RefreshIndicator(
+                  color: AppColors.primary,
+                  backgroundColor: AppColors.surface,
+                  onRefresh: () => ref.read(_pendingProvider.notifier).load(),
+                  child: rows.isEmpty
+                      ? _EmptyView()
+                      : Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 720),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              itemCount: rows.length,
+                              itemBuilder: (context, index) {
+                                final row = rows[index];
+                                if (row.isHeader) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      top: index == 0 ? 0 : AppSpacing.lg,
+                                      bottom: AppSpacing.sm,
+                                    ),
+                                    child: PendingDayHeader(date: row.date!),
+                                  );
+                                }
+                                final appt = row.appointment!;
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.sm),
+                                  child: _AppointmentTile(
+                                    appointment: appt,
+                                    onApprove: () {
+                                      ref
+                                          .read(_pendingProvider.notifier)
+                                          .updateStatus(
+                                              appt['id'].toString(),
+                                              'confirmed')
+                                          .then((_) => ref
+                                              .read(pendingCountProvider
+                                                  .notifier)
+                                              .refresh());
+                                    },
+                                    onReject: () {
+                                      ref
+                                          .read(_pendingProvider.notifier)
+                                          .updateStatus(
+                                              appt['id'].toString(),
+                                              'rejected')
+                                          .then((_) => ref
+                                              .read(pendingCountProvider
+                                                  .notifier)
+                                              .refresh());
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                );
+              },
             ),
     );
+  }
+}
+
+/// Helper used by the pending-approvals list to detect past appointments
+/// (by combining the raw API `date` + `startTime`).
+bool _isAppointmentPast(Map<String, dynamic> a) {
+  final date = a['date'] as String?;
+  final startTime = a['startTime'] as String?;
+  if (date == null || startTime == null) return false;
+  try {
+    final dt = DateTime.parse('${date}T$startTime:00');
+    return dt.isBefore(DateTime.now());
+  } catch (_) {
+    return false;
   }
 }
 

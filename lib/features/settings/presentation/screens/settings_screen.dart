@@ -10,6 +10,7 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
@@ -249,33 +250,53 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Column(
           children: [
-            // ── Section "Mon profil" with editable avatar ──────────────
-            _SectionCard(
-              title: context.l10n.myProfile,
-              icon: Icons.person_outline_rounded,
-              child: Column(
-                children: [
-                  const SizedBox(height: AppSpacing.sm),
-                  AvatarEditor(
-                    size: 120,
-                    initials: _computeInitials(
-                      _firstNameController.text,
-                      _lastNameController.text,
-                    ),
+            // ── Section "Mon profil" ─────────────────────────────────────
+            // Clients (no company role) only get a read-only avatar — the
+            // public avatar is mainly a pro feature (clients book, they
+            // don't need to be "found" by photo on the search page).
+            // Owners & employees get the editable version with camera button.
+            Builder(
+              builder: (context) {
+                final authUser = ref.watch(authStateProvider).user;
+                final isPro = (authUser?.companyRole ?? '').isNotEmpty;
+                final initials = _computeInitials(
+                  _firstNameController.text,
+                  _lastNameController.text,
+                );
+                return _SectionCard(
+                  title: context.l10n.myProfile,
+                  icon: Icons.person_outline_rounded,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: AppSpacing.sm),
+                      if (isPro)
+                        AvatarEditor(
+                          size: 120,
+                          initials: initials,
+                        )
+                      else
+                        AvatarDisplay(
+                          size: 120,
+                          initials: initials,
+                          photoUrl: authUser?.thumbnailUrl ??
+                              authUser?.profileImageUrl,
+                        ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        '${_firstNameController.text} ${_lastNameController.text}'
+                            .trim(),
+                        style: AppTextStyles.h3,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        authUser?.email ?? '',
+                        style: AppTextStyles.bodySmall,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    '${_firstNameController.text} ${_lastNameController.text}'.trim(),
-                    style: AppTextStyles.h3,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    ref.watch(authStateProvider).user?.email ?? '',
-                    style: AppTextStyles.bodySmall,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
-              ),
+                );
+              },
             ),
 
             const SizedBox(height: AppSpacing.md),
@@ -382,6 +403,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
             ),
+
+            // ── Section Expérience — haptic, sons, animations ──────────────
+            const SizedBox(height: AppSpacing.md),
+            _UxPrefsSection(),
 
             // Section Notifications — uniquement pour owner et employee.
             // Les clients (UserRole.user) n'ont pas de préférences configurables :
@@ -586,6 +611,77 @@ class _SettingsTile extends StatelessWidget {
                 ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// _UxPrefsSection — section Expérience dans Settings
+// ---------------------------------------------------------------------------
+
+class _UxPrefsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(uxPrefsProvider);
+
+    return _SectionCard(
+      title: context.l10n.experienceSection,
+      icon: Icons.auto_awesome_rounded,
+      child: Column(
+        children: [
+          // Vibrations
+          _SettingsTile(
+            icon: Icons.vibration_rounded,
+            title: context.l10n.hapticLabel,
+            subtitle: context.l10n.hapticDesc,
+            trailing: Switch.adaptive(
+              value: prefs.hapticEnabled,
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+              onChanged: (v) =>
+                  ref.read(uxPrefsProvider.notifier).setHaptic(v),
+            ),
+          ),
+          const Divider(
+            height: 1,
+            color: AppColors.divider,
+            indent: 48,
+          ),
+
+          // Sons de l'interface
+          _SettingsTile(
+            icon: Icons.music_note_rounded,
+            title: context.l10n.soundsLabel,
+            subtitle: context.l10n.soundsDesc,
+            trailing: Switch.adaptive(
+              value: prefs.soundsEnabled,
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+              onChanged: (v) =>
+                  ref.read(uxPrefsProvider.notifier).setSounds(v),
+            ),
+          ),
+          const Divider(
+            height: 1,
+            color: AppColors.divider,
+            indent: 48,
+          ),
+
+          // Animations
+          _SettingsTile(
+            icon: Icons.animation_rounded,
+            title: context.l10n.animationsLabel,
+            subtitle: context.l10n.animationsDesc,
+            trailing: Switch.adaptive(
+              value: prefs.animationsEnabled,
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+              onChanged: (v) =>
+                  ref.read(uxPrefsProvider.notifier).setAnimations(v),
+            ),
+          ),
+        ],
       ),
     );
   }

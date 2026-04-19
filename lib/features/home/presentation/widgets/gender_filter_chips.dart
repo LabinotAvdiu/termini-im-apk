@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -72,6 +73,7 @@ class _FilterChip extends StatelessWidget {
         label: Text(label),
         selected: isSelected,
         onSelected: (_) {
+          ref.read(uxPrefsProvider.notifier).selectionClick();
           ref.read(genderFilterProvider.notifier).state = filter;
         },
         // Minimum touch target is 40px height (SizedBox above) — satisfies 48dp

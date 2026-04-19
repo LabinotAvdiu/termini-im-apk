@@ -31,8 +31,61 @@ class BookingConfirmation extends ConsumerWidget {
 
           const SizedBox(height: AppSpacing.lg),
 
+          // Cancellation policy (per-salon)
+          _CancellationPolicyNote(minCancelHours: state.minCancelHours),
+
+          const SizedBox(height: AppSpacing.sm),
+
           // Info note
           _InfoNote(),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cancellation policy note — shown upfront so clients know the window.
+// ---------------------------------------------------------------------------
+
+class _CancellationPolicyNote extends StatelessWidget {
+  final int minCancelHours;
+  const _CancellationPolicyNote({required this.minCancelHours});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final message = minCancelHours == 0
+        ? l.bookingCancelPolicyNone
+        : l.bookingCancelPolicyHours(minCancelHours);
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: AppColors.secondary.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.timer_off_outlined,
+            size: 18,
+            color: AppColors.secondaryDark,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.secondaryDark,
+                height: 1.5,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -105,17 +158,22 @@ class _SummaryCard extends StatelessWidget {
                       : null,
                   subValueColor: AppColors.primary,
                 ),
-                const Divider(height: AppSpacing.lg),
-                _SummaryRow(
-                  icon: Icons.person_outline_rounded,
-                  label: context.l10n.hairdresser,
-                  value: state.employeeDisplayName,
-                  subValue: state.noPreference
-                      ? null
-                      : state.selectedEmployee?.specialties.isNotEmpty == true
-                          ? state.selectedEmployee!.specialties.first
-                          : null,
-                ),
+                // Hairdresser row — skipped when the employee picker is not
+                // shown at all (capacity-based salon with a single member).
+                if (!state.hideEmployeePicker) ...[
+                  const Divider(height: AppSpacing.lg),
+                  _SummaryRow(
+                    icon: Icons.person_outline_rounded,
+                    label: context.l10n.hairdresser,
+                    value: state.selectedEmployeeName ??
+                        context.l10n.noPreferenceShort,
+                    subValue: state.noPreference
+                        ? null
+                        : state.selectedEmployee?.specialties.isNotEmpty == true
+                            ? state.selectedEmployee!.specialties.first
+                            : null,
+                  ),
+                ],
                 if (state.selectedSlot != null) ...[
                   const Divider(height: AppSpacing.lg),
                   _SummaryRow(

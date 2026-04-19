@@ -13,4 +13,6 @@ abstract class RouteNames {
   static const String settings = 'settings';
   static const String capacitySettings = 'capacity-settings';
   static const String pendingApprovals = 'pending-approvals';
+  static const String submitReview = 'submit-review';
+  static const String myCompanyReviews = 'my-company-reviews';
 }

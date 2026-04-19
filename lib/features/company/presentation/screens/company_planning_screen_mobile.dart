@@ -9,9 +9,11 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../data/models/my_company_model.dart';
+import '../widgets/cancellation_reason_box.dart';
 import '../../data/models/planning_appointment_model.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/company_planning_provider.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Grid constants — shared with desktop presentation
@@ -268,10 +270,11 @@ class _CompanyPlanningScreenMobileState
               onSelect: (mode) =>
                   ref.read(companyPlanningProvider.notifier).setViewMode(mode),
             ),
-            // Month view has its own editorial totals strip above the grid —
-            // avoid showing the count twice.
-            if (state.viewMode != CompanyPlanningViewMode.month)
-              PlanningAppointmentsCountBar(state: state),
+            // Each view now embeds its own stats header:
+            //   • Day   → _MobileDayStatsHeader (in _buildDayBody)
+            //   • Week  → _MobileDayStatsHeader (wrapped around PlanningWeekView)
+            //   • Month → _MonthTotalsStrip (inside PlanningMonthView)
+            // No global bar here to avoid duplication.
             Expanded(child: _buildBody(context, state)),
           ],
         ),
@@ -294,8 +297,7 @@ class _CompanyPlanningScreenMobileState
     final companyState = ref.watch(companyDashboardProvider);
 
     if (state.isLoading && state.appointments.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     if (state.error != null && state.appointments.isEmpty) {
@@ -307,8 +309,7 @@ class _CompanyPlanningScreenMobileState
 
     final company = companyState.company;
     if (company == null) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     final selectedDate =
@@ -342,6 +343,18 @@ class _CompanyPlanningScreenMobileState
     // Trigger one-time auto-scroll to "now - 15 min" when on today's day view.
     _maybeAutoScrollToNow(state, todayHours);
 
+    // Per-day totals for the stats header (non-zero chips only).
+    final dayConfirmed =
+        state.appointments.where((a) => a.status == 'confirmed').length;
+    final dayPending =
+        state.appointments.where((a) => a.status == 'pending').length;
+    final dayNoShow =
+        state.appointments.where((a) => a.status == 'no_show').length;
+    final dayCancelled =
+        state.appointments.where((a) => a.status == 'cancelled').length;
+    final dayRejected =
+        state.appointments.where((a) => a.status == 'rejected').length;
+
     return RefreshIndicator(
       color: AppColors.primary,
       onRefresh: () => ref.read(companyPlanningProvider.notifier).load(),
@@ -356,6 +369,16 @@ class _CompanyPlanningScreenMobileState
                 backgroundColor: AppColors.divider,
               ),
             ),
+          SliverToBoxAdapter(
+            child: _MobileDayStatsHeader(
+              total: state.appointments.length,
+              confirmed: dayConfirmed,
+              pending: dayPending,
+              noShow: dayNoShow,
+              cancelled: dayCancelled,
+              rejected: dayRejected,
+            ),
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -389,30 +412,72 @@ class _CompanyPlanningScreenMobileState
 
   Widget _buildWeekBody(CompanyPlanningState state) {
     if (state.isLoading && state.rangeAppointments.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     final selected = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
     final weekStart = planningWeekStart(selected);
+    final totals = _weekTotals(state.rangeAppointments, weekStart);
 
-    return PlanningWeekView(
-      weekStart: weekStart,
-      appointmentsByDate: state.rangeAppointments,
-      selectedDate: selected,
-      onTapDay: (day) {
-        ref
-            .read(companyPlanningProvider.notifier)
-            .setViewMode(CompanyPlanningViewMode.day);
-        ref.read(companyPlanningProvider.notifier).setDate(day);
-      },
+    return Column(
+      children: [
+        _MobileDayStatsHeader(
+          total: totals.total,
+          confirmed: totals.confirmed,
+          pending: totals.pending,
+          noShow: totals.noShow,
+          cancelled: totals.cancelled,
+          rejected: totals.rejected,
+        ),
+        Expanded(
+          child: PlanningWeekView(
+            weekStart: weekStart,
+            appointmentsByDate: state.rangeAppointments,
+            selectedDate: selected,
+            onTapDay: (day) {
+              ref
+                  .read(companyPlanningProvider.notifier)
+                  .setViewMode(CompanyPlanningViewMode.day);
+              ref.read(companyPlanningProvider.notifier).setDate(day);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Aggregates the week totals from the range map (keyed by ISO date).
+  _StatusCounts _weekTotals(
+      Map<String, List<PlanningAppointmentModel>> byDate,
+      DateTime weekStart) {
+    var confirmed = 0, pending = 0, noShow = 0, cancelled = 0, rejected = 0;
+    for (var i = 0; i < 7; i++) {
+      final iso = planningToIso(weekStart.add(Duration(days: i)));
+      final list = byDate[iso];
+      if (list == null) continue;
+      for (final a in list) {
+        switch (a.status) {
+          case 'confirmed': confirmed++;
+          case 'pending':   pending++;
+          case 'no_show':   noShow++;
+          case 'cancelled': cancelled++;
+          case 'rejected':  rejected++;
+        }
+      }
+    }
+    return _StatusCounts(
+      total: confirmed + pending + noShow + cancelled + rejected,
+      confirmed: confirmed,
+      pending: pending,
+      noShow: noShow,
+      cancelled: cancelled,
+      rejected: rejected,
     );
   }
 
   Widget _buildMonthBody(CompanyPlanningState state) {
     if (state.isLoading && state.rangeAppointments.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     final selected = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
@@ -989,11 +1054,16 @@ class PlanningMonthView extends StatelessWidget {
       context.l10n.dayShortSun,
     ];
 
-    // Compute monthly totals (only for days inside `month`)
+    // Compute monthly totals (only for days inside `month`). Each terminal
+    // status is counted separately — refus / annulation / absence ne sont
+    // pas la même chose du point de vue d'un owner qui veut comprendre son
+    // taux de remplissage et son taux d'absentéisme.
     var totalCount = 0;
     var confirmedCount = 0;
     var pendingCount = 0;
     var rejectedCount = 0;
+    var cancelledCount = 0;
+    var noShowCount = 0;
     appointmentsByDate.forEach((iso, appts) {
       if (iso.length < 7) return;
       if (iso.substring(0, 7) != planningToIso(DateTime(month.year, month.month, 1)).substring(0, 7)) {
@@ -1004,9 +1074,9 @@ class PlanningMonthView extends StatelessWidget {
         switch (a.status) {
           case 'confirmed': confirmedCount++;
           case 'pending': pendingCount++;
-          case 'rejected':
-          case 'cancelled':
-          case 'no_show': rejectedCount++;
+          case 'rejected': rejectedCount++;
+          case 'cancelled': cancelledCount++;
+          case 'no_show': noShowCount++;
         }
       }
     });
@@ -1019,6 +1089,8 @@ class PlanningMonthView extends StatelessWidget {
           confirmed: confirmedCount,
           pending: pendingCount,
           rejected: rejectedCount,
+          cancelled: cancelledCount,
+          noShow: noShowCount,
         ),
         // Day-of-week header row
         Padding(
@@ -1085,12 +1157,16 @@ class _MonthTotalsStrip extends StatelessWidget {
   final int confirmed;
   final int pending;
   final int rejected;
+  final int cancelled;
+  final int noShow;
 
   const _MonthTotalsStrip({
     required this.total,
     required this.confirmed,
     required this.pending,
     required this.rejected,
+    required this.cancelled,
+    required this.noShow,
   });
 
   @override
@@ -1168,33 +1244,42 @@ class _MonthTotalsStrip extends StatelessWidget {
             color: AppColors.secondary.withValues(alpha: 0.3),
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           ),
-          // Status breakdown
+          // Status breakdown — only surface rows whose count > 0 so an owner
+          // with a clean month isn't confronted with a wall of zeros. The
+          // leading dot colour differentiates each status at a glance.
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: [
-              _StatRow(
-                color: AppColors.primary,
-                count: confirmed,
-                label: l.monthStatConfirmed,
-              ),
-              const SizedBox(height: 4),
-              _StatRow(
-                color: AppColors.warning,
-                count: pending,
-                label: l.monthStatPending,
-              ),
-              const SizedBox(height: 4),
-              _StatRow(
-                color: AppColors.textHint,
-                count: rejected,
-                label: l.monthStatRejected,
-              ),
-            ],
+            children: _buildStatRows(l),
           ),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildStatRows(dynamic l) {
+    // No-show and cancelled share the grey tone in the counter — they're
+    // informational, not alerts. Dots on the month cells keep their colours.
+    final rows = <(Color, int, String)>[
+      (AppColors.primary,   confirmed, l.monthStatConfirmed),
+      (AppColors.warning,   pending,   l.monthStatPending),
+      (AppColors.textHint,  noShow,    l.monthStatNoShow),
+      (AppColors.textHint,  cancelled, l.monthStatCancelled),
+      (AppColors.textHint,  rejected,  l.monthStatRejected),
+    ];
+    final widgets = <Widget>[];
+    for (final (color, count, label) in rows) {
+      if (count <= 0) continue;
+      if (widgets.isNotEmpty) widgets.add(const SizedBox(height: 4));
+      widgets.add(_StatRow(color: color, count: count, label: label));
+    }
+    // Fallback: if every bucket is 0, show a single muted "confirmed: 0" so
+    // the strip doesn't collapse to just the big total.
+    if (widgets.isEmpty) {
+      widgets.add(_StatRow(
+          color: AppColors.textHint, count: 0, label: l.monthStatConfirmed));
+    }
+    return widgets;
   }
 }
 
@@ -1275,6 +1360,10 @@ class _MonthDayCell extends StatelessWidget {
         appointments.where((a) => a.status == 'confirmed').length;
     final pendingCount =
         appointments.where((a) => a.status == 'pending').length;
+    final noShowCount =
+        appointments.where((a) => a.status == 'no_show').length;
+    final cancelledCount =
+        appointments.where((a) => a.status == 'cancelled').length;
 
     final dayFontSize = compact ? 11.0 : 13.0;
     final padding =
@@ -1362,6 +1451,8 @@ class _MonthDayCell extends StatelessWidget {
                   child: _AppointmentDotsRow(
                     confirmed: confirmedCount,
                     pending: pendingCount,
+                    noShow: noShowCount,
+                    cancelled: cancelledCount,
                     total: count,
                     isSelected: isSelected,
                     compact: compact,
@@ -1390,6 +1481,8 @@ class _MonthDayCell extends StatelessWidget {
 class _AppointmentDotsRow extends StatelessWidget {
   final int confirmed;
   final int pending;
+  final int noShow;
+  final int cancelled;
   final int total;
   final bool isSelected;
   final bool compact;
@@ -1397,6 +1490,8 @@ class _AppointmentDotsRow extends StatelessWidget {
   const _AppointmentDotsRow({
     required this.confirmed,
     required this.pending,
+    required this.noShow,
+    required this.cancelled,
     required this.total,
     required this.isSelected,
     required this.compact,
@@ -1411,6 +1506,8 @@ class _AppointmentDotsRow extends StatelessWidget {
     final showDots = total <= maxDots;
     final confirmedShown = showDots ? confirmed : 0;
     final pendingShown = showDots ? pending : 0;
+    final noShowShown = showDots ? noShow : 0;
+    final cancelledShown = showDots ? cancelled : 0;
 
     final dotSize = compact ? 5.5 : 8.0;
     final gap = compact ? 2.0 : 4.0;
@@ -1420,6 +1517,8 @@ class _AppointmentDotsRow extends StatelessWidget {
     final confirmedColor =
         isSelected ? AppColors.secondary : AppColors.primary;
     final pendingColor = AppColors.warning;
+    final noShowColor = AppColors.error;
+    final cancelledColor = AppColors.textHint;
     final textColor = isSelected
         ? AppColors.background.withValues(alpha: 0.9)
         : AppColors.textPrimary;
@@ -1454,6 +1553,24 @@ class _AppointmentDotsRow extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: pendingColor,
+                      ),
+                    ),
+                  for (int i = 0; i < noShowShown; i++)
+                    Container(
+                      width: dotSize,
+                      height: dotSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: noShowColor,
+                      ),
+                    ),
+                  for (int i = 0; i < cancelledShown; i++)
+                    Container(
+                      width: dotSize,
+                      height: dotSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: cancelledColor,
                       ),
                     ),
                 ],
@@ -2128,7 +2245,7 @@ class _PlanningAppointmentDetailSheetState
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.confirmCancelTitle),
-        content: Text(context.l10n.cancelAppointmentBody),
+        content: Text(context.l10n.cancelAppointmentBodyOwner),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -2153,6 +2270,61 @@ class _PlanningAppointmentDetailSheetState
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.actionFailed)));
+    }
+  }
+
+  bool _isPast() => appt.isPast;
+
+  /// No-show is only offered within 24h of the start time — keeps the
+  /// planning UI focused on recent events.
+  bool _canMarkNoShow() => appt.canMarkNoShow;
+
+  Future<void> _markNoShow() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
+        title: Text(context.l10n.noShowConfirmTitle),
+        content: Text(
+          context.l10n.noShowConfirmBody(appt.clientFullName),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.error.withValues(alpha: 0.8),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              context.l10n.markNoShow,
+              style: const TextStyle(color: AppColors.surface),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _loading = true);
+    final ok = await ref
+        .read(companyPlanningProvider.notifier)
+        .markNoShow(appt.id);
+    if (!mounted) return;
+    setState(() => _loading = false);
+    if (ok) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.noShowRegistered)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.actionFailed)),
+      );
     }
   }
 
@@ -2217,10 +2389,24 @@ class _PlanningAppointmentDetailSheetState
                   PlanningSheetPhoneRow(phone: appt.clientPhone!),
                 ],
                 const SizedBox(height: AppSpacing.md),
+                // No-show badge — visible if client has prior no-shows
+                if (appt.clientNoShowCount > 0) ...[
+                  _NoShowBadge(count: appt.clientNoShowCount),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
+                // Client-initiated cancellation reason — visible whenever
+                // the client filled the optional motif. Owners use it to
+                // understand patterns (last-minute cancellations, recurring
+                // reasons, etc.).
+                if (appt.status == 'cancelled' &&
+                    (appt.cancellationReason?.trim().isNotEmpty ?? false)) ...[
+                  CancellationReasonBox(reason: appt.cancellationReason!),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 if (_loading)
                   const Center(
                       child: CircularProgressIndicator(color: AppColors.primary))
-                else if (appt.status == 'pending') ...[
+                else if (appt.status == 'pending' && !appt.isPast) ...[
                   Row(
                     children: [
                       Expanded(
@@ -2250,19 +2436,40 @@ class _PlanningAppointmentDetailSheetState
                     ],
                   ),
                 ] else if (appt.status == 'confirmed') ...[
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: _cancel,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.error,
-                        side: const BorderSide(color: AppColors.error),
-                        padding:
-                            const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                  // Not yet started → Cancel.
+                  // Past start, within 24h → Mark no-show.
+                  // Past start, >24h → no action (too old to act on).
+                  if (!_isPast())
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: _cancel,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.error,
+                          side: const BorderSide(color: AppColors.error),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs),
+                        ),
+                        child: Text(context.l10n.cancel),
                       ),
-                      child: Text(context.l10n.cancel),
+                    )
+                  else if (_canMarkNoShow())
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _markNoShow,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor:
+                              AppColors.error.withValues(alpha: 0.7),
+                          side: BorderSide(
+                              color: AppColors.error.withValues(alpha: 0.4)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs),
+                        ),
+                        icon: const Icon(Icons.person_off_outlined, size: 18),
+                        label: Text(context.l10n.markNoShow),
+                      ),
                     ),
-                  ),
                 ],
               ],
             ),
@@ -2328,7 +2535,7 @@ class PlanningAppointmentDetail extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.confirmCancelTitle),
-        content: Text(context.l10n.cancelAppointmentBody),
+        content: Text(context.l10n.cancelAppointmentBodyOwner),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -2346,6 +2553,40 @@ class PlanningAppointmentDetail extends ConsumerWidget {
         .read(companyPlanningProvider.notifier)
         .cancelAppointment(appointment.id);
     if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.actionFailed)));
+    }
+  }
+
+  Future<void> _markNoShow(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(context.l10n.noShowConfirmTitle),
+        content: Text(
+          context.l10n.noShowConfirmBody(appointment.clientFullName),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(context.l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.markNoShow,
+                style: const TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    final ok = await ref
+        .read(companyPlanningProvider.notifier)
+        .markNoShow(appointment.id);
+    if (!context.mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.noShowRegistered)));
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.actionFailed)));
     }
@@ -2370,7 +2611,12 @@ class PlanningAppointmentDetail extends ConsumerWidget {
           label:
               '${appointment.service.name}  •  ${appointment.service.durationMinutes} min  •  ${appointment.service.price.toStringAsFixed(0)} €',
         ),
-        if (appointment.status == 'pending') ...[
+        if (appointment.status == 'cancelled' &&
+            (appointment.cancellationReason?.trim().isNotEmpty ?? false)) ...[
+          const SizedBox(height: AppSpacing.sm),
+          CancellationReasonBox(reason: appointment.cancellationReason!),
+        ],
+        if (appointment.status == 'pending' && !appointment.isPast) ...[
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
@@ -2400,19 +2646,35 @@ class PlanningAppointmentDetail extends ConsumerWidget {
               ),
             ],
           ),
-        ] else if (appointment.status == 'confirmed') ...[
+        ] else if (appointment.status == 'confirmed' &&
+            (!appointment.isPast || appointment.canMarkNoShow)) ...[
           const SizedBox(height: AppSpacing.sm),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => _cancel(context, ref),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.error,
-                side: const BorderSide(color: AppColors.error),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-              ),
-              child: Text(context.l10n.cancel),
-            ),
+            child: appointment.isPast
+                ? OutlinedButton.icon(
+                    onPressed: () => _markNoShow(context, ref),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor:
+                          AppColors.error.withValues(alpha: 0.7),
+                      side: BorderSide(
+                          color: AppColors.error.withValues(alpha: 0.4)),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xs),
+                    ),
+                    icon: const Icon(Icons.person_off_outlined, size: 18),
+                    label: Text(context.l10n.markNoShow),
+                  )
+                : OutlinedButton(
+                    onPressed: () => _cancel(context, ref),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xs),
+                    ),
+                    child: Text(context.l10n.cancel),
+                  ),
           ),
         ],
       ],
@@ -2924,4 +3186,215 @@ class _PlanningFreeSlotTarget extends StatelessWidget {
       child: InkWell(onTap: onTap, child: const SizedBox.expand()),
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Feature 4 — No-show client badge
+// ---------------------------------------------------------------------------
+
+class _NoShowBadge extends StatelessWidget {
+  final int count;
+
+  const _NoShowBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: context.l10n.noShowTooltip(count),
+      child: Container(
+        padding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppColors.error.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(20),
+          border:
+              Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              size: 14,
+              color: AppColors.error.withValues(alpha: 0.7),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              context.l10n.noShowBadge(count),
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.error.withValues(alpha: 0.8),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile day stats header — compact pill band above the timeline.
+// Shows total + non-zero status chips. Colours match the month dots:
+//   • bordeaux — confirmed
+//   • amber    — pending
+//   • red      — no-show (flags risk)
+//   • grey     — cancelled / rejected (neutral)
+// ---------------------------------------------------------------------------
+class _MobileDayStatsHeader extends StatelessWidget {
+  final int total;
+  final int confirmed;
+  final int pending;
+  final int noShow;
+  final int cancelled;
+  final int rejected;
+
+  const _MobileDayStatsHeader({
+    required this.total,
+    required this.confirmed,
+    required this.pending,
+    required this.noShow,
+    required this.cancelled,
+    required this.rejected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    if (total == 0) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.5), width: 1),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          RichText(
+            text: TextSpan(
+              style: GoogleFonts.fraunces(
+                fontSize: 22,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textPrimary,
+                letterSpacing: -0.4,
+                height: 1.1,
+              ),
+              children: [
+                TextSpan(text: '$total'),
+                TextSpan(
+                  text:
+                      ' ${total <= 1 ? l.appointmentSingular : l.appointmentPlural}',
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          Flexible(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              alignment: WrapAlignment.end,
+              children: [
+                if (confirmed > 0)
+                  _MobileDayChip(
+                      color: AppColors.primary,
+                      count: confirmed,
+                      label: l.monthStatConfirmed),
+                if (pending > 0)
+                  _MobileDayChip(
+                      color: AppColors.warning,
+                      count: pending,
+                      label: l.monthStatPending),
+                if (noShow > 0)
+                  _MobileDayChip(
+                      color: AppColors.textHint,
+                      count: noShow,
+                      label: l.monthStatNoShow),
+                if (cancelled > 0)
+                  _MobileDayChip(
+                      color: AppColors.textHint,
+                      count: cancelled,
+                      label: l.monthStatCancelled),
+                if (rejected > 0)
+                  _MobileDayChip(
+                      color: AppColors.textHint,
+                      count: rejected,
+                      label: l.monthStatRejected),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MobileDayChip extends StatelessWidget {
+  final Color color;
+  final int count;
+  final String label;
+
+  const _MobileDayChip({
+    required this.color,
+    required this.count,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          '$count',
+          style: GoogleFonts.fraunces(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(width: 2),
+        Text(
+          label,
+          style: GoogleFonts.instrumentSans(
+            fontSize: 10,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Tiny holder for per-range status counts used by the week stats header.
+class _StatusCounts {
+  final int total;
+  final int confirmed;
+  final int pending;
+  final int noShow;
+  final int cancelled;
+  final int rejected;
+  const _StatusCounts({
+    required this.total,
+    required this.confirmed,
+    required this.pending,
+    required this.noShow,
+    required this.cancelled,
+    required this.rejected,
+  });
 }

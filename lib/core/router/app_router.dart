@@ -13,7 +13,10 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/shell/presentation/screens/main_shell.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/company/presentation/screens/capacity_settings_screen.dart';
+import '../../features/company/presentation/screens/my_company_reviews_screen.dart';
 import '../../features/company/presentation/screens/pending_approvals_screen.dart';
+import '../../features/reviews/presentation/screens/submit_review_screen.dart';
+import 'page_transitions.dart';
 import 'route_names.dart';
 
 /// A [ChangeNotifier] that fires whenever the auth state changes.
@@ -79,25 +82,37 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         name: RouteNames.login,
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const LoginScreen(),
+        ),
       ),
       GoRoute(
         path: '/signup',
         name: RouteNames.signup,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final role = state.uri.queryParameters['role'] ?? 'user';
-          return SignupScreen(role: role);
+          return editorialFadePage(
+            key: state.pageKey,
+            child: SignupScreen(role: role),
+          );
         },
       ),
       GoRoute(
         path: '/role-select',
         name: RouteNames.roleSelect,
-        builder: (context, state) => const RoleSelectionScreen(),
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const RoleSelectionScreen(),
+        ),
       ),
       GoRoute(
         path: '/forgot-password',
         name: RouteNames.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const ForgotPasswordScreen(),
+        ),
       ),
       // ── /home — smart dispatch based on auth state ──────────────────
       // Authenticated users get the MainShell (bottom nav + IndexedStack).
@@ -117,35 +132,71 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         name: RouteNames.settings,
-        builder: (context, state) => const SettingsScreen(),
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const SettingsScreen(),
+        ),
       ),
       GoRoute(
         path: '/capacity-settings',
         name: RouteNames.capacitySettings,
-        builder: (context, state) => const CapacitySettingsScreen(),
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const CapacitySettingsScreen(),
+        ),
       ),
       GoRoute(
         path: '/pending-approvals',
         name: RouteNames.pendingApprovals,
-        builder: (context, state) => const PendingApprovalsScreen(),
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const PendingApprovalsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/my-company-reviews',
+        name: RouteNames.myCompanyReviews,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const MyCompanyReviewsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/appointments/:id/review',
+        name: RouteNames.submitReview,
+        pageBuilder: (context, state) {
+          final appointmentId = state.pathParameters['id']!;
+          return editorialSlidePage(
+            key: state.pageKey,
+            fromBottom: true,
+            child: SubmitReviewScreen(appointmentId: appointmentId),
+          );
+        },
       ),
       GoRoute(
         path: '/company/:id',
         name: RouteNames.companyDetail,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return CompanyDetailScreen(companyId: id);
+          return editorialSlidePage(
+            key: state.pageKey,
+            child: CompanyDetailScreen(companyId: id),
+          );
         },
         routes: [
           GoRoute(
             path: 'book',
             name: RouteNames.booking,
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final companyId = state.pathParameters['id']!;
               final serviceId = state.uri.queryParameters['serviceId'];
-              return BookingScreen(
-                companyId: companyId,
-                serviceId: serviceId,
+              return editorialSlidePage(
+                key: state.pageKey,
+                fromBottom: true,
+                child: BookingScreen(
+                  companyId: companyId,
+                  serviceId: serviceId,
+                ),
               );
             },
           ),

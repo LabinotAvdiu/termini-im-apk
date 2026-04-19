@@ -265,6 +265,8 @@ class MyCompanyModel {
   final List<MyEmployeeModel> employees;
   final List<OpeningHourModel> openingHours;
   final String bookingMode;
+  // Feature 1 — Cancellation window set by the owner
+  final int minCancelHours;
 
   const MyCompanyModel({
     required this.id,
@@ -280,7 +282,42 @@ class MyCompanyModel {
     this.employees = const [],
     this.openingHours = const [],
     this.bookingMode = 'employee_based',
+    this.minCancelHours = 2,
   });
+
+  MyCompanyModel copyWith({
+    String? id,
+    String? name,
+    String? address,
+    String? city,
+    String? phone,
+    String? phoneSecondary,
+    String? email,
+    String? description,
+    String? profileImageUrl,
+    List<MyCategoryModel>? categories,
+    List<MyEmployeeModel>? employees,
+    List<OpeningHourModel>? openingHours,
+    String? bookingMode,
+    int? minCancelHours,
+  }) {
+    return MyCompanyModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      city: city ?? this.city,
+      phone: phone ?? this.phone,
+      phoneSecondary: phoneSecondary ?? this.phoneSecondary,
+      email: email ?? this.email,
+      description: description ?? this.description,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      categories: categories ?? this.categories,
+      employees: employees ?? this.employees,
+      openingHours: openingHours ?? this.openingHours,
+      bookingMode: bookingMode ?? this.bookingMode,
+      minCancelHours: minCancelHours ?? this.minCancelHours,
+    );
+  }
 
   factory MyCompanyModel.fromJson(Map<String, dynamic> json) {
     // Unwrap optional 'data' envelope
@@ -312,6 +349,9 @@ class MyCompanyModel {
       bookingMode: d['bookingMode'] as String? ??
           d['booking_mode'] as String? ??
           'employee_based',
+      minCancelHours: d['minCancelHours'] as int? ??
+          d['min_cancel_hours'] as int? ??
+          2,
     );
   }
 
@@ -328,40 +368,9 @@ class MyCompanyModel {
         'categories': categories.map((c) => c.toJson()).toList(),
         'employees': employees.map((e) => e.toJson()).toList(),
         'openingHours': openingHours.map((h) => h.toJson()).toList(),
+        'min_cancel_hours': minCancelHours,
       };
 
-  MyCompanyModel copyWith({
-    String? id,
-    String? name,
-    String? address,
-    String? city,
-    String? phone,
-    Object? phoneSecondary = _sentinel,
-    String? email,
-    String? description,
-    String? profileImageUrl,
-    List<MyCategoryModel>? categories,
-    List<MyEmployeeModel>? employees,
-    List<OpeningHourModel>? openingHours,
-    String? bookingMode,
-  }) =>
-      MyCompanyModel(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        address: address ?? this.address,
-        city: city ?? this.city,
-        phone: phone ?? this.phone,
-        phoneSecondary: phoneSecondary == _sentinel
-            ? this.phoneSecondary
-            : phoneSecondary as String?,
-        email: email ?? this.email,
-        description: description ?? this.description,
-        profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-        categories: categories ?? this.categories,
-        employees: employees ?? this.employees,
-        openingHours: openingHours ?? this.openingHours,
-        bookingMode: bookingMode ?? this.bookingMode,
-      );
 }
 
 // Sentinel used by copyWith to distinguish "not provided" from explicit null.

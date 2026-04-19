@@ -14,6 +14,7 @@ import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Callback typedefs
@@ -84,8 +85,7 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: state.isLoading && state.company == null
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
+          ? const SkeletonDashboard()
           : state.error != null && state.company == null
               ? _MobileErrorView(
                   message: state.error!,
@@ -472,6 +472,13 @@ class _MobileCompanyInfoCard extends ConsumerWidget {
                       icon: Icons.phone_outlined, text: company.phone),
                   DashboardInfoRow(
                       icon: Icons.email_outlined, text: company.email),
+                  DashboardInfoRow(
+                    icon: Icons.timer_off_outlined,
+                    text: company.minCancelHours == 0
+                        ? context.l10n.minCancelHoursNone
+                        : context.l10n
+                            .minCancelHoursValue(company.minCancelHours),
+                  ),
                   if (company.description != null &&
                       company.description!.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.sm),

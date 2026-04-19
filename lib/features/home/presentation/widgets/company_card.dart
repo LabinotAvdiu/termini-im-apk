@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -226,16 +227,22 @@ class _CompanyPhoto extends ConsumerWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: photoUrl,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Shimmer.fromColors(
-                baseColor: AppColors.divider,
-                highlightColor: AppColors.background,
-                child: Container(color: AppColors.divider),
+            // Hero: la photo "voyage" vers le détail salon.
+            // Le tag est isolé à la photo seulement — les overlays (rank, heart)
+            // ne font pas partie du Hero pour éviter les conflits visuels.
+            child: Hero(
+              tag: 'company-photo-$companyId',
+              child: CachedNetworkImage(
+                imageUrl: photoUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: AppColors.divider,
+                  highlightColor: AppColors.background,
+                  child: Container(color: AppColors.divider),
+                ),
+                errorWidget: (context, url, error) =>
+                    _PhotoFallback(name: name),
               ),
-              errorWidget: (context, url, error) =>
-                  _PhotoFallback(name: name),
             ),
           ),
           if (rank != null)
@@ -298,6 +305,8 @@ class FavoriteBadge extends StatelessWidget {
       button: true,
       child: GestureDetector(
         onTap: () async {
+          // Action destructrice — mediumImpact avant la dialog de confirmation.
+          ref.read(uxPrefsProvider.notifier).mediumImpact();
           final confirmed = await showRemoveFavoriteDialog(
             context,
             companyName: companyName,
@@ -485,6 +494,7 @@ class _BookButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
+        ref.read(uxPrefsProvider.notifier).lightImpact();
         context.goNamed(
           RouteNames.companyDetail,
           pathParameters: {'id': companyId},

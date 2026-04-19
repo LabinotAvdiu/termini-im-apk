@@ -14,6 +14,10 @@ class CompanyDetailModel {
   /// Salon's target gender — 'men' | 'women' | 'both'. Defaults to 'both'
   /// when the backend doesn't specify.
   final String gender;
+  /// Minimum hours before the appointment after which client cancellation
+  /// is no longer allowed. `0` = no restriction. Displayed on the booking
+  /// confirmation so clients know their cancellation window upfront.
+  final int minCancelHours;
 
   /// Whether the authenticated user has marked this company as a favorite.
   /// Defaults to `false` when unauthenticated or when the field is absent.
@@ -33,6 +37,7 @@ class CompanyDetailModel {
     this.phoneSecondary,
     this.bookingMode = 'employee_based',
     this.gender = 'both',
+    this.minCancelHours = 2,
     this.isFavorite = false,
   });
 
@@ -50,6 +55,7 @@ class CompanyDetailModel {
     String? phoneSecondary,
     String? bookingMode,
     String? gender,
+    int? minCancelHours,
     bool? isFavorite,
   }) {
     return CompanyDetailModel(
@@ -66,6 +72,7 @@ class CompanyDetailModel {
       phoneSecondary: phoneSecondary ?? this.phoneSecondary,
       bookingMode: bookingMode ?? this.bookingMode,
       gender: gender ?? this.gender,
+      minCancelHours: minCancelHours ?? this.minCancelHours,
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
@@ -101,6 +108,9 @@ class CompanyDetailModel {
           data['booking_mode'] as String? ??
           'employee_based',
       gender: (data['gender'] as String?) ?? 'both',
+      minCancelHours: data['minCancelHours'] as int? ??
+          data['min_cancel_hours'] as int? ??
+          2,
       isFavorite: data['isFavorite'] as bool? ?? false,
     );
   }

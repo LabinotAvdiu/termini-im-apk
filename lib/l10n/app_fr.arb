@@ -174,10 +174,17 @@
   "past": "Passés",
   "noUpcomingAppointments": "Aucun rendez-vous à venir",
   "noPastAppointments": "Aucun rendez-vous passé",
+  "seeMorePastAppointments": "Voir {count} de plus",
+  "@seeMorePastAppointments": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "appointmentConfirmed": "Confirmé",
   "appointmentPending": "En attente",
   "appointmentCompleted": "Terminé",
   "appointmentCancelled": "Annulé",
+  "appointmentRejected": "Refusé",
+  "appointmentNoShow": "Absent",
+  "appointmentNoShowDetail": "Vous ne vous êtes pas présenté à ce rendez-vous.",
   "mySalon": "Mon Salon",
   "companyInfo": "Informations du salon",
   "servicesAndCategories": "Services & Catégories",
@@ -238,7 +245,7 @@
   "bookingSuccessMessage": "Votre rendez-vous a été pris avec succès. Vous recevrez une confirmation par notification.",
   "bookingConfirmationSubtitle": "Vérifiez les détails avant de confirmer.",
   "yourAppointment": "Votre rendez-vous",
-  "reminderNote": "Un rappel vous sera envoyé 24h avant votre rendez-vous. L'annulation est possible jusqu'à 2h avant.",
+  "reminderNote": "Un rappel vous sera envoyé 24h avant votre rendez-vous.",
   "hairdresser": "Coiffeur(se)",
   "noPreferenceShort": "Sans préf.",
   "dateLabel": "Date",
@@ -368,7 +375,6 @@
   "cancelAppointment": "Annuler le rendez-vous",
   "confirmRejectTitle": "Refuser ce rendez-vous ?",
   "confirmCancelTitle": "Annuler ce rendez-vous ?",
-  "cancelAppointmentBody": "Cette action libérera le créneau.",
   "actionFailed": "Échec de l'action. Réessayez.",
   "viewDay": "Jour",
   "viewWeek": "Semaine",
@@ -426,6 +432,8 @@
   "monthStatConfirmed": "confirmés",
   "monthStatPending": "en attente",
   "monthStatRejected": "refusés",
+  "monthStatCancelled": "annulés",
+  "monthStatNoShow": "absents",
   "appointmentSingular": "rendez-vous",
   "appointmentPlural": "rendez-vous",
   "emptyDayTitle": "Aucun rendez-vous",
@@ -511,5 +519,117 @@
   "removePhotoConfirm": "Voulez-vous vraiment supprimer votre photo de profil ?",
   "avatarUploading": "Envoi en cours\u2026",
   "avatarUploadError": "Échec de l'envoi de la photo.",
-  "cropPhotoTitle": "Recadrer la photo"
+  "cropPhotoTitle": "Recadrer la photo",
+  "experienceSection": "Expérience",
+  "hapticLabel": "Vibrations",
+  "hapticDesc": "Petits retours tactiles sur les interactions",
+  "soundsLabel": "Sons de l'interface",
+  "soundsDesc": "Désactivés par défaut",
+  "animationsLabel": "Animations",
+  "animationsDesc": "Transitions et effets visuels",
+
+  "cancelAppointmentTitle": "Annuler ce rendez-vous ?",
+  "cancelAppointmentBody": "{salon} · {date}. Cette action est irréversible.",
+  "@cancelAppointmentBody": {
+    "placeholders": {
+      "salon": { "type": "String" },
+      "date":  { "type": "String" }
+    }
+  },
+  "cancelAppointmentBodyOwner": "Cette action libérera le créneau.",
+  "cancelReasonLabel": "Motif (facultatif)",
+  "cancellableUntil": "Annulable jusqu'à {date}",
+  "@cancellableUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "cancellationTooLate": "Il est trop tard pour annuler ce rendez-vous.",
+  "minCancelHoursLabel": "Délai minimum d'annulation (heures)",
+  "minCancelHoursHint": "0 = pas de contrainte",
+  "minCancelHoursNone": "Annulation sans contrainte",
+  "minCancelHoursValue": "Annulation jusqu'à {hours}h avant",
+  "@minCancelHoursValue": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "bookingCancelPolicyNone": "Vous pouvez annuler ce rendez-vous à tout moment.",
+  "bookingCancelPolicyHours": "Annulable jusqu'à {hours} h avant le RDV.",
+  "@bookingCancelPolicyHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+
+  "upcomingReminderTitle": "Votre RDV approche",
+  "upcomingReminderBody": "{salon} · dans {duration}",
+  "@upcomingReminderBody": {
+    "placeholders": {
+      "salon":    { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "upcomingReminderNow": "maintenant",
+  "inXHoursYMinutes": "{hours}h {minutes}min",
+  "@inXHoursYMinutes": {
+    "placeholders": {
+      "hours":   { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+
+  "reviewsTitle": "Avis",
+  "reviewSubmitTitle": "Noter votre visite",
+  "reviewRatingLabel": "Votre note",
+  "reviewCommentLabel": "Votre avis (facultatif)",
+  "reviewCommentHint": "Partagez votre expérience…",
+  "reviewSubmit": "Envoyer mon avis",
+  "reviewSubmitted": "Merci ! Votre avis a été publié.",
+  "reviewsSeeAll": "Voir tous les avis ({count})",
+  "@reviewsSeeAll": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reviewsEmpty": "Aucun avis pour l'instant",
+  "reviewsOnlyRatings": "Tous les avis ont été laissés sous forme de note uniquement, sans commentaire.",
+  "cancellationReasonOwnerLabel": "MOTIF DE L'ANNULATION",
+  "today": "Aujourd'hui",
+  "tomorrow": "Demain",
+  "reviewHideTitle": "Masquer cet avis ?",
+  "reviewHideReason": "Motif",
+  "reviewsReceived": "Avis reçus",
+  "reviewHidden": "Avis masqué",
+  "reviewBadge": "★ {rating}/5",
+  "@reviewBadge": {
+    "placeholders": {
+      "rating": { "type": "int" }
+    }
+  },
+
+  "markNoShow": "Marquer comme absent",
+  "noShowConfirmTitle": "Marquer comme absent ?",
+  "noShowConfirmBody": "{client} sera marqué comme absent. Visible sur sa fiche.",
+  "@noShowConfirmBody": {
+    "placeholders": {
+      "client": { "type": "String" }
+    }
+  },
+  "noShowBadge": "{count, plural, =1{1 absence} other{{count} absences}}",
+  "@noShowBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noShowRegistered": "Absence enregistrée",
+  "noShowTooltip": "Ce client a manqué {count} rendez-vous.",
+  "@noShowTooltip": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "appointmentsDesktopTitle": "Vos visites",
+  "appointmentsDesktopOverline": "MES RENDEZ-VOUS",
+  "reviewsReceivedCardTitle": "Avis reçus",
+  "averageRatingOutOf": "sur 5",
+  "seeAllReviews": "Voir tout →",
+  "noReviewsYetOwner": "Vous n'avez pas encore d'avis."
 }

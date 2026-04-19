@@ -9,6 +9,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../data/models/schedule_models.dart';
 import '../providers/schedule_provider.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Grid constants
@@ -197,9 +198,7 @@ class _EmployeeScheduleScreenState
 
   Widget _buildBody(BuildContext context, ScheduleState state) {
     if (state.isLoading && state.schedule == null) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      );
+      return const SkeletonPlanningDay();
     }
 
     if (state.error != null && state.schedule == null) {

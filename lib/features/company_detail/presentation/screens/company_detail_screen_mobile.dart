@@ -11,6 +11,8 @@ import '../../../../core/widgets/auth_prompt_sheet.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
+import '../../../reviews/data/models/review_model.dart';
+import '../../../reviews/presentation/providers/review_provider.dart';
 import '../../data/models/company_detail_model.dart';
 import '../providers/company_detail_provider.dart';
 import '../widgets/photo_gallery.dart';
@@ -58,6 +60,7 @@ class CompanyDetailScreenMobile extends ConsumerWidget {
                   PhotoGallery(
                     photoUrls: company.photos,
                     height: 280,
+                    heroTag: 'company-photo-$companyId',
                   ),
                   // Gradient: readability for the back/heart actions.
                   // Pointer events disabled so horizontal swipes reach the
@@ -293,6 +296,9 @@ class _MobileInfoSheet extends StatelessWidget {
               },
             ),
           ),
+
+          // ── Reviews section — after services ─────────────────────────────
+          _ReviewsSection(companyId: companyId),
         ],
       ),
     );
@@ -346,6 +352,435 @@ class _StatsStrip extends StatelessWidget {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Feature 3 — Reviews section on company detail (mobile)
+// ---------------------------------------------------------------------------
+
+class _ReviewsSection extends ConsumerWidget {
+  final String companyId;
+
+  const _ReviewsSection({required this.companyId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(companyReviewsProvider(companyId));
+
+    // Nothing to show at all — hide the whole block so the services section
+    // is not followed by an "empty" placeholder.
+    if (!state.isLoading && state.total == 0) {
+      return const SizedBox.shrink();
+    }
+
+    // All visible reviews are stars-only (no written comment). Swap the
+    // carousel for a concise explanatory note.
+    final allWithoutComment = state.reviews.isNotEmpty &&
+        state.reviews.every((r) => (r.comment?.trim().isEmpty ?? true));
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 22, 0, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Row(
+              children: [
+                Text(
+                  context.l10n.reviewsTitle,
+                  style: AppTextStyles.h2,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                if (state.total > 0) ...[
+                  const Icon(
+                    Icons.star_rounded,
+                    size: 16,
+                    color: AppColors.secondary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${state.total} avis',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textHint,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+
+          if (state.isLoading)
+            const Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.secondary,
+                ),
+              ),
+            )
+          else if (allWithoutComment)
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary.withValues(alpha: 0.08),
+                  borderRadius:
+                      BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.info_outline_rounded,
+                        size: 16, color: AppColors.secondaryDark),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        context.l10n.reviewsOnlyRatings,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.secondaryDark,
+                          height: 1.45,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else ...[
+            // Horizontal carousel — first 4 reviews
+            SizedBox(
+              height: 160,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(right: 20),
+                itemCount: state.reviews.take(4).length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(width: AppSpacing.sm),
+                itemBuilder: (context, i) =>
+                    _ReviewCard(review: state.reviews[i]),
+              ),
+            ),
+            if (state.total > 4) ...[
+              const SizedBox(height: AppSpacing.md),
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: () => _showAllReviews(context, ref),
+                  child: Text(
+                    context.l10n.reviewsSeeAll(state.total),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+          const SizedBox(height: AppSpacing.lg),
+          const Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: Divider(color: AppColors.divider),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAllReviews(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AllReviewsSheet(
+        companyId: companyId,
+      ),
+    );
+  }
+}
+
+// Compact review card for horizontal list
+class _ReviewCard extends StatelessWidget {
+  final ReviewModel review;
+
+  const _ReviewCard({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 220,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Author row
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                backgroundImage: review.authorProfileImageUrl != null
+                    ? NetworkImage(review.authorProfileImageUrl!)
+                    : null,
+                child: review.authorProfileImageUrl == null
+                    ? Text(
+                        review.authorFirstName.isNotEmpty
+                            ? review.authorFirstName[0].toUpperCase()
+                            : '?',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.authorDisplay,
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Row(
+                      children: List.generate(5, (i) {
+                        return Icon(
+                          i < review.rating
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          size: 12,
+                          color: i < review.rating
+                              ? AppColors.secondary
+                              : AppColors.divider,
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          if (review.comment != null && review.comment!.isNotEmpty)
+            Expanded(
+              child: Text(
+                review.comment!,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// Full reviews bottom sheet
+class _AllReviewsSheet extends ConsumerWidget {
+  final String companyId;
+
+  const _AllReviewsSheet({required this.companyId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(companyReviewsProvider(companyId));
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          // Handle
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Row(
+              children: [
+                Text(
+                  context.l10n.reviewsTitle,
+                  style: AppTextStyles.h3,
+                ),
+                const Spacer(),
+                Text(
+                  '${state.total} avis',
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.textHint),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+              ),
+              itemCount:
+                  state.reviews.length + (state.hasMore ? 1 : 0),
+              itemBuilder: (context, i) {
+                if (i >= state.reviews.length) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ref
+                        .read(companyReviewsProvider(companyId).notifier)
+                        .loadMore();
+                  });
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.lg),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                          color: AppColors.primary),
+                    ),
+                  );
+                }
+                final review = state.reviews[i];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: _FullReviewCard(review: review),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FullReviewCard extends StatelessWidget {
+  final ReviewModel review;
+
+  const _FullReviewCard({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                backgroundImage: review.authorProfileImageUrl != null
+                    ? NetworkImage(review.authorProfileImageUrl!)
+                    : null,
+                child: review.authorProfileImageUrl == null
+                    ? Text(
+                        review.authorFirstName.isNotEmpty
+                            ? review.authorFirstName[0].toUpperCase()
+                            : '?',
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.authorDisplay,
+                      style: AppTextStyles.subtitle,
+                    ),
+                    Text(
+                      _relative(review.createdAt),
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textHint,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: List.generate(5, (i) {
+                  return Icon(
+                    i < review.rating
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                    size: 16,
+                    color: i < review.rating
+                        ? AppColors.secondary
+                        : AppColors.divider,
+                  );
+                }),
+              ),
+            ],
+          ),
+          if (review.comment != null && review.comment!.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              review.comment!,
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _relative(DateTime dt) {
+    final diff = DateTime.now().difference(dt);
+    if (diff.inDays == 0) return 'Aujourd\'hui';
+    if (diff.inDays == 1) return 'Hier';
+    if (diff.inDays < 7) return 'Il y a ${diff.inDays}j';
+    if (diff.inDays < 30) return 'Il y a ${diff.inDays ~/ 7} sem.';
+    return '${dt.day}/${dt.month}/${dt.year}';
+  }
+}
+
+// ---------------------------------------------------------------------------
 
 class _StatCell extends StatelessWidget {
   final String value;

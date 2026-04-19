@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -18,6 +19,13 @@ class EmployeeSelection extends ConsumerWidget {
     final isDesktop = ResponsiveLayout.isDesktop(context);
     // 64dp mobile / 80dp desktop as specified.
     final avatarSize = isDesktop ? 80.0 : 64.0;
+
+    // Capacity-based salon with a single (owner-only) team — no real employee
+    // choice, skip the whole selector. The booking_provider already forces
+    // `noPreference=true` in this case so the booking still resolves cleanly.
+    if (state.hideEmployeePicker) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +51,10 @@ class EmployeeSelection extends ConsumerWidget {
                   isSelected: state.noPreference,
                   icon: Icons.shuffle_rounded,
                   avatarSize: avatarSize,
-                  onTap: notifier.selectNoPreference,
+                  onTap: () {
+                    ref.read(uxPrefsProvider.notifier).selectionClick();
+                    notifier.selectNoPreference();
+                  },
                 );
               }
               final emp = state.employees[index - 1];
@@ -60,7 +71,10 @@ class EmployeeSelection extends ConsumerWidget {
                 photoUrl: emp.photoUrl,
                 initials: initials,
                 avatarSize: avatarSize,
-                onTap: () => notifier.selectEmployee(emp),
+                onTap: () {
+                  ref.read(uxPrefsProvider.notifier).selectionClick();
+                  notifier.selectEmployee(emp);
+                },
               );
             },
           ),

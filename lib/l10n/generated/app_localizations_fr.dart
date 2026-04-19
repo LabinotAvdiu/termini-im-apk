@@ -477,6 +477,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPastAppointments => 'Aucun rendez-vous passé';
 
   @override
+  String seeMorePastAppointments(int count) {
+    return 'Voir $count de plus';
+  }
+
+  @override
   String get appointmentConfirmed => 'Confirmé';
 
   @override
@@ -487,6 +492,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get appointmentCancelled => 'Annulé';
+
+  @override
+  String get appointmentRejected => 'Refusé';
+
+  @override
+  String get appointmentNoShow => 'Absent';
+
+  @override
+  String get appointmentNoShowDetail =>
+      'Vous ne vous êtes pas présenté à ce rendez-vous.';
 
   @override
   String get mySalon => 'Mon Salon';
@@ -654,7 +669,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reminderNote =>
-      'Un rappel vous sera envoyé 24h avant votre rendez-vous. L\'annulation est possible jusqu\'à 2h avant.';
+      'Un rappel vous sera envoyé 24h avant votre rendez-vous.';
 
   @override
   String get hairdresser => 'Coiffeur(se)';
@@ -978,9 +993,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirmCancelTitle => 'Annuler ce rendez-vous ?';
 
   @override
-  String get cancelAppointmentBody => 'Cette action libérera le créneau.';
-
-  @override
   String get actionFailed => 'Échec de l\'action. Réessayez.';
 
   @override
@@ -1161,6 +1173,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get monthStatRejected => 'refusés';
+
+  @override
+  String get monthStatCancelled => 'annulés';
+
+  @override
+  String get monthStatNoShow => 'absents';
 
   @override
   String get appointmentSingular => 'rendez-vous';
@@ -1350,4 +1368,194 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cropPhotoTitle => 'Recadrer la photo';
+
+  @override
+  String get experienceSection => 'Expérience';
+
+  @override
+  String get hapticLabel => 'Vibrations';
+
+  @override
+  String get hapticDesc => 'Petits retours tactiles sur les interactions';
+
+  @override
+  String get soundsLabel => 'Sons de l\'interface';
+
+  @override
+  String get soundsDesc => 'Désactivés par défaut';
+
+  @override
+  String get animationsLabel => 'Animations';
+
+  @override
+  String get animationsDesc => 'Transitions et effets visuels';
+
+  @override
+  String get cancelAppointmentTitle => 'Annuler ce rendez-vous ?';
+
+  @override
+  String cancelAppointmentBody(String salon, String date) {
+    return '$salon · $date. Cette action est irréversible.';
+  }
+
+  @override
+  String get cancelAppointmentBodyOwner => 'Cette action libérera le créneau.';
+
+  @override
+  String get cancelReasonLabel => 'Motif (facultatif)';
+
+  @override
+  String cancellableUntil(String date) {
+    return 'Annulable jusqu\'à $date';
+  }
+
+  @override
+  String get cancellationTooLate =>
+      'Il est trop tard pour annuler ce rendez-vous.';
+
+  @override
+  String get minCancelHoursLabel => 'Délai minimum d\'annulation (heures)';
+
+  @override
+  String get minCancelHoursHint => '0 = pas de contrainte';
+
+  @override
+  String get minCancelHoursNone => 'Annulation sans contrainte';
+
+  @override
+  String minCancelHoursValue(int hours) {
+    return 'Annulation jusqu\'à ${hours}h avant';
+  }
+
+  @override
+  String get bookingCancelPolicyNone =>
+      'Vous pouvez annuler ce rendez-vous à tout moment.';
+
+  @override
+  String bookingCancelPolicyHours(int hours) {
+    return 'Annulable jusqu\'à $hours h avant le RDV.';
+  }
+
+  @override
+  String get upcomingReminderTitle => 'Votre RDV approche';
+
+  @override
+  String upcomingReminderBody(String salon, String duration) {
+    return '$salon · dans $duration';
+  }
+
+  @override
+  String get upcomingReminderNow => 'maintenant';
+
+  @override
+  String inXHoursYMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}min';
+  }
+
+  @override
+  String get reviewsTitle => 'Avis';
+
+  @override
+  String get reviewSubmitTitle => 'Noter votre visite';
+
+  @override
+  String get reviewRatingLabel => 'Votre note';
+
+  @override
+  String get reviewCommentLabel => 'Votre avis (facultatif)';
+
+  @override
+  String get reviewCommentHint => 'Partagez votre expérience…';
+
+  @override
+  String get reviewSubmit => 'Envoyer mon avis';
+
+  @override
+  String get reviewSubmitted => 'Merci ! Votre avis a été publié.';
+
+  @override
+  String reviewsSeeAll(int count) {
+    return 'Voir tous les avis ($count)';
+  }
+
+  @override
+  String get reviewsEmpty => 'Aucun avis pour l\'instant';
+
+  @override
+  String get reviewsOnlyRatings =>
+      'Tous les avis ont été laissés sous forme de note uniquement, sans commentaire.';
+
+  @override
+  String get cancellationReasonOwnerLabel => 'MOTIF DE L\'ANNULATION';
+
+  @override
+  String get today => 'Aujourd\'hui';
+
+  @override
+  String get tomorrow => 'Demain';
+
+  @override
+  String get reviewHideTitle => 'Masquer cet avis ?';
+
+  @override
+  String get reviewHideReason => 'Motif';
+
+  @override
+  String get reviewsReceived => 'Avis reçus';
+
+  @override
+  String get reviewHidden => 'Avis masqué';
+
+  @override
+  String reviewBadge(int rating) {
+    return '★ $rating/5';
+  }
+
+  @override
+  String get markNoShow => 'Marquer comme absent';
+
+  @override
+  String get noShowConfirmTitle => 'Marquer comme absent ?';
+
+  @override
+  String noShowConfirmBody(String client) {
+    return '$client sera marqué comme absent. Visible sur sa fiche.';
+  }
+
+  @override
+  String noShowBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count absences',
+      one: '1 absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noShowRegistered => 'Absence enregistrée';
+
+  @override
+  String noShowTooltip(int count) {
+    return 'Ce client a manqué $count rendez-vous.';
+  }
+
+  @override
+  String get appointmentsDesktopTitle => 'Vos visites';
+
+  @override
+  String get appointmentsDesktopOverline => 'MES RENDEZ-VOUS';
+
+  @override
+  String get reviewsReceivedCardTitle => 'Avis reçus';
+
+  @override
+  String get averageRatingOutOf => 'sur 5';
+
+  @override
+  String get seeAllReviews => 'Voir tout →';
+
+  @override
+  String get noReviewsYetOwner => 'Vous n\'avez pas encore d\'avis.';
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/planning_appointment_model.dart';
@@ -60,10 +62,27 @@ class CompanyPlanningNotifier
     extends StateNotifier<CompanyPlanningState> {
   final Ref _ref;
 
+  /// Pending debounce for rapid arrow-clicks. Each call to
+  /// `_loadForCurrentMode` cancels the previous timer so only the LAST
+  /// selection within the window fires a network request.
+  Timer? _debounceTimer;
+  static const Duration _debounceWindow = Duration(milliseconds: 220);
+
+  /// Monotonic counter bumped on every dispatched request. The response
+  /// handler drops state updates from stale (non-latest) requests, so even
+  /// if two fetches race, only the most recent one wins.
+  int _latestRequestId = 0;
+
   CompanyPlanningNotifier(this._ref)
       : super(CompanyPlanningState(
           selectedDate: _todayIso(),
         ));
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
 
   static String _todayIso() {
     final now = DateTime.now();
@@ -75,23 +94,27 @@ class CompanyPlanningNotifier
 
   Future<void> load() async {
     if (!mounted) return;
+    final reqId = ++_latestRequestId;
     state = state.copyWith(isLoading: true, error: null);
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
+      // Use the datasource default (confirmed + pending + no_show + cancelled)
+      // so the owner keeps seeing the full activity of the day, including
+      // slots they just marked as no-show.
       final appts = await datasource.listCompanyAppointments(
         state.selectedDate,
-        statuses: const ['confirmed', 'pending'],
       );
-      if (!mounted) return;
+      if (!mounted || reqId != _latestRequestId) return; // stale
       state = state.copyWith(isLoading: false, appointments: appts);
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || reqId != _latestRequestId) return;
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
   Future<void> loadRange(DateTime start, DateTime endInclusive) async {
     if (!mounted) return;
+    final reqId = ++_latestRequestId;
     state = state.copyWith(isLoading: true, error: null);
 
     try {
@@ -99,9 +122,8 @@ class CompanyPlanningNotifier
       final appts = await datasource.listCompanyAppointmentsRange(
         _toIso(start),
         _toIso(endInclusive),
-        statuses: const ['confirmed', 'pending'],
       );
-      if (!mounted) return;
+      if (!mounted || reqId != _latestRequestId) return; // stale
       final map = <String, List<PlanningAppointmentModel>>{};
       for (var d = start;
           !d.isAfter(endInclusive);
@@ -114,7 +136,7 @@ class CompanyPlanningNotifier
       }
       state = state.copyWith(isLoading: false, rangeAppointments: map);
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || reqId != _latestRequestId) return;
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -126,6 +148,15 @@ class CompanyPlanningNotifier
   }
 
   void _loadForCurrentMode() {
+    // Debounce: if the user taps the arrow multiple times quickly, only the
+    // last navigation fires a request. Prevents the 20/04 flash when the
+    // user is actually headed to 21/04.
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(_debounceWindow, _dispatchLoad);
+  }
+
+  void _dispatchLoad() {
+    if (!mounted) return;
     switch (state.viewMode) {
       case CompanyPlanningViewMode.day:
         load();
@@ -225,6 +256,9 @@ class CompanyPlanningNotifier
 
   Future<bool> cancelAppointment(String id) =>
       _updateStatus(id, 'cancelled');
+
+  /// Feature 4 — Mark a client as no-show (owner only).
+  Future<bool> markNoShow(String id) => _updateStatus(id, 'no_show');
 
   Future<bool> _updateStatus(String id, String newStatus) async {
     if (!mounted) return false;
