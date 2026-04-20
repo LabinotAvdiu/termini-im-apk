@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/datasources/company_remote_datasource.dart';
 import '../../data/models/company_card_model.dart';
 import '../../data/models/gender_filter.dart';
@@ -12,8 +13,30 @@ import '../../data/models/gender_filter.dart';
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 /// Currently selected gender filter chip.
+///
+/// The filter auto-initialises from the authenticated user's `gender` (set at
+/// signup) and rebuilds whenever the logged-in user changes. Within a single
+/// session the user is free to change the filter via chips — manual changes
+/// stick because the provider only re-runs `build()` on `user.id` transitions,
+/// not on every unrelated auth-state update (we `select` the id explicitly).
+class GenderFilterNotifier extends Notifier<GenderFilter> {
+  @override
+  GenderFilter build() {
+    // Re-initialise when the logged-in user changes (different id ⇒ fresh session).
+    ref.watch(authStateProvider.select((s) => s.user?.id));
+    final gender = ref.read(authStateProvider).user?.gender;
+    return switch (gender) {
+      'men'   => GenderFilter.men,
+      'women' => GenderFilter.women,
+      _       => GenderFilter.both,
+    };
+  }
+}
+
 final genderFilterProvider =
-    StateProvider<GenderFilter>((ref) => GenderFilter.both);
+    NotifierProvider<GenderFilterNotifier, GenderFilter>(
+  GenderFilterNotifier.new,
+);
 
 /// City filter.
 final cityFilterProvider = StateProvider<String>((ref) => '');

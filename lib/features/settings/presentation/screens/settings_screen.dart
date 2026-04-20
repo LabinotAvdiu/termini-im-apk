@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -11,8 +10,11 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/widgets/personal_gender_selector.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
+import '../../../profile/presentation/widgets/avatar_editor.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -33,6 +35,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late String _origFirstName;
   late String _origLastName;
   late String _origPhone;
+  String? _origGender;
+
+  /// Editable personal gender — 'men' / 'women' / null.
+  String? _gender;
 
   @override
   void initState() {
@@ -41,6 +47,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _origFirstName = user?.firstName ?? '';
     _origLastName = user?.lastName ?? '';
     _origPhone = user?.phone ?? '';
+    _origGender = user?.gender;
+    _gender = _origGender;
 
     _firstNameController = TextEditingController(text: _origFirstName);
     _lastNameController = TextEditingController(text: _origLastName);
@@ -51,10 +59,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _phoneController.addListener(_checkChanges);
   }
 
+  static String _computeInitials(String first, String last) {
+    final parts = [first.trim(), last.trim()].where((w) => w.isNotEmpty);
+    return parts.take(2).map((w) => w[0].toUpperCase()).join();
+  }
+
   void _checkChanges() {
     final changed = _firstNameController.text != _origFirstName ||
         _lastNameController.text != _origLastName ||
-        _phoneController.text != _origPhone;
+        _phoneController.text != _origPhone ||
+        _gender != _origGender;
     if (changed != _hasChanges) {
       setState(() => _hasChanges = changed);
     }
@@ -79,6 +93,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         'first_name': _firstNameController.text.trim(),
         'last_name': _lastNameController.text.trim(),
         'phone': _phoneController.text.trim(),
+        'gender': _gender,
       });
 
       if (!mounted) return;
@@ -89,6 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _origFirstName = _firstNameController.text;
       _origLastName = _lastNameController.text;
       _origPhone = _phoneController.text;
+      _origGender = _gender;
 
       setState(() {
         _isSaving = false;
@@ -124,6 +140,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onPressed: () {
               Navigator.of(ctx).pop();
               ref.read(authStateProvider.notifier).logout();
+              // Reset locale so the next guest session defaults to SQ
+              // instead of inheriting the previous user's preference.
+              ref.read(localeProvider.notifier).reset();
               context.go('/login');
             },
             style: ElevatedButton.styleFrom(
@@ -244,78 +263,109 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Column(
           children: [
-            // Profile avatar
-            _ProfileAvatar(
-              name: '${_firstNameController.text} ${_lastNameController.text}',
-              isEditing: false,
-            ),
-
-            const SizedBox(height: AppSpacing.lg),
-
-            // Personal info form
-            _SectionCard(
-              title: context.l10n.personalInfo,
-              icon: Icons.person_outline_rounded,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // Email (read-only)
-                    AppTextField(
-                      controller: TextEditingController(
-                        text: ref.watch(authStateProvider).user?.email ?? '',
-                      ),
-                      label: context.l10n.email,
-                      enabled: false,
-                      prefixIcon: Icons.email_outlined,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    Row(
+            // ── Section "Mon profil" ─────────────────────────────────────
+            // Avatar + email en lecture + formulaire éditable, tout dans
+            // une seule carte pour éviter la redondance des titres
+            // "Mon profil" / "Informations personnelles".
+            //
+            // Clients (no company role) only get a read-only avatar — the
+            // public avatar is mainly a pro feature (clients book, they
+            // don't need to be "found" by photo on the search page).
+            // Owners & employees get the editable version with camera button.
+            Builder(
+              builder: (context) {
+                final authUser = ref.watch(authStateProvider).user;
+                final isPro = (authUser?.companyRole ?? '').isNotEmpty;
+                final initials = _computeInitials(
+                  _firstNameController.text,
+                  _lastNameController.text,
+                );
+                return _SectionCard(
+                  title: context.l10n.myProfile,
+                  icon: Icons.person_outline_rounded,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: AppTextField(
-                            controller: _firstNameController,
-                            label: context.l10n.firstName,
-                            prefixIcon: Icons.person_outline,
-                            validator: (v) => Validators.required(v,
-                                message: context.l10n.firstNameRequired),
+                        const SizedBox(height: AppSpacing.sm),
+                        if (isPro)
+                          AvatarEditor(
+                            size: 120,
+                            initials: initials,
+                          )
+                        else
+                          AvatarDisplay(
+                            size: 120,
+                            initials: initials,
+                            photoUrl: authUser?.thumbnailUrl ??
+                                authUser?.profileImageUrl,
+                          ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          authUser?.email ?? '',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
                           ),
                         ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: AppTextField(
-                            controller: _lastNameController,
-                            label: context.l10n.lastName,
-                            prefixIcon: Icons.person_outline,
-                            validator: (v) => Validators.required(v,
-                                message: context.l10n.lastNameRequired),
-                          ),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                controller: _firstNameController,
+                                label: context.l10n.firstName,
+                                prefixIcon: Icons.person_outline,
+                                validator: (v) => Validators.required(v,
+                                    message: context.l10n.firstNameRequired),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: AppTextField(
+                                controller: _lastNameController,
+                                label: context.l10n.lastName,
+                                prefixIcon: Icons.person_outline,
+                                validator: (v) => Validators.required(v,
+                                    message: context.l10n.lastNameRequired),
+                              ),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        AppTextField(
+                          controller: _phoneController,
+                          label: context.l10n.phone,
+                          prefixIcon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                        ),
+
+                        const SizedBox(height: AppSpacing.md),
+
+                        PersonalGenderSelector(
+                          value: _gender,
+                          onChanged: (g) {
+                            setState(() => _gender = g);
+                            _checkChanges();
+                          },
+                        ),
+
+                        // Update button — only visible when changes detected
+                        if (_hasChanges) ...[
+                          const SizedBox(height: AppSpacing.lg),
+                          AppButton(
+                            text: context.l10n.saveChanges,
+                            isLoading: _isSaving,
+                            onPressed: _saveChanges,
+                            width: double.infinity,
+                          ),
+                        ],
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    AppTextField(
-                      controller: _phoneController,
-                      label: context.l10n.phone,
-                      prefixIcon: Icons.phone_outlined,
-                      keyboardType: TextInputType.phone,
-                    ),
-
-                    // Update button — only visible when changes detected
-                    if (_hasChanges) ...[
-                      const SizedBox(height: AppSpacing.lg),
-                      AppButton(
-                        text: context.l10n.saveChanges,
-                        isLoading: _isSaving,
-                        onPressed: _saveChanges,
-                        width: double.infinity,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: AppSpacing.md),
@@ -354,6 +404,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
             ),
+
+            // ── Section Expérience — haptic, sons, animations ──────────────
+            const SizedBox(height: AppSpacing.md),
+            _UxPrefsSection(),
 
             // Section Notifications — uniquement pour owner et employee.
             // Les clients (UserRole.user) n'ont pas de préférences configurables :
@@ -407,69 +461,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 }
 
 // ---------------------------------------------------------------------------
-// Profile avatar
-// ---------------------------------------------------------------------------
-
-class _ProfileAvatar extends StatelessWidget {
-  final String name;
-  final bool isEditing;
-
-  const _ProfileAvatar({required this.name, required this.isEditing});
-
-  @override
-  Widget build(BuildContext context) {
-    final initials = name
-        .split(' ')
-        .where((w) => w.isNotEmpty)
-        .take(2)
-        .map((w) => w[0].toUpperCase())
-        .join();
-
-    return Column(
-      children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 48,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.10),
-              child: Text(
-                initials,
-                style: GoogleFonts.fraunces(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.primary,
-                  height: 1.0,
-                ),
-              ),
-            ),
-            if (isEditing)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt_outlined,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(name, style: AppTextStyles.h3),
-      ],
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Section card — editorial: 1px border, Fraunces section heading + overline
 // ---------------------------------------------------------------------------
 
@@ -509,27 +500,19 @@ class _SectionCard extends StatelessWidget {
                 AppSpacing.md,
                 AppSpacing.md,
                 AppSpacing.md,
-                AppSpacing.xs,
+                AppSpacing.sm,
               ),
               child: Row(
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 14, color: AppColors.textHint),
-                    const SizedBox(width: AppSpacing.xs),
+                    Icon(icon, size: 18, color: AppColors.primary),
+                    const SizedBox(width: AppSpacing.sm),
                   ],
-                  Text(
-                    title.toUpperCase(),
-                    style: AppTextStyles.overline.copyWith(letterSpacing: 1.8),
+                  Expanded(
+                    child: Text(title, style: AppTextStyles.h3),
                   ),
                 ],
               ),
-            ),
-          if (title.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs,
-              ),
-              child: Text(title, style: AppTextStyles.h3),
             ),
           const Divider(height: 1, color: AppColors.divider),
           Padding(
@@ -621,6 +604,77 @@ class _SettingsTile extends StatelessWidget {
                 ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// _UxPrefsSection — section Expérience dans Settings
+// ---------------------------------------------------------------------------
+
+class _UxPrefsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(uxPrefsProvider);
+
+    return _SectionCard(
+      title: context.l10n.experienceSection,
+      icon: Icons.auto_awesome_rounded,
+      child: Column(
+        children: [
+          // Vibrations
+          _SettingsTile(
+            icon: Icons.vibration_rounded,
+            title: context.l10n.hapticLabel,
+            subtitle: context.l10n.hapticDesc,
+            trailing: Switch.adaptive(
+              value: prefs.hapticEnabled,
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+              onChanged: (v) =>
+                  ref.read(uxPrefsProvider.notifier).setHaptic(v),
+            ),
+          ),
+          const Divider(
+            height: 1,
+            color: AppColors.divider,
+            indent: 48,
+          ),
+
+          // Sons de l'interface
+          _SettingsTile(
+            icon: Icons.music_note_rounded,
+            title: context.l10n.soundsLabel,
+            subtitle: context.l10n.soundsDesc,
+            trailing: Switch.adaptive(
+              value: prefs.soundsEnabled,
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+              onChanged: (v) =>
+                  ref.read(uxPrefsProvider.notifier).setSounds(v),
+            ),
+          ),
+          const Divider(
+            height: 1,
+            color: AppColors.divider,
+            indent: 48,
+          ),
+
+          // Animations
+          _SettingsTile(
+            icon: Icons.animation_rounded,
+            title: context.l10n.animationsLabel,
+            subtitle: context.l10n.animationsDesc,
+            trailing: Switch.adaptive(
+              value: prefs.animationsEnabled,
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+              onChanged: (v) =>
+                  ref.read(uxPrefsProvider.notifier).setAnimations(v),
+            ),
+          ),
+        ],
       ),
     );
   }

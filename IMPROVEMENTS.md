@@ -19,7 +19,7 @@ Backlog des améliorations fonctionnelles / techniques. À compléter au fil de 
 - [ ] Gérer le linking : si l'email Google existe déjà en local avec un mot de passe classique → proposer la fusion
 
 ### Facebook Login
-- [ ] Créer une app Facebook dans developers.facebook.com → activer Facebook Login + produits
+- [ ] Créer une apclaup Facebook dans developers.facebook.com → activer Facebook Login + produits
 - [ ] Android : `facebook_app_id` dans `strings.xml` + activity Facebook dans `AndroidManifest.xml`
 - [ ] iOS : URL scheme `fb{APP_ID}` dans `Info.plist` + `FacebookAppID` / `FacebookClientToken` / `FacebookDisplayName`
 - [ ] Backend : endpoint `POST /api/auth/facebook` qui vérifie le `access_token` via Graph API
@@ -49,6 +49,7 @@ Backlog des améliorations fonctionnelles / techniques. À compléter au fil de 
 - [ ] Suppression de compte RGPD-compliant (pas juste soft-delete : anonymisation des appointments + retrait des relations)
 - [ ] Historique des connexions (IP, date, device) — visible dans Paramètres > Sécurité
 - [ ] 2FA par email ou TOTP (au moins pour les owners)
+- [ ] **Redirect post-login vers l'écran d'origine** — si l'user anonyme clique sur "Prendre RDV" ou "Favori" et se fait renvoyer sur `/login` ou `/signup`, après l'auth il doit atterrir **à la même étape** qu'il a laissée (ex : step 2 du booking d'un salon précis). Passer par un `redirectTo` en query param sur les routes auth, ou stocker la dernière intention dans un provider qui est consommé au retour de l'auth. Penser aussi au cas signup → onboarding complet → redirect.
 
 ---
 
@@ -86,12 +87,28 @@ Backlog des améliorations fonctionnelles / techniques. À compléter au fil de 
 
 ## 🎨 UI / UX
 
-- [ ] Mode sombre (dark theme éditorial — nécessite revoir la palette)
-- [ ] Animations de transition entre les screens (Hero + shared-element)
-- [ ] Skeleton loaders sur tous les écrans (actuellement juste sur certains)
-- [ ] Micro-interactions : confettis sur RDV confirmé, vibrations haptic sur tap, sons subtils optionnels
-- [ ] Onboarding 3 écrans au premier lancement
-- [ ] Accessibilité : contraste AA, TalkBack/VoiceOver labels, tailles de touch ≥48dp
+- [ ] **Mode sombre** — preview validée dans `design-proposals/termini-dark-mode.html`.
+  Palette proposée : BG `#0F0C0B`, surface `#1A1513`, surface+ `#231D1A`,
+  burgundy clarifié `#B23A4C`, or `#E0B260`, texte `#F3ECE0`. 4ᵉ toggle dans
+  Settings > Expérience pour l'override manuel. **Session dédiée après
+  stabilisation des features.**
+- [x] Animations de transition entre les screens (Hero + shared-element) — ✅ 2026-04-18
+- [x] Skeleton loaders sur tous les écrans — ✅ 2026-04-18 (13 widgets, 15 écrans)
+- [x] Micro-interactions : confettis sur RDV confirmé, vibrations haptic — ✅ 2026-04-18
+      (sons : structure en place, off par défaut, TODO assets WAV)
+- [ ] **Onboarding 3 écrans** au premier lancement. Flag `onboarding_done` via
+  FlutterSecureStorage. Structure type :
+    1. Promesse « Trouvez votre salon en quelques gestes »
+    2. Différenciateur « Prenez RDV sans appeler »
+    3. Réassurance « Pros vérifiés, avis honnêtes »
+  Décisions à prendre : copy FR/EN/SQ, type d'illustration (photo/vectoriel/
+  gradient), skip dès écran 1 ou après écran 2, CTA final (signup direct ou
+  "explorer sans compte"). Reset depuis Settings en option.
+- [ ] **Accessibilité** — audit livré dans `A11Y_NOTES.md` (non corrigé).
+  5 axes à corriger : touch targets < 44dp (chips slots, favoris badge),
+  contrastes `textHint` et `secondary` (sous AA 4.5:1), Semantics manquants
+  (PhotoGallery, SkeletonBox, StepIndicator), focus clavier lightbox galerie,
+  `MediaQuery.disableAnimations` sur hover desktop.
 
 ---
 
@@ -106,6 +123,18 @@ Backlog des améliorations fonctionnelles / techniques. À compléter au fil de 
 
 ## 💾 Backend / Infra
 
+- [ ] **Fuseau horaire cohérent app/backend** 🔴 — actuellement `config/app.php`
+  timezone = `UTC` et `appointments.date` / `start_time` stockés naïvement.
+  Résultat : un RDV « 14:00 » en DB = 14:00 UTC = 16:00 à Prishtinë l'été.
+  Les comparaisons côté serveur (`no-show`, `canCancel`, `minutesUntilStart`)
+  considèrent le temps serveur UTC tandis que le Flutter affiche l'heure
+  locale → décalage de 2h qui fait échouer « Cannot mark a future
+  appointment as no-show » alors que l'owner voit le RDV passé.
+  Fix propre :
+    1. Définir `APP_TIMEZONE=Europe/Belgrade` (Kosovo) dans `.env` prod + CI
+    2. OU : stocker tout en UTC et convertir à l'affichage Flutter via
+       `intl` / `timezone` package avec la tz du company (colonne à ajouter)
+    3. Backfill de la DB si besoin pour les RDV existants
 - [ ] Migrer queue driver `sync` → `redis` en prod (pour les jobs notifs)
 - [ ] Monitoring Laravel Horizon sur les queues
 - [ ] Backup DB automatique (S3 ou Backblaze B2) quotidien + test de restore mensuel

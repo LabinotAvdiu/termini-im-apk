@@ -33,7 +33,7 @@ jobs:
         run: flutter test
 
       - name: Build web release
-        run: flutter build web --release
+        run: flutter build web --release --dart-define=API_BASE_URL=https://api.termini-im.com/api
 
       - name: Setup SSH key
         run: |

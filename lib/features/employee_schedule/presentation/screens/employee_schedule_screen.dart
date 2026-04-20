@@ -7,8 +7,10 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../company/presentation/widgets/cancel_appointment_owner_dialog.dart';
 import '../../data/models/schedule_models.dart';
 import '../providers/schedule_provider.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Grid constants
@@ -197,9 +199,7 @@ class _EmployeeScheduleScreenState
 
   Widget _buildBody(BuildContext context, ScheduleState state) {
     if (state.isLoading && state.schedule == null) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      );
+      return const SkeletonPlanningDay();
     }
 
     if (state.error != null && state.schedule == null) {
@@ -229,14 +229,18 @@ class _EmployeeScheduleScreenState
       appointments: schedule.appointments,
     );
 
-    // Compute the next appointment based on current time when today is shown.
+    // Always-visible "next appointment" — loaded independently via
+    // /my-schedule/upcoming so it keeps pointing at the closest future
+    // booking even when the owner browses a past/future day.
     final now = DateTime.now();
     final todayIso =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final nowTime = state.selectedDate == todayIso
-        ? '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}'
-        : null;
-    final nextAppt = schedule.nextAppointment(nowTime: nowTime);
+    final nextAppt = state.upcomingAppointment;
+    // "Compact" variant when the next appt is on a day different from the
+    // currently displayed one — the date badge replaces the verbose copy.
+    final isOnViewedDate =
+        nextAppt != null && nextAppt.date == state.selectedDate;
+    final isOnToday = nextAppt != null && nextAppt.date == todayIso;
 
     return RefreshIndicator(
       color: AppColors.primary,
@@ -252,7 +256,9 @@ class _EmployeeScheduleScreenState
               ),
             ),
 
-          // Next appointment banner
+          // Next appointment banner — always visible when there's one.
+          // `compact: true` when the appt is on a different day than the
+          // currently viewed one → smaller card with the date on display.
           if (nextAppt != null)
             SliverToBoxAdapter(
               child: Padding(
@@ -262,7 +268,11 @@ class _EmployeeScheduleScreenState
                   AppSpacing.md,
                   AppSpacing.sm,
                 ),
-                child: _NextAppointmentCard(appointment: nextAppt),
+                child: _NextAppointmentCard(
+                  appointment: nextAppt,
+                  compact: !isOnViewedDate,
+                  isToday: isOnToday,
+                ),
               ),
             ),
 
@@ -277,6 +287,11 @@ class _EmployeeScheduleScreenState
                 rows:    rows,
                 events:  events,
                 workEnd: work.endTime,
+                // Red "now" line — only on today. Minutes since midnight so
+                // the grid can clamp it to the visible opening range.
+                currentTimeMinutes: state.selectedDate == todayIso
+                    ? now.hour * 60 + now.minute
+                    : null,
                 onTapFreeSlot: (time) => _showWalkInDialog(context, time),
               ),
             ),
@@ -335,11 +350,16 @@ class _TimelineGrid extends StatefulWidget {
   final String workEnd;
   final void Function(String time) onTapFreeSlot;
 
+  /// Current time in minutes since midnight for the viewing day. Non-null
+  /// only when the grid is showing today — drives the red "now" line.
+  final int? currentTimeMinutes;
+
   const _TimelineGrid({
     required this.rows,
     required this.events,
     required this.workEnd,
     required this.onTapFreeSlot,
+    this.currentTimeMinutes,
   });
 
   @override
@@ -409,9 +429,34 @@ class _TimelineGridState extends State<_TimelineGrid> {
         ? expandedEv.startRow + expandedEv.rowSpan
         : -1;
 
+    // "Now" indicator — clamped to the visible opening range so the line
+    // still renders at the top/bottom edge when the current time falls
+    // before opening or after closing (otherwise Karim who opens the app
+    // at 16:08 while the salon closes at 16:00 would see nothing).
+    double? nowTopPx;
+    String? nowTimeLabel;
+    if (widget.currentTimeMinutes != null && widget.rows.isNotEmpty) {
+      final openParts = widget.rows.first.time.split(':');
+      final openMin =
+          int.parse(openParts[0]) * 60 + int.parse(openParts[1]);
+      final closeParts = widget.workEnd.split(':');
+      final closeMin =
+          int.parse(closeParts[0]) * 60 + int.parse(closeParts[1]);
+      final currentMin = widget.currentTimeMinutes!;
+      final clampedMin = currentMin.clamp(openMin, closeMin);
+      nowTopPx = (clampedMin - openMin) / 15 * _kRowHeight;
+      final h = currentMin ~/ 60;
+      final m = currentMin % 60;
+      nowTimeLabel =
+          '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+    }
+
     return SizedBox(
       height: totalHeight,
-      child: Row(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -521,6 +566,85 @@ class _TimelineGridState extends State<_TimelineGrid> {
                     ),
                   );
                 }),
+              ],
+            ),
+          ),
+        ],
+      ),
+          // Red "now" line — spans the full width, positioned at nowTopPx.
+          // Rendered above the Row children thanks to the outer Stack.
+          if (nowTopPx != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              top: nowTopPx - 8,
+              child: IgnorePointer(
+                child: _ScheduleNowIndicator(time: nowTimeLabel!),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Red pill + dot + line showing the current time on the employee's day
+/// view. Positioned absolutely inside the timeline Stack so it overlays
+/// the grid and appointment cards.
+class _ScheduleNowIndicator extends StatelessWidget {
+  final String time;
+  const _ScheduleNowIndicator({required this.time});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 16,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: _kTimeColumnWidth,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.error,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  time,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.error,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1.5,
+                    color: AppColors.error,
+                  ),
+                ),
               ],
             ),
           ),
@@ -673,8 +797,20 @@ class _AppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isWalkIn     = appointment.isWalkIn;
-    final accentColor  = isWalkIn ? AppColors.warning : AppColors.primary;
-    final bgColor      = accentColor.withValues(alpha: 0.08);
+    final isCancelled  = appointment.isCancelled;
+    // Cancelled / no-show tiles render muted (grey) with strike-through
+    // copy so the employee can still see context without the card
+    // competing visually with active bookings.
+    final accentColor = isCancelled
+        ? AppColors.textHint
+        : (isWalkIn ? AppColors.warning : AppColors.primary);
+    final bgColor = isCancelled
+        ? AppColors.divider.withValues(alpha: 0.5)
+        : accentColor.withValues(alpha: 0.08);
+    final titleColor = isCancelled
+        ? AppColors.textHint
+        : AppColors.textPrimary;
+    final strike = isCancelled ? TextDecoration.lineThrough : null;
 
     return GestureDetector(
       onTap: onToggle,
@@ -692,13 +828,15 @@ class _AppointmentCard extends StatelessWidget {
             topRight:    Radius.circular(AppSpacing.radiusSm),
             bottomRight: Radius.circular(AppSpacing.radiusSm),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.08),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: isCancelled
+              ? []
+              : [
+                  BoxShadow(
+                    color: accentColor.withValues(alpha: 0.08),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
@@ -719,15 +857,22 @@ class _AppointmentCard extends StatelessWidget {
                           appointment.clientFullName,
                           style: AppTextStyles.body.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: titleColor,
+                            decoration: strike,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (isWalkIn) ...[
+                      if (isWalkIn && !isCancelled) ...[
                         const SizedBox(width: AppSpacing.xs),
                         _WalkInBadge(),
+                      ],
+                      if (isCancelled) ...[
+                        const SizedBox(width: AppSpacing.xs),
+                        _CancelledBadge(
+                          isNoShow: appointment.status == 'no_show',
+                        ),
                       ],
                     ],
                   ),
@@ -792,13 +937,76 @@ class _AppointmentCard extends StatelessWidget {
 // Expanded appointment detail
 // ---------------------------------------------------------------------------
 
-class _AppointmentDetail extends StatelessWidget {
+class _AppointmentDetail extends ConsumerWidget {
   final ScheduleAppointment appointment;
 
   const _AppointmentDetail({super.key, required this.appointment});
 
+  Future<void> _onCancelTap(BuildContext context, WidgetRef ref) async {
+    final result = await showCancelAppointmentOwnerDialog(
+      context,
+      clientName: appointment.clientFullName.isEmpty
+          ? '—'
+          : appointment.clientFullName,
+      // Walk-ins have no backing user account — nobody to notify, so the
+      // dialog skips the "client will be notified" warning line.
+      isWalkIn: appointment.isWalkIn,
+    );
+    if (result == null || !result.confirmed) return;
+    if (!context.mounted) return;
+
+    final ok = await ref
+        .read(scheduleProvider.notifier)
+        .cancelAppointment(appointment.id, reason: result.reason);
+
+    if (!context.mounted) return;
+    if (!ok) {
+      final error = ref.read(scheduleProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error ?? context.l10n.error)),
+      );
+    }
+  }
+
+  Future<void> _onNoShowTap(BuildContext context, WidgetRef ref) async {
+    final ok = await ref
+        .read(scheduleProvider.notifier)
+        .markNoShow(appointment.id);
+    if (!context.mounted) return;
+    if (!ok) {
+      final error = ref.read(scheduleProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error ?? context.l10n.error)),
+      );
+    }
+  }
+
+  /// Computes whether this appointment has started AND the no-show window
+  /// (backend: 24h) is still open. The employee can mark no-show only
+  /// within that window, so we hide the button outside of it.
+  ({bool isPast, bool canMarkNoShow}) _timingFlags(WidgetRef ref) {
+    final dateStr = appointment.date ??
+        ref.read(scheduleProvider).selectedDate;
+    final date = DateTime.tryParse(dateStr);
+    if (date == null) return (isPast: false, canMarkNoShow: false);
+    final parts = appointment.startTime.split(':');
+    final start = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+    );
+    final now = DateTime.now();
+    final isPast = start.isBefore(now);
+    final canMarkNoShow =
+        isPast && now.difference(start).inHours < 24;
+    return (isPast: isPast, canMarkNoShow: canMarkNoShow);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final timing = _timingFlags(ref);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -818,6 +1026,81 @@ class _AppointmentDetail extends StatelessWidget {
           label:
               '${appointment.serviceName}  •  ${appointment.durationMinutes} min  •  ${appointment.price.toStringAsFixed(0)} €',
         ),
+        // Action button — live bookings only. Aligned left with a capped
+        // width so it doesn't span the whole card on desktop.
+        //   * Upcoming            → "Annuler le RDV" (rouge)
+        //   * Past + within 24h   → "Marquer absent" (orange)
+        //   * Past outside 24h    → no action (can't cancel past anymore)
+        //   * Already cancelled   → no action
+        if (!appointment.isCancelled && !timing.isPast) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                  side: BorderSide(
+                    color: AppColors.error.withValues(alpha: 0.50),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusSm),
+                  ),
+                ),
+                onPressed: () => _onCancelTap(context, ref),
+                icon: const Icon(Icons.event_busy_rounded, size: 16),
+                label: Text(
+                  context.l10n.cancelAppointment,
+                  style: AppTextStyles.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.error,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ] else if (!appointment.isCancelled &&
+            timing.isPast &&
+            timing.canMarkNoShow) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.warning,
+                  side: BorderSide(
+                    color: AppColors.warning.withValues(alpha: 0.50),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusSm),
+                  ),
+                ),
+                onPressed: () => _onNoShowTap(context, ref),
+                icon: const Icon(Icons.person_off_outlined, size: 16),
+                label: Text(
+                  context.l10n.markNoShow,
+                  style: AppTextStyles.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.warning,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -913,6 +1196,38 @@ class _WalkInBadge extends StatelessWidget {
   }
 }
 
+class _CancelledBadge extends StatelessWidget {
+  final bool isNoShow;
+  const _CancelledBadge({required this.isNoShow});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xs + 2,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.textHint.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(
+          color: AppColors.textHint.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        isNoShow
+            ? context.l10n.appointmentNoShow
+            : context.l10n.appointmentCancelled,
+        style: AppTextStyles.caption.copyWith(
+          color: AppColors.textHint,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Next appointment highlight card
 // ---------------------------------------------------------------------------
@@ -920,10 +1235,155 @@ class _WalkInBadge extends StatelessWidget {
 class _NextAppointmentCard extends StatelessWidget {
   final ScheduleAppointment appointment;
 
-  const _NextAppointmentCard({required this.appointment});
+  /// `true` when the appointment is NOT on the currently displayed day —
+  /// render a smaller horizontal layout and surface the date badge so the
+  /// owner knows it's coming from another day.
+  final bool compact;
+
+  /// Whether the appointment's date matches the real "today" (not just the
+  /// currently viewed day). Changes the date-badge copy to "Today" / "Tomorrow".
+  final bool isToday;
+
+  const _NextAppointmentCard({
+    required this.appointment,
+    this.compact = false,
+    this.isToday = false,
+  });
+
+  String _formatDateBadge(BuildContext context) {
+    final l = context.l10n;
+    final now = DateTime.now();
+    final date = DateTime.tryParse(appointment.date ?? '');
+    if (date == null) return '';
+    if (isToday) return l.todayLabel;
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+    final isTomorrow = date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day;
+    if (isTomorrow) return l.tomorrowLabel;
+    final months = [
+      l.monthShortJan, l.monthShortFeb, l.monthShortMar, l.monthShortApr,
+      l.monthShortMay, l.monthShortJun, l.monthShortJul, l.monthShortAug,
+      l.monthShortSep, l.monthShortOct, l.monthShortNov, l.monthShortDec,
+    ];
+    return '${date.day} ${months[date.month - 1]}';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final child = compact ? _buildCompact(context) : _buildFull(context);
+    // Wrap the whole card in a tappable surface so the owner can reveal
+    // the client's phone (and place a call) without needing to navigate
+    // to the appointment's row in the grid.
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(
+        compact ? AppSpacing.radiusMd : AppSpacing.radiusLg,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _showDetailSheet(context),
+        child: child,
+      ),
+    );
+  }
+
+  Future<void> _showDetailSheet(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _NextAppointmentDetailSheet(
+        appointment: appointment,
+        dateBadge: _formatDateBadge(context),
+        compact: compact,
+        isToday: isToday,
+      ),
+    );
+  }
+
+  Widget _buildCompact(BuildContext context) {
+    final dateBadge = _formatDateBadge(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.08),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.25),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm + 2,
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.event_available_rounded,
+            size: 16,
+            color: AppColors.primary,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: RichText(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+                children: [
+                  TextSpan(
+                    text: '${context.l10n.nextAppointment} · ',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textHint,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                  TextSpan(
+                    text: appointment.clientFullName,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          // Date pill — e.g. "Demain" / "23 avr.".
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 3,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              dateBadge,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            appointment.startTime,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFull(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -1003,6 +1463,222 @@ class _NextAppointmentCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Bottom sheet opened when the owner taps the "next appointment" card.
+/// Surfaces the phone number (tap to call via `tel:`) and a little bit more
+/// context than the teaser card could show.
+class _NextAppointmentDetailSheet extends StatelessWidget {
+  final ScheduleAppointment appointment;
+  final String dateBadge;
+  final bool compact;
+  final bool isToday;
+
+  const _NextAppointmentDetailSheet({
+    required this.appointment,
+    required this.dateBadge,
+    required this.compact,
+    required this.isToday,
+  });
+
+  Future<void> _dial(BuildContext context, String phone) async {
+    final cleaned = phone.replaceAll(RegExp(r'\s+'), '');
+    final uri = Uri.parse('tel:$cleaned');
+    final ok = await launchUrl(uri);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(phone)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final hasPhone = appointment.clientPhone != null &&
+        appointment.clientPhone!.isNotEmpty;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            // Header — time + date pill
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.access_time_rounded,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.nextAppointment,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textHint),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            appointment.startTime,
+                            style: AppTextStyles.h3,
+                          ),
+                          const SizedBox(width: 8),
+                          if (dateBadge.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    AppColors.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                dateBadge,
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: AppSpacing.lg),
+            const Divider(height: 1, color: AppColors.divider),
+            const SizedBox(height: AppSpacing.md),
+
+            // Client
+            _DetailRow(
+              icon: Icons.person_rounded,
+              label: appointment.clientFullName.isEmpty
+                  ? '—'
+                  : appointment.clientFullName,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // Service
+            _DetailRow(
+              icon: Icons.content_cut_rounded,
+              label:
+                  '${appointment.serviceName}  •  ${appointment.durationMinutes} min  •  ${appointment.price.toStringAsFixed(0)} €',
+            ),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // Phone — tappable row / disabled placeholder when missing
+            if (hasPhone)
+              InkWell(
+                onTap: () => _dial(context, appointment.clientPhone!),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm + 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMd),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.22),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.phone_rounded,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          appointment.clientPhone!,
+                          style: AppTextStyles.body.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.phone_forwarded_rounded,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm + 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.phone_disabled_rounded,
+                      size: 18,
+                      color: AppColors.textHint,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      l.noPhoneAvailable,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textHint),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

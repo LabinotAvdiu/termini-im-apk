@@ -162,7 +162,14 @@ class MyCategoryModel {
 // ---------------------------------------------------------------------------
 
 class MyEmployeeModel {
+  /// Company_user pivot id — used by owner mutation endpoints (assign
+  /// service, remove from team). NOT the user's id.
   final String id;
+
+  /// Underlying User id — stable across salons. Used to match the logged-in
+  /// user against the team for the "share as me" flow.
+  final String userId;
+
   final String firstName;
   final String lastName;
   final String email;
@@ -175,6 +182,7 @@ class MyEmployeeModel {
 
   const MyEmployeeModel({
     required this.id,
+    required this.userId,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -189,8 +197,11 @@ class MyEmployeeModel {
   String get fullName => '$firstName $lastName'.trim();
 
   factory MyEmployeeModel.fromJson(Map<String, dynamic> json) {
+    final rawUserId = json['userId']?.toString() ?? '';
+    final rawId = json['id']?.toString() ?? '';
     return MyEmployeeModel(
-      id: json['id']?.toString() ?? '',
+      id: rawId,
+      userId: rawUserId.isNotEmpty ? rawUserId : rawId,
       firstName: json['firstName'] as String? ?? '',
       lastName: json['lastName'] as String? ?? '',
       email: json['email'] as String? ?? '',
@@ -223,6 +234,7 @@ class MyEmployeeModel {
 
   MyEmployeeModel copyWith({
     String? id,
+    String? userId,
     String? firstName,
     String? lastName,
     String? email,
@@ -235,6 +247,7 @@ class MyEmployeeModel {
   }) =>
       MyEmployeeModel(
         id: id ?? this.id,
+        userId: userId ?? this.userId,
         firstName: firstName ?? this.firstName,
         lastName: lastName ?? this.lastName,
         email: email ?? this.email,
@@ -265,6 +278,14 @@ class MyCompanyModel {
   final List<MyEmployeeModel> employees;
   final List<OpeningHourModel> openingHours;
   final String bookingMode;
+  // Feature 1 — Cancellation window set by the owner
+  final int minCancelHours;
+  // Geospatial fields — null when the salon hasn't been geocoded yet.
+  // The owner's home + dashboard shows a red banner when these are null so
+  // the salon shows up in search faster. Populated either by selecting a
+  // Google Places suggestion or by capturing GPS from the owner's device.
+  final double? latitude;
+  final double? longitude;
 
   const MyCompanyModel({
     required this.id,
@@ -280,7 +301,52 @@ class MyCompanyModel {
     this.employees = const [],
     this.openingHours = const [],
     this.bookingMode = 'employee_based',
+    this.minCancelHours = 2,
+    this.latitude,
+    this.longitude,
   });
+
+  /// True when the salon has either a Google-validated address (lat/lng set
+  /// by Places autocomplete) or manually captured GPS coordinates.
+  bool get hasGeocoding => latitude != null && longitude != null;
+
+  MyCompanyModel copyWith({
+    String? id,
+    String? name,
+    String? address,
+    String? city,
+    String? phone,
+    String? phoneSecondary,
+    String? email,
+    String? description,
+    String? profileImageUrl,
+    List<MyCategoryModel>? categories,
+    List<MyEmployeeModel>? employees,
+    List<OpeningHourModel>? openingHours,
+    String? bookingMode,
+    int? minCancelHours,
+    double? latitude,
+    double? longitude,
+  }) {
+    return MyCompanyModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      city: city ?? this.city,
+      phone: phone ?? this.phone,
+      phoneSecondary: phoneSecondary ?? this.phoneSecondary,
+      email: email ?? this.email,
+      description: description ?? this.description,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      categories: categories ?? this.categories,
+      employees: employees ?? this.employees,
+      openingHours: openingHours ?? this.openingHours,
+      bookingMode: bookingMode ?? this.bookingMode,
+      minCancelHours: minCancelHours ?? this.minCancelHours,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
 
   factory MyCompanyModel.fromJson(Map<String, dynamic> json) {
     // Unwrap optional 'data' envelope
@@ -312,6 +378,11 @@ class MyCompanyModel {
       bookingMode: d['bookingMode'] as String? ??
           d['booking_mode'] as String? ??
           'employee_based',
+      minCancelHours: d['minCancelHours'] as int? ??
+          d['min_cancel_hours'] as int? ??
+          2,
+      latitude: (d['latitude'] as num?)?.toDouble(),
+      longitude: (d['longitude'] as num?)?.toDouble(),
     );
   }
 
@@ -328,40 +399,9 @@ class MyCompanyModel {
         'categories': categories.map((c) => c.toJson()).toList(),
         'employees': employees.map((e) => e.toJson()).toList(),
         'openingHours': openingHours.map((h) => h.toJson()).toList(),
+        'min_cancel_hours': minCancelHours,
       };
 
-  MyCompanyModel copyWith({
-    String? id,
-    String? name,
-    String? address,
-    String? city,
-    String? phone,
-    Object? phoneSecondary = _sentinel,
-    String? email,
-    String? description,
-    String? profileImageUrl,
-    List<MyCategoryModel>? categories,
-    List<MyEmployeeModel>? employees,
-    List<OpeningHourModel>? openingHours,
-    String? bookingMode,
-  }) =>
-      MyCompanyModel(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        address: address ?? this.address,
-        city: city ?? this.city,
-        phone: phone ?? this.phone,
-        phoneSecondary: phoneSecondary == _sentinel
-            ? this.phoneSecondary
-            : phoneSecondary as String?,
-        email: email ?? this.email,
-        description: description ?? this.description,
-        profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-        categories: categories ?? this.categories,
-        employees: employees ?? this.employees,
-        openingHours: openingHours ?? this.openingHours,
-        bookingMode: bookingMode ?? this.bookingMode,
-      );
 }
 
 // Sentinel used by copyWith to distinguish "not provided" from explicit null.

@@ -1,11 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../../../core/auth/google_web_auth_stub.dart'
+    if (dart.library.js_interop) '../../../../core/auth/google_web_auth_web.dart'
+    as gwa;
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
@@ -40,6 +45,11 @@ class AuthState {
   // consumes it to land a new owner on the "Mon Salon" tab, then clears it.
   final bool justSignedUp;
 
+  /// True when the user authenticated as role=company but the Company
+  /// record doesn't exist yet (fresh social sign-up). The router watches
+  /// this flag and routes to the company-setup screen instead of /home.
+  final bool needsCompanySetup;
+
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
@@ -50,6 +60,7 @@ class AuthState {
     this.rememberMe = true, // default: remember the user
     this.isGuest = false,
     this.justSignedUp = false,
+    this.needsCompanySetup = false,
   });
 
   /// Convenience getters for tab-layout decisions in MainShell.
@@ -67,6 +78,7 @@ class AuthState {
     bool? rememberMe,
     bool? isGuest,
     bool? justSignedUp,
+    bool? needsCompanySetup,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -80,6 +92,7 @@ class AuthState {
       rememberMe: rememberMe ?? this.rememberMe,
       isGuest: isGuest ?? this.isGuest,
       justSignedUp: justSignedUp ?? this.justSignedUp,
+      needsCompanySetup: needsCompanySetup ?? this.needsCompanySetup,
     );
   }
 }
@@ -227,8 +240,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String phone,
     required UserRole role,
     String? city,
+    String? gender,
     String? companyName,
     String? address,
+    String? companyGender, // 'men' | 'women' | 'both' — required when role=company
     String? bookingMode,
     double? latitude,
     double? longitude,
@@ -245,8 +260,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         'phone': phone,
         'role': role == UserRole.company ? 'company' : 'user',
         'city': city,
+        if (gender != null) 'gender': gender,
         'company_name': companyName,
         'address': address,
+        if (companyGender != null) 'company_gender': companyGender,
         if (bookingMode != null) 'booking_mode': bookingMode,
         if (latitude != null) 'latitude': latitude,
         if (longitude != null) 'longitude': longitude,
@@ -293,24 +310,43 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Google Sign-In
   // ---------------------------------------------------------------------------
 
-  Future<void> loginWithGoogle() async {
-    state = state.copyWith(isLoading: true, error: null);
+  /// Google Sign-In. [role] is a creation hint honored only when the account
+  /// doesn't exist yet — returning users always keep their existing role.
+  /// Returns true on success so callers can decide where to navigate next
+  /// (e.g. `/home` vs the company-setup screen when [needsCompanySetup] is
+  /// set on the resulting state).
+  Future<bool> loginWithGoogle({String? role}) async {
+    state = state.copyWith(
+        isLoading: true, error: null, needsCompanySetup: false);
     try {
-      // 1. Trigger Google Sign-In native flow
-      final googleSignIn = GoogleSignIn();
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        // User cancelled
-        state = state.copyWith(isLoading: false);
-        return;
-      }
-      final auth = await googleUser.authentication;
-      final idToken = auth.idToken;
-      if (idToken == null) throw Exception('Google ID token manquant');
+      String? idToken;
+      String? accessToken;
 
-      // 2. Send idToken to backend
+      if (kIsWeb) {
+        // google_sign_in 6.2.2 `signIn()` is broken under GIS on web — the
+        // popup fires but the Future never resolves. We drive GIS Token Client
+        // ourselves via the helper declared in web/index.html.
+        accessToken = await gwa.signInWithGoogleWeb();
+        if (accessToken == null) {
+          state = state.copyWith(isLoading: false);
+          return false; // user closed the popup
+        }
+      } else {
+        final googleSignIn = GoogleSignIn();
+        final googleUser = await googleSignIn.signIn();
+        if (googleUser == null) {
+          state = state.copyWith(isLoading: false);
+          return false;
+        }
+        final auth = await googleUser.authentication;
+        idToken = auth.idToken;
+        if (idToken == null) throw Exception('Google ID token manquant');
+      }
+
       final response = await _repository.googleLogin(
         idToken: idToken,
+        accessToken: accessToken,
+        role: role,
         rememberMe: state.rememberMe,
       );
 
@@ -320,14 +356,65 @@ class AuthNotifier extends StateNotifier<AuthState> {
         token: response.token,
         user: response.user,
         role: _resolveRole(response.role, response.user),
+        needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
-      // Enregistre le token FCM après Google login réussi (fire-and-forget).
       unawaited(_registerFcmToken());
+      return true;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
+    }
+  }
+
+  /// Complete the company signup for a user who authenticated via social
+  /// but has no Company provisioned yet. Clears [needsCompanySetup] on
+  /// success so the router/UI can move them to `/home`.
+  Future<bool> completeCompanySignup({
+    required String companyName,
+    required String address,
+    required String companyGender,
+    String? city,
+    String? phone,
+    String? bookingMode,
+    double? latitude,
+    double? longitude,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final response = await _repository.completeCompanySignup(
+        companyName: companyName,
+        address: address,
+        companyGender: companyGender,
+        city: city,
+        phone: phone,
+        bookingMode: bookingMode,
+        latitude: latitude,
+        longitude: longitude,
+        rememberMe: state.rememberMe,
+      );
+      state = state.copyWith(
+        isAuthenticated: true,
+        isLoading: false,
+        token: response.token,
+        user: response.user,
+        role: _resolveRole(response.role, response.user),
+        needsCompanySetup: false,
+        // Mirror the signup() flag so MainShell lands new owners on the
+        // "Mon Salon" tab instead of the client home feed.
+        justSignedUp: true,
+        error: null,
+      );
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
     }
   }
 
@@ -335,15 +422,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Facebook Login
   // ---------------------------------------------------------------------------
 
-  Future<void> loginWithFacebook() async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<bool> loginWithFacebook({String? role}) async {
+    state = state.copyWith(
+        isLoading: true, error: null, needsCompanySetup: false);
     try {
       final result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
       );
       if (result.status == LoginStatus.cancelled) {
         state = state.copyWith(isLoading: false);
-        return;
+        return false;
       }
       if (result.status != LoginStatus.success) {
         throw Exception(result.message ?? 'Facebook login échoué');
@@ -352,6 +440,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       final response = await _repository.facebookLogin(
         accessToken: accessToken,
+        role: role,
         rememberMe: state.rememberMe,
       );
 
@@ -361,14 +450,73 @@ class AuthNotifier extends StateNotifier<AuthState> {
         token: response.token,
         user: response.user,
         role: _resolveRole(response.role, response.user),
+        needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
-      // Enregistre le token FCM après Facebook login réussi (fire-and-forget).
       unawaited(_registerFcmToken());
+      return true;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Apple Sign-In
+  // ---------------------------------------------------------------------------
+
+  Future<bool> loginWithApple({String? role}) async {
+    state = state.copyWith(
+        isLoading: true, error: null, needsCompanySetup: false);
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: const [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final idToken = credential.identityToken;
+      if (idToken == null) {
+        throw Exception('Apple identity token manquant');
+      }
+
+      final response = await _repository.appleLogin(
+        identityToken: idToken,
+        authorizationCode: credential.authorizationCode,
+        firstName: credential.givenName,
+        lastName: credential.familyName,
+        role: role,
+        rememberMe: state.rememberMe,
+      );
+
+      state = state.copyWith(
+        isAuthenticated: true,
+        isLoading: false,
+        token: response.token,
+        user: response.user,
+        role: _resolveRole(response.role, response.user),
+        needsCompanySetup: response.needsCompanySetup,
+        error: null,
+      );
+      unawaited(_registerFcmToken());
+      return true;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        state = state.copyWith(isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false, error: e);
+      }
+      return false;
+    } on ApiException catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
     }
   }
 
@@ -481,6 +629,15 @@ class LocaleNotifier extends StateNotifier<Locale> {
   final FlutterSecureStorage _storage;
 
   LocaleNotifier(this._storage) : super(const Locale('sq'));
+
+  /// Resets the locale back to the default (SQ) and wipes the stored value.
+  /// Called on logout so the next guest session doesn't inherit the last
+  /// logged-in user's language preference.
+  Future<void> reset() async {
+    state = const Locale('sq');
+    await _storage.delete(key: AppConstants.localeKey);
+    writeWebLocale('sq');
+  }
 
   /// Reads the persisted locale from secure storage and applies it.
   /// Call once from main() / app start — before the first frame if possible.

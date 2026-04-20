@@ -11,10 +11,16 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../profile/presentation/widgets/avatar_editor.dart';
+import '../../../reviews/data/models/review_model.dart';
+import '../../../reviews/presentation/providers/review_provider.dart';
+import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/salon_geocoding_banner.dart';
 import 'company_dashboard_screen_mobile.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Callback re-imports (same typedefs live in mobile file)
@@ -90,8 +96,7 @@ class CompanyDashboardScreenDesktop extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: state.isLoading && state.company == null
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
+          ? const SkeletonDashboard()
           : state.error != null && state.company == null
               ? _DesktopErrorView(
                   message: state.error!,
@@ -189,6 +194,10 @@ class _DesktopMainContent extends StatelessWidget {
             const Divider(color: AppColors.divider, height: 1),
             const SizedBox(height: AppSpacing.xl),
 
+            // Red warning when the salon lacks geocoding — hidden once
+            // address/GPS is set.
+            const SalonGeocodingBanner(),
+
             // ── Metric tiles ──────────────────────────────────────────────
             if (company != null)
               _MetricTilesRow(company: company),
@@ -257,6 +266,24 @@ class _DesktopMainContent extends StatelessWidget {
               if (company.bookingMode == 'capacity_based')
                 _DesktopCapacityCard(),
 
+              // ── Reviews received — owner aperçu ──────────────────────
+              // Wrapped in a Consumer so we can collapse the entire block
+              // (card + surrounding spacing) when the salon has zero reviews.
+              Consumer(
+                builder: (ctx, wRef, _) {
+                  final st = wRef.watch(myCompanyReviewsProvider);
+                  if (!st.isLoading && st.reviews.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    children: const [
+                      SizedBox(height: AppSpacing.xl),
+                      _DesktopReviewsCard(),
+                    ],
+                  );
+                },
+              ),
+
               const SizedBox(height: AppSpacing.xl),
 
               // ── Gallery ───────────────────────────────────────────────
@@ -311,40 +338,67 @@ class _DesktopGreeting extends ConsumerWidget {
     ];
     final dateStr = '${now.day} ${months[now.month - 1]} ${now.year}';
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final initials = [
+      user?.firstName.trim() ?? '',
+      user?.lastName.trim() ?? '',
+    ].where((w) => w.isNotEmpty).take(2).map((w) => w[0].toUpperCase()).join();
+    final avatarUrl = user?.thumbnailUrl ?? user?.profileImageUrl;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          '${l.greetingHello},',
-          style: AppTextStyles.overline.copyWith(
-            color: AppColors.textHint,
-            letterSpacing: 2,
-          ),
+        // Avatar 56×56 desktop
+        AvatarDisplay(
+          photoUrl: avatarUrl,
+          initials: initials,
+          size: 56,
         ),
-        const SizedBox(height: AppSpacing.xs),
-        RichText(
-          text: TextSpan(
-            style: GoogleFonts.fraunces(
-              fontSize: 56,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textPrimary,
-              height: 0.95,
-              letterSpacing: -1.5,
-            ),
-            children: [
-              TextSpan(text: firstName),
-              const TextSpan(
-                text: '.',
-                style: TextStyle(color: AppColors.primary),
+        const SizedBox(width: AppSpacing.md),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${l.greetingHello},',
+              style: AppTextStyles.overline.copyWith(
+                color: AppColors.textHint,
+                letterSpacing: 2,
               ),
-            ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            RichText(
+              text: TextSpan(
+                style: GoogleFonts.fraunces(
+                  fontSize: 56,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textPrimary,
+                  height: 0.95,
+                  letterSpacing: -1.5,
+                ),
+                children: [
+                  TextSpan(text: firstName),
+                  const TextSpan(
+                    text: '.',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              dateStr,
+              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+            ),
+          ],
+        ),
+        const Spacer(),
+        if (company != null)
+          ShareOutlinedButton(
+            companyId: company!.id,
+            salonName: company!.name,
+            bookingMode: company!.bookingMode,
+            employeeIds: {for (final e in company!.employees) e.userId},
+            showFreshBadge: true,
           ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          dateStr,
-          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
-        ),
       ],
     );
   }
@@ -585,6 +639,13 @@ class _DesktopSalonInfoCard extends ConsumerWidget {
                         icon: Icons.phone_outlined, text: company.phone),
                     DashboardInfoRow(
                         icon: Icons.email_outlined, text: company.email),
+                    DashboardInfoRow(
+                      icon: Icons.timer_off_outlined,
+                      text: company.minCancelHours == 0
+                          ? context.l10n.minCancelHoursNone
+                          : context.l10n
+                              .minCancelHoursValue(company.minCancelHours),
+                    ),
                     if (company.description != null &&
                         company.description!.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.sm),
@@ -815,25 +876,32 @@ class _DesktopTeamSection extends StatelessWidget {
               icon: Icons.person_add_outlined,
             )
           else
-            // Avatar grid — 2 per row on desktop
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 360,
-                mainAxisExtent: 72,
-                crossAxisSpacing: AppSpacing.sm,
-                mainAxisSpacing: AppSpacing.sm,
-              ),
-              itemCount: company.employees.length,
-              itemBuilder: (_, i) {
-                final emp = company.employees[i];
-                return DashboardEmployeeTile(
-                  employee: emp,
-                  allServices: allServices,
-                  companyHoursLabel: companyHoursLabel,
-                  onEdit: () => onEdit(emp, allServices),
-                  onRemove: () => onRemove(emp),
+            // 2 tiles per row — Wrap so each tile has intrinsic height,
+            // otherwise tiles with many service chips overflow the fixed
+            // mainAxisExtent of a GridView by up to 30+ px and push the
+            // "Inviter / Créer" buttons on top of the cards.
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Two columns above 680 px, one column below.
+                final twoCols = constraints.maxWidth >= 680;
+                final tileWidth = twoCols
+                    ? (constraints.maxWidth - AppSpacing.sm) / 2
+                    : constraints.maxWidth;
+                return Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: company.employees.map((emp) {
+                    return SizedBox(
+                      width: tileWidth,
+                      child: DashboardEmployeeTile(
+                        employee: emp,
+                        allServices: allServices,
+                        companyHoursLabel: companyHoursLabel,
+                        onEdit: () => onEdit(emp, allServices),
+                        onRemove: () => onRemove(emp),
+                      ),
+                    );
+                  }).toList(),
                 );
               },
             ),
@@ -990,6 +1058,311 @@ class _DesktopGallerySection extends ConsumerWidget {
             onAddPhoto: onAddPhoto,
             onDeletePhoto: onDeletePhoto,
             onReorder: onReorder,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reviews received card — owner dashboard aperçu
+// ---------------------------------------------------------------------------
+
+class _DesktopReviewsCard extends ConsumerWidget {
+  const _DesktopReviewsCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(myCompanyReviewsProvider);
+
+    return _DesktopCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ──────────────────────────────────────────────────────
+          Row(
+            children: [
+              Text(
+                context.l10n.reviewsReceivedCardTitle,
+                style: GoogleFonts.fraunces(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: -0.4,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () =>
+                    context.goNamed(RouteNames.myCompanyReviews),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  context.l10n.seeAllReviews,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          const Divider(color: AppColors.divider, height: 1),
+          const SizedBox(height: AppSpacing.md),
+
+          // ── Body ─────────────────────────────────────────────────────────
+          if (state.isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                child: CircularProgressIndicator(color: AppColors.secondary),
+              ),
+            )
+          else if (state.reviews.isEmpty)
+            _ReviewsEmptyState()
+          else if (state.reviews
+              .every((r) => (r.comment?.trim().isEmpty ?? true)))
+            // Stars-only situation — one concise note, still shows the
+            // average via _RatingSummary for completeness.
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _RatingSummary(reviews: state.reviews),
+                  const SizedBox(width: AppSpacing.xl),
+                  Container(width: 1, color: AppColors.divider),
+                  const SizedBox(width: AppSpacing.xl),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.info_outline_rounded,
+                            size: 18, color: AppColors.secondaryDark),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            context.l10n.reviewsOnlyRatings,
+                            style: AppTextStyles.body.copyWith(
+                              color: AppColors.secondaryDark,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left — big average rating
+                  _RatingSummary(reviews: state.reviews),
+                  const SizedBox(width: AppSpacing.xl),
+                  // Vertical divider
+                  Container(
+                    width: 1,
+                    color: AppColors.divider,
+                  ),
+                  const SizedBox(width: AppSpacing.xl),
+                  // Right — last 3 reviews
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: state.reviews
+                          .take(3)
+                          .map(
+                            (r) => Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.md),
+                              child: _CompactReviewRow(review: r),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RatingSummary extends StatelessWidget {
+  final List<ReviewModel> reviews;
+
+  const _RatingSummary({required this.reviews});
+
+  @override
+  Widget build(BuildContext context) {
+    final avg = reviews.isEmpty
+        ? 0.0
+        : reviews.fold<double>(0, (s, r) => s + r.rating) / reviews.length;
+
+    return SizedBox(
+      width: 120,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            avg.toStringAsFixed(1),
+            style: GoogleFonts.fraunces(
+              fontSize: 56,
+              fontWeight: FontWeight.w400,
+              color: AppColors.textPrimary,
+              letterSpacing: -2.0,
+              height: 1.0,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            context.l10n.averageRatingOutOf,
+            style: AppTextStyles.overline.copyWith(
+              color: AppColors.textHint,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 6),
+          // Star row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (i) {
+              return Icon(
+                i < avg.round()
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                size: 14,
+                color: i < avg.round()
+                    ? AppColors.secondary
+                    : AppColors.divider,
+              );
+            }),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '${reviews.length} avis',
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textHint,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CompactReviewRow extends StatelessWidget {
+  final ReviewModel review;
+
+  const _CompactReviewRow({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Avatar
+        CircleAvatar(
+          radius: 18,
+          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+          backgroundImage: review.authorProfileImageUrl != null
+              ? NetworkImage(review.authorProfileImageUrl!)
+              : null,
+          child: review.authorProfileImageUrl == null
+              ? Text(
+                  review.authorFirstName.isNotEmpty
+                      ? review.authorFirstName[0].toUpperCase()
+                      : '?',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Author + stars
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      review.authorDisplay,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Row(
+                    children: List.generate(5, (i) {
+                      return Icon(
+                        i < review.rating
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        size: 11,
+                        color: i < review.rating
+                            ? AppColors.secondary
+                            : AppColors.divider,
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              // Comment (2 lines truncate)
+              if (review.comment != null && review.comment!.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  review.comment!,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    letterSpacing: 0,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ReviewsEmptyState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+      child: Row(
+        children: [
+          Icon(
+            Icons.star_outline_rounded,
+            size: 28,
+            color: AppColors.textHint.withValues(alpha: 0.5),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Text(
+            context.l10n.noReviewsYetOwner,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textHint,
+            ),
           ),
         ],
       ),

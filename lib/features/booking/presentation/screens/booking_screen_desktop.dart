@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../../data/models/available_slot_model.dart';
 import '../../data/models/day_availability_model.dart';
 import '../providers/booking_provider.dart';
@@ -41,9 +42,7 @@ class BookingScreenDesktop extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: state.isLoading && state.employees.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            )
+          ? const SingleChildScrollView(child: SkeletonBookingEmployees())
           : _DesktopBody(
               state: state,
               onBack: onBack,
@@ -351,8 +350,9 @@ class _DesktopStepSlot extends StatelessWidget {
 
         const SizedBox(height: AppSpacing.xl),
 
-        // Employee selection (only for employee_based mode)
-        if (!isCapacityBased) ...[
+        // Employee selection — hidden for capacity mode OR when the recipient
+        // came from a shared link that locked the pro (?employee=<id>).
+        if (!isCapacityBased && !state.employeeLocked) ...[
           Text(
             context.l10n.hairdresser,
             style: AppTextStyles.caption.copyWith(
@@ -388,12 +388,7 @@ class _DesktopDateAndSlots extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (state.isLoading && state.availability.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(AppSpacing.xl),
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-      );
+      return const SkeletonTimeSlots();
     }
 
     return Column(
@@ -635,12 +630,7 @@ class _DesktopSlotSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state.isLoadingSlots) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(AppSpacing.xl),
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-      );
+      return const SkeletonTimeSlots();
     }
 
     if (state.availableSlots.isEmpty) {
@@ -959,10 +949,14 @@ class _RecapSidebar extends StatelessWidget {
                 ),
 
                 // ── Recap blocks ──────────────────────────────────────────────
-                _RecapBlock(
-                  label: context.l10n.hairdresser,
-                  value: state.employeeDisplayName,
-                ),
+                // Hairdresser block skipped when the picker was hidden on
+                // step 2 (capacity-based salon with a single team member).
+                if (!state.hideEmployeePicker)
+                  _RecapBlock(
+                    label: context.l10n.hairdresser,
+                    value: state.selectedEmployeeName ??
+                        context.l10n.noPreferenceShort,
+                  ),
 
                 if (state.selectedSlot != null) ...[
                   _RecapBlock(

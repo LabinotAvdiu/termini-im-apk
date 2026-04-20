@@ -24,10 +24,15 @@ class PhotoGallery extends StatefulWidget {
   final List<String> photoUrls;
   final double height;
 
+  /// Si non null, la première photo est enveloppée dans un [Hero] avec ce tag.
+  /// Doit correspondre à celui utilisé sur la carte home ('company-photo-{id}').
+  final String? heroTag;
+
   const PhotoGallery({
     super.key,
     required this.photoUrls,
     this.height = 300,
+    this.heroTag,
   });
 
   @override
@@ -60,7 +65,12 @@ class _PhotoGalleryState extends State<PhotoGallery> {
             itemCount: widget.photoUrls.length,
             scrollBehavior: const _AllPointerDeviceDragBehavior(),
             itemBuilder: (context, index) {
-              return _GalleryPhoto(url: widget.photoUrls[index]);
+              final photo = _GalleryPhoto(url: widget.photoUrls[index]);
+              // Wrap only the first photo in a Hero to match the card tag.
+              if (index == 0 && widget.heroTag != null) {
+                return Hero(tag: widget.heroTag!, child: photo);
+              }
+              return photo;
             },
           ),
 

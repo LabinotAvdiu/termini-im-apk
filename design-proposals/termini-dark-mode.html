@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Prishtina Editorial · Dark mode preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:ital,wght@0,400..700&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /*
+      Proposition de palette DARK — variante éditoriale de "Prishtina Editorial".
+      Règles conservées :
+        • Fraunces display + Instrument Sans body
+        • Bordeaux + or comme accents
+        • Grain texturé pour rester "papier" pas "verre"
+      Inversion :
+        • Background ink profond et chaud (pas noir pur) → #0F0C0B
+        • Surface ivoire remplacée par un brun ink légèrement éclairé
+        • Burgundy clarifié (#B23A4C) pour contraste texte
+        • Or légèrement plus clair pour rester lisible
+        • Ivory devient une nuance warm-off-white #F3ECE0
+    */
+    :root {
+      /* --- Palette light (rappel — inchangée) --- */
+      --light-ivory: #f7f2ea;
+      --light-surface: #fcf7ee;
+      --light-ink: #171311;
+      --light-burgundy: #7a2232;
+      --light-gold: #c89b47;
+
+      /* --- DARK palette proposée --- */
+      --d-bg:          #0f0c0b;  /* ink profond et warm */
+      --d-surface:     #1a1513;  /* cards */
+      --d-surface-2:   #231d1a;  /* surface élevée, modales */
+      --d-border:      #3a312d;  /* séparateurs warm-brown */
+      --d-divider:     #2a2320;
+      --d-text:        #f3ece0;  /* warm off-white, même chaleur que l'ivoire */
+      --d-text-sec:    #b5a99d;
+      --d-text-hint:   #7a6e64;
+      --d-burgundy:    #b23a4c;  /* + clair pour lisibilité */
+      --d-burgundy-deep:#7a2232; /* profond, pour accents retenus */
+      --d-gold:        #e0b260;  /* or + clair pour contraste */
+      --d-gold-soft:   #8a6f3e;  /* accents discrets */
+      --d-success:     #8fa670;
+      --d-danger:      #c85048;
+
+      --radius-s: 10px;
+      --radius-m: 18px;
+      --radius-l: 28px;
+
+      --font-display: "Fraunces", Georgia, serif;
+      --font-body:    "Instrument Sans", -apple-system, sans-serif;
+
+      --shadow-s: 0 2px 10px rgba(0,0,0,0.45);
+      --shadow-m: 0 12px 32px rgba(0,0,0,0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--d-bg);
+      color: var(--d-text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2000;
+      opacity: 0.28;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 0.92 0 0 0 0 0.85 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
+
+    .container { max-width: 1360px; margin: 0 auto; padding: 0 40px; }
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.32em;
+      color: var(--d-text-hint);
+      margin: 80px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .section-label::before, .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--d-divider);
+    }
+
+    /* ------------------------------------------------------------ */
+    /* TOP BRANDBAR                                                 */
+    /* ------------------------------------------------------------ */
+    .brandbar {
+      height: 56px;
+      border-bottom: 1px solid var(--d-divider);
+      background: var(--d-surface);
+      display: flex;
+      align-items: center;
+    }
+    .brandbar .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 18px;
+    }
+    .brand .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--d-burgundy);
+    }
+    .brand em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--d-burgundy);
+    }
+    .nav-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--d-text-sec);
+    }
+    .nav-right a { color: var(--d-text-sec); text-decoration: none; }
+
+    /* ------------------------------------------------------------ */
+    /* HERO HOME                                                    */
+    /* ------------------------------------------------------------ */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      padding: 64px 0 48px;
+    }
+    .hero-lead .overline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.35em;
+      color: var(--d-gold);
+      margin-bottom: 20px;
+    }
+    .hero-lead h1 {
+      font-size: 84px;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+    .hero-lead h1 em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--d-burgundy);
+      display: block;
+    }
+    .hero-lead p {
+      color: var(--d-text-sec);
+      max-width: 420px;
+      margin-top: 24px;
+      font-size: 16px;
+    }
+    .hero-image {
+      aspect-ratio: 4/5;
+      background:
+        linear-gradient(135deg, rgba(178, 58, 76, 0.18), transparent 50%),
+        linear-gradient(45deg, rgba(224, 178, 96, 0.15), transparent 60%),
+        var(--d-surface);
+      border-radius: var(--radius-l);
+      border: 1px solid var(--d-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 70% 20%, rgba(224, 178, 96, 0.25), transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(178, 58, 76, 0.22), transparent 50%);
+    }
+
+    /* ------------------------------------------------------------ */
+    /* SEARCH BAR                                                   */
+    /* ------------------------------------------------------------ */
+    .search {
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+      border-radius: 999px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr auto;
+      gap: 0;
+      align-items: stretch;
+    }
+    .search-field {
+      padding: 14px 24px;
+      border-right: 1px solid var(--d-divider);
+    }
+    .search-field:last-of-type { border-right: none; }
+    .search-field .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--d-text-hint);
+      margin-bottom: 4px;
+    }
+    .search-field .value {
+      color: var(--d-text);
+      font-size: 14px;
+    }
+    .search-cta {
+      background: var(--d-burgundy);
+      color: var(--d-text);
+      border: none;
+      border-radius: 999px;
+      padding: 0 32px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 13px;
+      cursor: pointer;
+      margin: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .search-cta::after {
+      content: "→";
+      font-size: 15px;
+    }
+
+    /* ------------------------------------------------------------ */
+    /* SALON CARDS GRID                                             */
+    /* ------------------------------------------------------------ */
+    .results {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 40px;
+    }
+    .salon-card {
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .salon-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-m);
+      border-color: var(--d-gold-soft);
+    }
+    .salon-photo {
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, var(--d-surface-2), var(--d-divider));
+      position: relative;
+    }
+    .salon-photo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(224, 178, 96, 0.15), transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(178, 58, 76, 0.10), transparent 60%);
+    }
+    .salon-rating {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--d-surface);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      border: 1px solid var(--d-border);
+    }
+    .salon-rating::before { content: "★ "; color: var(--d-gold); }
+    .salon-fav {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      background: rgba(15, 12, 11, 0.78);
+      border: 1px solid var(--d-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--d-burgundy);
+    }
+    .salon-body {
+      padding: 22px;
+    }
+    .salon-body h3 {
+      font-size: 22px;
+      line-height: 1.1;
+    }
+    .salon-body .addr {
+      color: var(--d-text-hint);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .slots {
+      display: flex;
+      gap: 8px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .slot {
+      border: 1px solid var(--d-border);
+      background: var(--d-surface-2);
+      color: var(--d-text-sec);
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .slot.active {
+      background: var(--d-burgundy);
+      border-color: var(--d-burgundy);
+      color: var(--d-text);
+    }
+    .salon-footer {
+      border-top: 1px solid var(--d-divider);
+      padding: 14px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .salon-footer .more {
+      color: var(--d-text-hint);
+      font-size: 13px;
+    }
+    .salon-footer .book {
+      background: var(--d-burgundy);
+      color: var(--d-text);
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+    }
+
+    /* ------------------------------------------------------------ */
+    /* DETAIL — hero + info sheet                                   */
+    /* ------------------------------------------------------------ */
+    .detail-hero {
+      aspect-ratio: 16/7;
+      border-radius: var(--radius-l);
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+    }
+    .detail-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 40% 30%, rgba(224, 178, 96, 0.22), transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(178, 58, 76, 0.20), transparent 55%),
+        linear-gradient(135deg, var(--d-surface-2), var(--d-divider));
+    }
+    .detail-hero .back, .detail-hero .fav-btn {
+      position: absolute;
+      top: 24px;
+      width: 40px;
+      height: 40px;
+      background: rgba(26, 21, 19, 0.85);
+      border: 1px solid var(--d-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--d-text);
+    }
+    .detail-hero .back { left: 24px; }
+    .detail-hero .fav-btn { right: 24px; color: var(--d-burgundy); }
+
+    .detail-info {
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+      border-radius: var(--radius-m);
+      padding: 40px;
+      margin-top: -60px;
+      margin-left: 60px;
+      margin-right: 60px;
+      position: relative;
+      z-index: 2;
+      box-shadow: var(--shadow-m);
+    }
+    .detail-overline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--d-burgundy);
+      font-weight: 600;
+    }
+    .detail-info h2 {
+      font-size: 40px;
+      line-height: 1.05;
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+    .detail-meta {
+      display: flex;
+      gap: 24px;
+      color: var(--d-text-hint);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+    .detail-cta {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-primary {
+      background: var(--d-burgundy);
+      color: var(--d-text);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--d-text);
+      border: 1px solid var(--d-border);
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    /* ------------------------------------------------------------ */
+    /* BOOKING CONFIRMATION                                         */
+    /* ------------------------------------------------------------ */
+    .booking-confirm {
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+      border-radius: var(--radius-l);
+      padding: 60px;
+      text-align: center;
+      max-width: 720px;
+      margin: 20px auto 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .booking-confirm::before {
+      content: "";
+      position: absolute;
+      inset: -40% auto auto -40%;
+      width: 80%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(224, 178, 96, 0.12), transparent 70%);
+    }
+    .check-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 28px;
+      background: linear-gradient(135deg, var(--d-burgundy), var(--d-burgundy-deep));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--d-gold);
+      font-size: 32px;
+      font-weight: 700;
+      box-shadow: 0 8px 32px rgba(178, 58, 76, 0.4);
+    }
+    .booking-confirm h2 {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .booking-confirm p {
+      color: var(--d-text-sec);
+      max-width: 420px;
+      margin: 0 auto 36px;
+    }
+    .recap {
+      background: var(--d-surface-2);
+      border: 1px solid var(--d-divider);
+      border-radius: var(--radius-m);
+      padding: 22px 28px;
+      text-align: left;
+      margin: 0 auto;
+      max-width: 480px;
+    }
+    .recap .line {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--d-divider);
+    }
+    .recap .line:last-child { border-bottom: none; }
+    .recap .k { color: var(--d-text-hint); font-size: 13px; }
+    .recap .v { color: var(--d-text); font-weight: 500; font-size: 14px; }
+
+    /* confetti dots */
+    .confetti { position: absolute; inset: 0; pointer-events: none; }
+    .confetti i {
+      position: absolute;
+      width: 6px;
+      height: 14px;
+      border-radius: 1px;
+      opacity: 0.8;
+    }
+    .c-1 { top: 10%; left: 20%; background: var(--d-burgundy); transform: rotate(25deg); }
+    .c-2 { top: 18%; left: 78%; background: var(--d-gold); transform: rotate(-18deg); }
+    .c-3 { top: 30%; left: 45%; background: var(--d-text); transform: rotate(40deg); }
+    .c-4 { top: 8%;  left: 55%; background: var(--d-gold); transform: rotate(-35deg); }
+    .c-5 { top: 55%; left: 12%; background: var(--d-burgundy); transform: rotate(10deg); }
+    .c-6 { top: 45%; left: 88%; background: var(--d-text); transform: rotate(-10deg); }
+
+    /* ------------------------------------------------------------ */
+    /* SETTINGS — experience toggles                                */
+    /* ------------------------------------------------------------ */
+    .settings-card {
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+      border-radius: var(--radius-m);
+      padding: 32px;
+      max-width: 720px;
+      margin: 20px auto 0;
+    }
+    .settings-card h3 {
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--d-divider);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-row .meta .title { font-size: 15px; font-weight: 500; margin-bottom: 3px; }
+    .toggle-row .meta .desc  { font-size: 13px; color: var(--d-text-hint); }
+    .toggle {
+      width: 44px; height: 26px;
+      background: var(--d-divider);
+      border-radius: 999px;
+      position: relative;
+      transition: background 180ms;
+      border: 1px solid var(--d-border);
+    }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--d-text-sec);
+      transition: transform 200ms, background 200ms;
+    }
+    .toggle.on {
+      background: var(--d-burgundy);
+      border-color: var(--d-burgundy);
+    }
+    .toggle.on::after {
+      transform: translateX(18px);
+      background: var(--d-text);
+    }
+
+    /* ------------------------------------------------------------ */
+    /* NOTES PALETTE — reference strip                              */
+    /* ------------------------------------------------------------ */
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .swatch {
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 1px solid var(--d-border);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .swatch .name {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--d-text-sec);
+    }
+    .swatch .hex {
+      font-size: 11px;
+      font-family: "SF Mono", "Roboto Mono", monospace;
+      color: var(--d-text-hint);
+      margin-top: 2px;
+    }
+
+    .notes {
+      margin-top: 80px;
+      padding: 40px;
+      background: var(--d-surface);
+      border: 1px solid var(--d-border);
+      border-radius: var(--radius-m);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .notes h3 { font-size: 20px; margin-bottom: 16px; }
+    .notes ul { padding-left: 20px; color: var(--d-text-sec); }
+    .notes li { margin-bottom: 6px; }
+    .notes strong { color: var(--d-text); }
+
+    footer {
+      padding: 60px 0 80px;
+      text-align: center;
+      color: var(--d-text-hint);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═════════════════════════ BRANDBAR ═════════════════════════ -->
+  <header class="brandbar">
+    <div class="container inner">
+      <div class="brand"><span class="dot"></span>Termini <em>im</em></div>
+      <div class="nav-right">
+        <a href="#">FR</a>
+        <span style="color: var(--d-divider);">·</span>
+        <a href="#">Connexion</a>
+        <a href="#" style="color: var(--d-gold);">Mon compte</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ═════════════════════════ HERO ═════════════════════════ -->
+    <div class="section-label">01 — Accueil</div>
+
+    <section class="hero">
+      <div class="hero-lead">
+        <div class="overline">Prishtina · Salons &amp; Berberë</div>
+        <h1>Kosova<em>se coiffe.</em></h1>
+        <p>
+          Trouvez le salon idéal, choisissez votre coiffeur·se et réservez en
+          deux gestes. Avis, prix et disponibilités réels.
+        </p>
+      </div>
+      <div class="hero-image"></div>
+    </section>
+
+    <!-- search bar -->
+    <section class="search">
+      <div class="search-field">
+        <div class="label">Où</div>
+        <div class="value">Prishtina</div>
+      </div>
+      <div class="search-field">
+        <div class="label">Quand</div>
+        <div class="value">Vendredi 25 avril</div>
+      </div>
+      <div class="search-field">
+        <div class="label">Qui</div>
+        <div class="value">Femme</div>
+      </div>
+      <button class="search-cta">Rechercher</button>
+    </section>
+
+    <!-- results -->
+    <div class="section-label">02 — Résultats</div>
+
+    <div class="results">
+      <!-- card 1 -->
+      <div class="salon-card">
+        <div class="salon-photo">
+          <div class="salon-rating">4.9</div>
+          <div class="salon-fav">♥</div>
+        </div>
+        <div class="salon-body">
+          <h3>Studio Lorena</h3>
+          <div class="addr">Rr. Nëna Terezë 12 · Prishtinë</div>
+          <div class="slots">
+            <span class="slot">09:30</span>
+            <span class="slot active">10:15</span>
+            <span class="slot">11:00</span>
+            <span class="slot">11:45</span>
+          </div>
+        </div>
+        <div class="salon-footer">
+          <span class="more">Voir la fiche →</span>
+          <button class="book">Prendre RDV</button>
+        </div>
+      </div>
+
+      <!-- card 2 -->
+      <div class="salon-card">
+        <div class="salon-photo">
+          <div class="salon-rating">4.7</div>
+        </div>
+        <div class="salon-body">
+          <h3>Barber Krasniqi</h3>
+          <div class="addr">Rr. Fehmi Agani 28 · Prishtinë</div>
+          <div class="slots">
+            <span class="slot">13:45</span>
+            <span class="slot">14:30</span>
+            <span class="slot active">15:15</span>
+            <span class="slot">16:00</span>
+          </div>
+        </div>
+        <div class="salon-footer">
+          <span class="more">Voir la fiche →</span>
+          <button class="book">Prendre RDV</button>
+        </div>
+      </div>
+
+      <!-- card 3 -->
+      <div class="salon-card">
+        <div class="salon-photo">
+          <div class="salon-rating">5.0</div>
+          <div class="salon-fav">♥</div>
+        </div>
+        <div class="salon-body">
+          <h3>Salloni Donjeta</h3>
+          <div class="addr">Rr. Garibaldi 7 · Prishtinë</div>
+          <div class="slots">
+            <span class="slot">10:00</span>
+            <span class="slot">10:45</span>
+            <span class="slot">11:30</span>
+            <span class="slot active">12:15</span>
+          </div>
+        </div>
+        <div class="salon-footer">
+          <span class="more">Voir la fiche →</span>
+          <button class="book">Prendre RDV</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════ DETAIL ═════════════════════════ -->
+    <div class="section-label">03 — Fiche salon</div>
+
+    <div class="detail-hero">
+      <div class="back">←</div>
+      <div class="fav-btn">♥</div>
+    </div>
+    <div class="detail-info">
+      <div class="detail-overline">Sallon për gra · Coiffure femme</div>
+      <h2>Studio Lorena</h2>
+      <div class="detail-meta">
+        <span>★ 4.9 (132 avis)</span>
+        <span>· €€€</span>
+        <span>· Ouvert jusqu'à 20:00</span>
+      </div>
+      <div class="detail-cta">
+        <button class="btn-primary">Prendre rendez-vous</button>
+        <button class="btn-ghost">Voir les services</button>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════ BOOKING SUCCESS ═════════════════════════ -->
+    <div class="section-label">04 — Confirmation de réservation</div>
+
+    <div class="booking-confirm">
+      <div class="confetti">
+        <i class="c-1"></i><i class="c-2"></i><i class="c-3"></i>
+        <i class="c-4"></i><i class="c-5"></i><i class="c-6"></i>
+      </div>
+      <div class="check-circle">✓</div>
+      <h2>Réservation confirmée</h2>
+      <p>Un email de confirmation vous a été envoyé. Nous vous enverrons un rappel 2h avant votre rendez-vous.</p>
+      <div class="recap">
+        <div class="line"><span class="k">Salon</span><span class="v">Studio Lorena</span></div>
+        <div class="line"><span class="k">Service</span><span class="v">Coupe + Brushing</span></div>
+        <div class="line"><span class="k">Coiffeuse</span><span class="v">Ariana K.</span></div>
+        <div class="line"><span class="k">Date</span><span class="v">Vendredi 25 avril · 10:15</span></div>
+        <div class="line"><span class="k">Prix</span><span class="v">30 €</span></div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════ SETTINGS EXPERIENCE ═════════════════════════ -->
+    <div class="section-label">05 — Paramètres — Expérience</div>
+
+    <div class="settings-card">
+      <h3>Expérience</h3>
+      <div class="toggle-row">
+        <div class="meta">
+          <div class="title">Vibrations</div>
+          <div class="desc">Petits retours tactiles sur les interactions</div>
+        </div>
+        <div class="toggle on"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="meta">
+          <div class="title">Sons de l'interface</div>
+          <div class="desc">Désactivés par défaut</div>
+        </div>
+        <div class="toggle"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="meta">
+          <div class="title">Animations</div>
+          <div class="desc">Transitions et effets visuels</div>
+        </div>
+        <div class="toggle on"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="meta">
+          <div class="title">Mode sombre</div>
+          <div class="desc">Interface optimisée pour les ambiances tamisées</div>
+        </div>
+        <div class="toggle on"></div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════ PALETTE ═════════════════════════ -->
+    <div class="section-label">06 — Palette proposée</div>
+
+    <div class="palette">
+      <div class="swatch" style="background:#0f0c0b;">
+        <div class="name">BG</div>
+        <div class="hex">#0F0C0B</div>
+      </div>
+      <div class="swatch" style="background:#1a1513;">
+        <div class="name">Surface</div>
+        <div class="hex">#1A1513</div>
+      </div>
+      <div class="swatch" style="background:#231d1a;">
+        <div class="name">Surface+</div>
+        <div class="hex">#231D1A</div>
+      </div>
+      <div class="swatch" style="background:#b23a4c;">
+        <div class="name">Burgundy</div>
+        <div class="hex">#B23A4C</div>
+      </div>
+      <div class="swatch" style="background:#e0b260;">
+        <div class="name">Or</div>
+        <div class="hex">#E0B260</div>
+      </div>
+      <div class="swatch" style="background:#f3ece0; color: #171311;">
+        <div class="name" style="color: #716059;">Texte</div>
+        <div class="hex" style="color: #716059;">#F3ECE0</div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════ NOTES ═════════════════════════ -->
+    <div class="notes">
+      <h3>Décisions à valider avant l'implémentation Flutter</h3>
+      <ul>
+        <li><strong>Burgundy clarifié</strong> de <code>#7A2232</code> → <code>#B23A4C</code> pour atteindre un contraste AA sur fond ink. L'ancien burgundy reste comme "burgundy-deep" pour les accents discrets.</li>
+        <li><strong>Or ajusté</strong> de <code>#C89B47</code> → <code>#E0B260</code> pour rester lisible en texte sur fond ink (ratio ~5.8:1).</li>
+        <li><strong>Warm ink chaud</strong> <code>#0F0C0B</code> plutôt que noir pur — cohérence avec l'ambiance "papier/salon" de la palette light.</li>
+        <li><strong>Grain réduit</strong> à 0.28 opacity avec <code>mix-blend-mode: overlay</code> pour ne pas manger les couleurs en dark.</li>
+        <li><strong>Surface à 2 niveaux</strong> — cards <code>#1A1513</code>, surface élevée (modales, booking recap) <code>#231D1A</code>.</li>
+        <li><strong>Toggle activation</strong> — détection <code>MediaQuery.platformBrightness</code> au boot + override manuel via un 4ᵉ toggle dans Paramètres &gt; Expérience (visible sur la maquette).</li>
+      </ul>
+      <h3 style="margin-top: 32px;">Ce qui NE change pas</h3>
+      <ul>
+        <li>Typo Fraunces + Instrument Sans / Serif — inchangées.</li>
+        <li>Radius, spacings, rhythm vertical — identiques à la version light.</li>
+        <li>Confetti booking : les 4 couleurs éditoriales (bordeaux, or, ivoire, blanc) fonctionnent sur les deux backgrounds.</li>
+        <li>Hero tags, transitions, haptics, skeletons — comportements identiques.</li>
+      </ul>
+      <h3 style="margin-top: 32px;">Risques connus</h3>
+      <ul>
+        <li>Les photos de galerie seed actuelles (Unsplash, bien éclairées) fonctionnent, mais les photos owner uploadées en basse lumière peuvent devenir "trous noirs". Envisager un overlay warm-black → transparent 40% au top pour maintenir la lisibilité des actions header.</li>
+        <li>Sur iOS, le <code>UINavigationBarAppearance</code> doit être configuré en dark pour éviter le flash blanc au push. Côté Flutter, c'est géré automatiquement si le ThemeData est complet.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <footer>
+    Termini im — Dark preview · 2026-04-18
+  </footer>
+</body>
+</html>

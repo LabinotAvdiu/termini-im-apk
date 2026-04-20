@@ -12,9 +12,10 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/widgets/app_text_field.dart';
-import '../../../../core/widgets/place_autocomplete_field.dart';
+import '../../../../core/widgets/salon_location_fields.dart';
 import '../../../../core/network/places_datasource.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/company_clientele_selector.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   /// 'user' or 'company'
@@ -51,6 +52,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   double? _latitude;
   double? _longitude;
+
+  /// Personal gender of the registrant — 'men' / 'women' / null.
+  /// Drives the default home filter after signup (see home_providers).
+  String? _gender;
+
+  /// Clientele the salon serves — 'men' | 'women' | 'both'. Required when
+  /// signing up a company (drives the home filter for searching clients).
+  String? _companyGender;
+
+  /// Which social provider is currently running — null / 'google' / 'facebook' /
+  /// 'apple'. Used to show the spinner only on the tapped button instead of
+  /// flipping all three when the shared `authState.isLoading` toggles.
+  String? _loadingSocial;
 
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
@@ -165,8 +179,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           phone: _phoneController.text.trim(),
           role: userRole,
           city: _cityController.text.trim(),
+          gender: _gender,
           companyName: _isCompany ? _companyNameController.text.trim().titleCase : null,
           address: _isCompany ? _addressController.text.trim() : null,
+          companyGender: _isCompany ? _companyGender : null,
           bookingMode: _isCompany ? _bookingMode : null,
           latitude: _isCompany ? _latitude : null,
           longitude: _isCompany ? _longitude : null,
@@ -183,14 +199,45 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Future<void> _loginWithGoogle() async {
-    await ref.read(authStateProvider.notifier).loginWithGoogle();
+    setState(() => _loadingSocial = 'google');
+    try {
+      // Pass the current role so a new user created via Google inherits the
+      // intent (client vs company). The router watches [needsCompanySetup]
+      // and redirects companies to the business-info completion screen.
+      await ref
+          .read(authStateProvider.notifier)
+          .loginWithGoogle(role: _isCompany ? 'company' : 'user');
+    } finally {
+      if (mounted) setState(() => _loadingSocial = null);
+    }
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
     if (error != null) context.showErrorSnackBar(error);
   }
 
   Future<void> _loginWithFacebook() async {
-    await ref.read(authStateProvider.notifier).loginWithFacebook();
+    setState(() => _loadingSocial = 'facebook');
+    try {
+      await ref
+          .read(authStateProvider.notifier)
+          .loginWithFacebook(role: _isCompany ? 'company' : 'user');
+    } finally {
+      if (mounted) setState(() => _loadingSocial = null);
+    }
+    if (!mounted) return;
+    final error = ref.read(authStateProvider).error;
+    if (error != null) context.showErrorSnackBar(error);
+  }
+
+  Future<void> _loginWithApple() async {
+    setState(() => _loadingSocial = 'apple');
+    try {
+      await ref
+          .read(authStateProvider.notifier)
+          .loginWithApple(role: _isCompany ? 'company' : 'user');
+    } finally {
+      if (mounted) setState(() => _loadingSocial = null);
+    }
     if (!mounted) return;
     final error = ref.read(authStateProvider).error;
     if (error != null) context.showErrorSnackBar(error);
@@ -201,6 +248,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authStateProvider).isLoading;
+    // Social-login loading must NOT spin the email submit button (and vice
+    // versa). The form gets a narrower flag while the social buttons read
+    // _loadingSocial directly.
+    final submitLoading = isLoading && _loadingSocial == null;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -244,7 +295,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   if (_isCompany)
                     _CompanySignupForm(
                       currentStep: _currentStep,
-                      isLoading: isLoading,
+                      isLoading: submitLoading,
+                      gender: _gender,
+                      onGenderChanged: (g) => setState(() => _gender = g),
+                      companyGender: _companyGender,
+                      onCompanyGenderChanged: (g) =>
+                          setState(() => _companyGender = g),
                       step1FormKey: _step1FormKey,
                       step2FormKey: _step2FormKey,
                       step4FormKey: _step4FormKey,
@@ -282,11 +338,21 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           _cityController.text = details.city!;
                         }
                       }),
+                      latitude: _latitude,
+                      longitude: _longitude,
+                      onLocationCaptured: (lat, lng) => setState(() {
+                        _latitude = lat;
+                        _longitude = lng;
+                      }),
+                      onLocationInvalidated: () => setState(() {
+                        _latitude = null;
+                        _longitude = null;
+                      }),
                     )
                   else
                     _UserSignupFormCard(
                       formKey: _step1FormKey,
-                      isLoading: isLoading,
+                      isLoading: submitLoading,
                       emailController: _emailController,
                       emailFocusNode: _emailFocusNode,
                       emailError: _emailError,
@@ -303,27 +369,43 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       onToggleConfirmPassword: () => setState(() =>
                           _confirmPasswordVisible = !_confirmPasswordVisible),
                       onSubmit: _submit,
+                      gender: _gender,
+                      onGenderChanged: (g) => setState(() => _gender = g),
                     ),
 
-                  // ---- Social section (user only) ----
-                  if (!_isCompany) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    _OrDivider(),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppSocialButton(
-                      text: context.l10n.continueWithGoogle,
-                      isLoading: isLoading,
-                      onPressed: isLoading ? null : _loginWithGoogle,
-                      icon: const _GoogleIcon(),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    AppSocialButton(
-                      text: context.l10n.continueWithFacebook,
-                      isLoading: isLoading,
-                      onPressed: isLoading ? null : _loginWithFacebook,
-                      icon: const _FacebookIcon(),
-                    ),
-                  ],
+                  // ---- Social section (shown for both client and company
+                  // signups — role hint is forwarded so a fresh Google
+                  // sign-up lands the company on /company-setup). Only the
+                  // tapped button spins; the other two are disabled. ----
+                  const SizedBox(height: AppSpacing.lg),
+                  _OrDivider(),
+                  const SizedBox(height: AppSpacing.lg),
+                  AppSocialButton(
+                    text: context.l10n.continueWithGoogle,
+                    isLoading: _loadingSocial == 'google',
+                    onPressed: _loadingSocial != null || isLoading
+                        ? null
+                        : _loginWithGoogle,
+                    icon: const _GoogleIcon(),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  AppSocialButton(
+                    text: context.l10n.continueWithFacebook,
+                    isLoading: _loadingSocial == 'facebook',
+                    onPressed: _loadingSocial != null || isLoading
+                        ? null
+                        : _loginWithFacebook,
+                    icon: const _FacebookIcon(),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  AppSocialButton(
+                    text: context.l10n.continueWithApple,
+                    isLoading: _loadingSocial == 'apple',
+                    onPressed: _loadingSocial != null || isLoading
+                        ? null
+                        : _loginWithApple,
+                    icon: const _AppleIcon(),
+                  ),
 
                   const SizedBox(height: AppSpacing.xl),
 
@@ -390,7 +472,7 @@ class _BackButton extends StatelessWidget {
         onTap: onTap ??
             () => context.canPop()
                 ? context.pop()
-                : context.goNamed(RouteNames.roleSelect),
+                : context.goNamed(RouteNames.landing),
         child: Container(
           width: 40,
           height: 40,
@@ -539,6 +621,10 @@ class _UserSignupFormCard extends StatelessWidget {
   final VoidCallback onToggleConfirmPassword;
   final VoidCallback onSubmit;
 
+  // Personal gender (optional) — drives the default home gender filter.
+  final String? gender;
+  final ValueChanged<String?> onGenderChanged;
+
   const _UserSignupFormCard({
     required this.formKey,
     required this.isLoading,
@@ -556,6 +642,8 @@ class _UserSignupFormCard extends StatelessWidget {
     required this.onTogglePassword,
     required this.onToggleConfirmPassword,
     required this.onSubmit,
+    required this.gender,
+    required this.onGenderChanged,
   });
 
   @override
@@ -658,6 +746,12 @@ class _UserSignupFormCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
 
+            _GenderSelector(
+              value: gender,
+              onChanged: onGenderChanged,
+            ),
+            const SizedBox(height: AppSpacing.md),
+
             _SecurityDivider(),
             const SizedBox(height: AppSpacing.md),
 
@@ -740,6 +834,24 @@ class _CompanySignupForm extends StatelessWidget {
   final VoidCallback onBackFromStep4;
   final VoidCallback onSubmit;
   final void Function(PlaceDetails details) onPlaceSelected;
+  // GPS fallback — user taps "use my location" when Google can't find the
+  // salon's address (common for recent addresses in Kosovo). The callback
+  // only receives lat/lng; the typed address stays untouched.
+  final double? latitude;
+  final double? longitude;
+  final void Function(double lat, double lng) onLocationCaptured;
+  // Manual city edit after a Google Places selection invalidates the
+  // captured lat/lng — fires so the parent clears them.
+  final VoidCallback onLocationInvalidated;
+
+  // Personal gender of the owner — drives the home filter after signup.
+  final String? gender;
+  final ValueChanged<String?> onGenderChanged;
+
+  // Clientele served by the salon ('men'|'women'|'both') — drives the
+  // public gender filter on the home feed.
+  final String? companyGender;
+  final ValueChanged<String> onCompanyGenderChanged;
 
   const _CompanySignupForm({
     required this.currentStep,
@@ -772,6 +884,14 @@ class _CompanySignupForm extends StatelessWidget {
     required this.onBackFromStep4,
     required this.onSubmit,
     required this.onPlaceSelected,
+    required this.latitude,
+    required this.longitude,
+    required this.onLocationCaptured,
+    required this.onLocationInvalidated,
+    required this.gender,
+    required this.onGenderChanged,
+    required this.companyGender,
+    required this.onCompanyGenderChanged,
   });
 
   @override
@@ -807,6 +927,8 @@ class _CompanySignupForm extends StatelessWidget {
             cityController: cityController,
             firstNameController: firstNameController,
             lastNameController: lastNameController,
+            gender: gender,
+            onGenderChanged: onGenderChanged,
             onNext: onNext,
           ),
         1 => _CompanyStep2(
@@ -814,6 +936,13 @@ class _CompanySignupForm extends StatelessWidget {
             formKey: step2FormKey,
             companyNameController: companyNameController,
             addressController: addressController,
+            cityController: cityController,
+            latitude: latitude,
+            longitude: longitude,
+            onLocationCaptured: onLocationCaptured,
+            onLocationInvalidated: onLocationInvalidated,
+            companyGender: companyGender,
+            onCompanyGenderChanged: onCompanyGenderChanged,
             onBack: onBack,
             onNext: onNextFromStep2,
             onPlaceSelected: onPlaceSelected,
@@ -855,6 +984,8 @@ class _CompanyStep1 extends StatelessWidget {
   final TextEditingController cityController;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
+  final String? gender;
+  final ValueChanged<String?> onGenderChanged;
   final VoidCallback onNext;
 
   const _CompanyStep1({
@@ -867,6 +998,8 @@ class _CompanyStep1 extends StatelessWidget {
     required this.cityController,
     required this.firstNameController,
     required this.lastNameController,
+    required this.gender,
+    required this.onGenderChanged,
     required this.onNext,
   });
 
@@ -947,6 +1080,11 @@ class _CompanyStep1 extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
 
+            _GenderSelector(
+              value: gender,
+              onChanged: onGenderChanged,
+            ),
+
             const SizedBox(height: AppSpacing.lg),
 
             AppButton(
@@ -964,10 +1102,17 @@ class _CompanyStep1 extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Company Step 2 — company info only
 // ---------------------------------------------------------------------------
-class _CompanyStep2 extends StatelessWidget {
+class _CompanyStep2 extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController companyNameController;
   final TextEditingController addressController;
+  final TextEditingController cityController;
+  final double? latitude;
+  final double? longitude;
+  final void Function(double lat, double lng) onLocationCaptured;
+  final VoidCallback onLocationInvalidated;
+  final String? companyGender;
+  final ValueChanged<String> onCompanyGenderChanged;
   final VoidCallback onBack;
   final VoidCallback onNext;
   final void Function(PlaceDetails details) onPlaceSelected;
@@ -977,16 +1122,40 @@ class _CompanyStep2 extends StatelessWidget {
     required this.formKey,
     required this.companyNameController,
     required this.addressController,
+    required this.cityController,
+    required this.latitude,
+    required this.longitude,
+    required this.onLocationCaptured,
+    required this.onLocationInvalidated,
+    required this.companyGender,
+    required this.onCompanyGenderChanged,
     required this.onBack,
     required this.onNext,
     required this.onPlaceSelected,
   });
 
   @override
+  State<_CompanyStep2> createState() => _CompanyStep2State();
+}
+
+class _CompanyStep2State extends State<_CompanyStep2> {
+  bool _showClienteleError = false;
+
+  void _handleNext() {
+    if (widget.companyGender == null) {
+      setState(() => _showClienteleError = true);
+    }
+    if ((widget.formKey.currentState?.validate() ?? false) &&
+        widget.companyGender != null) {
+      widget.onNext();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _CardShell(
       child: Form(
-        key: formKey,
+        key: widget.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -998,7 +1167,7 @@ class _CompanyStep2 extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
 
             AppTextField(
-              controller: companyNameController,
+              controller: widget.companyNameController,
               label: context.l10n.companyName,
               hint: context.l10n.companyNameHint,
               prefixIcon: Icons.storefront_outlined,
@@ -1009,21 +1178,35 @@ class _CompanyStep2 extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            PlaceAutocompleteField(
-              controller: addressController,
-              label: context.l10n.address,
-              hint: context.l10n.addressHintExample,
-              onPlaceSelected: onPlaceSelected,
-              validator: (v) => Validators.required(
-                v,
-                message: context.l10n.addressRequired,
-              ),
+            // Address autocomplete + city + GPS fallback — shared widget
+            // between signup / social-auth setup / fix-geocoding dialog.
+            // Handles the "edit city → invalidate GPS" rule internally.
+            SalonLocationFields(
+              addressController: widget.addressController,
+              cityController: widget.cityController,
+              latitude: widget.latitude,
+              longitude: widget.longitude,
+              onLocationCaptured: widget.onLocationCaptured,
+              onPlaceSelected: widget.onPlaceSelected,
+              onLocationInvalidated: widget.onLocationInvalidated,
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            CompanyClienteleSelector(
+              value: widget.companyGender,
+              onChanged: (g) {
+                setState(() => _showClienteleError = false);
+                widget.onCompanyGenderChanged(g);
+              },
+              errorText: _showClienteleError
+                  ? context.l10n.salonClienteleRequired
+                  : null,
             ),
             const SizedBox(height: AppSpacing.lg),
 
             AppButton(
               text: context.l10n.next,
-              onPressed: onNext,
+              onPressed: _handleNext,
               width: double.infinity,
             ),
 
@@ -1031,7 +1214,7 @@ class _CompanyStep2 extends StatelessWidget {
 
             Center(
               child: TextButton(
-                onPressed: onBack,
+                onPressed: widget.onBack,
                 child: Text(
                   context.l10n.previous,
                   style: const TextStyle(
@@ -1786,3 +1969,157 @@ class _FacebookLogoPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+// ---------------------------------------------------------------------------
+// Apple logo — monochrome glyph rendered via CustomPaint so the icon has
+// the same crisp edges as the Google & Facebook ones on any DPI.
+// ---------------------------------------------------------------------------
+class _AppleIcon extends StatelessWidget {
+  const _AppleIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.apple, size: 22, color: AppColors.textPrimary);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Gender selector — segmented editorial control (optional, nullable)
+// ---------------------------------------------------------------------------
+/// Personal gender picker. Tapping the active choice clears the selection
+/// (maps to null on the backend → "prefer not to say"). Visually aligns with
+/// the other form fields: same label style, same corner radius as AppTextField.
+class _GenderSelector extends StatelessWidget {
+  final String? value;
+  final ValueChanged<String?> onChanged;
+
+  const _GenderSelector({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Match the AppTextField label style for visual consistency with the
+        // other form inputs.
+        Text(
+          context.l10n.genderSelectorLabel,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          children: [
+            Expanded(
+              child: _GenderChoice(
+                selected: value == 'men',
+                label: context.l10n.filterMen,
+                icon: Icons.male_rounded,
+                onTap: () => onChanged(value == 'men' ? null : 'men'),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _GenderChoice(
+                selected: value == 'women',
+                label: context.l10n.filterWomen,
+                icon: Icons.female_rounded,
+                onTap: () => onChanged(value == 'women' ? null : 'women'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.xs),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, size: 12, color: AppColors.textHint),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  context.l10n.genderSelectorHint,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textHint,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GenderChoice extends StatelessWidget {
+  final bool selected;
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _GenderChoice({
+    required this.selected,
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      decoration: BoxDecoration(
+        color: selected
+            ? AppColors.primary.withValues(alpha: 0.08)
+            : AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: selected
+              ? AppColors.primary
+              : AppColors.border.withValues(alpha: 0.6),
+          width: selected ? 1.5 : 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: 14,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color: selected ? AppColors.primary : AppColors.textHint,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: selected
+                        ? AppColors.primary
+                        : AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

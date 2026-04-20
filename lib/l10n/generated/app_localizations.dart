@@ -214,6 +214,12 @@ abstract class AppLocalizations {
   /// **'Continuer avec Facebook'**
   String get continueWithFacebook;
 
+  /// No description provided for @continueWithApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Apple'**
+  String get continueWithApple;
+
   /// No description provided for @iAmUser.
   ///
   /// In fr, this message translates to:
@@ -1000,6 +1006,12 @@ abstract class AppLocalizations {
   /// **'Aucun rendez-vous passé'**
   String get noPastAppointments;
 
+  /// No description provided for @seeMorePastAppointments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir {count} de plus'**
+  String seeMorePastAppointments(int count);
+
   /// No description provided for @appointmentConfirmed.
   ///
   /// In fr, this message translates to:
@@ -1023,6 +1035,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Annulé'**
   String get appointmentCancelled;
+
+  /// No description provided for @appointmentRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusé'**
+  String get appointmentRejected;
+
+  /// No description provided for @appointmentNoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absent'**
+  String get appointmentNoShow;
+
+  /// No description provided for @appointmentNoShowDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne vous êtes pas présenté à ce rendez-vous.'**
+  String get appointmentNoShowDetail;
 
   /// No description provided for @mySalon.
   ///
@@ -1345,7 +1375,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderNote.
   ///
   /// In fr, this message translates to:
-  /// **'Un rappel vous sera envoyé 24h avant votre rendez-vous. L\'annulation est possible jusqu\'à 2h avant.'**
+  /// **'Un rappel vous sera envoyé 24h avant votre rendez-vous.'**
   String get reminderNote;
 
   /// No description provided for @hairdresser.
@@ -1930,12 +1960,6 @@ abstract class AppLocalizations {
   /// **'Annuler ce rendez-vous ?'**
   String get confirmCancelTitle;
 
-  /// No description provided for @cancelAppointmentBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Cette action libérera le créneau.'**
-  String get cancelAppointmentBody;
-
   /// No description provided for @actionFailed.
   ///
   /// In fr, this message translates to:
@@ -2278,6 +2302,18 @@ abstract class AppLocalizations {
   /// **'refusés'**
   String get monthStatRejected;
 
+  /// No description provided for @monthStatCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'annulés'**
+  String get monthStatCancelled;
+
+  /// No description provided for @monthStatNoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'absents'**
+  String get monthStatNoShow;
+
   /// No description provided for @appointmentSingular.
   ///
   /// In fr, this message translates to:
@@ -2373,6 +2409,258 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Salon pour femmes'**
   String get salonForWomen;
+
+  /// No description provided for @salonClienteleLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clientèle du salon'**
+  String get salonClienteleLabel;
+
+  /// No description provided for @salonClienteleMen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hommes'**
+  String get salonClienteleMen;
+
+  /// No description provided for @salonClienteleWomen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Femmes'**
+  String get salonClienteleWomen;
+
+  /// No description provided for @salonClienteleBoth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les deux'**
+  String get salonClienteleBoth;
+
+  /// No description provided for @salonClienteleRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionne la clientèle du salon'**
+  String get salonClienteleRequired;
+
+  /// No description provided for @completeYourProfileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complète ton profil'**
+  String get completeYourProfileTitle;
+
+  /// No description provided for @completeProfileGenderPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute ton numéro et ton genre pour un meilleur service.'**
+  String get completeProfileGenderPhone;
+
+  /// No description provided for @completeProfileGenderOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute ton genre pour personnaliser les filtres.'**
+  String get completeProfileGenderOnly;
+
+  /// No description provided for @completeProfilePhoneOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute ton numéro pour recevoir les confirmations de rendez-vous.'**
+  String get completeProfilePhoneOnly;
+
+  /// No description provided for @useMyGpsLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser ma position GPS'**
+  String get useMyGpsLocation;
+
+  /// No description provided for @gpsLocationCaptured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position enregistrée ✓'**
+  String get gpsLocationCaptured;
+
+  /// No description provided for @gpsHintNoAddressOnGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse introuvable sur Google ? Utilise ton GPS pour enregistrer la position exacte du salon — l\'adresse reste telle que tu l\'as écrite.'**
+  String get gpsHintNoAddressOnGoogle;
+
+  /// No description provided for @gpsErrorServiceDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Active le GPS sur ton appareil puis réessaie.'**
+  String get gpsErrorServiceDisabled;
+
+  /// No description provided for @gpsErrorPermissionDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorise l\'accès à la position pour enregistrer les coordonnées.'**
+  String get gpsErrorPermissionDenied;
+
+  /// No description provided for @gpsErrorPermissionDeniedForever.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvre les paramètres système et autorise la localisation pour Termini im.'**
+  String get gpsErrorPermissionDeniedForever;
+
+  /// No description provided for @gpsErrorTimeout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'obtenir la position. Va dehors ou réessaie.'**
+  String get gpsErrorTimeout;
+
+  /// No description provided for @gpsErrorUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue. Réessaie.'**
+  String get gpsErrorUnknown;
+
+  /// No description provided for @salonGeocodingBannerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Finalise la localisation du salon'**
+  String get salonGeocodingBannerTitle;
+
+  /// No description provided for @salonGeocodingBannerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton salon apparaîtra plus rapidement dans les recherches avec une adresse Google OU des coordonnées GPS enregistrées.'**
+  String get salonGeocodingBannerBody;
+
+  /// No description provided for @salonGeocodingDialogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Localisation du salon'**
+  String get salonGeocodingDialogTitle;
+
+  /// No description provided for @salonGeocodingDialogSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisis une adresse depuis Google OU enregistre la position via GPS.'**
+  String get salonGeocodingDialogSubtitle;
+
+  /// No description provided for @salonGeocodingSaveCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer la localisation'**
+  String get salonGeocodingSaveCta;
+
+  /// No description provided for @salonGeocodingSuccessToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Localisation enregistrée.'**
+  String get salonGeocodingSuccessToast;
+
+  /// No description provided for @shareSalon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get shareSalon;
+
+  /// No description provided for @shareSalonSheetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager ce salon'**
+  String get shareSalonSheetTitle;
+
+  /// No description provided for @shareSalonSheetSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invite un proche à réserver'**
+  String get shareSalonSheetSubtitle;
+
+  /// No description provided for @shareViaWhatsApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'WhatsApp'**
+  String get shareViaWhatsApp;
+
+  /// No description provided for @shareViaWhatsAppCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi direct · message pré-rempli'**
+  String get shareViaWhatsAppCaption;
+
+  /// No description provided for @shareMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager…'**
+  String get shareMore;
+
+  /// No description provided for @shareMoreCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuille système · autres apps'**
+  String get shareMoreCaption;
+
+  /// No description provided for @shareCopyLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le lien'**
+  String get shareCopyLink;
+
+  /// No description provided for @shareLinkCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien copié'**
+  String get shareLinkCopied;
+
+  /// No description provided for @shareIncludeMeAsPro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Me recommander'**
+  String get shareIncludeMeAsPro;
+
+  /// No description provided for @shareIncludeMeAsProHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le destinataire arrivera sur la réservation avec toi déjà choisi.'**
+  String get shareIncludeMeAsProHelp;
+
+  /// No description provided for @shareLinkPreviewLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get shareLinkPreviewLabel;
+
+  /// No description provided for @tomorrowLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get tomorrowLabel;
+
+  /// No description provided for @noPhoneAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de numéro renseigné'**
+  String get noPhoneAvailable;
+
+  /// No description provided for @sharedEmployeePrefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendez-vous avec'**
+  String get sharedEmployeePrefix;
+
+  /// No description provided for @sharedEmployeeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Services filtrés pour ce pro'**
+  String get sharedEmployeeHint;
+
+  /// No description provided for @shareWhatsAppMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salut ! Je te recommande {salonName} — prends ton rendez-vous ici : {url}'**
+  String shareWhatsAppMessage(String salonName, String url);
+
+  /// No description provided for @companySetupHeadline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Termine la configuration de ton salon'**
+  String get companySetupHeadline;
+
+  /// No description provided for @companySetupSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encore quelques infos pour activer ton espace propriétaire.'**
+  String get companySetupSubtitle;
 
   /// No description provided for @salonUnisex.
   ///
@@ -2547,6 +2835,498 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Fermer'**
   String get close;
+
+  /// No description provided for @genderSelectorLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je suis'**
+  String get genderSelectorLabel;
+
+  /// No description provided for @genderSelectorHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sert à pré-filtrer les salons. Vous pourrez changer à tout moment.'**
+  String get genderSelectorHint;
+
+  /// No description provided for @myProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon profil'**
+  String get myProfile;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la photo'**
+  String get changePhoto;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir dans la galerie'**
+  String get chooseFromGallery;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la photo'**
+  String get removePhoto;
+
+  /// No description provided for @removePhotoConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voulez-vous vraiment supprimer votre photo de profil ?'**
+  String get removePhotoConfirm;
+
+  /// No description provided for @avatarUploading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi en cours…'**
+  String get avatarUploading;
+
+  /// No description provided for @avatarUploadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'envoi de la photo.'**
+  String get avatarUploadError;
+
+  /// No description provided for @cropPhotoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recadrer la photo'**
+  String get cropPhotoTitle;
+
+  /// No description provided for @experienceSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expérience'**
+  String get experienceSection;
+
+  /// No description provided for @hapticLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vibrations'**
+  String get hapticLabel;
+
+  /// No description provided for @hapticDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Petits retours tactiles sur les interactions'**
+  String get hapticDesc;
+
+  /// No description provided for @soundsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sons de l\'interface'**
+  String get soundsLabel;
+
+  /// No description provided for @soundsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivés par défaut'**
+  String get soundsDesc;
+
+  /// No description provided for @animationsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Animations'**
+  String get animationsLabel;
+
+  /// No description provided for @animationsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transitions et effets visuels'**
+  String get animationsDesc;
+
+  /// No description provided for @cancelAppointmentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler ce rendez-vous ?'**
+  String get cancelAppointmentTitle;
+
+  /// No description provided for @cancelAppointmentBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{salon} · {date}. Cette action est irréversible.'**
+  String cancelAppointmentBody(String salon, String date);
+
+  /// No description provided for @cancelAppointmentBodyOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette action libérera le créneau.'**
+  String get cancelAppointmentBodyOwner;
+
+  /// No description provided for @cancelReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif (facultatif)'**
+  String get cancelReasonLabel;
+
+  /// No description provided for @cancellableUntil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulable jusqu\'à {date}'**
+  String cancellableUntil(String date);
+
+  /// No description provided for @cancellationTooLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il est trop tard pour annuler ce rendez-vous.'**
+  String get cancellationTooLate;
+
+  /// No description provided for @minCancelHoursLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Délai minimum d\'annulation (heures)'**
+  String get minCancelHoursLabel;
+
+  /// No description provided for @minCancelHoursHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'0 = pas de contrainte'**
+  String get minCancelHoursHint;
+
+  /// No description provided for @minCancelHoursNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulation sans contrainte'**
+  String get minCancelHoursNone;
+
+  /// No description provided for @minCancelHoursValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulation jusqu\'à {hours}h avant'**
+  String minCancelHoursValue(int hours);
+
+  /// No description provided for @bookingCancelPolicyNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez annuler ce rendez-vous à tout moment.'**
+  String get bookingCancelPolicyNone;
+
+  /// No description provided for @bookingCancelPolicyHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulable jusqu\'à {hours} h avant le RDV.'**
+  String bookingCancelPolicyHours(int hours);
+
+  /// No description provided for @upcomingReminderTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre RDV approche'**
+  String get upcomingReminderTitle;
+
+  /// No description provided for @upcomingReminderBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{salon} · dans {duration}'**
+  String upcomingReminderBody(String salon, String duration);
+
+  /// No description provided for @upcomingReminderNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'maintenant'**
+  String get upcomingReminderNow;
+
+  /// No description provided for @inXHoursYMinutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'{hours}h {minutes}min'**
+  String inXHoursYMinutes(int hours, int minutes);
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis'**
+  String get reviewsTitle;
+
+  /// No description provided for @reviewSubmitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noter votre visite'**
+  String get reviewSubmitTitle;
+
+  /// No description provided for @reviewRatingLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre note'**
+  String get reviewRatingLabel;
+
+  /// No description provided for @reviewCommentLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre avis (facultatif)'**
+  String get reviewCommentLabel;
+
+  /// No description provided for @reviewCommentHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagez votre expérience…'**
+  String get reviewCommentHint;
+
+  /// No description provided for @reviewSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer mon avis'**
+  String get reviewSubmit;
+
+  /// No description provided for @reviewSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci ! Votre avis a été publié.'**
+  String get reviewSubmitted;
+
+  /// No description provided for @reviewsSeeAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir tous les avis ({count})'**
+  String reviewsSeeAll(int count);
+
+  /// No description provided for @reviewsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun avis pour l\'instant'**
+  String get reviewsEmpty;
+
+  /// No description provided for @reviewsOnlyRatings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les avis ont été laissés sous forme de note uniquement, sans commentaire.'**
+  String get reviewsOnlyRatings;
+
+  /// No description provided for @cancellationReasonOwnerLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'MOTIF DE L\'ANNULATION'**
+  String get cancellationReasonOwnerLabel;
+
+  /// No description provided for @today.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get today;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get tomorrow;
+
+  /// No description provided for @reviewHideTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer cet avis ?'**
+  String get reviewHideTitle;
+
+  /// No description provided for @reviewHideReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get reviewHideReason;
+
+  /// No description provided for @reviewsReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis reçus'**
+  String get reviewsReceived;
+
+  /// No description provided for @reviewHidden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis masqué'**
+  String get reviewHidden;
+
+  /// No description provided for @reviewBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'★ {rating}/5'**
+  String reviewBadge(int rating);
+
+  /// No description provided for @markNoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme absent'**
+  String get markNoShow;
+
+  /// No description provided for @noShowConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme absent ?'**
+  String get noShowConfirmTitle;
+
+  /// No description provided for @noShowConfirmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{client} sera marqué comme absent. Visible sur sa fiche.'**
+  String noShowConfirmBody(String client);
+
+  /// No description provided for @noShowBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 absence} other{{count} absences}}'**
+  String noShowBadge(int count);
+
+  /// No description provided for @noShowRegistered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absence enregistrée'**
+  String get noShowRegistered;
+
+  /// No description provided for @noShowTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce client a manqué {count} rendez-vous.'**
+  String noShowTooltip(int count);
+
+  /// No description provided for @appointmentsDesktopTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos visites'**
+  String get appointmentsDesktopTitle;
+
+  /// No description provided for @appointmentsDesktopOverline.
+  ///
+  /// In fr, this message translates to:
+  /// **'MES RENDEZ-VOUS'**
+  String get appointmentsDesktopOverline;
+
+  /// No description provided for @reviewsReceivedCardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avis reçus'**
+  String get reviewsReceivedCardTitle;
+
+  /// No description provided for @averageRatingOutOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur 5'**
+  String get averageRatingOutOf;
+
+  /// No description provided for @seeAllReviews.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir tout →'**
+  String get seeAllReviews;
+
+  /// No description provided for @noReviewsYetOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas encore d\'avis.'**
+  String get noReviewsYetOwner;
+
+  /// No description provided for @rejectAppointmentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser ce rendez-vous ?'**
+  String get rejectAppointmentTitle;
+
+  /// No description provided for @rejectAppointmentSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{client} sera prévenu(e).'**
+  String rejectAppointmentSubtitle(String client);
+
+  /// No description provided for @rejectAppointmentWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau reste bloqué après le refus. Pour libérer le créneau et permettre à d\'autres clients de réserver, utilisez le bouton « Libérer le créneau » après avoir refusé.'**
+  String get rejectAppointmentWarning;
+
+  /// No description provided for @rejectAppointmentReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du refus (facultatif)'**
+  String get rejectAppointmentReasonLabel;
+
+  /// No description provided for @rejectAppointmentButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get rejectAppointmentButton;
+
+  /// No description provided for @freeSlotButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libérer le créneau'**
+  String get freeSlotButton;
+
+  /// No description provided for @freeSlotConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libérer ce créneau ?'**
+  String get freeSlotConfirmTitle;
+
+  /// No description provided for @freeSlotConfirmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le client ne recevra pas de nouvelle notification.'**
+  String get freeSlotConfirmBody;
+
+  /// No description provided for @freeSlotDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneau libéré'**
+  String get freeSlotDone;
+
+  /// No description provided for @slotFreedBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneau libéré'**
+  String get slotFreedBadge;
+
+  /// No description provided for @rejectionReasonOwnerLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'MOTIF DU REFUS'**
+  String get rejectionReasonOwnerLabel;
+
+  /// No description provided for @rejectionReasonClientLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du salon'**
+  String get rejectionReasonClientLabel;
+
+  /// No description provided for @cancelAppointmentOwnerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler ce rendez-vous ?'**
+  String get cancelAppointmentOwnerTitle;
+
+  /// No description provided for @cancelAppointmentOwnerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{client} sera prévenu(e) et le créneau sera libéré.'**
+  String cancelAppointmentOwnerSubtitle(String client);
+
+  /// No description provided for @cancelAppointmentOwnerSubtitleWalkIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau de {client} sera libéré.'**
+  String cancelAppointmentOwnerSubtitleWalkIn(String client);
+
+  /// No description provided for @cancelAppointmentOwnerWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau redeviendra disponible à la réservation et le client sera notifié.'**
+  String get cancelAppointmentOwnerWarning;
+
+  /// No description provided for @cancelAppointmentOwnerWarningWalkIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau redeviendra disponible à la réservation.'**
+  String get cancelAppointmentOwnerWarningWalkIn;
+
+  /// No description provided for @cancelAppointmentOwnerReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif de l\'annulation (facultatif)'**
+  String get cancelAppointmentOwnerReasonLabel;
 }
 
 class _AppLocalizationsDelegate

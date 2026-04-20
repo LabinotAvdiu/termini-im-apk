@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/presentation/screens/company_setup_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
@@ -13,7 +14,10 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/shell/presentation/screens/main_shell.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/company/presentation/screens/capacity_settings_screen.dart';
+import '../../features/company/presentation/screens/my_company_reviews_screen.dart';
 import '../../features/company/presentation/screens/pending_approvals_screen.dart';
+import '../../features/reviews/presentation/screens/submit_review_screen.dart';
+import 'page_transitions.dart';
 import 'route_names.dart';
 
 /// A [ChangeNotifier] that fires whenever the auth state changes.
@@ -47,6 +51,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           currentPath == '/forgot-password';
 
       final isLandingRoute = currentPath == '/landing';
+      final isCompanySetupRoute = currentPath == '/company-setup';
 
       // Routes accessible without login: landing, auth routes, home, company detail.
       // Routes that require auth: /settings, /company/:id/book, /bookings.
@@ -58,8 +63,31 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Don't redirect while loading (prevents flash to login during signup/login)
       if (isLoading) return null;
 
-      // Authenticated users on landing/auth screens → home
-      if (isLoggedIn && (isLandingRoute || isAuthRoute)) {
+      // Authenticated company accounts without a Company record yet — force
+      // them through the business-info completion screen before anything else.
+      if (isLoggedIn && authState.needsCompanySetup && !isCompanySetupRoute) {
+        return '/company-setup';
+      }
+
+      // Authenticated users on landing/auth screens → home OR the original
+      // destination captured in `?returnTo=` (e.g. a shared booking link).
+      // Without this, a recipient of a shared salon link loses their URL
+      // the moment they log in during the booking flow.
+      if (isLoggedIn &&
+          !authState.needsCompanySetup &&
+          (isLandingRoute || isAuthRoute || isCompanySetupRoute)) {
+        final returnTo = state.uri.queryParameters['returnTo'];
+        if (returnTo != null && returnTo.isNotEmpty) {
+          // Guard against loops: never honour a returnTo that points back
+          // at one of the auth pages themselves.
+          final loops = returnTo.startsWith('/login') ||
+              returnTo.startsWith('/signup') ||
+              returnTo.startsWith('/role-select') ||
+              returnTo.startsWith('/landing') ||
+              returnTo.startsWith('/forgot-password') ||
+              returnTo.startsWith('/company-setup');
+          if (!loops) return returnTo;
+        }
         return '/home';
       }
 
@@ -79,25 +107,45 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         name: RouteNames.login,
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const LoginScreen(),
+        ),
       ),
       GoRoute(
         path: '/signup',
         name: RouteNames.signup,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final role = state.uri.queryParameters['role'] ?? 'user';
-          return SignupScreen(role: role);
+          return editorialFadePage(
+            key: state.pageKey,
+            child: SignupScreen(role: role),
+          );
         },
       ),
       GoRoute(
         path: '/role-select',
         name: RouteNames.roleSelect,
-        builder: (context, state) => const RoleSelectionScreen(),
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const RoleSelectionScreen(),
+        ),
       ),
       GoRoute(
         path: '/forgot-password',
         name: RouteNames.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const ForgotPasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/company-setup',
+        name: RouteNames.companySetup,
+        pageBuilder: (context, state) => editorialFadePage(
+          key: state.pageKey,
+          child: const CompanySetupScreen(),
+        ),
       ),
       // ── /home — smart dispatch based on auth state ──────────────────
       // Authenticated users get the MainShell (bottom nav + IndexedStack).
@@ -117,35 +165,85 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         name: RouteNames.settings,
-        builder: (context, state) => const SettingsScreen(),
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const SettingsScreen(),
+        ),
       ),
       GoRoute(
         path: '/capacity-settings',
         name: RouteNames.capacitySettings,
-        builder: (context, state) => const CapacitySettingsScreen(),
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const CapacitySettingsScreen(),
+        ),
       ),
       GoRoute(
         path: '/pending-approvals',
         name: RouteNames.pendingApprovals,
-        builder: (context, state) => const PendingApprovalsScreen(),
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const PendingApprovalsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/my-company-reviews',
+        name: RouteNames.myCompanyReviews,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const MyCompanyReviewsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/appointments/:id/review',
+        name: RouteNames.submitReview,
+        pageBuilder: (context, state) {
+          final appointmentId = state.pathParameters['id']!;
+          return editorialSlidePage(
+            key: state.pageKey,
+            fromBottom: true,
+            child: SubmitReviewScreen(appointmentId: appointmentId),
+          );
+        },
       ),
       GoRoute(
         path: '/company/:id',
         name: RouteNames.companyDetail,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return CompanyDetailScreen(companyId: id);
+          // Shared link `/company/:id?employee={userId}` — filter services
+          // on the detail page to only those the employee can perform and
+          // forward the id to the booking flow on "Choisir".
+          final preselectedEmployeeId =
+              state.uri.queryParameters['employee'];
+          return editorialSlidePage(
+            key: state.pageKey,
+            child: CompanyDetailScreen(
+              companyId: id,
+              preselectedEmployeeId: preselectedEmployeeId,
+            ),
+          );
         },
         routes: [
           GoRoute(
             path: 'book',
             name: RouteNames.booking,
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final companyId = state.pathParameters['id']!;
               final serviceId = state.uri.queryParameters['serviceId'];
-              return BookingScreen(
-                companyId: companyId,
-                serviceId: serviceId,
+              // Shared salon links from employees carry ?employee={userId} so
+              // the recipient lands on the booking screen with that pro
+              // already picked. See share_url_builder.dart.
+              final preselectedEmployeeId =
+                  state.uri.queryParameters['employee'];
+              return editorialSlidePage(
+                key: state.pageKey,
+                fromBottom: true,
+                child: BookingScreen(
+                  companyId: companyId,
+                  serviceId: serviceId,
+                  preselectedEmployeeId: preselectedEmployeeId,
+                ),
               );
             },
           ),

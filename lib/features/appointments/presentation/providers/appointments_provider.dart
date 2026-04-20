@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../data/datasources/appointments_remote_datasource.dart';
 import '../../data/models/appointment_model.dart';
 
@@ -46,29 +50,34 @@ class AppointmentsState {
   // Derived lists (computed, not stored)
   // ---------------------------------------------------------------------------
 
-  /// Upcoming: status is 'confirmed' or 'pending', AND date >= today.
-  /// Sorted by date ASC so the nearest appointment appears first.
+  /// Upcoming: non-terminal status (`confirmed` / `pending`) AND the start
+  /// time is still in the future. We compare against `now` (not the start
+  /// of today) so a confirmed appointment at 13:00 flips to "past" as soon
+  /// as 13:00 has elapsed — otherwise clients can't leave a review on an
+  /// appointment that already happened earlier the same day.
   List<AppointmentModel> get upcoming {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
     return appointments
         .where((a) =>
             (a.status == 'confirmed' || a.status == 'pending') &&
-            !a.dateTime.isBefore(today))
+            a.dateTime.isAfter(now))
         .toList()
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
-  /// Past: status is 'completed' or 'cancelled', OR date < today.
-  /// Sorted by date DESC so the most recent past appointment appears first.
+  /// Past: a terminal status (completed / cancelled / rejected / no_show),
+  /// OR the start time has passed (even if the status is still confirmed/
+  /// pending — same-day RDV earlier today should appear here so the review
+  /// CTA is reachable).
   List<AppointmentModel> get past {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
     return appointments
         .where((a) =>
             a.status == 'completed' ||
             a.status == 'cancelled' ||
-            a.dateTime.isBefore(today))
+            a.status == 'rejected' ||
+            a.status == 'no_show' ||
+            !a.dateTime.isAfter(now))
         .toList()
       ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
   }
@@ -80,9 +89,13 @@ class AppointmentsState {
 
 class AppointmentsNotifier extends StateNotifier<AppointmentsState> {
   final AppointmentsRemoteDatasource _datasource;
+  final Ref _ref;
 
-  AppointmentsNotifier({required AppointmentsRemoteDatasource datasource})
-      : _datasource = datasource,
+  AppointmentsNotifier({
+    required AppointmentsRemoteDatasource datasource,
+    required Ref ref,
+  })  : _datasource = datasource,
+        _ref = ref,
         super(const AppointmentsState()) {
     fetchAppointments();
   }
@@ -102,6 +115,46 @@ class AppointmentsNotifier extends StateNotifier<AppointmentsState> {
   }
 
   Future<void> refresh() => fetchAppointments();
+
+  /// Feature 1 — Cancel an appointment (client side).
+  ///
+  /// Returns true on success, false on failure.
+  /// The caller is responsible for showing a SnackBar with the result.
+  Future<bool> cancel(String id, {String? reason}) async {
+    if (!mounted) return false;
+    try {
+      final updated = await _datasource.cancelAppointment(id, reason: reason);
+      // Replace in-place — keep list order stable.
+      final newList = state.appointments.map((a) {
+        return a.id == id ? updated : a;
+      }).toList();
+      if (!mounted) return false;
+      state = state.copyWith(appointments: newList, error: null);
+
+      // Haptic feedback on success.
+      if (!kIsWeb) {
+        final uxPrefs = _ref.read(uxPrefsProvider);
+        if (uxPrefs.hapticEnabled) {
+          await HapticFeedback.mediumImpact();
+        }
+      }
+      return true;
+    } catch (e) {
+      if (!mounted) return false;
+      // Expose error so the UI can build a localized message.
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  /// Returns the last error as an [ApiException] if available.
+  ApiException? get lastApiError {
+    final e = state.error;
+    if (e == null) return null;
+    // We store e.toString() — a best-effort re-parse isn't reliable.
+    // Callers should catch the exception directly via cancel().
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -111,5 +164,5 @@ class AppointmentsNotifier extends StateNotifier<AppointmentsState> {
 final appointmentsProvider =
     StateNotifierProvider<AppointmentsNotifier, AppointmentsState>((ref) {
   final datasource = ref.watch(appointmentsDatasourceProvider);
-  return AppointmentsNotifier(datasource: datasource);
+  return AppointmentsNotifier(datasource: datasource, ref: ref);
 });

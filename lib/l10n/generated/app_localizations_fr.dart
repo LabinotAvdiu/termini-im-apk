@@ -66,6 +66,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get continueWithFacebook => 'Continuer avec Facebook';
 
   @override
+  String get continueWithApple => 'Continuer avec Apple';
+
+  @override
   String get iAmUser => 'Je suis un client';
 
   @override
@@ -477,6 +480,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPastAppointments => 'Aucun rendez-vous passé';
 
   @override
+  String seeMorePastAppointments(int count) {
+    return 'Voir $count de plus';
+  }
+
+  @override
   String get appointmentConfirmed => 'Confirmé';
 
   @override
@@ -487,6 +495,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get appointmentCancelled => 'Annulé';
+
+  @override
+  String get appointmentRejected => 'Refusé';
+
+  @override
+  String get appointmentNoShow => 'Absent';
+
+  @override
+  String get appointmentNoShowDetail =>
+      'Vous ne vous êtes pas présenté à ce rendez-vous.';
 
   @override
   String get mySalon => 'Mon Salon';
@@ -654,7 +672,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reminderNote =>
-      'Un rappel vous sera envoyé 24h avant votre rendez-vous. L\'annulation est possible jusqu\'à 2h avant.';
+      'Un rappel vous sera envoyé 24h avant votre rendez-vous.';
 
   @override
   String get hairdresser => 'Coiffeur(se)';
@@ -978,9 +996,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirmCancelTitle => 'Annuler ce rendez-vous ?';
 
   @override
-  String get cancelAppointmentBody => 'Cette action libérera le créneau.';
-
-  @override
   String get actionFailed => 'Échec de l\'action. Réessayez.';
 
   @override
@@ -1163,6 +1178,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get monthStatRejected => 'refusés';
 
   @override
+  String get monthStatCancelled => 'annulés';
+
+  @override
+  String get monthStatNoShow => 'absents';
+
+  @override
   String get appointmentSingular => 'rendez-vous';
 
   @override
@@ -1209,6 +1230,146 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get salonForWomen => 'Salon pour femmes';
+
+  @override
+  String get salonClienteleLabel => 'Clientèle du salon';
+
+  @override
+  String get salonClienteleMen => 'Hommes';
+
+  @override
+  String get salonClienteleWomen => 'Femmes';
+
+  @override
+  String get salonClienteleBoth => 'Les deux';
+
+  @override
+  String get salonClienteleRequired => 'Sélectionne la clientèle du salon';
+
+  @override
+  String get completeYourProfileTitle => 'Complète ton profil';
+
+  @override
+  String get completeProfileGenderPhone =>
+      'Ajoute ton numéro et ton genre pour un meilleur service.';
+
+  @override
+  String get completeProfileGenderOnly =>
+      'Ajoute ton genre pour personnaliser les filtres.';
+
+  @override
+  String get completeProfilePhoneOnly =>
+      'Ajoute ton numéro pour recevoir les confirmations de rendez-vous.';
+
+  @override
+  String get useMyGpsLocation => 'Utiliser ma position GPS';
+
+  @override
+  String get gpsLocationCaptured => 'Position enregistrée ✓';
+
+  @override
+  String get gpsHintNoAddressOnGoogle =>
+      'Adresse introuvable sur Google ? Utilise ton GPS pour enregistrer la position exacte du salon — l\'adresse reste telle que tu l\'as écrite.';
+
+  @override
+  String get gpsErrorServiceDisabled =>
+      'Active le GPS sur ton appareil puis réessaie.';
+
+  @override
+  String get gpsErrorPermissionDenied =>
+      'Autorise l\'accès à la position pour enregistrer les coordonnées.';
+
+  @override
+  String get gpsErrorPermissionDeniedForever =>
+      'Ouvre les paramètres système et autorise la localisation pour Termini im.';
+
+  @override
+  String get gpsErrorTimeout =>
+      'Impossible d\'obtenir la position. Va dehors ou réessaie.';
+
+  @override
+  String get gpsErrorUnknown => 'Une erreur est survenue. Réessaie.';
+
+  @override
+  String get salonGeocodingBannerTitle => 'Finalise la localisation du salon';
+
+  @override
+  String get salonGeocodingBannerBody =>
+      'Ton salon apparaîtra plus rapidement dans les recherches avec une adresse Google OU des coordonnées GPS enregistrées.';
+
+  @override
+  String get salonGeocodingDialogTitle => 'Localisation du salon';
+
+  @override
+  String get salonGeocodingDialogSubtitle =>
+      'Choisis une adresse depuis Google OU enregistre la position via GPS.';
+
+  @override
+  String get salonGeocodingSaveCta => 'Enregistrer la localisation';
+
+  @override
+  String get salonGeocodingSuccessToast => 'Localisation enregistrée.';
+
+  @override
+  String get shareSalon => 'Partager';
+
+  @override
+  String get shareSalonSheetTitle => 'Partager ce salon';
+
+  @override
+  String get shareSalonSheetSubtitle => 'Invite un proche à réserver';
+
+  @override
+  String get shareViaWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareViaWhatsAppCaption => 'Envoi direct · message pré-rempli';
+
+  @override
+  String get shareMore => 'Partager…';
+
+  @override
+  String get shareMoreCaption => 'Feuille système · autres apps';
+
+  @override
+  String get shareCopyLink => 'Copier le lien';
+
+  @override
+  String get shareLinkCopied => 'Lien copié';
+
+  @override
+  String get shareIncludeMeAsPro => 'Me recommander';
+
+  @override
+  String get shareIncludeMeAsProHelp =>
+      'Le destinataire arrivera sur la réservation avec toi déjà choisi.';
+
+  @override
+  String get shareLinkPreviewLabel => 'Aperçu';
+
+  @override
+  String get tomorrowLabel => 'Demain';
+
+  @override
+  String get noPhoneAvailable => 'Pas de numéro renseigné';
+
+  @override
+  String get sharedEmployeePrefix => 'Rendez-vous avec';
+
+  @override
+  String get sharedEmployeeHint => 'Services filtrés pour ce pro';
+
+  @override
+  String shareWhatsAppMessage(String salonName, String url) {
+    return 'Salut ! Je te recommande $salonName — prends ton rendez-vous ici : $url';
+  }
+
+  @override
+  String get companySetupHeadline => 'Termine la configuration de ton salon';
+
+  @override
+  String get companySetupSubtitle =>
+      'Encore quelques infos pour activer ton espace propriétaire.';
 
   @override
   String get salonUnisex => 'Salon · Hommes & Femmes';
@@ -1315,4 +1476,294 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get close => 'Fermer';
+
+  @override
+  String get genderSelectorLabel => 'Je suis';
+
+  @override
+  String get genderSelectorHint =>
+      'Sert à pré-filtrer les salons. Vous pourrez changer à tout moment.';
+
+  @override
+  String get myProfile => 'Mon profil';
+
+  @override
+  String get changePhoto => 'Changer la photo';
+
+  @override
+  String get takePhoto => 'Prendre une photo';
+
+  @override
+  String get chooseFromGallery => 'Choisir dans la galerie';
+
+  @override
+  String get removePhoto => 'Supprimer la photo';
+
+  @override
+  String get removePhotoConfirm =>
+      'Voulez-vous vraiment supprimer votre photo de profil ?';
+
+  @override
+  String get avatarUploading => 'Envoi en cours…';
+
+  @override
+  String get avatarUploadError => 'Échec de l\'envoi de la photo.';
+
+  @override
+  String get cropPhotoTitle => 'Recadrer la photo';
+
+  @override
+  String get experienceSection => 'Expérience';
+
+  @override
+  String get hapticLabel => 'Vibrations';
+
+  @override
+  String get hapticDesc => 'Petits retours tactiles sur les interactions';
+
+  @override
+  String get soundsLabel => 'Sons de l\'interface';
+
+  @override
+  String get soundsDesc => 'Désactivés par défaut';
+
+  @override
+  String get animationsLabel => 'Animations';
+
+  @override
+  String get animationsDesc => 'Transitions et effets visuels';
+
+  @override
+  String get cancelAppointmentTitle => 'Annuler ce rendez-vous ?';
+
+  @override
+  String cancelAppointmentBody(String salon, String date) {
+    return '$salon · $date. Cette action est irréversible.';
+  }
+
+  @override
+  String get cancelAppointmentBodyOwner => 'Cette action libérera le créneau.';
+
+  @override
+  String get cancelReasonLabel => 'Motif (facultatif)';
+
+  @override
+  String cancellableUntil(String date) {
+    return 'Annulable jusqu\'à $date';
+  }
+
+  @override
+  String get cancellationTooLate =>
+      'Il est trop tard pour annuler ce rendez-vous.';
+
+  @override
+  String get minCancelHoursLabel => 'Délai minimum d\'annulation (heures)';
+
+  @override
+  String get minCancelHoursHint => '0 = pas de contrainte';
+
+  @override
+  String get minCancelHoursNone => 'Annulation sans contrainte';
+
+  @override
+  String minCancelHoursValue(int hours) {
+    return 'Annulation jusqu\'à ${hours}h avant';
+  }
+
+  @override
+  String get bookingCancelPolicyNone =>
+      'Vous pouvez annuler ce rendez-vous à tout moment.';
+
+  @override
+  String bookingCancelPolicyHours(int hours) {
+    return 'Annulable jusqu\'à $hours h avant le RDV.';
+  }
+
+  @override
+  String get upcomingReminderTitle => 'Votre RDV approche';
+
+  @override
+  String upcomingReminderBody(String salon, String duration) {
+    return '$salon · dans $duration';
+  }
+
+  @override
+  String get upcomingReminderNow => 'maintenant';
+
+  @override
+  String inXHoursYMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}min';
+  }
+
+  @override
+  String get reviewsTitle => 'Avis';
+
+  @override
+  String get reviewSubmitTitle => 'Noter votre visite';
+
+  @override
+  String get reviewRatingLabel => 'Votre note';
+
+  @override
+  String get reviewCommentLabel => 'Votre avis (facultatif)';
+
+  @override
+  String get reviewCommentHint => 'Partagez votre expérience…';
+
+  @override
+  String get reviewSubmit => 'Envoyer mon avis';
+
+  @override
+  String get reviewSubmitted => 'Merci ! Votre avis a été publié.';
+
+  @override
+  String reviewsSeeAll(int count) {
+    return 'Voir tous les avis ($count)';
+  }
+
+  @override
+  String get reviewsEmpty => 'Aucun avis pour l\'instant';
+
+  @override
+  String get reviewsOnlyRatings =>
+      'Tous les avis ont été laissés sous forme de note uniquement, sans commentaire.';
+
+  @override
+  String get cancellationReasonOwnerLabel => 'MOTIF DE L\'ANNULATION';
+
+  @override
+  String get today => 'Aujourd\'hui';
+
+  @override
+  String get tomorrow => 'Demain';
+
+  @override
+  String get reviewHideTitle => 'Masquer cet avis ?';
+
+  @override
+  String get reviewHideReason => 'Motif';
+
+  @override
+  String get reviewsReceived => 'Avis reçus';
+
+  @override
+  String get reviewHidden => 'Avis masqué';
+
+  @override
+  String reviewBadge(int rating) {
+    return '★ $rating/5';
+  }
+
+  @override
+  String get markNoShow => 'Marquer comme absent';
+
+  @override
+  String get noShowConfirmTitle => 'Marquer comme absent ?';
+
+  @override
+  String noShowConfirmBody(String client) {
+    return '$client sera marqué comme absent. Visible sur sa fiche.';
+  }
+
+  @override
+  String noShowBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count absences',
+      one: '1 absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noShowRegistered => 'Absence enregistrée';
+
+  @override
+  String noShowTooltip(int count) {
+    return 'Ce client a manqué $count rendez-vous.';
+  }
+
+  @override
+  String get appointmentsDesktopTitle => 'Vos visites';
+
+  @override
+  String get appointmentsDesktopOverline => 'MES RENDEZ-VOUS';
+
+  @override
+  String get reviewsReceivedCardTitle => 'Avis reçus';
+
+  @override
+  String get averageRatingOutOf => 'sur 5';
+
+  @override
+  String get seeAllReviews => 'Voir tout →';
+
+  @override
+  String get noReviewsYetOwner => 'Vous n\'avez pas encore d\'avis.';
+
+  @override
+  String get rejectAppointmentTitle => 'Refuser ce rendez-vous ?';
+
+  @override
+  String rejectAppointmentSubtitle(String client) {
+    return '$client sera prévenu(e).';
+  }
+
+  @override
+  String get rejectAppointmentWarning =>
+      'Le créneau reste bloqué après le refus. Pour libérer le créneau et permettre à d\'autres clients de réserver, utilisez le bouton « Libérer le créneau » après avoir refusé.';
+
+  @override
+  String get rejectAppointmentReasonLabel => 'Motif du refus (facultatif)';
+
+  @override
+  String get rejectAppointmentButton => 'Refuser';
+
+  @override
+  String get freeSlotButton => 'Libérer le créneau';
+
+  @override
+  String get freeSlotConfirmTitle => 'Libérer ce créneau ?';
+
+  @override
+  String get freeSlotConfirmBody =>
+      'Le client ne recevra pas de nouvelle notification.';
+
+  @override
+  String get freeSlotDone => 'Créneau libéré';
+
+  @override
+  String get slotFreedBadge => 'Créneau libéré';
+
+  @override
+  String get rejectionReasonOwnerLabel => 'MOTIF DU REFUS';
+
+  @override
+  String get rejectionReasonClientLabel => 'Motif du salon';
+
+  @override
+  String get cancelAppointmentOwnerTitle => 'Annuler ce rendez-vous ?';
+
+  @override
+  String cancelAppointmentOwnerSubtitle(String client) {
+    return '$client sera prévenu(e) et le créneau sera libéré.';
+  }
+
+  @override
+  String cancelAppointmentOwnerSubtitleWalkIn(String client) {
+    return 'Le créneau de $client sera libéré.';
+  }
+
+  @override
+  String get cancelAppointmentOwnerWarning =>
+      'Le créneau redeviendra disponible à la réservation et le client sera notifié.';
+
+  @override
+  String get cancelAppointmentOwnerWarningWalkIn =>
+      'Le créneau redeviendra disponible à la réservation.';
+
+  @override
+  String get cancelAppointmentOwnerReasonLabel =>
+      'Motif de l\'annulation (facultatif)';
 }

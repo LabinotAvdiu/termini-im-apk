@@ -6,10 +6,18 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"/>
+    <!-- Camera — required for avatar "Take a photo" option -->
+    <uses-permission android:name="android.permission.CAMERA"/>
     <!-- Push notifications — required on Android 13+ (API 33) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- FCM — wake the app when a background notification arrives -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Facebook Login — Chrome Custom Tabs fallback needs network access -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Geolocation — GPS fallback pour le signup salon quand Google Places
+         ne connaît pas l'adresse (cas fréquent pour les adresses récentes au Kosovo) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:label="Termini im"
         android:name="${applicationName}"
@@ -45,6 +53,12 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/notification_color" />
 
+        <!-- image_cropper — UCrop activity required for native Android crop UI -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -53,6 +67,29 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCPkPaXXa1sS9dMsX2ObWTgeVAPF_juWEk"/>
+
+        <!-- Facebook Login — SDK reads these from resources -->
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token"/>
+
+        <!-- Facebook OAuth web redirect — handles the fb<APP_ID>:// scheme -->
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/facebook_app_id"
+            android:exported="false"/>
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="@string/fb_login_protocol_scheme"/>
+            </intent-filter>
+        </activity>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

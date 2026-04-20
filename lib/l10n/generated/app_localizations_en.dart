@@ -66,6 +66,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithFacebook => 'Continue with Facebook';
 
   @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
   String get iAmUser => 'I\'m a client';
 
   @override
@@ -475,6 +478,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPastAppointments => 'No past appointments';
 
   @override
+  String seeMorePastAppointments(int count) {
+    return 'Show $count more';
+  }
+
+  @override
   String get appointmentConfirmed => 'Confirmed';
 
   @override
@@ -485,6 +493,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appointmentCancelled => 'Cancelled';
+
+  @override
+  String get appointmentRejected => 'Rejected';
+
+  @override
+  String get appointmentNoShow => 'No-show';
+
+  @override
+  String get appointmentNoShowDetail =>
+      'You didn\'t show up for this appointment.';
 
   @override
   String get mySalon => 'My Salon';
@@ -651,7 +669,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderNote =>
-      'A reminder will be sent 24h before your appointment. Cancellation is possible up to 2h before.';
+      'A reminder will be sent 24h before your appointment.';
 
   @override
   String get hairdresser => 'Stylist';
@@ -974,9 +992,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmCancelTitle => 'Cancel this appointment?';
 
   @override
-  String get cancelAppointmentBody => 'This will free the time slot.';
-
-  @override
   String get actionFailed => 'Action failed. Try again.';
 
   @override
@@ -1157,6 +1172,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthStatRejected => 'rejected';
 
   @override
+  String get monthStatCancelled => 'cancelled';
+
+  @override
+  String get monthStatNoShow => 'no-shows';
+
+  @override
   String get appointmentSingular => 'appointment';
 
   @override
@@ -1203,6 +1224,147 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salonForWomen => 'Salon for women';
+
+  @override
+  String get salonClienteleLabel => 'Salon clientele';
+
+  @override
+  String get salonClienteleMen => 'Men';
+
+  @override
+  String get salonClienteleWomen => 'Women';
+
+  @override
+  String get salonClienteleBoth => 'Both';
+
+  @override
+  String get salonClienteleRequired => 'Pick the salon\'s clientele';
+
+  @override
+  String get completeYourProfileTitle => 'Complete your profile';
+
+  @override
+  String get completeProfileGenderPhone =>
+      'Add your phone and gender for a better experience.';
+
+  @override
+  String get completeProfileGenderOnly =>
+      'Add your gender to personalise filters.';
+
+  @override
+  String get completeProfilePhoneOnly =>
+      'Add your phone number so we can confirm bookings.';
+
+  @override
+  String get useMyGpsLocation => 'Use my GPS location';
+
+  @override
+  String get gpsLocationCaptured => 'Location saved ✓';
+
+  @override
+  String get gpsHintNoAddressOnGoogle =>
+      'Address not on Google? Use GPS to save the salon\'s exact location — the address you typed stays.';
+
+  @override
+  String get gpsErrorServiceDisabled =>
+      'Turn on GPS on your device then try again.';
+
+  @override
+  String get gpsErrorPermissionDenied =>
+      'Allow location access to save the coordinates.';
+
+  @override
+  String get gpsErrorPermissionDeniedForever =>
+      'Open system settings and enable location for Termini im.';
+
+  @override
+  String get gpsErrorTimeout =>
+      'Couldn\'t get your location. Step outside or try again.';
+
+  @override
+  String get gpsErrorUnknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get salonGeocodingBannerTitle =>
+      'Finish setting up your salon\'s location';
+
+  @override
+  String get salonGeocodingBannerBody =>
+      'Your salon will appear in searches sooner with a Google address OR saved GPS coordinates.';
+
+  @override
+  String get salonGeocodingDialogTitle => 'Salon location';
+
+  @override
+  String get salonGeocodingDialogSubtitle =>
+      'Pick an address from Google OR save the position via GPS.';
+
+  @override
+  String get salonGeocodingSaveCta => 'Save location';
+
+  @override
+  String get salonGeocodingSuccessToast => 'Location saved.';
+
+  @override
+  String get shareSalon => 'Share';
+
+  @override
+  String get shareSalonSheetTitle => 'Share this salon';
+
+  @override
+  String get shareSalonSheetSubtitle => 'Invite someone to book';
+
+  @override
+  String get shareViaWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareViaWhatsAppCaption => 'Direct send · pre-filled message';
+
+  @override
+  String get shareMore => 'Share…';
+
+  @override
+  String get shareMoreCaption => 'System sheet · other apps';
+
+  @override
+  String get shareCopyLink => 'Copy link';
+
+  @override
+  String get shareLinkCopied => 'Link copied';
+
+  @override
+  String get shareIncludeMeAsPro => 'Recommend me';
+
+  @override
+  String get shareIncludeMeAsProHelp =>
+      'The recipient will land on the booking with you already picked.';
+
+  @override
+  String get shareLinkPreviewLabel => 'Preview';
+
+  @override
+  String get tomorrowLabel => 'Tomorrow';
+
+  @override
+  String get noPhoneAvailable => 'No phone on file';
+
+  @override
+  String get sharedEmployeePrefix => 'Booking with';
+
+  @override
+  String get sharedEmployeeHint => 'Services filtered for this pro';
+
+  @override
+  String shareWhatsAppMessage(String salonName, String url) {
+    return 'Hey! I recommend $salonName — book here: $url';
+  }
+
+  @override
+  String get companySetupHeadline => 'Finish setting up your salon';
+
+  @override
+  String get companySetupSubtitle =>
+      'A few more details to activate your owner dashboard.';
 
   @override
   String get salonUnisex => 'Salon · Men & Women';
@@ -1308,4 +1470,292 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get genderSelectorLabel => 'I am';
+
+  @override
+  String get genderSelectorHint =>
+      'Used to pre-filter salons. You can change it anytime.';
+
+  @override
+  String get myProfile => 'My profile';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get takePhoto => 'Take a photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get removePhotoConfirm => 'Remove your profile photo?';
+
+  @override
+  String get avatarUploading => 'Uploading…';
+
+  @override
+  String get avatarUploadError => 'Photo upload failed.';
+
+  @override
+  String get cropPhotoTitle => 'Crop photo';
+
+  @override
+  String get experienceSection => 'Experience';
+
+  @override
+  String get hapticLabel => 'Haptic feedback';
+
+  @override
+  String get hapticDesc => 'Subtle taps when you interact';
+
+  @override
+  String get soundsLabel => 'Interface sounds';
+
+  @override
+  String get soundsDesc => 'Off by default';
+
+  @override
+  String get animationsLabel => 'Animations';
+
+  @override
+  String get animationsDesc => 'Transitions and visual effects';
+
+  @override
+  String get cancelAppointmentTitle => 'Cancel this appointment?';
+
+  @override
+  String cancelAppointmentBody(String salon, String date) {
+    return '$salon · $date. This action cannot be undone.';
+  }
+
+  @override
+  String get cancelAppointmentBodyOwner => 'This will free up the time slot.';
+
+  @override
+  String get cancelReasonLabel => 'Reason (optional)';
+
+  @override
+  String cancellableUntil(String date) {
+    return 'Cancellable until $date';
+  }
+
+  @override
+  String get cancellationTooLate => 'Too late to cancel this booking.';
+
+  @override
+  String get minCancelHoursLabel => 'Minimum cancellation window (hours)';
+
+  @override
+  String get minCancelHoursHint => '0 = no restriction';
+
+  @override
+  String get minCancelHoursNone => 'Cancellation with no restriction';
+
+  @override
+  String minCancelHoursValue(int hours) {
+    return 'Cancellable up to ${hours}h before';
+  }
+
+  @override
+  String get bookingCancelPolicyNone =>
+      'You can cancel this appointment at any time.';
+
+  @override
+  String bookingCancelPolicyHours(int hours) {
+    return 'Cancellable up to ${hours}h before the appointment.';
+  }
+
+  @override
+  String get upcomingReminderTitle => 'Your appointment is coming up';
+
+  @override
+  String upcomingReminderBody(String salon, String duration) {
+    return '$salon · in $duration';
+  }
+
+  @override
+  String get upcomingReminderNow => 'now';
+
+  @override
+  String inXHoursYMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}min';
+  }
+
+  @override
+  String get reviewsTitle => 'Reviews';
+
+  @override
+  String get reviewSubmitTitle => 'Rate your visit';
+
+  @override
+  String get reviewRatingLabel => 'Your rating';
+
+  @override
+  String get reviewCommentLabel => 'Your review (optional)';
+
+  @override
+  String get reviewCommentHint => 'Share your experience…';
+
+  @override
+  String get reviewSubmit => 'Publish review';
+
+  @override
+  String get reviewSubmitted => 'Thanks! Your review is live.';
+
+  @override
+  String reviewsSeeAll(int count) {
+    return 'See all reviews ($count)';
+  }
+
+  @override
+  String get reviewsEmpty => 'No reviews yet';
+
+  @override
+  String get reviewsOnlyRatings =>
+      'All reviews are ratings only, without any written comment.';
+
+  @override
+  String get cancellationReasonOwnerLabel => 'CANCELLATION REASON';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get reviewHideTitle => 'Hide this review?';
+
+  @override
+  String get reviewHideReason => 'Reason';
+
+  @override
+  String get reviewsReceived => 'Reviews received';
+
+  @override
+  String get reviewHidden => 'Review hidden';
+
+  @override
+  String reviewBadge(int rating) {
+    return '★ $rating/5';
+  }
+
+  @override
+  String get markNoShow => 'Mark no-show';
+
+  @override
+  String get noShowConfirmTitle => 'Mark as no-show?';
+
+  @override
+  String noShowConfirmBody(String client) {
+    return '$client will be marked as absent. Visible on their profile.';
+  }
+
+  @override
+  String noShowBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count no-shows',
+      one: '1 no-show',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noShowRegistered => 'No-show recorded';
+
+  @override
+  String noShowTooltip(int count) {
+    return 'This client missed $count appointments.';
+  }
+
+  @override
+  String get appointmentsDesktopTitle => 'Your visits';
+
+  @override
+  String get appointmentsDesktopOverline => 'MY APPOINTMENTS';
+
+  @override
+  String get reviewsReceivedCardTitle => 'Reviews received';
+
+  @override
+  String get averageRatingOutOf => 'out of 5';
+
+  @override
+  String get seeAllReviews => 'See all →';
+
+  @override
+  String get noReviewsYetOwner => 'No reviews yet.';
+
+  @override
+  String get rejectAppointmentTitle => 'Reject this booking?';
+
+  @override
+  String rejectAppointmentSubtitle(String client) {
+    return '$client will be notified.';
+  }
+
+  @override
+  String get rejectAppointmentWarning =>
+      'The slot remains blocked after rejection. To free the slot and allow other clients to book, use the \"Free the slot\" button after rejecting.';
+
+  @override
+  String get rejectAppointmentReasonLabel => 'Reason for rejection (optional)';
+
+  @override
+  String get rejectAppointmentButton => 'Reject';
+
+  @override
+  String get freeSlotButton => 'Free the slot';
+
+  @override
+  String get freeSlotConfirmTitle => 'Free this slot?';
+
+  @override
+  String get freeSlotConfirmBody =>
+      'The client will not receive another notification.';
+
+  @override
+  String get freeSlotDone => 'Slot freed';
+
+  @override
+  String get slotFreedBadge => 'Slot freed';
+
+  @override
+  String get rejectionReasonOwnerLabel => 'REJECTION REASON';
+
+  @override
+  String get rejectionReasonClientLabel => 'Salon\'s reason';
+
+  @override
+  String get cancelAppointmentOwnerTitle => 'Cancel this booking?';
+
+  @override
+  String cancelAppointmentOwnerSubtitle(String client) {
+    return '$client will be notified and the slot will be freed.';
+  }
+
+  @override
+  String cancelAppointmentOwnerSubtitleWalkIn(String client) {
+    return '$client\'s slot will be freed.';
+  }
+
+  @override
+  String get cancelAppointmentOwnerWarning =>
+      'The slot will become available again and the client will be notified.';
+
+  @override
+  String get cancelAppointmentOwnerWarningWalkIn =>
+      'The slot will become available again.';
+
+  @override
+  String get cancelAppointmentOwnerReasonLabel =>
+      'Reason for cancellation (optional)';
 }

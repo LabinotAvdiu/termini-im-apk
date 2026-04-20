@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/salon_location_fields.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
@@ -52,35 +53,14 @@ class _CompanyDashboardScreenState
   // ── Company info ─────────────────────────────────────────────────────────
 
   void showEditCompanyDialog(BuildContext context, MyCompanyModel company) {
-    final nameCtrl = TextEditingController(text: company.name);
-    final addressCtrl = TextEditingController(text: company.address);
-    final cityCtrl = TextEditingController(text: company.city);
-    final phoneCtrl = TextEditingController(text: company.phone);
-    final phoneSecondaryCtrl =
-        TextEditingController(text: company.phoneSecondary ?? '');
-    final descCtrl = TextEditingController(text: company.description ?? '');
-
     showDialog<void>(
       context: context,
       builder: (ctx) => _CompanyEditDialog(
-        nameCtrl: nameCtrl,
-        addressCtrl: addressCtrl,
-        cityCtrl: cityCtrl,
-        phoneCtrl: phoneCtrl,
-        phoneSecondaryCtrl: phoneSecondaryCtrl,
-        descCtrl: descCtrl,
-        onSave: () async {
-          final secondaryRaw = phoneSecondaryCtrl.text.trim();
+        company: company,
+        onSave: (payload) async {
           final ok = await ref
               .read(companyDashboardProvider.notifier)
-              .updateCompanyInfo({
-            'name': nameCtrl.text.trim().titleCase,
-            'address': addressCtrl.text.trim(),
-            'city': cityCtrl.text.trim(),
-            'phone': phoneCtrl.text.trim(),
-            'phone_secondary': secondaryRaw.isEmpty ? null : secondaryRaw,
-            'description': descCtrl.text.trim(),
-          });
+              .updateCompanyInfo(payload);
           if (ctx.mounted) Navigator.of(ctx).pop();
           if (ok && context.mounted) {
             _showSnack(context, context.l10n.saveSuccess);
@@ -437,24 +417,75 @@ class _CompanyDashboardScreenState
 // Shared dialog widgets used by both presentations (via wrapper)
 // ---------------------------------------------------------------------------
 
-class _CompanyEditDialog extends StatelessWidget {
-  final TextEditingController nameCtrl;
-  final TextEditingController addressCtrl;
-  final TextEditingController cityCtrl;
-  final TextEditingController phoneCtrl;
-  final TextEditingController phoneSecondaryCtrl;
-  final TextEditingController descCtrl;
-  final VoidCallback onSave;
+class _CompanyEditDialog extends StatefulWidget {
+  final MyCompanyModel company;
+  final void Function(Map<String, dynamic> payload) onSave;
 
   const _CompanyEditDialog({
-    required this.nameCtrl,
-    required this.addressCtrl,
-    required this.cityCtrl,
-    required this.phoneCtrl,
-    required this.phoneSecondaryCtrl,
-    required this.descCtrl,
+    required this.company,
     required this.onSave,
   });
+
+  @override
+  State<_CompanyEditDialog> createState() => _CompanyEditDialogState();
+}
+
+class _CompanyEditDialogState extends State<_CompanyEditDialog> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _addressCtrl;
+  late final TextEditingController _cityCtrl;
+  late final TextEditingController _phoneCtrl;
+  late final TextEditingController _phoneSecondaryCtrl;
+  late final TextEditingController _descCtrl;
+  late final ValueNotifier<int> _minCancelHours;
+  double? _latitude;
+  double? _longitude;
+
+  @override
+  void initState() {
+    super.initState();
+    final c = widget.company;
+    _nameCtrl = TextEditingController(text: c.name);
+    _addressCtrl = TextEditingController(text: c.address);
+    _cityCtrl = TextEditingController(text: c.city);
+    _phoneCtrl = TextEditingController(text: c.phone);
+    _phoneSecondaryCtrl = TextEditingController(text: c.phoneSecondary ?? '');
+    _descCtrl = TextEditingController(text: c.description ?? '');
+    _minCancelHours = ValueNotifier<int>(c.minCancelHours);
+    _latitude = c.latitude;
+    _longitude = c.longitude;
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _addressCtrl.dispose();
+    _cityCtrl.dispose();
+    _phoneCtrl.dispose();
+    _phoneSecondaryCtrl.dispose();
+    _descCtrl.dispose();
+    _minCancelHours.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final secondaryRaw = _phoneSecondaryCtrl.text.trim();
+    widget.onSave({
+      'name': _nameCtrl.text.trim().titleCase,
+      'address': _addressCtrl.text.trim(),
+      'city': _cityCtrl.text.trim(),
+      'phone': _phoneCtrl.text.trim(),
+      'phone_secondary': secondaryRaw.isEmpty ? null : secondaryRaw,
+      'description': _descCtrl.text.trim(),
+      'min_cancel_hours': _minCancelHours.value,
+      // Only include lat/lng when actually set — backend validator requires
+      // both-or-neither, and we don't want to wipe existing coords.
+      if (_latitude != null && _longitude != null) ...{
+        'latitude': _latitude,
+        'longitude': _longitude,
+      },
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -466,14 +497,41 @@ class _CompanyEditDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _field(nameCtrl, l.salonName, Icons.storefront_outlined),
-            _field(addressCtrl, l.address, Icons.location_on_outlined),
-            _field(cityCtrl, l.city, Icons.location_city_outlined),
-            _field(phoneCtrl, l.phone, Icons.phone_outlined,
+            _field(_nameCtrl, l.salonName, Icons.storefront_outlined),
+            // Address + city + GPS — shared component handles Google Places
+            // autocomplete, auto-fill of city, and GPS fallback. Manual
+            // edits to the city invalidate the captured lat/lng.
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SalonLocationFields(
+                addressController: _addressCtrl,
+                cityController: _cityCtrl,
+                latitude: _latitude,
+                longitude: _longitude,
+                onLocationCaptured: (lat, lng) => setState(() {
+                  _latitude = lat;
+                  _longitude = lng;
+                }),
+                onLocationInvalidated: () => setState(() {
+                  _latitude = null;
+                  _longitude = null;
+                }),
+                onPlaceSelected: (details) => setState(() {
+                  _latitude = details.latitude;
+                  _longitude = details.longitude;
+                  if (details.city != null && details.city!.isNotEmpty) {
+                    _cityCtrl.text = details.city!;
+                  }
+                }),
+              ),
+            ),
+            _field(_phoneCtrl, l.phone, Icons.phone_outlined,
                 type: TextInputType.phone),
-            _field(phoneSecondaryCtrl, l.phoneSecondary, Icons.phone_outlined,
+            _field(_phoneSecondaryCtrl, l.phoneSecondary, Icons.phone_outlined,
                 type: TextInputType.phone),
-            _field(descCtrl, l.descriptionLabel, Icons.notes_outlined, maxLines: 3),
+            _field(_descCtrl, l.descriptionLabel, Icons.notes_outlined,
+                maxLines: 3),
+            _MinCancelHoursStepper(notifier: _minCancelHours),
           ],
         ),
       ),
@@ -484,7 +542,7 @@ class _CompanyEditDialog extends StatelessWidget {
         ),
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7A2232)),
-          onPressed: onSave,
+          onPressed: _save,
           child: Text(l.saveChanges),
         ),
       ],
@@ -677,6 +735,107 @@ class _CreateEmployeeDialog extends StatelessWidget {
           child: Text(l.saveChanges),
         ),
       ],
+    );
+  }
+}
+
+/// Stepper (-/+) éditorial pour le délai minimum d'annulation.
+/// Valeurs : 0..24 heures. 0 = pas de contrainte.
+class _MinCancelHoursStepper extends StatelessWidget {
+  final ValueNotifier<int> notifier;
+  const _MinCancelHoursStepper({required this.notifier});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: ValueListenableBuilder<int>(
+        valueListenable: notifier,
+        builder: (context, value, _) {
+          return Container(
+            padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFFD9CAB3)),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.timer_off_outlined,
+                    size: 20, color: Color(0xFF716059)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.minCancelHoursLabel,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF716059),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        value == 0
+                            ? l.minCancelHoursHint
+                            : '$value h',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF171311),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _StepBtn(
+                  icon: Icons.remove_rounded,
+                  onTap: value > 0 ? () => notifier.value = value - 1 : null,
+                ),
+                const SizedBox(width: 4),
+                _StepBtn(
+                  icon: Icons.add_rounded,
+                  onTap: value < 24 ? () => notifier.value = value + 1 : null,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _StepBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+  const _StepBtn({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+    return Material(
+      color: enabled
+          ? const Color(0xFF7A2232).withValues(alpha: 0.08)
+          : const Color(0xFFD9CAB3).withValues(alpha: 0.3),
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 36,
+          height: 36,
+          child: Icon(
+            icon,
+            size: 18,
+            color: enabled
+                ? const Color(0xFF7A2232)
+                : const Color(0xFF716059).withValues(alpha: 0.4),
+          ),
+        ),
+      ),
     );
   }
 }

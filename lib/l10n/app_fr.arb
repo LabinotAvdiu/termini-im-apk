@@ -19,6 +19,7 @@
   "orContinueWith": "Ou continuer avec",
   "continueWithGoogle": "Continuer avec Google",
   "continueWithFacebook": "Continuer avec Facebook",
+  "continueWithApple": "Continuer avec Apple",
   "iAmUser": "Je suis un client",
   "iAmUserSubtitle": "Trouvez et réservez vos rendez-vous beauté",
   "iAmCompany": "Je suis un professionnel",
@@ -174,10 +175,17 @@
   "past": "Passés",
   "noUpcomingAppointments": "Aucun rendez-vous à venir",
   "noPastAppointments": "Aucun rendez-vous passé",
+  "seeMorePastAppointments": "Voir {count} de plus",
+  "@seeMorePastAppointments": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "appointmentConfirmed": "Confirmé",
   "appointmentPending": "En attente",
   "appointmentCompleted": "Terminé",
   "appointmentCancelled": "Annulé",
+  "appointmentRejected": "Refusé",
+  "appointmentNoShow": "Absent",
+  "appointmentNoShowDetail": "Vous ne vous êtes pas présenté à ce rendez-vous.",
   "mySalon": "Mon Salon",
   "companyInfo": "Informations du salon",
   "servicesAndCategories": "Services & Catégories",
@@ -238,7 +246,7 @@
   "bookingSuccessMessage": "Votre rendez-vous a été pris avec succès. Vous recevrez une confirmation par notification.",
   "bookingConfirmationSubtitle": "Vérifiez les détails avant de confirmer.",
   "yourAppointment": "Votre rendez-vous",
-  "reminderNote": "Un rappel vous sera envoyé 24h avant votre rendez-vous. L'annulation est possible jusqu'à 2h avant.",
+  "reminderNote": "Un rappel vous sera envoyé 24h avant votre rendez-vous.",
   "hairdresser": "Coiffeur(se)",
   "noPreferenceShort": "Sans préf.",
   "dateLabel": "Date",
@@ -368,7 +376,6 @@
   "cancelAppointment": "Annuler le rendez-vous",
   "confirmRejectTitle": "Refuser ce rendez-vous ?",
   "confirmCancelTitle": "Annuler ce rendez-vous ?",
-  "cancelAppointmentBody": "Cette action libérera le créneau.",
   "actionFailed": "Échec de l'action. Réessayez.",
   "viewDay": "Jour",
   "viewWeek": "Semaine",
@@ -426,6 +433,8 @@
   "monthStatConfirmed": "confirmés",
   "monthStatPending": "en attente",
   "monthStatRejected": "refusés",
+  "monthStatCancelled": "annulés",
+  "monthStatNoShow": "absents",
   "appointmentSingular": "rendez-vous",
   "appointmentPlural": "rendez-vous",
   "emptyDayTitle": "Aucun rendez-vous",
@@ -442,6 +451,54 @@
   "companyOverline": "Barber · Coupe homme",
   "salonForMen": "Salon pour hommes",
   "salonForWomen": "Salon pour femmes",
+  "salonClienteleLabel": "Clientèle du salon",
+  "salonClienteleMen": "Hommes",
+  "salonClienteleWomen": "Femmes",
+  "salonClienteleBoth": "Les deux",
+  "salonClienteleRequired": "Sélectionne la clientèle du salon",
+  "completeYourProfileTitle": "Complète ton profil",
+  "completeProfileGenderPhone": "Ajoute ton numéro et ton genre pour un meilleur service.",
+  "completeProfileGenderOnly": "Ajoute ton genre pour personnaliser les filtres.",
+  "completeProfilePhoneOnly": "Ajoute ton numéro pour recevoir les confirmations de rendez-vous.",
+  "useMyGpsLocation": "Utiliser ma position GPS",
+  "gpsLocationCaptured": "Position enregistrée ✓",
+  "gpsHintNoAddressOnGoogle": "Adresse introuvable sur Google ? Utilise ton GPS pour enregistrer la position exacte du salon — l'adresse reste telle que tu l'as écrite.",
+  "gpsErrorServiceDisabled": "Active le GPS sur ton appareil puis réessaie.",
+  "gpsErrorPermissionDenied": "Autorise l'accès à la position pour enregistrer les coordonnées.",
+  "gpsErrorPermissionDeniedForever": "Ouvre les paramètres système et autorise la localisation pour Termini im.",
+  "gpsErrorTimeout": "Impossible d'obtenir la position. Va dehors ou réessaie.",
+  "gpsErrorUnknown": "Une erreur est survenue. Réessaie.",
+  "salonGeocodingBannerTitle": "Finalise la localisation du salon",
+  "salonGeocodingBannerBody": "Ton salon apparaîtra plus rapidement dans les recherches avec une adresse Google OU des coordonnées GPS enregistrées.",
+  "salonGeocodingDialogTitle": "Localisation du salon",
+  "salonGeocodingDialogSubtitle": "Choisis une adresse depuis Google OU enregistre la position via GPS.",
+  "salonGeocodingSaveCta": "Enregistrer la localisation",
+  "salonGeocodingSuccessToast": "Localisation enregistrée.",
+  "shareSalon": "Partager",
+  "shareSalonSheetTitle": "Partager ce salon",
+  "shareSalonSheetSubtitle": "Invite un proche à réserver",
+  "shareViaWhatsApp": "WhatsApp",
+  "shareViaWhatsAppCaption": "Envoi direct · message pré-rempli",
+  "shareMore": "Partager…",
+  "shareMoreCaption": "Feuille système · autres apps",
+  "shareCopyLink": "Copier le lien",
+  "shareLinkCopied": "Lien copié",
+  "shareIncludeMeAsPro": "Me recommander",
+  "shareIncludeMeAsProHelp": "Le destinataire arrivera sur la réservation avec toi déjà choisi.",
+  "shareLinkPreviewLabel": "Aperçu",
+  "tomorrowLabel": "Demain",
+  "noPhoneAvailable": "Pas de numéro renseigné",
+  "sharedEmployeePrefix": "Rendez-vous avec",
+  "sharedEmployeeHint": "Services filtrés pour ce pro",
+  "shareWhatsAppMessage": "Salut ! Je te recommande {salonName} — prends ton rendez-vous ici : {url}",
+  "@shareWhatsAppMessage": {
+    "placeholders": {
+      "salonName": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "companySetupHeadline": "Termine la configuration de ton salon",
+  "companySetupSubtitle": "Encore quelques infos pour activer ton espace propriétaire.",
   "salonUnisex": "Salon · Hommes & Femmes",
   "servicesOffered": "proposés",
   "approvalsTitle": "APPROBATIONS",
@@ -499,5 +556,158 @@
       "total": { "type": "String" }
     }
   },
-  "close": "Fermer"
+  "close": "Fermer",
+  "genderSelectorLabel": "Je suis",
+  "genderSelectorHint": "Sert à pré-filtrer les salons. Vous pourrez changer à tout moment.",
+
+  "myProfile": "Mon profil",
+  "changePhoto": "Changer la photo",
+  "takePhoto": "Prendre une photo",
+  "chooseFromGallery": "Choisir dans la galerie",
+  "removePhoto": "Supprimer la photo",
+  "removePhotoConfirm": "Voulez-vous vraiment supprimer votre photo de profil ?",
+  "avatarUploading": "Envoi en cours\u2026",
+  "avatarUploadError": "Échec de l'envoi de la photo.",
+  "cropPhotoTitle": "Recadrer la photo",
+  "experienceSection": "Expérience",
+  "hapticLabel": "Vibrations",
+  "hapticDesc": "Petits retours tactiles sur les interactions",
+  "soundsLabel": "Sons de l'interface",
+  "soundsDesc": "Désactivés par défaut",
+  "animationsLabel": "Animations",
+  "animationsDesc": "Transitions et effets visuels",
+
+  "cancelAppointmentTitle": "Annuler ce rendez-vous ?",
+  "cancelAppointmentBody": "{salon} · {date}. Cette action est irréversible.",
+  "@cancelAppointmentBody": {
+    "placeholders": {
+      "salon": { "type": "String" },
+      "date":  { "type": "String" }
+    }
+  },
+  "cancelAppointmentBodyOwner": "Cette action libérera le créneau.",
+  "cancelReasonLabel": "Motif (facultatif)",
+  "cancellableUntil": "Annulable jusqu'à {date}",
+  "@cancellableUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "cancellationTooLate": "Il est trop tard pour annuler ce rendez-vous.",
+  "minCancelHoursLabel": "Délai minimum d'annulation (heures)",
+  "minCancelHoursHint": "0 = pas de contrainte",
+  "minCancelHoursNone": "Annulation sans contrainte",
+  "minCancelHoursValue": "Annulation jusqu'à {hours}h avant",
+  "@minCancelHoursValue": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "bookingCancelPolicyNone": "Vous pouvez annuler ce rendez-vous à tout moment.",
+  "bookingCancelPolicyHours": "Annulable jusqu'à {hours} h avant le RDV.",
+  "@bookingCancelPolicyHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+
+  "upcomingReminderTitle": "Votre RDV approche",
+  "upcomingReminderBody": "{salon} · dans {duration}",
+  "@upcomingReminderBody": {
+    "placeholders": {
+      "salon":    { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "upcomingReminderNow": "maintenant",
+  "inXHoursYMinutes": "{hours}h {minutes}min",
+  "@inXHoursYMinutes": {
+    "placeholders": {
+      "hours":   { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+
+  "reviewsTitle": "Avis",
+  "reviewSubmitTitle": "Noter votre visite",
+  "reviewRatingLabel": "Votre note",
+  "reviewCommentLabel": "Votre avis (facultatif)",
+  "reviewCommentHint": "Partagez votre expérience…",
+  "reviewSubmit": "Envoyer mon avis",
+  "reviewSubmitted": "Merci ! Votre avis a été publié.",
+  "reviewsSeeAll": "Voir tous les avis ({count})",
+  "@reviewsSeeAll": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reviewsEmpty": "Aucun avis pour l'instant",
+  "reviewsOnlyRatings": "Tous les avis ont été laissés sous forme de note uniquement, sans commentaire.",
+  "cancellationReasonOwnerLabel": "MOTIF DE L'ANNULATION",
+  "today": "Aujourd'hui",
+  "tomorrow": "Demain",
+  "reviewHideTitle": "Masquer cet avis ?",
+  "reviewHideReason": "Motif",
+  "reviewsReceived": "Avis reçus",
+  "reviewHidden": "Avis masqué",
+  "reviewBadge": "★ {rating}/5",
+  "@reviewBadge": {
+    "placeholders": {
+      "rating": { "type": "int" }
+    }
+  },
+
+  "markNoShow": "Marquer comme absent",
+  "noShowConfirmTitle": "Marquer comme absent ?",
+  "noShowConfirmBody": "{client} sera marqué comme absent. Visible sur sa fiche.",
+  "@noShowConfirmBody": {
+    "placeholders": {
+      "client": { "type": "String" }
+    }
+  },
+  "noShowBadge": "{count, plural, =1{1 absence} other{{count} absences}}",
+  "@noShowBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noShowRegistered": "Absence enregistrée",
+  "noShowTooltip": "Ce client a manqué {count} rendez-vous.",
+  "@noShowTooltip": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "appointmentsDesktopTitle": "Vos visites",
+  "appointmentsDesktopOverline": "MES RENDEZ-VOUS",
+  "reviewsReceivedCardTitle": "Avis reçus",
+  "averageRatingOutOf": "sur 5",
+  "seeAllReviews": "Voir tout →",
+  "noReviewsYetOwner": "Vous n'avez pas encore d'avis.",
+
+  "rejectAppointmentTitle": "Refuser ce rendez-vous ?",
+  "rejectAppointmentSubtitle": "{client} sera prévenu(e).",
+  "@rejectAppointmentSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "rejectAppointmentWarning": "Le créneau reste bloqué après le refus. Pour libérer le créneau et permettre à d'autres clients de réserver, utilisez le bouton « Libérer le créneau » après avoir refusé.",
+  "rejectAppointmentReasonLabel": "Motif du refus (facultatif)",
+  "rejectAppointmentButton": "Refuser",
+  "freeSlotButton": "Libérer le créneau",
+  "freeSlotConfirmTitle": "Libérer ce créneau ?",
+  "freeSlotConfirmBody": "Le client ne recevra pas de nouvelle notification.",
+  "freeSlotDone": "Créneau libéré",
+  "slotFreedBadge": "Créneau libéré",
+  "rejectionReasonOwnerLabel": "MOTIF DU REFUS",
+  "rejectionReasonClientLabel": "Motif du salon",
+
+  "cancelAppointmentOwnerTitle": "Annuler ce rendez-vous ?",
+  "cancelAppointmentOwnerSubtitle": "{client} sera prévenu(e) et le créneau sera libéré.",
+  "@cancelAppointmentOwnerSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerSubtitleWalkIn": "Le créneau de {client} sera libéré.",
+  "@cancelAppointmentOwnerSubtitleWalkIn": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerWarning": "Le créneau redeviendra disponible à la réservation et le client sera notifié.",
+  "cancelAppointmentOwnerWarningWalkIn": "Le créneau redeviendra disponible à la réservation.",
+  "cancelAppointmentOwnerReasonLabel": "Motif de l'annulation (facultatif)"
 }

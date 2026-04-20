@@ -6,9 +6,13 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/auth_prompt_sheet.dart';
 import '../../../../core/widgets/language_sheet.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
+import '../../../appointments/presentation/widgets/upcoming_appointment_banner.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../company/presentation/widgets/salon_geocoding_banner.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart';
+import '../widgets/complete_profile_banner.dart';
 import '../widgets/search_filter_bar.dart';
 
 /// Mobile presentation for the home / search screen (M1 editorial design).
@@ -40,6 +44,26 @@ class HomeScreenMobile extends ConsumerWidget {
             // Email verification banner
             SliverToBoxAdapter(child: _EmailVerificationBanner()),
 
+            // Profile completion nudge (gender / phone missing).
+            const SliverToBoxAdapter(child: CompleteProfileBanner()),
+
+            // Salon geocoding warning — shown to owners whose salon has no
+            // Google address + no GPS (can't be ranked in proximity search).
+            const SliverToBoxAdapter(child: SalonGeocodingBanner()),
+
+            // Feature 2 — Upcoming appointment reminder banner (auth users only)
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final isAuth = ref.watch(
+                    authStateProvider.select((s) => s.isAuthenticated),
+                  );
+                  if (!isAuth) return const SizedBox.shrink();
+                  return const UpcomingAppointmentBanner();
+                },
+              ),
+            ),
+
             // Sticky-ish filter bar + results label
             SliverToBoxAdapter(
               child: Column(
@@ -64,10 +88,16 @@ class HomeScreenMobile extends ConsumerWidget {
 
             // Company cards list
             if (companyState.isLoading && companies.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    child: const SkeletonCompanyCard(
+                      key: ValueKey('skeleton'),
+                    ),
+                  ),
+                  childCount: 5,
                 ),
               )
             else if (companies.isEmpty)
@@ -78,9 +108,13 @@ class HomeScreenMobile extends ConsumerWidget {
             else
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => CompanyCard(
-                    key: ValueKey(companies[index].id),
-                    company: companies[index],
+                  (context, index) => AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    child: CompanyCard(
+                      key: ValueKey(companies[index].id),
+                      company: companies[index],
+                    ),
                   ),
                   childCount: companies.length,
                 ),

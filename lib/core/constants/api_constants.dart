@@ -2,11 +2,18 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 abstract class ApiConstants {
-  // Android emulator reaches the host machine via 10.0.2.2 — localhost on the
-  // emulator points to the emulator itself. Web and other platforms use localhost.
+  // Override via --dart-define=API_BASE_URL=https://api.termini-im.com/api at build time.
+  // Without an override, Android emulator uses 10.0.2.2 to reach the host; other
+  // platforms fall back to localhost.
+  static const String _envBaseUrl =
+      String.fromEnvironment('API_BASE_URL', defaultValue: '');
+
   static final String baseUrl = _resolveBaseUrl();
 
   static String _resolveBaseUrl() {
+    if (_envBaseUrl.isNotEmpty) {
+      return _envBaseUrl;
+    }
     if (!kIsWeb && Platform.isAndroid) {
       return 'http://10.0.2.2:8080/api';
     }
@@ -23,6 +30,8 @@ abstract class ApiConstants {
   static const String register            = '/auth/register';
   static const String googleAuth          = '/auth/google';
   static const String facebookAuth        = '/auth/facebook';
+  static const String appleAuth           = '/auth/apple';
+  static const String completeCompany     = '/auth/complete-company';
   static const String refreshToken        = '/auth/refresh';
   static const String logout              = '/auth/logout';
   static const String profile             = '/auth/profile';
@@ -51,10 +60,17 @@ abstract class ApiConstants {
   static String companyFavorite(String id) => '/companies/$id/favorite';
 
   // ---------------------------------------------------------------------------
-  // Bookings
+  // Bookings (client)
   // ---------------------------------------------------------------------------
   static const String bookings = '/bookings';
   static String bookingDetail(String id) => '/bookings/$id';
+  static String appointmentCancel(String id) => '/appointments/$id/cancel';
+  static String appointmentReview(String id) => '/appointments/$id/review';
+
+  // ---------------------------------------------------------------------------
+  // Reviews (public)
+  // ---------------------------------------------------------------------------
+  static String companyReviews(String id) => '/companies/$id/reviews';
 
   // ---------------------------------------------------------------------------
   // My Company (authenticated owner endpoints)
@@ -87,10 +103,20 @@ abstract class ApiConstants {
   static String myCompanyCapacityOverride(String id) =>
       '/my-company/capacity-overrides/$id';
 
+  // Reviews (owner)
+  static const String myCompanyReviews         = '/my-company/reviews';
+  static String myCompanyReviewHide(String id)   => '/my-company/reviews/$id/hide';
+  static String myCompanyReviewUnhide(String id) => '/my-company/reviews/$id/unhide';
+
   // Gallery
   static const String myCompanyGallery         = '/my-company/gallery';
   static const String myCompanyGalleryReorder  = '/my-company/gallery/reorder';
   static String myCompanyGalleryPhoto(String id) => '/my-company/gallery/$id';
+
+  // ---------------------------------------------------------------------------
+  // Avatar (user profile photo)
+  // ---------------------------------------------------------------------------
+  static const String meAvatar = '/me/avatar';
 
   // ---------------------------------------------------------------------------
   // Notifications push
@@ -102,7 +128,10 @@ abstract class ApiConstants {
   // My Schedule (authenticated employee endpoints)
   // ---------------------------------------------------------------------------
   static const String mySchedule         = '/my-schedule';
+  static const String myScheduleUpcoming = '/my-schedule/upcoming';
   static const String myScheduleWalkIn   = '/my-schedule/walk-in';
+  static String myScheduleAppointmentStatus(String id) =>
+      '/my-schedule/appointments/$id/status';
   static const String myScheduleSettings = '/my-schedule/settings';
   static const String myScheduleHours    = '/my-schedule/hours';
   static const String myScheduleBreaks   = '/my-schedule/breaks';

@@ -1,31 +1,44 @@
 {
-  "//": "TODO: Remplace ce fichier par le vrai google-services.json téléchargé depuis la Firebase Console.",
-  "//2": "  1. Va sur https://console.firebase.google.com → ton projet → Paramètres du projet → Tes applications",
-  "//3": "  2. Ajoute une application Android avec le package 'com.hairspot.hairspot_mobile'",
-  "//4": "  3. Télécharge le fichier google-services.json et remplace celui-ci",
-  "//5": "  4. Active FCM dans Firebase Console → Cloud Messaging",
   "project_info": {
-    "project_number": "000000000000",
-    "project_id": "termini-im-placeholder",
-    "storage_bucket": "termini-im-placeholder.appspot.com"
+    "project_number": "759517993388",
+    "project_id": "termini-im-cd5ff",
+    "storage_bucket": "termini-im-cd5ff.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "mobilesdk_app_id": "1:759517993388:android:5ca6abaf41d02ddf8d8209",
         "android_client_info": {
-          "package_name": "com.hairspot.hairspot_mobile"
+          "package_name": "com.terminiim.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "759517993388-8bkrju3e3vtmrap6u226qbn54pmsmnbc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.terminiim.app",
+            "certificate_hash": "a4610599a91b7d1fc356887a6bb739d17ce2cca4"
+          }
+        },
+        {
+          "client_id": "759517993388-6hqo810qjnephb8v1rb6oupb6csi9er0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "PLACEHOLDER_API_KEY"
+          "current_key": "AIzaSyB9AAZoTfhdRrbQBBqxDCsjWwcTMg2yxaQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "759517993388-6hqo810qjnephb8v1rb6oupb6csi9er0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -66,6 +66,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get continueWithFacebook => 'Vazhdo me Facebook';
 
   @override
+  String get continueWithApple => 'Vazhdo me Apple';
+
+  @override
   String get iAmUser => 'Jam klient';
 
   @override
@@ -476,6 +479,11 @@ class AppLocalizationsSq extends AppLocalizations {
   String get noPastAppointments => 'Asnjë takim i kaluar';
 
   @override
+  String seeMorePastAppointments(int count) {
+    return 'Shiko $count më shumë';
+  }
+
+  @override
   String get appointmentConfirmed => 'I konfirmuar';
 
   @override
@@ -486,6 +494,15 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get appointmentCancelled => 'I anuluar';
+
+  @override
+  String get appointmentRejected => 'I refuzuar';
+
+  @override
+  String get appointmentNoShow => 'Mungesë';
+
+  @override
+  String get appointmentNoShowDetail => 'Nuk u paraqitët në këtë takim.';
 
   @override
   String get mySalon => 'Salloni im';
@@ -652,7 +669,7 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get reminderNote =>
-      'Një kujtues do t\'ju dërgohet 24 orë para takimit. Anulimi është i mundur deri 2 orë para.';
+      'Një kujtues do t\'ju dërgohet 24 orë para takimit.';
 
   @override
   String get hairdresser => 'Stilisti';
@@ -974,9 +991,6 @@ class AppLocalizationsSq extends AppLocalizations {
   String get confirmCancelTitle => 'Anulo këtë takim?';
 
   @override
-  String get cancelAppointmentBody => 'Ky veprim do të lirojë orarin.';
-
-  @override
   String get actionFailed => 'Veprimi dështoi. Provo përsëri.';
 
   @override
@@ -1159,6 +1173,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get monthStatRejected => 'të refuzuara';
 
   @override
+  String get monthStatCancelled => 'të anuluara';
+
+  @override
+  String get monthStatNoShow => 'mungesa';
+
+  @override
   String get appointmentSingular => 'takim';
 
   @override
@@ -1205,6 +1225,147 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get salonForWomen => 'Sallon për gra';
+
+  @override
+  String get salonClienteleLabel => 'Klientela e sallonit';
+
+  @override
+  String get salonClienteleMen => 'Burra';
+
+  @override
+  String get salonClienteleWomen => 'Gra';
+
+  @override
+  String get salonClienteleBoth => 'Të dyja';
+
+  @override
+  String get salonClienteleRequired => 'Zgjidh klientelën e sallonit';
+
+  @override
+  String get completeYourProfileTitle => 'Plotëso profilin tënd';
+
+  @override
+  String get completeProfileGenderPhone =>
+      'Shto numrin dhe gjininë për një shërbim më të mirë.';
+
+  @override
+  String get completeProfileGenderOnly =>
+      'Shto gjininë për të personalizuar filtrat.';
+
+  @override
+  String get completeProfilePhoneOnly =>
+      'Shto numrin e telefonit për të konfirmuar rezervimet.';
+
+  @override
+  String get useMyGpsLocation => 'Përdor pozicionin GPS';
+
+  @override
+  String get gpsLocationCaptured => 'Pozicioni u ruajt ✓';
+
+  @override
+  String get gpsHintNoAddressOnGoogle =>
+      'Adresa nuk gjendet në Google? Përdor GPS-in për të ruajtur pozicionin e saktë — adresa që ke shkruar mbetet.';
+
+  @override
+  String get gpsErrorServiceDisabled =>
+      'Aktivizo GPS-in në pajisjen tënde dhe provo sërish.';
+
+  @override
+  String get gpsErrorPermissionDenied =>
+      'Lejo qasjen në lokacion për të ruajtur koordinatat.';
+
+  @override
+  String get gpsErrorPermissionDeniedForever =>
+      'Hap cilësimet e sistemit dhe aktivizo lokacionin për Termini im.';
+
+  @override
+  String get gpsErrorTimeout =>
+      'Nuk mund të marrim pozicionin. Dil jashtë ose provo sërish.';
+
+  @override
+  String get gpsErrorUnknown => 'Diçka shkoi keq. Provo sërish.';
+
+  @override
+  String get salonGeocodingBannerTitle => 'Përfundo lokalizimin e sallonit';
+
+  @override
+  String get salonGeocodingBannerBody =>
+      'Salloni do të shfaqet më shpejt në kërkime me një adresë Google OSE me koordinata GPS të ruajtura.';
+
+  @override
+  String get salonGeocodingDialogTitle => 'Lokacioni i sallonit';
+
+  @override
+  String get salonGeocodingDialogSubtitle =>
+      'Zgjidh një adresë nga Google OSE ruaj pozicionin me GPS.';
+
+  @override
+  String get salonGeocodingSaveCta => 'Ruaj lokacionin';
+
+  @override
+  String get salonGeocodingSuccessToast => 'Lokacioni u ruajt.';
+
+  @override
+  String get shareSalon => 'Ndaj';
+
+  @override
+  String get shareSalonSheetTitle => 'Ndaj këtë sallon';
+
+  @override
+  String get shareSalonSheetSubtitle => 'Fto dikë për të rezervuar';
+
+  @override
+  String get shareViaWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareViaWhatsAppCaption => 'Dërgim direkt · mesazh i përgatitur';
+
+  @override
+  String get shareMore => 'Ndaj…';
+
+  @override
+  String get shareMoreCaption => 'Fletë sistemi · aplikacione të tjera';
+
+  @override
+  String get shareCopyLink => 'Kopjo lidhjen';
+
+  @override
+  String get shareLinkCopied => 'Lidhja u kopjua';
+
+  @override
+  String get shareIncludeMeAsPro => 'Më rekomando';
+
+  @override
+  String get shareIncludeMeAsProHelp =>
+      'Marrësi do të hyjë në rezervim me ty të zgjedhur tashmë.';
+
+  @override
+  String get shareLinkPreviewLabel => 'Paraqitja';
+
+  @override
+  String get tomorrowLabel => 'Nesër';
+
+  @override
+  String get noPhoneAvailable => 'Nuk ka numër telefoni';
+
+  @override
+  String get sharedEmployeePrefix => 'Rezervim me';
+
+  @override
+  String get sharedEmployeeHint =>
+      'Shërbimet e filtruara për këtë profesionist';
+
+  @override
+  String shareWhatsAppMessage(String salonName, String url) {
+    return 'Përshëndetje! Të rekomandoj $salonName — rezervo këtu: $url';
+  }
+
+  @override
+  String get companySetupHeadline => 'Mbaro konfigurimin e sallonit';
+
+  @override
+  String get companySetupSubtitle =>
+      'Edhe disa detaje për të aktivizuar hapësirën e pronarit.';
 
   @override
   String get salonUnisex => 'Sallon · Burra & Gra';
@@ -1311,4 +1472,292 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get close => 'Mbyll';
+
+  @override
+  String get genderSelectorLabel => 'Unë jam';
+
+  @override
+  String get genderSelectorHint =>
+      'Përdoret për të para-filtruar sallonet. Mund ta ndryshoni në çdo kohë.';
+
+  @override
+  String get myProfile => 'Profili im';
+
+  @override
+  String get changePhoto => 'Ndrysho foton';
+
+  @override
+  String get takePhoto => 'Bëj një foto';
+
+  @override
+  String get chooseFromGallery => 'Zgjidh nga galeria';
+
+  @override
+  String get removePhoto => 'Fshi foton';
+
+  @override
+  String get removePhotoConfirm => 'Të fshijmë foton e profilit?';
+
+  @override
+  String get avatarUploading => 'Duke ngarkuar…';
+
+  @override
+  String get avatarUploadError => 'Ngarkimi i fotos dështoi.';
+
+  @override
+  String get cropPhotoTitle => 'Prite foton';
+
+  @override
+  String get experienceSection => 'Përvoja';
+
+  @override
+  String get hapticLabel => 'Dridhjet';
+
+  @override
+  String get hapticDesc => 'Dridhje të lehta gjatë ndërveprimit';
+
+  @override
+  String get soundsLabel => 'Zërat e ndërfaqes';
+
+  @override
+  String get soundsDesc => 'Çaktivizuar si parazgjedhje';
+
+  @override
+  String get animationsLabel => 'Animacionet';
+
+  @override
+  String get animationsDesc => 'Kalimet dhe efektet vizuale';
+
+  @override
+  String get cancelAppointmentTitle => 'Ta anulosh këtë takim?';
+
+  @override
+  String cancelAppointmentBody(String salon, String date) {
+    return '$salon · $date. Ky veprim është i pakthyeshëm.';
+  }
+
+  @override
+  String get cancelAppointmentBodyOwner =>
+      'Ky veprim do të lëshojë sllotin e kohës.';
+
+  @override
+  String get cancelReasonLabel => 'Arsyeja (opsionale)';
+
+  @override
+  String cancellableUntil(String date) {
+    return 'Mund të anulohet deri më $date';
+  }
+
+  @override
+  String get cancellationTooLate => 'Është vonë për të anuluar këtë takim.';
+
+  @override
+  String get minCancelHoursLabel => 'Afati minimal i anulimit (orë)';
+
+  @override
+  String get minCancelHoursHint => '0 = pa kufizim';
+
+  @override
+  String get minCancelHoursNone => 'Anulim pa kufizim';
+
+  @override
+  String minCancelHoursValue(int hours) {
+    return 'Mund të anulohet deri ${hours}h para';
+  }
+
+  @override
+  String get bookingCancelPolicyNone =>
+      'Mund ta anuloni këtë takim në çdo kohë.';
+
+  @override
+  String bookingCancelPolicyHours(int hours) {
+    return 'Mund ta anuloni deri ${hours}h para takimit.';
+  }
+
+  @override
+  String get upcomingReminderTitle => 'Takimi juaj po afrohet';
+
+  @override
+  String upcomingReminderBody(String salon, String duration) {
+    return '$salon · për $duration';
+  }
+
+  @override
+  String get upcomingReminderNow => 'tani';
+
+  @override
+  String inXHoursYMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}min';
+  }
+
+  @override
+  String get reviewsTitle => 'Vlerësime';
+
+  @override
+  String get reviewSubmitTitle => 'Vlerëso vizitën';
+
+  @override
+  String get reviewRatingLabel => 'Vlerësimi juaj';
+
+  @override
+  String get reviewCommentLabel => 'Mendimi juaj (opsional)';
+
+  @override
+  String get reviewCommentHint => 'Ndani përvojën tuaj…';
+
+  @override
+  String get reviewSubmit => 'Publiko vlerësimin';
+
+  @override
+  String get reviewSubmitted => 'Faleminderit! Vlerësimi juaj është publikuar.';
+
+  @override
+  String reviewsSeeAll(int count) {
+    return 'Shiko të gjitha ($count)';
+  }
+
+  @override
+  String get reviewsEmpty => 'Ende asnjë vlerësim';
+
+  @override
+  String get reviewsOnlyRatings =>
+      'Të gjitha vlerësimet janë lënë vetëm si notë, pa koment të shkruar.';
+
+  @override
+  String get cancellationReasonOwnerLabel => 'ARSYEJA E ANULIMIT';
+
+  @override
+  String get today => 'Sot';
+
+  @override
+  String get tomorrow => 'Nesër';
+
+  @override
+  String get reviewHideTitle => 'Ta fshehësh këtë vlerësim?';
+
+  @override
+  String get reviewHideReason => 'Arsyeja';
+
+  @override
+  String get reviewsReceived => 'Vlerësimet e marra';
+
+  @override
+  String get reviewHidden => 'Vlerësimi i fshehur';
+
+  @override
+  String reviewBadge(int rating) {
+    return '★ $rating/5';
+  }
+
+  @override
+  String get markNoShow => 'Shëno mungesë';
+
+  @override
+  String get noShowConfirmTitle => 'Ta shënosh si mungesë?';
+
+  @override
+  String noShowConfirmBody(String client) {
+    return '$client do të shënohet si i/e munguar. E dukshme në profilin e tij.';
+  }
+
+  @override
+  String noShowBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mungesa',
+      one: '1 mungesë',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noShowRegistered => 'Mungesa u regjistrua';
+
+  @override
+  String noShowTooltip(int count) {
+    return 'Ky klient ka munguar $count takime.';
+  }
+
+  @override
+  String get appointmentsDesktopTitle => 'Vizitat tuaja';
+
+  @override
+  String get appointmentsDesktopOverline => 'TAKIMET E MIA';
+
+  @override
+  String get reviewsReceivedCardTitle => 'Vlerësimet e marra';
+
+  @override
+  String get averageRatingOutOf => 'nga 5';
+
+  @override
+  String get seeAllReviews => 'Shiko të gjitha →';
+
+  @override
+  String get noReviewsYetOwner => 'Ende asnjë vlerësim.';
+
+  @override
+  String get rejectAppointmentTitle => 'Refuzo këtë rezervim?';
+
+  @override
+  String rejectAppointmentSubtitle(String client) {
+    return '$client do të njoftohet.';
+  }
+
+  @override
+  String get rejectAppointmentWarning =>
+      'Termini mbetet i bllokuar pas refuzimit. Për të liruar terminin dhe lejuar klientë të tjerë të rezervojnë, përdorni butonin \"Liro termin\" pas refuzimit.';
+
+  @override
+  String get rejectAppointmentReasonLabel => 'Arsyeja e refuzimit (opsionale)';
+
+  @override
+  String get rejectAppointmentButton => 'Refuzo';
+
+  @override
+  String get freeSlotButton => 'Liro termin';
+
+  @override
+  String get freeSlotConfirmTitle => 'Ta lirosh këtë termin?';
+
+  @override
+  String get freeSlotConfirmBody => 'Klienti nuk do të marrë njoftim të ri.';
+
+  @override
+  String get freeSlotDone => 'Termini u lirua';
+
+  @override
+  String get slotFreedBadge => 'Termin i liruar';
+
+  @override
+  String get rejectionReasonOwnerLabel => 'ARSYEJA E REFUZIMIT';
+
+  @override
+  String get rejectionReasonClientLabel => 'Arsyeja e sallonit';
+
+  @override
+  String get cancelAppointmentOwnerTitle => 'Anulo këtë rezervim?';
+
+  @override
+  String cancelAppointmentOwnerSubtitle(String client) {
+    return '$client do të njoftohet dhe termini do të lirohet.';
+  }
+
+  @override
+  String cancelAppointmentOwnerSubtitleWalkIn(String client) {
+    return 'Termini i $client do të lirohet.';
+  }
+
+  @override
+  String get cancelAppointmentOwnerWarning =>
+      'Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.';
+
+  @override
+  String get cancelAppointmentOwnerWarningWalkIn =>
+      'Termini do të bëhet sërish i disponueshëm.';
+
+  @override
+  String get cancelAppointmentOwnerReasonLabel =>
+      'Arsyeja e anulimit (opsionale)';
 }

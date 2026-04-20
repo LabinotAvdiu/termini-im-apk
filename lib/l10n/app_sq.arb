@@ -19,6 +19,7 @@
   "orContinueWith": "Ose vazhdoni me",
   "continueWithGoogle": "Vazhdo me Google",
   "continueWithFacebook": "Vazhdo me Facebook",
+  "continueWithApple": "Vazhdo me Apple",
   "iAmUser": "Jam klient",
   "iAmUserSubtitle": "Gjeni dhe rezervoni takimet tuaja të bukurisë",
   "iAmCompany": "Jam profesionist",
@@ -174,10 +175,17 @@
   "past": "Të kaluara",
   "noUpcomingAppointments": "Asnjë takim në vijim",
   "noPastAppointments": "Asnjë takim i kaluar",
+  "seeMorePastAppointments": "Shiko {count} më shumë",
+  "@seeMorePastAppointments": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "appointmentConfirmed": "I konfirmuar",
   "appointmentPending": "Në pritje",
   "appointmentCompleted": "I përfunduar",
   "appointmentCancelled": "I anuluar",
+  "appointmentRejected": "I refuzuar",
+  "appointmentNoShow": "Mungesë",
+  "appointmentNoShowDetail": "Nuk u paraqitët në këtë takim.",
   "mySalon": "Salloni im",
   "companyInfo": "Informacionet e sallonit",
   "servicesAndCategories": "Shërbimet & Kategoritë",
@@ -238,7 +246,7 @@
   "bookingSuccessMessage": "Takimi juaj u rezervua me sukses. Do të merrni një njoftim konfirmimi.",
   "bookingConfirmationSubtitle": "Kontrolloni detajet para se të konfirmoni.",
   "yourAppointment": "Takimi juaj",
-  "reminderNote": "Një kujtues do t'ju dërgohet 24 orë para takimit. Anulimi është i mundur deri 2 orë para.",
+  "reminderNote": "Një kujtues do t'ju dërgohet 24 orë para takimit.",
   "hairdresser": "Stilisti",
   "noPreferenceShort": "Pa pref.",
   "dateLabel": "Data",
@@ -368,7 +376,6 @@
   "cancelAppointment": "Anulo takimin",
   "confirmRejectTitle": "Refuzo këtë takim?",
   "confirmCancelTitle": "Anulo këtë takim?",
-  "cancelAppointmentBody": "Ky veprim do të lirojë orarin.",
   "actionFailed": "Veprimi dështoi. Provo përsëri.",
   "viewDay": "Ditë",
   "viewWeek": "Javë",
@@ -426,6 +433,8 @@
   "monthStatConfirmed": "të konfirmuara",
   "monthStatPending": "në pritje",
   "monthStatRejected": "të refuzuara",
+  "monthStatCancelled": "të anuluara",
+  "monthStatNoShow": "mungesa",
   "appointmentSingular": "takim",
   "appointmentPlural": "takime",
   "emptyDayTitle": "Asnjë takim",
@@ -442,6 +451,54 @@
   "companyOverline": "Berber · Qethje burrash",
   "salonForMen": "Sallon për burra",
   "salonForWomen": "Sallon për gra",
+  "salonClienteleLabel": "Klientela e sallonit",
+  "salonClienteleMen": "Burra",
+  "salonClienteleWomen": "Gra",
+  "salonClienteleBoth": "Të dyja",
+  "salonClienteleRequired": "Zgjidh klientelën e sallonit",
+  "completeYourProfileTitle": "Plotëso profilin tënd",
+  "completeProfileGenderPhone": "Shto numrin dhe gjininë për një shërbim më të mirë.",
+  "completeProfileGenderOnly": "Shto gjininë për të personalizuar filtrat.",
+  "completeProfilePhoneOnly": "Shto numrin e telefonit për të konfirmuar rezervimet.",
+  "useMyGpsLocation": "Përdor pozicionin GPS",
+  "gpsLocationCaptured": "Pozicioni u ruajt ✓",
+  "gpsHintNoAddressOnGoogle": "Adresa nuk gjendet në Google? Përdor GPS-in për të ruajtur pozicionin e saktë — adresa që ke shkruar mbetet.",
+  "gpsErrorServiceDisabled": "Aktivizo GPS-in në pajisjen tënde dhe provo sërish.",
+  "gpsErrorPermissionDenied": "Lejo qasjen në lokacion për të ruajtur koordinatat.",
+  "gpsErrorPermissionDeniedForever": "Hap cilësimet e sistemit dhe aktivizo lokacionin për Termini im.",
+  "gpsErrorTimeout": "Nuk mund të marrim pozicionin. Dil jashtë ose provo sërish.",
+  "gpsErrorUnknown": "Diçka shkoi keq. Provo sërish.",
+  "salonGeocodingBannerTitle": "Përfundo lokalizimin e sallonit",
+  "salonGeocodingBannerBody": "Salloni do të shfaqet më shpejt në kërkime me një adresë Google OSE me koordinata GPS të ruajtura.",
+  "salonGeocodingDialogTitle": "Lokacioni i sallonit",
+  "salonGeocodingDialogSubtitle": "Zgjidh një adresë nga Google OSE ruaj pozicionin me GPS.",
+  "salonGeocodingSaveCta": "Ruaj lokacionin",
+  "salonGeocodingSuccessToast": "Lokacioni u ruajt.",
+  "shareSalon": "Ndaj",
+  "shareSalonSheetTitle": "Ndaj këtë sallon",
+  "shareSalonSheetSubtitle": "Fto dikë për të rezervuar",
+  "shareViaWhatsApp": "WhatsApp",
+  "shareViaWhatsAppCaption": "Dërgim direkt · mesazh i përgatitur",
+  "shareMore": "Ndaj…",
+  "shareMoreCaption": "Fletë sistemi · aplikacione të tjera",
+  "shareCopyLink": "Kopjo lidhjen",
+  "shareLinkCopied": "Lidhja u kopjua",
+  "shareIncludeMeAsPro": "Më rekomando",
+  "shareIncludeMeAsProHelp": "Marrësi do të hyjë në rezervim me ty të zgjedhur tashmë.",
+  "shareLinkPreviewLabel": "Paraqitja",
+  "tomorrowLabel": "Nesër",
+  "noPhoneAvailable": "Nuk ka numër telefoni",
+  "sharedEmployeePrefix": "Rezervim me",
+  "sharedEmployeeHint": "Shërbimet e filtruara për këtë profesionist",
+  "shareWhatsAppMessage": "Përshëndetje! Të rekomandoj {salonName} — rezervo këtu: {url}",
+  "@shareWhatsAppMessage": {
+    "placeholders": {
+      "salonName": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "companySetupHeadline": "Mbaro konfigurimin e sallonit",
+  "companySetupSubtitle": "Edhe disa detaje për të aktivizuar hapësirën e pronarit.",
   "salonUnisex": "Sallon · Burra & Gra",
   "servicesOffered": "të ofruara",
   "approvalsTitle": "MIRATIMET",
@@ -499,5 +556,158 @@
       "total": { "type": "String" }
     }
   },
-  "close": "Mbyll"
+  "close": "Mbyll",
+  "genderSelectorLabel": "Unë jam",
+  "genderSelectorHint": "Përdoret për të para-filtruar sallonet. Mund ta ndryshoni në çdo kohë.",
+
+  "myProfile": "Profili im",
+  "changePhoto": "Ndrysho foton",
+  "takePhoto": "Bëj një foto",
+  "chooseFromGallery": "Zgjidh nga galeria",
+  "removePhoto": "Fshi foton",
+  "removePhotoConfirm": "Të fshijmë foton e profilit?",
+  "avatarUploading": "Duke ngarkuar\u2026",
+  "avatarUploadError": "Ngarkimi i fotos dështoi.",
+  "cropPhotoTitle": "Prite foton",
+  "experienceSection": "Përvoja",
+  "hapticLabel": "Dridhjet",
+  "hapticDesc": "Dridhje të lehta gjatë ndërveprimit",
+  "soundsLabel": "Zërat e ndërfaqes",
+  "soundsDesc": "Çaktivizuar si parazgjedhje",
+  "animationsLabel": "Animacionet",
+  "animationsDesc": "Kalimet dhe efektet vizuale",
+
+  "cancelAppointmentTitle": "Ta anulosh këtë takim?",
+  "cancelAppointmentBody": "{salon} · {date}. Ky veprim është i pakthyeshëm.",
+  "@cancelAppointmentBody": {
+    "placeholders": {
+      "salon": { "type": "String" },
+      "date":  { "type": "String" }
+    }
+  },
+  "cancelAppointmentBodyOwner": "Ky veprim do të lëshojë sllotin e kohës.",
+  "cancelReasonLabel": "Arsyeja (opsionale)",
+  "cancellableUntil": "Mund të anulohet deri më {date}",
+  "@cancellableUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "cancellationTooLate": "Është vonë për të anuluar këtë takim.",
+  "minCancelHoursLabel": "Afati minimal i anulimit (orë)",
+  "minCancelHoursHint": "0 = pa kufizim",
+  "minCancelHoursNone": "Anulim pa kufizim",
+  "minCancelHoursValue": "Mund të anulohet deri {hours}h para",
+  "@minCancelHoursValue": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "bookingCancelPolicyNone": "Mund ta anuloni këtë takim në çdo kohë.",
+  "bookingCancelPolicyHours": "Mund ta anuloni deri {hours}h para takimit.",
+  "@bookingCancelPolicyHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+
+  "upcomingReminderTitle": "Takimi juaj po afrohet",
+  "upcomingReminderBody": "{salon} · për {duration}",
+  "@upcomingReminderBody": {
+    "placeholders": {
+      "salon":    { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "upcomingReminderNow": "tani",
+  "inXHoursYMinutes": "{hours}h {minutes}min",
+  "@inXHoursYMinutes": {
+    "placeholders": {
+      "hours":   { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+
+  "reviewsTitle": "Vlerësime",
+  "reviewSubmitTitle": "Vlerëso vizitën",
+  "reviewRatingLabel": "Vlerësimi juaj",
+  "reviewCommentLabel": "Mendimi juaj (opsional)",
+  "reviewCommentHint": "Ndani përvojën tuaj…",
+  "reviewSubmit": "Publiko vlerësimin",
+  "reviewSubmitted": "Faleminderit! Vlerësimi juaj është publikuar.",
+  "reviewsSeeAll": "Shiko të gjitha ({count})",
+  "@reviewsSeeAll": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reviewsEmpty": "Ende asnjë vlerësim",
+  "reviewsOnlyRatings": "Të gjitha vlerësimet janë lënë vetëm si notë, pa koment të shkruar.",
+  "cancellationReasonOwnerLabel": "ARSYEJA E ANULIMIT",
+  "today": "Sot",
+  "tomorrow": "Nesër",
+  "reviewHideTitle": "Ta fshehësh këtë vlerësim?",
+  "reviewHideReason": "Arsyeja",
+  "reviewsReceived": "Vlerësimet e marra",
+  "reviewHidden": "Vlerësimi i fshehur",
+  "reviewBadge": "★ {rating}/5",
+  "@reviewBadge": {
+    "placeholders": {
+      "rating": { "type": "int" }
+    }
+  },
+
+  "markNoShow": "Shëno mungesë",
+  "noShowConfirmTitle": "Ta shënosh si mungesë?",
+  "noShowConfirmBody": "{client} do të shënohet si i/e munguar. E dukshme në profilin e tij.",
+  "@noShowConfirmBody": {
+    "placeholders": {
+      "client": { "type": "String" }
+    }
+  },
+  "noShowBadge": "{count, plural, =1{1 mungesë} other{{count} mungesa}}",
+  "@noShowBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noShowRegistered": "Mungesa u regjistrua",
+  "noShowTooltip": "Ky klient ka munguar {count} takime.",
+  "@noShowTooltip": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "appointmentsDesktopTitle": "Vizitat tuaja",
+  "appointmentsDesktopOverline": "TAKIMET E MIA",
+  "reviewsReceivedCardTitle": "Vlerësimet e marra",
+  "averageRatingOutOf": "nga 5",
+  "seeAllReviews": "Shiko të gjitha →",
+  "noReviewsYetOwner": "Ende asnjë vlerësim.",
+
+  "rejectAppointmentTitle": "Refuzo këtë rezervim?",
+  "rejectAppointmentSubtitle": "{client} do të njoftohet.",
+  "@rejectAppointmentSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "rejectAppointmentWarning": "Termini mbetet i bllokuar pas refuzimit. Për të liruar terminin dhe lejuar klientë të tjerë të rezervojnë, përdorni butonin \"Liro termin\" pas refuzimit.",
+  "rejectAppointmentReasonLabel": "Arsyeja e refuzimit (opsionale)",
+  "rejectAppointmentButton": "Refuzo",
+  "freeSlotButton": "Liro termin",
+  "freeSlotConfirmTitle": "Ta lirosh këtë termin?",
+  "freeSlotConfirmBody": "Klienti nuk do të marrë njoftim të ri.",
+  "freeSlotDone": "Termini u lirua",
+  "slotFreedBadge": "Termin i liruar",
+  "rejectionReasonOwnerLabel": "ARSYEJA E REFUZIMIT",
+  "rejectionReasonClientLabel": "Arsyeja e sallonit",
+
+  "cancelAppointmentOwnerTitle": "Anulo këtë rezervim?",
+  "cancelAppointmentOwnerSubtitle": "{client} do të njoftohet dhe termini do të lirohet.",
+  "@cancelAppointmentOwnerSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerSubtitleWalkIn": "Termini i {client} do të lirohet.",
+  "@cancelAppointmentOwnerSubtitleWalkIn": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerWarning": "Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.",
+  "cancelAppointmentOwnerWarningWalkIn": "Termini do të bëhet sërish i disponueshëm.",
+  "cancelAppointmentOwnerReasonLabel": "Arsyeja e anulimit (opsionale)"
 }

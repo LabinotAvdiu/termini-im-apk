@@ -10,8 +10,15 @@ import '../../../../core/utils/extensions.dart';
 import '../../data/models/my_company_model.dart';
 import '../../data/models/planning_appointment_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/next_appointment_banner.dart';
 import '../providers/company_planning_provider.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
+import '../widgets/cancellation_reason_box.dart';
+import '../widgets/cancel_appointment_owner_dialog.dart';
+import '../widgets/reject_appointment_dialog.dart';
+import '../widgets/rejection_reason_box.dart';
 import 'company_planning_screen_mobile.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Callback typedefs
@@ -42,6 +49,12 @@ class CompanyPlanningScreenDesktop extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(companyPlanningProvider);
+    // employee_based salons skip the pending-approvals side panel: their
+    // appointments are auto-confirmed on booking, nothing to approve.
+    final bookingMode = ref.watch(
+      companyDashboardProvider.select((s) => s.company?.bookingMode),
+    );
+    final isCapacityBased = bookingMode == 'capacity_based';
 
     // Sidebar is now provided by the shell (MainShell) on desktop.
     return Scaffold(
@@ -56,7 +69,7 @@ class CompanyPlanningScreenDesktop extends ConsumerWidget {
               onPickDate: onPickDate,
             ),
           ),
-          _DesktopApprovalsPanel(state: state),
+          if (isCapacityBased) _DesktopApprovalsPanel(state: state),
         ],
       ),
     );
@@ -123,9 +136,9 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
     final l = context.l10n;
 
     final months = [
-      l.monthShortJan, l.monthShortFeb, l.monthShortMar, l.monthShortApr,
-      l.monthShortMay, l.monthShortJun, l.monthShortJul, l.monthShortAug,
-      l.monthShortSep, l.monthShortOct, l.monthShortNov, l.monthShortDec,
+      l.monthJan, l.monthFeb, l.monthMar, l.monthApr,
+      l.monthMay, l.monthJun, l.monthJul, l.monthAug,
+      l.monthSep, l.monthOct, l.monthNov, l.monthDec,
     ];
     final dayNames = [
       l.monday, l.tuesday, l.wednesday, l.thursday,
@@ -149,8 +162,14 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
         }
       case CompanyPlanningViewMode.month:
         formattedDate =
-            '${months[date.month - 1].toUpperCase()} ${date.year}';
+            '${_capitalize(months[date.month - 1])} ${date.year}';
     }
+
+    // Fixed width for the date label so the navigation chevrons stay anchored
+    // regardless of which day / month is displayed. The value is sized for the
+    // widest possible rendering across all three locales (FR/EN/SQ) plus a bit
+    // of breathing room so the calendar icon doesn't ride up against the text.
+    const double kDateLabelWidth = 340;
 
     return Container(
       color: AppColors.surface,
@@ -174,17 +193,29 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
                   CompanyPlanningViewMode.month => l.previousMonth,
                 },
               ),
-              GestureDetector(
-                onTap: onPickDate,
-                behavior: HitTestBehavior.opaque,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(formattedDate, style: AppTextStyles.h3),
-                    const SizedBox(width: AppSpacing.xs),
-                    const Icon(Icons.calendar_today_rounded,
-                        size: 16, color: AppColors.primary),
-                  ],
+              SizedBox(
+                width: kDateLabelWidth,
+                child: GestureDetector(
+                  onTap: onPickDate,
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          formattedDate,
+                          style: AppTextStyles.h3,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      const Icon(Icons.calendar_today_rounded,
+                          size: 16, color: AppColors.primary),
+                    ],
+                  ),
                 ),
               ),
               IconButton(
@@ -234,6 +265,9 @@ class _DesktopPlanningTopBar extends ConsumerWidget {
       ),
     );
   }
+
+  String _capitalize(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
 
 // ---------------------------------------------------------------------------
@@ -381,8 +415,7 @@ class _DesktopTimelineContentState
     final companyState = ref.watch(companyDashboardProvider);
 
     if (state.isLoading && state.appointments.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     if (state.error != null && state.appointments.isEmpty) {
@@ -394,8 +427,7 @@ class _DesktopTimelineContentState
 
     final company = companyState.company;
     if (company == null) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     final selectedDate =
@@ -415,9 +447,18 @@ class _DesktopTimelineContentState
     }
 
     final rows = buildPlanningRows(todayHours);
+    // In employee_based mode cancelled/rejected cards add noise — the slot
+    // has already been freed on the timeline. We keep them in the counters
+    // at the top so the day's audit numbers stay accurate.
+    final isEmployeeBased = company.bookingMode != 'capacity_based';
+    final visibleAppointments = isEmployeeBased
+        ? state.appointments
+            .where((a) => a.status != 'cancelled' && a.status != 'rejected')
+            .toList()
+        : state.appointments;
     final events = buildPlanningEvents(
       hours: todayHours,
-      appointments: state.appointments,
+      appointments: visibleAppointments,
     );
     final services = company.categories.expand((c) => c.services).toList();
 
@@ -425,6 +466,19 @@ class _DesktopTimelineContentState
     final isToday = planningIsSameDay(selectedDate, now);
     final nowMinutes = isToday ? now.hour * 60 + now.minute : null;
     _maybeAutoScrollToNow(state, todayHours);
+
+    // Per-day totals — feeds the stats header above the timeline.
+    final dayConfirmed =
+        state.appointments.where((a) => a.status == 'confirmed').length;
+    final dayPending =
+        state.appointments.where((a) => a.status == 'pending').length;
+    final dayNoShow =
+        state.appointments.where((a) => a.status == 'no_show').length;
+    final dayCancelled =
+        state.appointments.where((a) => a.status == 'cancelled').length;
+    final dayRejected =
+        state.appointments.where((a) => a.status == 'rejected').length;
+    final dayTotal = state.appointments.length;
 
     return RefreshIndicator(
       color: AppColors.primary,
@@ -440,6 +494,23 @@ class _DesktopTimelineContentState
                 backgroundColor: AppColors.divider,
               ),
             ),
+          // Employee-based mode: surface the next upcoming booking at the
+          // top of the planning. Hidden in capacity mode (multi-booking).
+          if (isEmployeeBased)
+            SliverToBoxAdapter(
+              child: NextAppointmentBanner(viewedDate: state.selectedDate),
+            ),
+          SliverToBoxAdapter(
+            child: _DayStatsHeader(
+              selectedDate: selectedDate,
+              total: dayTotal,
+              confirmed: dayConfirmed,
+              pending: dayPending,
+              noShow: dayNoShow,
+              cancelled: dayCancelled,
+              rejected: dayRejected,
+            ),
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
@@ -472,31 +543,62 @@ class _DesktopTimelineContentState
   Widget _buildWeekBody(
       BuildContext context, CompanyPlanningState state, WidgetRef ref) {
     if (state.isLoading && state.rangeAppointments.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     final selected = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
     final weekStart = planningWeekStart(selected);
 
-    return PlanningWeekView(
-      weekStart: weekStart,
-      appointmentsByDate: state.rangeAppointments,
-      selectedDate: selected,
-      onTapDay: (day) {
-        ref
-            .read(companyPlanningProvider.notifier)
-            .setViewMode(CompanyPlanningViewMode.day);
-        ref.read(companyPlanningProvider.notifier).setDate(day);
-      },
+    // Aggregate the 7-day window for the stats header.
+    var confirmed = 0, pending = 0, noShow = 0, cancelled = 0, rejected = 0;
+    for (var i = 0; i < 7; i++) {
+      final iso = planningToIso(weekStart.add(Duration(days: i)));
+      final list = state.rangeAppointments[iso];
+      if (list == null) continue;
+      for (final a in list) {
+        switch (a.status) {
+          case 'confirmed': confirmed++;
+          case 'pending':   pending++;
+          case 'no_show':   noShow++;
+          case 'cancelled': cancelled++;
+          case 'rejected':  rejected++;
+        }
+      }
+    }
+    final total = confirmed + pending + noShow + cancelled + rejected;
+
+    return Column(
+      children: [
+        _DayStatsHeader(
+          selectedDate: selected,
+          total: total,
+          confirmed: confirmed,
+          pending: pending,
+          noShow: noShow,
+          cancelled: cancelled,
+          rejected: rejected,
+        ),
+        Expanded(
+          child: PlanningWeekView(
+            weekStart: weekStart,
+            appointmentsByDate: state.rangeAppointments,
+            selectedDate: selected,
+            onTapDay: (day) {
+              ref
+                  .read(companyPlanningProvider.notifier)
+                  .setViewMode(CompanyPlanningViewMode.day);
+              ref.read(companyPlanningProvider.notifier).setDate(day);
+            },
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildMonthBody(
       BuildContext context, CompanyPlanningState state, WidgetRef ref) {
     if (state.isLoading && state.rangeAppointments.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+      return const SkeletonPlanningDay();
     }
 
     final selected = DateTime.tryParse(state.selectedDate) ?? DateTime.now();
@@ -543,7 +645,11 @@ class _DesktopApprovalsPanel extends ConsumerWidget {
     final List<PlanningAppointmentModel> dayList = isMonthView
         ? (state.rangeAppointments[state.selectedDate] ?? const [])
             .toList()
-        : state.appointments.where((a) => a.status == 'pending').toList();
+        // Pending-to-approve panel: hide slots that have already started —
+        // the owner has nothing useful to decide on a past time.
+        : state.appointments
+            .where((a) => a.status == 'pending' && !a.isPast)
+            .toList();
 
     dayList.sort((a, b) => a.startTime.compareTo(b.startTime));
 
@@ -573,6 +679,15 @@ class _DesktopApprovalsPanel extends ConsumerWidget {
                     pending: dayList
                         .where((a) => a.status == 'pending')
                         .length,
+                    rejected: dayList
+                        .where((a) => a.status == 'rejected')
+                        .length,
+                    cancelled: dayList
+                        .where((a) => a.status == 'cancelled')
+                        .length,
+                    noShow: dayList
+                        .where((a) => a.status == 'no_show')
+                        .length,
                     onOpenDay: () => ref
                         .read(companyPlanningProvider.notifier)
                         .setViewMode(CompanyPlanningViewMode.day),
@@ -600,17 +715,60 @@ class _DesktopApprovalsPanel extends ConsumerWidget {
                         itemCount: dayList.length,
                         separatorBuilder: (_, __) =>
                             const SizedBox(height: AppSpacing.sm),
-                        itemBuilder: (_, i) => _DayAppointmentCard(
+                        itemBuilder: (ctx, i) => _DayAppointmentCard(
                           appointment: dayList[i],
                           onConfirm: () => ref
                               .read(companyPlanningProvider.notifier)
                               .confirmAppointment(dayList[i].id),
-                          onReject: () => ref
+                          onReject: () async {
+                            final result =
+                                await showRejectAppointmentDialog(
+                              ctx,
+                              clientName: dayList[i].clientFullName,
+                            );
+                            if (result == null || !result.confirmed) return;
+                            ref
+                                .read(companyPlanningProvider.notifier)
+                                .rejectAppointment(dayList[i].id,
+                                    reason: result.reason);
+                          },
+                          onCancel: () async {
+                            final result =
+                                await showCancelAppointmentOwnerDialog(
+                              ctx,
+                              clientName: dayList[i].clientFullName,
+                            );
+                            if (result == null || !result.confirmed) return;
+                            final ok = await ref
+                                .read(companyPlanningProvider.notifier)
+                                .cancelAppointment(dayList[i].id,
+                                    reason: result.reason);
+                            if (!ok && ctx.mounted) {
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                    content: Text(ctx.l10n.actionFailed)),
+                              );
+                            }
+                          },
+                          onMarkNoShow: () => ref
                               .read(companyPlanningProvider.notifier)
-                              .rejectAppointment(dayList[i].id),
-                          onCancel: () => ref
-                              .read(companyPlanningProvider.notifier)
-                              .cancelAppointment(dayList[i].id),
+                              .markNoShow(dayList[i].id),
+                          onFreeSlot: () async {
+                            ref
+                                .read(uxPrefsProvider.notifier)
+                                .lightImpact();
+                            final ok = await ref
+                                .read(companyPlanningProvider.notifier)
+                                .freeRejectedSlot(dayList[i].id);
+                            if (!ctx.mounted) return;
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: Text(ok
+                                    ? ctx.l10n.freeSlotDone
+                                    : ctx.l10n.actionFailed),
+                              ),
+                            );
+                          },
                         ),
                       ),
           ),
@@ -681,6 +839,9 @@ class _MonthPanelHeader extends StatelessWidget {
   final int total;
   final int confirmed;
   final int pending;
+  final int rejected;
+  final int cancelled;
+  final int noShow;
   final VoidCallback onOpenDay;
 
   const _MonthPanelHeader({
@@ -688,6 +849,9 @@ class _MonthPanelHeader extends StatelessWidget {
     required this.total,
     required this.confirmed,
     required this.pending,
+    required this.rejected,
+    required this.cancelled,
+    required this.noShow,
     required this.onOpenDay,
   });
 
@@ -737,22 +901,47 @@ class _MonthPanelHeader extends StatelessWidget {
             ],
           ),
         ),
-        // Breakdown: confirmed + pending with colored dots
+        // Breakdown — only non-zero chips to keep the header uncluttered
+        // for clean months.
         if (total > 0) ...[
           const SizedBox(height: 6),
-          Row(
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: 6,
             children: [
-              _HeaderStatChip(
-                color: AppColors.primary,
-                count: confirmed,
-                label: l.monthStatConfirmed,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              _HeaderStatChip(
-                color: AppColors.warning,
-                count: pending,
-                label: l.monthStatPending,
-              ),
+              if (confirmed > 0)
+                _HeaderStatChip(
+                  color: AppColors.primary,
+                  count: confirmed,
+                  label: l.monthStatConfirmed,
+                ),
+              if (pending > 0)
+                _HeaderStatChip(
+                  color: AppColors.warning,
+                  count: pending,
+                  label: l.monthStatPending,
+                ),
+              if (noShow > 0)
+                _HeaderStatChip(
+                  // No-show & cancelled share the same neutral grey tone
+                  // in the counter — they're both "didn't happen" buckets
+                  // seen as informational, not alerts.
+                  color: AppColors.textHint,
+                  count: noShow,
+                  label: l.monthStatNoShow,
+                ),
+              if (cancelled > 0)
+                _HeaderStatChip(
+                  color: AppColors.textHint,
+                  count: cancelled,
+                  label: l.monthStatCancelled,
+                ),
+              if (rejected > 0)
+                _HeaderStatChip(
+                  color: AppColors.textHint,
+                  count: rejected,
+                  label: l.monthStatRejected,
+                ),
             ],
           ),
         ],
@@ -950,25 +1139,32 @@ class _EmptyApprovals extends StatelessWidget {
 // Pending appointment card in approvals panel
 // ---------------------------------------------------------------------------
 
-class _DayAppointmentCard extends StatelessWidget {
+class _DayAppointmentCard extends ConsumerWidget {
   final PlanningAppointmentModel appointment;
   final VoidCallback onConfirm;
   final VoidCallback onReject;
   final VoidCallback onCancel;
+  final VoidCallback onMarkNoShow;
+  final VoidCallback onFreeSlot;
 
   const _DayAppointmentCard({
     required this.appointment,
     required this.onConfirm,
     required this.onReject,
     required this.onCancel,
+    required this.onMarkNoShow,
+    required this.onFreeSlot,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isWalkIn = appointment.isWalkIn;
     final status = appointment.status;
     final isCancelled =
         status == 'rejected' || status == 'cancelled' || status == 'no_show';
+    // Past appointments shouldn't offer confirm/reject/cancel actions —
+    // the owner can no longer act on them as a booking decision.
+    final isPast = appointment.isPast;
 
     return Container(
       decoration: BoxDecoration(
@@ -1120,8 +1316,36 @@ class _DayAppointmentCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           const Divider(height: 1, color: AppColors.divider),
 
-          // Action buttons — adapt to status
-          if (!isCancelled)
+          // Rejection reason — shown on rejected (slot still blocked) or on
+          // cancelled cards that went through rejection first (slot freed).
+          if ((status == 'rejected' || status == 'cancelled') &&
+              (appointment.rejectionReason?.trim().isNotEmpty ?? false))
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: RejectionReasonBox(
+                reason: appointment.rejectionReason!,
+                showSlotFreedBadge: status == 'cancelled',
+              ),
+            ),
+          // Client-initiated cancellation motif — shown on cancelled cards.
+          if (status == 'cancelled' &&
+              (appointment.cancellationReason?.trim().isNotEmpty ?? false))
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: CancellationReasonBox(
+                  reason: appointment.cancellationReason!),
+            ),
+
+          // Action buttons:
+          //   pending + future    → [Reject] [Confirm]
+          //   confirmed + future  → [Cancel]
+          //   confirmed + past, within 24h → [Mark no-show]
+          //   confirmed + past, >24h → no buttons (too old)
+          //   anything else       → no buttons
+          if (!isCancelled &&
+              (status == 'pending'
+                  ? !isPast
+                  : (!isPast || appointment.canMarkNoShow)))
             Padding(
               padding: const EdgeInsets.all(AppSpacing.sm),
               child: status == 'pending'
@@ -1180,29 +1404,87 @@ class _DayAppointmentCard extends StatelessWidget {
                     )
                   : SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.error,
-                          side: BorderSide(
-                              color:
-                                  AppColors.error.withValues(alpha: 0.5)),
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          minimumSize: const Size(0, 32),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppSpacing.radiusSm),
-                          ),
-                        ),
-                        onPressed: onCancel,
-                        child: Text(
-                          context.l10n.cancelAppointment,
-                          style: GoogleFonts.instrumentSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                      child: isPast
+                          ? OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.error
+                                    .withValues(alpha: 0.7),
+                                side: BorderSide(
+                                    color: AppColors.error
+                                        .withValues(alpha: 0.4)),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                minimumSize: const Size(0, 32),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      AppSpacing.radiusSm),
+                                ),
+                              ),
+                              onPressed: onMarkNoShow,
+                              icon: const Icon(Icons.person_off_outlined,
+                                  size: 16),
+                              label: Text(
+                                context.l10n.markNoShow,
+                                style: GoogleFonts.instrumentSans(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          : OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.error,
+                                side: BorderSide(
+                                    color: AppColors.error
+                                        .withValues(alpha: 0.5)),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                minimumSize: const Size(0, 32),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      AppSpacing.radiusSm),
+                                ),
+                              ),
+                              onPressed: onCancel,
+                              child: Text(
+                                context.l10n.cancelAppointment,
+                                style: GoogleFonts.instrumentSans(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                     ),
+            ),
+          // "Libérer le créneau" — only shown on rejected appointments.
+          if (status == 'rejected')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm, 0, AppSpacing.sm, AppSpacing.sm),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.secondary,
+                    side: BorderSide(
+                        color: AppColors.secondary.withValues(alpha: 0.6)),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    minimumSize: const Size(0, 32),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                  ),
+                  onPressed: onFreeSlot,
+                  icon: const Icon(Icons.lock_open_rounded, size: 14),
+                  label: Text(
+                    context.l10n.freeSlotButton,
+                    style: GoogleFonts.instrumentSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
             ),
         ],
       ),
@@ -1221,6 +1503,8 @@ class _StatusPill extends StatelessWidget {
     final (Color color, String label) = switch (status) {
       'confirmed' => (AppColors.primary, l.appointmentConfirmed),
       'pending' => (AppColors.warning, l.appointmentPending),
+      'rejected' => (AppColors.error, l.appointmentRejected),
+      'no_show' => (AppColors.textHint, l.appointmentNoShow),
       _ => (AppColors.textHint, l.appointmentCancelled),
     };
     return Container(
@@ -1239,6 +1523,144 @@ class _StatusPill extends StatelessWidget {
           color: color,
           letterSpacing: 0.4,
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Day view stats header — compact totals with dot-prefixed chips.
+// Mirrors the month-panel breakdown so the owner gets the same situational
+// awareness whether they're on the month or the day. Only non-zero buckets
+// are shown to keep the header uncluttered for quiet days.
+// ---------------------------------------------------------------------------
+
+class _DayStatsHeader extends StatelessWidget {
+  final DateTime selectedDate;
+  final int total;
+  final int confirmed;
+  final int pending;
+  final int noShow;
+  final int cancelled;
+  final int rejected;
+
+  const _DayStatsHeader({
+    required this.selectedDate,
+    required this.total,
+    required this.confirmed,
+    required this.pending,
+    required this.noShow,
+    required this.cancelled,
+    required this.rejected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final months = [
+      l.monthJan, l.monthFeb, l.monthMar, l.monthApr,
+      l.monthMay, l.monthJun, l.monthJul, l.monthAug,
+      l.monthSep, l.monthOct, l.monthNov, l.monthDec,
+    ];
+    final dayNames = [
+      l.monday, l.tuesday, l.wednesday, l.thursday,
+      l.friday, l.saturday, l.sunday,
+    ];
+    final formatted =
+        '${dayNames[selectedDate.weekday - 1]} ${selectedDate.day} ${months[selectedDate.month - 1]}';
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 0),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border:
+            Border.all(color: AppColors.border.withValues(alpha: 0.5), width: 1),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Left — day label + big total
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                formatted.toUpperCase(),
+                style: AppTextStyles.overline.copyWith(
+                  color: AppColors.textHint,
+                  letterSpacing: 1.4,
+                ),
+              ),
+              const SizedBox(height: 4),
+              RichText(
+                text: TextSpan(
+                  style: GoogleFonts.fraunces(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.5,
+                    height: 1.1,
+                  ),
+                  children: [
+                    TextSpan(text: '$total'),
+                    TextSpan(
+                      text:
+                          ' ${total <= 1 ? l.appointmentSingular : l.appointmentPlural}',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          // Right — non-zero chips wrap
+          if (total > 0)
+            Flexible(
+              child: Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: 6,
+                alignment: WrapAlignment.end,
+                children: [
+                  if (confirmed > 0)
+                    _HeaderStatChip(
+                      color: AppColors.primary,
+                      count: confirmed,
+                      label: l.monthStatConfirmed,
+                    ),
+                  if (pending > 0)
+                    _HeaderStatChip(
+                      color: AppColors.warning,
+                      count: pending,
+                      label: l.monthStatPending,
+                    ),
+                  if (noShow > 0)
+                    _HeaderStatChip(
+                      color: AppColors.textHint,
+                      count: noShow,
+                      label: l.monthStatNoShow,
+                    ),
+                  if (cancelled > 0)
+                    _HeaderStatChip(
+                      color: AppColors.textHint,
+                      count: cancelled,
+                      label: l.monthStatCancelled,
+                    ),
+                  if (rejected > 0)
+                    _HeaderStatChip(
+                      color: AppColors.textHint,
+                      count: rejected,
+                      label: l.monthStatRejected,
+                    ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

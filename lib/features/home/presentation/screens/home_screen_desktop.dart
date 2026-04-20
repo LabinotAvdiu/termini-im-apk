@@ -16,6 +16,9 @@ import '../../data/models/company_card_model.dart';
 import '../../data/models/gender_filter.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart' show FavoriteBadge;
+import '../widgets/complete_profile_banner.dart';
+import '../../../company/presentation/widgets/salon_geocoding_banner.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 /// Desktop (D1) editorial presentation for the home / search screen.
 ///
@@ -89,6 +92,13 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Profile completion nudge (gender / phone missing).
+                    const CompleteProfileBanner(),
+
+                    // Salon geocoding warning — owners whose salon has no
+                    // Google address + no GPS won't be found in search.
+                    const SalonGeocodingBanner(),
+
                     // Hero
                     _DesktopHero(),
 
@@ -136,14 +146,7 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
                           const SizedBox(height: AppSpacing.lg),
 
                           if (companyState.isLoading && companies.isEmpty)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 80),
-                                child: CircularProgressIndicator(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            )
+                            _DesktopSkeletonGrid()
                           else if (companies.isEmpty)
                             _DesktopEmptyState()
                           else
@@ -829,6 +832,37 @@ class _DesktopSalonGrid extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// Desktop skeleton grid — 3 colonnes de SkeletonDesktopSalonCard
+// ---------------------------------------------------------------------------
+
+class _DesktopSkeletonGrid extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const crossAxisCount = 3;
+        const spacing = 24.0;
+        final cardWidth =
+            (constraints.maxWidth - spacing * (crossAxisCount - 1)) /
+                crossAxisCount;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            for (int i = 0; i < 6; i++)
+              SizedBox(
+                width: cardWidth,
+                child: const SkeletonDesktopSalonCard(),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // D1 salon card — image header + body + footer
 // ---------------------------------------------------------------------------
 
@@ -900,25 +934,28 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: company.photoUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Shimmer.fromColors(
-                          baseColor: AppColors.divider,
-                          highlightColor: AppColors.background,
-                          child: Container(color: AppColors.divider),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: AppColors.ivoryAlt,
-                          child: Center(
-                            child: Text(
-                              company.name.isNotEmpty
-                                  ? company.name[0].toUpperCase()
-                                  : '?',
-                              style: GoogleFonts.fraunces(
-                                fontSize: 48,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.primary,
+                      Hero(
+                        tag: 'company-photo-${company.id}',
+                        child: CachedNetworkImage(
+                          imageUrl: company.photoUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: AppColors.divider,
+                            highlightColor: AppColors.background,
+                            child: Container(color: AppColors.divider),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColors.ivoryAlt,
+                            child: Center(
+                              child: Text(
+                                company.name.isNotEmpty
+                                    ? company.name[0].toUpperCase()
+                                    : '?',
+                                style: GoogleFonts.fraunces(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ),
                           ),

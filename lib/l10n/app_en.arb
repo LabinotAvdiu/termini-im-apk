@@ -19,6 +19,7 @@
   "orContinueWith": "Or continue with",
   "continueWithGoogle": "Continue with Google",
   "continueWithFacebook": "Continue with Facebook",
+  "continueWithApple": "Continue with Apple",
   "iAmUser": "I'm a client",
   "iAmUserSubtitle": "Find and book your beauty appointments",
   "iAmCompany": "I'm a professional",
@@ -174,10 +175,17 @@
   "past": "Past",
   "noUpcomingAppointments": "No upcoming appointments",
   "noPastAppointments": "No past appointments",
+  "seeMorePastAppointments": "Show {count} more",
+  "@seeMorePastAppointments": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "appointmentConfirmed": "Confirmed",
   "appointmentPending": "Pending",
   "appointmentCompleted": "Completed",
   "appointmentCancelled": "Cancelled",
+  "appointmentRejected": "Rejected",
+  "appointmentNoShow": "No-show",
+  "appointmentNoShowDetail": "You didn't show up for this appointment.",
   "mySalon": "My Salon",
   "companyInfo": "Salon information",
   "servicesAndCategories": "Services & Categories",
@@ -238,7 +246,7 @@
   "bookingSuccessMessage": "Your appointment has been booked successfully. You will receive a confirmation notification.",
   "bookingConfirmationSubtitle": "Review the details before confirming.",
   "yourAppointment": "Your appointment",
-  "reminderNote": "A reminder will be sent 24h before your appointment. Cancellation is possible up to 2h before.",
+  "reminderNote": "A reminder will be sent 24h before your appointment.",
   "hairdresser": "Stylist",
   "noPreferenceShort": "No pref.",
   "dateLabel": "Date",
@@ -368,7 +376,6 @@
   "cancelAppointment": "Cancel appointment",
   "confirmRejectTitle": "Refuse this appointment?",
   "confirmCancelTitle": "Cancel this appointment?",
-  "cancelAppointmentBody": "This will free the time slot.",
   "actionFailed": "Action failed. Try again.",
   "viewDay": "Day",
   "viewWeek": "Week",
@@ -426,6 +433,8 @@
   "monthStatConfirmed": "confirmed",
   "monthStatPending": "pending",
   "monthStatRejected": "rejected",
+  "monthStatCancelled": "cancelled",
+  "monthStatNoShow": "no-shows",
   "appointmentSingular": "appointment",
   "appointmentPlural": "appointments",
   "emptyDayTitle": "No appointments",
@@ -442,6 +451,54 @@
   "companyOverline": "Barber · Men's cut",
   "salonForMen": "Salon for men",
   "salonForWomen": "Salon for women",
+  "salonClienteleLabel": "Salon clientele",
+  "salonClienteleMen": "Men",
+  "salonClienteleWomen": "Women",
+  "salonClienteleBoth": "Both",
+  "salonClienteleRequired": "Pick the salon's clientele",
+  "completeYourProfileTitle": "Complete your profile",
+  "completeProfileGenderPhone": "Add your phone and gender for a better experience.",
+  "completeProfileGenderOnly": "Add your gender to personalise filters.",
+  "completeProfilePhoneOnly": "Add your phone number so we can confirm bookings.",
+  "useMyGpsLocation": "Use my GPS location",
+  "gpsLocationCaptured": "Location saved ✓",
+  "gpsHintNoAddressOnGoogle": "Address not on Google? Use GPS to save the salon's exact location — the address you typed stays.",
+  "gpsErrorServiceDisabled": "Turn on GPS on your device then try again.",
+  "gpsErrorPermissionDenied": "Allow location access to save the coordinates.",
+  "gpsErrorPermissionDeniedForever": "Open system settings and enable location for Termini im.",
+  "gpsErrorTimeout": "Couldn't get your location. Step outside or try again.",
+  "gpsErrorUnknown": "Something went wrong. Please try again.",
+  "salonGeocodingBannerTitle": "Finish setting up your salon's location",
+  "salonGeocodingBannerBody": "Your salon will appear in searches sooner with a Google address OR saved GPS coordinates.",
+  "salonGeocodingDialogTitle": "Salon location",
+  "salonGeocodingDialogSubtitle": "Pick an address from Google OR save the position via GPS.",
+  "salonGeocodingSaveCta": "Save location",
+  "salonGeocodingSuccessToast": "Location saved.",
+  "shareSalon": "Share",
+  "shareSalonSheetTitle": "Share this salon",
+  "shareSalonSheetSubtitle": "Invite someone to book",
+  "shareViaWhatsApp": "WhatsApp",
+  "shareViaWhatsAppCaption": "Direct send · pre-filled message",
+  "shareMore": "Share…",
+  "shareMoreCaption": "System sheet · other apps",
+  "shareCopyLink": "Copy link",
+  "shareLinkCopied": "Link copied",
+  "shareIncludeMeAsPro": "Recommend me",
+  "shareIncludeMeAsProHelp": "The recipient will land on the booking with you already picked.",
+  "shareLinkPreviewLabel": "Preview",
+  "tomorrowLabel": "Tomorrow",
+  "noPhoneAvailable": "No phone on file",
+  "sharedEmployeePrefix": "Booking with",
+  "sharedEmployeeHint": "Services filtered for this pro",
+  "shareWhatsAppMessage": "Hey! I recommend {salonName} — book here: {url}",
+  "@shareWhatsAppMessage": {
+    "placeholders": {
+      "salonName": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "companySetupHeadline": "Finish setting up your salon",
+  "companySetupSubtitle": "A few more details to activate your owner dashboard.",
   "salonUnisex": "Salon · Men & Women",
   "servicesOffered": "offered",
   "approvalsTitle": "APPROVALS",
@@ -499,5 +556,158 @@
       "total": { "type": "String" }
     }
   },
-  "close": "Close"
+  "close": "Close",
+  "genderSelectorLabel": "I am",
+  "genderSelectorHint": "Used to pre-filter salons. You can change it anytime.",
+
+  "myProfile": "My profile",
+  "changePhoto": "Change photo",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
+  "removePhoto": "Remove photo",
+  "removePhotoConfirm": "Remove your profile photo?",
+  "avatarUploading": "Uploading\u2026",
+  "avatarUploadError": "Photo upload failed.",
+  "cropPhotoTitle": "Crop photo",
+  "experienceSection": "Experience",
+  "hapticLabel": "Haptic feedback",
+  "hapticDesc": "Subtle taps when you interact",
+  "soundsLabel": "Interface sounds",
+  "soundsDesc": "Off by default",
+  "animationsLabel": "Animations",
+  "animationsDesc": "Transitions and visual effects",
+
+  "cancelAppointmentTitle": "Cancel this appointment?",
+  "cancelAppointmentBody": "{salon} · {date}. This action cannot be undone.",
+  "@cancelAppointmentBody": {
+    "placeholders": {
+      "salon": { "type": "String" },
+      "date":  { "type": "String" }
+    }
+  },
+  "cancelAppointmentBodyOwner": "This will free up the time slot.",
+  "cancelReasonLabel": "Reason (optional)",
+  "cancellableUntil": "Cancellable until {date}",
+  "@cancellableUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "cancellationTooLate": "Too late to cancel this booking.",
+  "minCancelHoursLabel": "Minimum cancellation window (hours)",
+  "minCancelHoursHint": "0 = no restriction",
+  "minCancelHoursNone": "Cancellation with no restriction",
+  "minCancelHoursValue": "Cancellable up to {hours}h before",
+  "@minCancelHoursValue": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "bookingCancelPolicyNone": "You can cancel this appointment at any time.",
+  "bookingCancelPolicyHours": "Cancellable up to {hours}h before the appointment.",
+  "@bookingCancelPolicyHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+
+  "upcomingReminderTitle": "Your appointment is coming up",
+  "upcomingReminderBody": "{salon} · in {duration}",
+  "@upcomingReminderBody": {
+    "placeholders": {
+      "salon":    { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "upcomingReminderNow": "now",
+  "inXHoursYMinutes": "{hours}h {minutes}min",
+  "@inXHoursYMinutes": {
+    "placeholders": {
+      "hours":   { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+
+  "reviewsTitle": "Reviews",
+  "reviewSubmitTitle": "Rate your visit",
+  "reviewRatingLabel": "Your rating",
+  "reviewCommentLabel": "Your review (optional)",
+  "reviewCommentHint": "Share your experience…",
+  "reviewSubmit": "Publish review",
+  "reviewSubmitted": "Thanks! Your review is live.",
+  "reviewsSeeAll": "See all reviews ({count})",
+  "@reviewsSeeAll": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reviewsEmpty": "No reviews yet",
+  "reviewsOnlyRatings": "All reviews are ratings only, without any written comment.",
+  "cancellationReasonOwnerLabel": "CANCELLATION REASON",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "reviewHideTitle": "Hide this review?",
+  "reviewHideReason": "Reason",
+  "reviewsReceived": "Reviews received",
+  "reviewHidden": "Review hidden",
+  "reviewBadge": "★ {rating}/5",
+  "@reviewBadge": {
+    "placeholders": {
+      "rating": { "type": "int" }
+    }
+  },
+
+  "markNoShow": "Mark no-show",
+  "noShowConfirmTitle": "Mark as no-show?",
+  "noShowConfirmBody": "{client} will be marked as absent. Visible on their profile.",
+  "@noShowConfirmBody": {
+    "placeholders": {
+      "client": { "type": "String" }
+    }
+  },
+  "noShowBadge": "{count, plural, =1{1 no-show} other{{count} no-shows}}",
+  "@noShowBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noShowRegistered": "No-show recorded",
+  "noShowTooltip": "This client missed {count} appointments.",
+  "@noShowTooltip": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "appointmentsDesktopTitle": "Your visits",
+  "appointmentsDesktopOverline": "MY APPOINTMENTS",
+  "reviewsReceivedCardTitle": "Reviews received",
+  "averageRatingOutOf": "out of 5",
+  "seeAllReviews": "See all →",
+  "noReviewsYetOwner": "No reviews yet.",
+
+  "rejectAppointmentTitle": "Reject this booking?",
+  "rejectAppointmentSubtitle": "{client} will be notified.",
+  "@rejectAppointmentSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "rejectAppointmentWarning": "The slot remains blocked after rejection. To free the slot and allow other clients to book, use the \"Free the slot\" button after rejecting.",
+  "rejectAppointmentReasonLabel": "Reason for rejection (optional)",
+  "rejectAppointmentButton": "Reject",
+  "freeSlotButton": "Free the slot",
+  "freeSlotConfirmTitle": "Free this slot?",
+  "freeSlotConfirmBody": "The client will not receive another notification.",
+  "freeSlotDone": "Slot freed",
+  "slotFreedBadge": "Slot freed",
+  "rejectionReasonOwnerLabel": "REJECTION REASON",
+  "rejectionReasonClientLabel": "Salon's reason",
+
+  "cancelAppointmentOwnerTitle": "Cancel this booking?",
+  "cancelAppointmentOwnerSubtitle": "{client} will be notified and the slot will be freed.",
+  "@cancelAppointmentOwnerSubtitle": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerSubtitleWalkIn": "{client}'s slot will be freed.",
+  "@cancelAppointmentOwnerSubtitleWalkIn": {
+    "placeholders": { "client": { "type": "String" } }
+  },
+  "cancelAppointmentOwnerWarning": "The slot will become available again and the client will be notified.",
+  "cancelAppointmentOwnerWarningWalkIn": "The slot will become available again.",
+  "cancelAppointmentOwnerReasonLabel": "Reason for cancellation (optional)"
 }

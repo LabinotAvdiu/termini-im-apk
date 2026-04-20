@@ -10,9 +10,13 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../profile/presentation/widgets/avatar_editor.dart';
+import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/salon_geocoding_banner.dart';
+import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
 // Callback typedefs
@@ -83,8 +87,7 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: state.isLoading && state.company == null
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
+          ? const SkeletonDashboard()
           : state.error != null && state.company == null
               ? _MobileErrorView(
                   message: state.error!,
@@ -110,6 +113,9 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
                             if (state.company != null) ...[
+                              // Red warning when the salon has no Google
+                              // address + no GPS — blocks proximity ranking.
+                              const SalonGeocodingBanner(),
                               _MobileCompanyInfoCard(
                                 company: state.company!,
                                 onEdit: () =>
@@ -200,6 +206,14 @@ class _MobileAppBar extends ConsumerWidget {
         ? user!.firstName.titleCase
         : context.l10n.mySalon;
 
+    // Build initials for avatar fallback.
+    final initials = [
+      user?.firstName.trim() ?? '',
+      user?.lastName.trim() ?? '',
+    ].where((w) => w.isNotEmpty).take(2).map((w) => w[0].toUpperCase()).join();
+
+    final avatarUrl = user?.thumbnailUrl ?? user?.profileImageUrl;
+
     return SliverAppBar(
       pinned: true,
       backgroundColor: AppColors.background,
@@ -207,32 +221,57 @@ class _MobileAppBar extends ConsumerWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       shadowColor: AppColors.cardShadow,
-      title: Column(
+      title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            context.l10n.greetingHello,
-            style: AppTextStyles.overline.copyWith(
-              color: AppColors.textHint,
-              letterSpacing: 1.4,
-            ),
+          // Avatar 40×40 — read-only, tapping opens Settings.
+          AvatarDisplay(
+            photoUrl: avatarUrl,
+            initials: initials,
+            size: 40,
           ),
-          Text.rich(
-            TextSpan(
-              children: [
+          const SizedBox(width: AppSpacing.sm),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.greetingHello,
+                style: AppTextStyles.overline.copyWith(
+                  color: AppColors.textHint,
+                  letterSpacing: 1.4,
+                ),
+              ),
+              Text.rich(
                 TextSpan(
-                  text: firstName,
-                  style: AppTextStyles.h3,
+                  children: [
+                    TextSpan(
+                      text: firstName,
+                      style: AppTextStyles.h3,
+                    ),
+                    const TextSpan(
+                      text: '.',
+                      style: TextStyle(color: AppColors.primary),
+                    ),
+                  ],
                 ),
-                const TextSpan(
-                  text: '.',
-                  style: TextStyle(color: AppColors.primary),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
+      actions: [
+        if (company != null)
+          ShareIconButton(
+            companyId: company!.id,
+            salonName: company!.name,
+            bookingMode: company!.bookingMode,
+            employeeIds: {
+              for (final e in company!.employees) e.userId,
+            },
+            showFreshBadge: true,
+          ),
+      ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(0.5),
         child: Container(height: 0.5, color: AppColors.divider),
@@ -450,6 +489,13 @@ class _MobileCompanyInfoCard extends ConsumerWidget {
                       icon: Icons.phone_outlined, text: company.phone),
                   DashboardInfoRow(
                       icon: Icons.email_outlined, text: company.email),
+                  DashboardInfoRow(
+                    icon: Icons.timer_off_outlined,
+                    text: company.minCancelHours == 0
+                        ? context.l10n.minCancelHoursNone
+                        : context.l10n
+                            .minCancelHoursValue(company.minCancelHours),
+                  ),
                   if (company.description != null &&
                       company.description!.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.sm),

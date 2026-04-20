@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -21,11 +24,17 @@ import 'booking_screen_desktop.dart';
 class BookingScreen extends ConsumerStatefulWidget {
   final String companyId;
   final String? serviceId;
+  /// Set by the router when a shared link carries `?employee=<userId>`.
+  /// Forwarded to [BookingNotifier.initialize] which selects that employee
+  /// after the employee list loads — skipped silently if the id doesn't
+  /// match any available pro or if the salon is capacity_based.
+  final String? preselectedEmployeeId;
 
   const BookingScreen({
     super.key,
     required this.companyId,
     this.serviceId,
+    this.preselectedEmployeeId,
   });
 
   @override
@@ -44,6 +53,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       ref.read(bookingProvider.notifier).initialize(
             companyId: widget.companyId,
             serviceId: widget.serviceId,
+            preselectedEmployeeId: widget.preselectedEmployeeId,
           );
     });
   }
@@ -71,7 +81,17 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     if (step > 0) {
       ref.read(bookingProvider.notifier).previousStep();
     } else {
-      context.go('/company/${widget.companyId}');
+      // Preserve `?employee=<userId>` so a recipient going back from the
+      // booking flow lands on the same silently-filtered salon page they
+      // came from (otherwise the service list snaps back to "all").
+      final employee = widget.preselectedEmployeeId;
+      final uri = Uri(
+        path: '/company/${widget.companyId}',
+        queryParameters: (employee != null && employee.isNotEmpty)
+            ? {'employee': employee}
+            : null,
+      );
+      context.go(uri.toString());
     }
   }
 
@@ -81,14 +101,20 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       showAuthRequiredModal(context);
       return;
     }
+    // Changement de step — selectionClick
+    ref.read(uxPrefsProvider.notifier).selectionClick();
     ref.read(bookingProvider.notifier).nextStep();
   }
 
   void _handlePrevious() {
+    ref.read(uxPrefsProvider.notifier).selectionClick();
     ref.read(bookingProvider.notifier).previousStep();
   }
 
   Future<void> _handleConfirm() async {
+    // Déclenchement de la confirmation — lightImpact avant la requête
+    ref.read(uxPrefsProvider.notifier).lightImpact();
+
     final booking = await ref
         .read(bookingProvider.notifier)
         .confirmBooking(companyId: widget.companyId);
@@ -96,6 +122,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     if (!mounted) return;
 
     if (booking != null) {
+      // Succès major — mediumImpact
+      ref.read(uxPrefsProvider.notifier).mediumImpact();
       _showSuccessDialog();
     }
   }
@@ -149,20 +177,22 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 // Success dialog — shared between mobile and desktop (shown by the wrapper)
 // ---------------------------------------------------------------------------
 
-class _BookingSuccessDialog extends StatefulWidget {
+class _BookingSuccessDialog extends ConsumerStatefulWidget {
   final VoidCallback onDone;
   final bool isPending;
 
   const _BookingSuccessDialog({required this.onDone, this.isPending = false});
 
   @override
-  State<_BookingSuccessDialog> createState() => _BookingSuccessDialogState();
+  ConsumerState<_BookingSuccessDialog> createState() =>
+      _BookingSuccessDialogState();
 }
 
-class _BookingSuccessDialogState extends State<_BookingSuccessDialog>
+class _BookingSuccessDialogState extends ConsumerState<_BookingSuccessDialog>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
+  late final ConfettiController _confettiController;
 
   @override
   void initState() {
@@ -175,23 +205,76 @@ class _BookingSuccessDialogState extends State<_BookingSuccessDialog>
       parent: _controller,
       curve: Curves.elasticOut,
     );
+    _confettiController = ConfettiController(
+      duration: const Duration(milliseconds: 1200),
+    );
     _controller.forward();
+
+    // Lance le confetti uniquement si :
+    // - booking confirmé (pas pending)
+    // - animations activées dans les prefs
+    // - MediaQuery.disableAnimations est false (a11y)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final animationsEnabled =
+          ref.read(uxPrefsProvider).animationsEnabled;
+      final reduceMotion =
+          MediaQuery.of(context).disableAnimations;
+
+      if (!widget.isPending && animationsEnabled && !reduceMotion) {
+        _confettiController.play();
+      }
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _confettiController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Reuse the same dialog from the original file — unchanged visually.
-    return _SuccessDialogContent(
-      controller: _controller,
-      scaleAnimation: _scaleAnimation,
-      isPending: widget.isPending,
-      onDone: widget.onDone,
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        // Dialog content
+        _SuccessDialogContent(
+          controller: _controller,
+          scaleAnimation: _scaleAnimation,
+          isPending: widget.isPending,
+          onDone: widget.onDone,
+        ),
+
+        // Confetti — par-dessus le dialog, depuis le haut
+        Positioned(
+          top: 0,
+          child: ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirection: math.pi / 2, // vers le bas
+            blastDirectionality: BlastDirectionality.explosive,
+            emissionFrequency: 0.15,
+            numberOfParticles: 18,
+            gravity: 0.2,
+            maxBlastForce: 20,
+            minBlastForce: 8,
+            // Couleurs éditoriales — 4 max pour rester classe
+            colors: const [
+              AppColors.primary,
+              AppColors.secondary,
+              AppColors.ivoryAlt,
+              Colors.white,
+            ],
+            // Paillettes rectangulaires 6×14 — pas des ronds kitsch
+            createParticlePath: (size) {
+              final path = Path();
+              path.addRect(Rect.fromLTWH(0, 0, 6, 14));
+              return path;
+            },
+          ),
+        ),
+      ],
     );
   }
 }

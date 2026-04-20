@@ -284,9 +284,20 @@ class MyCompanyRemoteDatasource {
 
   // ── Company planning appointments ────────────────────────────────────────
 
+  /// Owner planning — fetch a single day.
+  /// Default status filter covers every state that occupies or recently
+  /// occupied the slot, so the owner keeps an honest timeline. `rejected`
+  /// is included because it still blocks capacity and shows the motif +
+  /// the "Free the slot" action.
   Future<List<PlanningAppointmentModel>> listCompanyAppointments(
     String date, {
-    List<String> statuses = const ['confirmed', 'pending'],
+    List<String> statuses = const [
+      'confirmed',
+      'pending',
+      'no_show',
+      'cancelled',
+      'rejected',
+    ],
   }) async {
     try {
       final url = ApiConstants.myCompanyAppointments(date, statuses);
@@ -302,10 +313,19 @@ class MyCompanyRemoteDatasource {
     }
   }
 
+  /// Owner planning — fetch a date range (week / month views). Same status
+  /// default as `listCompanyAppointments` so the month grid counts reflect
+  /// the real activity including no-shows, cancellations and rejections.
   Future<List<PlanningAppointmentModel>> listCompanyAppointmentsRange(
     String start,
     String end, {
-    List<String> statuses = const ['confirmed', 'pending'],
+    List<String> statuses = const [
+      'confirmed',
+      'pending',
+      'no_show',
+      'cancelled',
+      'rejected',
+    ],
   }) async {
     try {
       final response = await _client.get(
@@ -358,11 +378,18 @@ class MyCompanyRemoteDatasource {
   }
 
   Future<void> updateAppointmentStatus(
-      String id, String status) async {
+    String id,
+    String status, {
+    String? reason,
+  }) async {
     try {
+      final body = <String, dynamic>{'status': status};
+      if (reason != null && reason.trim().isNotEmpty) {
+        body['reason'] = reason.trim();
+      }
       await _client.put(
         ApiConstants.myCompanyAppointmentStatus(id),
-        data: {'status': status},
+        data: body,
       );
     } on DioException catch (e) {
       throw _mapDioException(e);

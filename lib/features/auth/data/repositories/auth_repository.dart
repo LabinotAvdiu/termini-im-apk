@@ -126,10 +126,46 @@ class AuthRepository {
   // ---------------------------------------------------------------------------
 
   Future<AuthResponse> googleLogin({
-    required String idToken,
+    String? idToken,
+    String? accessToken,
+    String? role,
     bool rememberMe = true,
   }) async {
-    final response = await _datasource.googleLogin(idToken: idToken);
+    final response = await _datasource.googleLogin(
+      idToken: idToken,
+      accessToken: accessToken,
+      role: role,
+    );
+    await _persistSession(
+      token: response.token,
+      refreshToken: response.refreshToken,
+      role: response.role,
+      rememberMe: rememberMe,
+    );
+    return response;
+  }
+
+  Future<AuthResponse> completeCompanySignup({
+    required String companyName,
+    required String address,
+    required String companyGender,
+    String? city,
+    String? phone,
+    String? bookingMode,
+    double? latitude,
+    double? longitude,
+    bool rememberMe = true,
+  }) async {
+    final response = await _datasource.completeCompanySignup(
+      companyName: companyName,
+      address: address,
+      companyGender: companyGender,
+      city: city,
+      phone: phone,
+      bookingMode: bookingMode,
+      latitude: latitude,
+      longitude: longitude,
+    );
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
@@ -141,9 +177,37 @@ class AuthRepository {
 
   Future<AuthResponse> facebookLogin({
     required String accessToken,
+    String? role,
     bool rememberMe = true,
   }) async {
-    final response = await _datasource.facebookLogin(accessToken: accessToken);
+    final response = await _datasource.facebookLogin(
+      accessToken: accessToken,
+      role: role,
+    );
+    await _persistSession(
+      token: response.token,
+      refreshToken: response.refreshToken,
+      role: response.role,
+      rememberMe: rememberMe,
+    );
+    return response;
+  }
+
+  Future<AuthResponse> appleLogin({
+    required String identityToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+    String? role,
+    bool rememberMe = true,
+  }) async {
+    final response = await _datasource.appleLogin(
+      identityToken: identityToken,
+      authorizationCode: authorizationCode,
+      firstName: firstName,
+      lastName: lastName,
+      role: role,
+    );
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
