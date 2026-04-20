@@ -25,7 +25,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: Remove default values before push
-  // final _emailController = TextEditingController(text: 'karim@barbier-parisien.fr');
+  // final _emailController = TextEditingController(text: ');
   final _emailController = TextEditingController(text: 'donjeta@termini.im');
   final _passwordController = TextEditingController(text: 'Password1');
   bool _passwordVisible = false;

@@ -486,6 +486,8 @@
   "shareIncludeMeAsPro": "Me recommander",
   "shareIncludeMeAsProHelp": "Le destinataire arrivera sur la réservation avec toi déjà choisi.",
   "shareLinkPreviewLabel": "Aperçu",
+  "tomorrowLabel": "Demain",
+  "noPhoneAvailable": "Pas de numéro renseigné",
   "sharedEmployeePrefix": "Rendez-vous avec",
   "sharedEmployeeHint": "Services filtrés pour ce pro",
   "shareWhatsAppMessage": "Salut ! Je te recommande {salonName} — prends ton rendez-vous ici : {url}",
@@ -701,6 +703,11 @@
   "@cancelAppointmentOwnerSubtitle": {
     "placeholders": { "client": { "type": "String" } }
   },
+  "cancelAppointmentOwnerSubtitleWalkIn": "Le créneau de {client} sera libéré.",
+  "@cancelAppointmentOwnerSubtitleWalkIn": {
+    "placeholders": { "client": { "type": "String" } }
+  },
   "cancelAppointmentOwnerWarning": "Le créneau redeviendra disponible à la réservation et le client sera notifié.",
+  "cancelAppointmentOwnerWarningWalkIn": "Le créneau redeviendra disponible à la réservation.",
   "cancelAppointmentOwnerReasonLabel": "Motif de l'annulation (facultatif)"
 }

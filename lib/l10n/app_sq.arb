@@ -486,6 +486,8 @@
   "shareIncludeMeAsPro": "Më rekomando",
   "shareIncludeMeAsProHelp": "Marrësi do të hyjë në rezervim me ty të zgjedhur tashmë.",
   "shareLinkPreviewLabel": "Paraqitja",
+  "tomorrowLabel": "Nesër",
+  "noPhoneAvailable": "Nuk ka numër telefoni",
   "sharedEmployeePrefix": "Rezervim me",
   "sharedEmployeeHint": "Shërbimet e filtruara për këtë profesionist",
   "shareWhatsAppMessage": "Përshëndetje! Të rekomandoj {salonName} — rezervo këtu: {url}",
@@ -701,6 +703,11 @@
   "@cancelAppointmentOwnerSubtitle": {
     "placeholders": { "client": { "type": "String" } }
   },
+  "cancelAppointmentOwnerSubtitleWalkIn": "Termini i {client} do të lirohet.",
+  "@cancelAppointmentOwnerSubtitleWalkIn": {
+    "placeholders": { "client": { "type": "String" } }
+  },
   "cancelAppointmentOwnerWarning": "Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.",
+  "cancelAppointmentOwnerWarningWalkIn": "Termini do të bëhet sërish i disponueshëm.",
   "cancelAppointmentOwnerReasonLabel": "Arsyeja e anulimit (opsionale)"
 }

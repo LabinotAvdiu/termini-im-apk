@@ -8,6 +8,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../data/models/my_company_model.dart';
+import '../providers/company_dashboard_provider.dart';
 import '../providers/company_planning_provider.dart';
 import 'company_planning_screen_desktop.dart';
 import 'company_planning_screen_mobile.dart';
@@ -30,7 +31,12 @@ class _CompanyPlanningScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       ref.read(companyPlanningProvider.notifier).load();
+      // Pull in the company (opening hours + bookingMode) — employees
+      // don't visit the owner dashboard so the dashboard provider would
+      // stay empty otherwise. loadCompanyOnly is idempotent for owners.
+      ref.read(companyDashboardProvider.notifier).loadCompanyOnly();
     });
   }
 

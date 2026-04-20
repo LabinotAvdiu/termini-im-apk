@@ -2620,6 +2620,18 @@ abstract class AppLocalizations {
   /// **'Aperçu'**
   String get shareLinkPreviewLabel;
 
+  /// No description provided for @tomorrowLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get tomorrowLabel;
+
+  /// No description provided for @noPhoneAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de numéro renseigné'**
+  String get noPhoneAvailable;
+
   /// No description provided for @sharedEmployeePrefix.
   ///
   /// In fr, this message translates to:
@@ -3292,11 +3304,23 @@ abstract class AppLocalizations {
   /// **'{client} sera prévenu(e) et le créneau sera libéré.'**
   String cancelAppointmentOwnerSubtitle(String client);
 
+  /// No description provided for @cancelAppointmentOwnerSubtitleWalkIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau de {client} sera libéré.'**
+  String cancelAppointmentOwnerSubtitleWalkIn(String client);
+
   /// No description provided for @cancelAppointmentOwnerWarning.
   ///
   /// In fr, this message translates to:
   /// **'Le créneau redeviendra disponible à la réservation et le client sera notifié.'**
   String get cancelAppointmentOwnerWarning;
+
+  /// No description provided for @cancelAppointmentOwnerWarningWalkIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le créneau redeviendra disponible à la réservation.'**
+  String get cancelAppointmentOwnerWarningWalkIn;
 
   /// No description provided for @cancelAppointmentOwnerReasonLabel.
   ///

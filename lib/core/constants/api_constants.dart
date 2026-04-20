@@ -2,11 +2,18 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 abstract class ApiConstants {
-  // Android emulator reaches the host machine via 10.0.2.2 — localhost on the
-  // emulator points to the emulator itself. Web and other platforms use localhost.
+  // Override via --dart-define=API_BASE_URL=https://api.termini-im.com/api at build time.
+  // Without an override, Android emulator uses 10.0.2.2 to reach the host; other
+  // platforms fall back to localhost.
+  static const String _envBaseUrl =
+      String.fromEnvironment('API_BASE_URL', defaultValue: '');
+
   static final String baseUrl = _resolveBaseUrl();
 
   static String _resolveBaseUrl() {
+    if (_envBaseUrl.isNotEmpty) {
+      return _envBaseUrl;
+    }
     if (!kIsWeb && Platform.isAndroid) {
       return 'http://10.0.2.2:8080/api';
     }
@@ -121,7 +128,10 @@ abstract class ApiConstants {
   // My Schedule (authenticated employee endpoints)
   // ---------------------------------------------------------------------------
   static const String mySchedule         = '/my-schedule';
+  static const String myScheduleUpcoming = '/my-schedule/upcoming';
   static const String myScheduleWalkIn   = '/my-schedule/walk-in';
+  static String myScheduleAppointmentStatus(String id) =>
+      '/my-schedule/appointments/$id/status';
   static const String myScheduleSettings = '/my-schedule/settings';
   static const String myScheduleHours    = '/my-schedule/hours';
   static const String myScheduleBreaks   = '/my-schedule/breaks';

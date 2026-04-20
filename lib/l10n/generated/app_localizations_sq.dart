@@ -1343,6 +1343,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get shareLinkPreviewLabel => 'Paraqitja';
 
   @override
+  String get tomorrowLabel => 'Nesër';
+
+  @override
+  String get noPhoneAvailable => 'Nuk ka numër telefoni';
+
+  @override
   String get sharedEmployeePrefix => 'Rezervim me';
 
   @override
@@ -1739,8 +1745,17 @@ class AppLocalizationsSq extends AppLocalizations {
   }
 
   @override
+  String cancelAppointmentOwnerSubtitleWalkIn(String client) {
+    return 'Termini i $client do të lirohet.';
+  }
+
+  @override
   String get cancelAppointmentOwnerWarning =>
       'Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.';
+
+  @override
+  String get cancelAppointmentOwnerWarningWalkIn =>
+      'Termini do të bëhet sërish i disponueshëm.';
 
   @override
   String get cancelAppointmentOwnerReasonLabel =>

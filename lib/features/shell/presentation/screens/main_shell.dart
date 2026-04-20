@@ -15,7 +15,6 @@ import '../../../company/presentation/providers/pending_count_provider.dart';
 import '../../../company/presentation/screens/company_dashboard_screen.dart';
 import '../../../company/presentation/screens/company_planning_screen.dart';
 import '../../../company/presentation/screens/pending_approvals_screen.dart';
-import '../../../employee_schedule/presentation/screens/employee_schedule_screen.dart';
 import '../../../employee_schedule/presentation/screens/schedule_settings_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 
@@ -53,9 +52,12 @@ class _MainShellState extends ConsumerState<MainShell> {
     final pages = <Widget>[
       const HomeScreen(),
       if (authState.isOwner) const CompanyDashboardScreen(),
-      if ((authState.isOwner && !isCapacityOwner) || authState.isEmployee)
-        const EmployeeScheduleScreen(),
-      if (isCapacityOwner) const _LazyPage(child: CompanyPlanningScreen()),
+      // Unified planning — day stats, day/week/month views, cancel + no-show.
+      // Backend scopes the data automatically (full for owners, employee's
+      // own bookings for employees). Replaces the old EmployeeScheduleScreen
+      // which only had a single-day view with no stats header.
+      if (authState.isOwner || authState.isEmployee)
+        const _LazyPage(child: CompanyPlanningScreen()),
       if ((authState.isOwner && !isCapacityOwner) || authState.isEmployee)
         const _LazyPage(child: ScheduleSettingsScreen()),
       if (isCapacityOwner) const _LazyPage(child: PendingApprovalsScreen()),
@@ -169,16 +171,9 @@ List<_TabSpec> _buildTabs({
         ));
   }
 
-  if ((isOwner && !isCapacityOwner) || isEmployee) {
-    add((i) => _TabSpec(
-          icon: Icons.view_timeline_rounded,
-          label: context.l10n.myPlanning,
-          selected: selectedIndex == i,
-          onTap: () => onTap(i),
-        ));
-  }
-
-  if (isCapacityOwner) {
+  // Unified planning tab — shown to any company member (owner or employee,
+  // regardless of booking mode). The underlying screen is the same.
+  if (isOwner || isEmployee) {
     add((i) => _TabSpec(
           icon: Icons.view_timeline_rounded,
           label: context.l10n.myPlanning,

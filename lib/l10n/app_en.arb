@@ -486,6 +486,8 @@
   "shareIncludeMeAsPro": "Recommend me",
   "shareIncludeMeAsProHelp": "The recipient will land on the booking with you already picked.",
   "shareLinkPreviewLabel": "Preview",
+  "tomorrowLabel": "Tomorrow",
+  "noPhoneAvailable": "No phone on file",
   "sharedEmployeePrefix": "Booking with",
   "sharedEmployeeHint": "Services filtered for this pro",
   "shareWhatsAppMessage": "Hey! I recommend {salonName} — book here: {url}",
@@ -701,6 +703,11 @@
   "@cancelAppointmentOwnerSubtitle": {
     "placeholders": { "client": { "type": "String" } }
   },
+  "cancelAppointmentOwnerSubtitleWalkIn": "{client}'s slot will be freed.",
+  "@cancelAppointmentOwnerSubtitleWalkIn": {
+    "placeholders": { "client": { "type": "String" } }
+  },
   "cancelAppointmentOwnerWarning": "The slot will become available again and the client will be notified.",
+  "cancelAppointmentOwnerWarningWalkIn": "The slot will become available again.",
   "cancelAppointmentOwnerReasonLabel": "Reason for cancellation (optional)"
 }

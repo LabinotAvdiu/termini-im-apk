@@ -11,6 +11,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../data/models/my_company_model.dart';
 import '../widgets/cancel_appointment_owner_dialog.dart';
+import '../widgets/next_appointment_banner.dart';
 import '../widgets/cancellation_reason_box.dart';
 import '../widgets/reject_appointment_dialog.dart';
 import '../widgets/rejection_reason_box.dart';
@@ -333,9 +334,19 @@ class _CompanyPlanningScreenMobileState
     }
 
     final rows = buildPlanningRows(todayHours);
+    // In employee_based mode an appointment is owned by exactly one pro, so
+    // a cancelled/rejected card brings no informational value on the timeline
+    // (the slot is instantly free again). We keep them in the stats counters
+    // to preserve audit context but hide the cards themselves.
+    final isEmployeeBased = company.bookingMode != 'capacity_based';
+    final visibleAppointments = isEmployeeBased
+        ? state.appointments
+            .where((a) => a.status != 'cancelled' && a.status != 'rejected')
+            .toList()
+        : state.appointments;
     final events = buildPlanningEvents(
       hours: todayHours,
-      appointments: state.appointments,
+      appointments: visibleAppointments,
     );
 
     final services = company.categories.expand((c) => c.services).toList();
@@ -372,6 +383,13 @@ class _CompanyPlanningScreenMobileState
                 color: AppColors.primary,
                 backgroundColor: AppColors.divider,
               ),
+            ),
+          // Employee-based mode: "next appointment" banner at the top.
+          // Hidden in capacity mode (multiple bookings may overlap → "next"
+          // would be ambiguous).
+          if (isEmployeeBased)
+            SliverToBoxAdapter(
+              child: NextAppointmentBanner(viewedDate: state.selectedDate),
             ),
           SliverToBoxAdapter(
             child: _MobileDayStatsHeader(

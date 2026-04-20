@@ -16,18 +16,26 @@ import '../../../../core/utils/extensions.dart';
 Future<({bool confirmed, String? reason})?> showCancelAppointmentOwnerDialog(
   BuildContext context, {
   required String clientName,
+  bool isWalkIn = false,
 }) {
   return showDialog<({bool confirmed, String? reason})>(
     context: context,
     barrierColor: Colors.black54,
-    builder: (ctx) => _CancelAppointmentOwnerDialog(clientName: clientName),
+    builder: (ctx) => _CancelAppointmentOwnerDialog(
+      clientName: clientName,
+      isWalkIn: isWalkIn,
+    ),
   );
 }
 
 class _CancelAppointmentOwnerDialog extends ConsumerStatefulWidget {
   final String clientName;
+  final bool isWalkIn;
 
-  const _CancelAppointmentOwnerDialog({required this.clientName});
+  const _CancelAppointmentOwnerDialog({
+    required this.clientName,
+    required this.isWalkIn,
+  });
 
   @override
   ConsumerState<_CancelAppointmentOwnerDialog> createState() =>
@@ -89,7 +97,11 @@ class _CancelAppointmentOwnerDialogState
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                l.cancelAppointmentOwnerSubtitle(widget.clientName),
+                // Walk-ins drop the "will be notified" half — no user
+                // account backing a walk-in, nobody to ping.
+                widget.isWalkIn
+                    ? l.cancelAppointmentOwnerSubtitleWalkIn(widget.clientName)
+                    : l.cancelAppointmentOwnerSubtitle(widget.clientName),
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textHint,
                 ),
@@ -117,7 +129,12 @@ class _CancelAppointmentOwnerDialogState
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
-                        l.cancelAppointmentOwnerWarning,
+                        // Walk-ins have no backing user account → drop the
+                        // "client will be notified" half-sentence, keep only
+                        // the "slot will be freed" part.
+                        widget.isWalkIn
+                            ? l.cancelAppointmentOwnerWarningWalkIn
+                            : l.cancelAppointmentOwnerWarning,
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.primary.withValues(alpha: 0.85),
                           height: 1.4,

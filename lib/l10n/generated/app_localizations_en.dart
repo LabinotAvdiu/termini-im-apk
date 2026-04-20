@@ -1343,6 +1343,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareLinkPreviewLabel => 'Preview';
 
   @override
+  String get tomorrowLabel => 'Tomorrow';
+
+  @override
+  String get noPhoneAvailable => 'No phone on file';
+
+  @override
   String get sharedEmployeePrefix => 'Booking with';
 
   @override
@@ -1737,8 +1743,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String cancelAppointmentOwnerSubtitleWalkIn(String client) {
+    return '$client\'s slot will be freed.';
+  }
+
+  @override
   String get cancelAppointmentOwnerWarning =>
       'The slot will become available again and the client will be notified.';
+
+  @override
+  String get cancelAppointmentOwnerWarningWalkIn =>
+      'The slot will become available again.';
 
   @override
   String get cancelAppointmentOwnerReasonLabel =>

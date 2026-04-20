@@ -10,6 +10,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../data/models/my_company_model.dart';
 import '../../data/models/planning_appointment_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/next_appointment_banner.dart';
 import '../providers/company_planning_provider.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
 import '../widgets/cancellation_reason_box.dart';
@@ -48,6 +49,12 @@ class CompanyPlanningScreenDesktop extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(companyPlanningProvider);
+    // employee_based salons skip the pending-approvals side panel: their
+    // appointments are auto-confirmed on booking, nothing to approve.
+    final bookingMode = ref.watch(
+      companyDashboardProvider.select((s) => s.company?.bookingMode),
+    );
+    final isCapacityBased = bookingMode == 'capacity_based';
 
     // Sidebar is now provided by the shell (MainShell) on desktop.
     return Scaffold(
@@ -62,7 +69,7 @@ class CompanyPlanningScreenDesktop extends ConsumerWidget {
               onPickDate: onPickDate,
             ),
           ),
-          _DesktopApprovalsPanel(state: state),
+          if (isCapacityBased) _DesktopApprovalsPanel(state: state),
         ],
       ),
     );
@@ -440,9 +447,18 @@ class _DesktopTimelineContentState
     }
 
     final rows = buildPlanningRows(todayHours);
+    // In employee_based mode cancelled/rejected cards add noise — the slot
+    // has already been freed on the timeline. We keep them in the counters
+    // at the top so the day's audit numbers stay accurate.
+    final isEmployeeBased = company.bookingMode != 'capacity_based';
+    final visibleAppointments = isEmployeeBased
+        ? state.appointments
+            .where((a) => a.status != 'cancelled' && a.status != 'rejected')
+            .toList()
+        : state.appointments;
     final events = buildPlanningEvents(
       hours: todayHours,
-      appointments: state.appointments,
+      appointments: visibleAppointments,
     );
     final services = company.categories.expand((c) => c.services).toList();
 
@@ -477,6 +493,12 @@ class _DesktopTimelineContentState
                 color: AppColors.primary,
                 backgroundColor: AppColors.divider,
               ),
+            ),
+          // Employee-based mode: surface the next upcoming booking at the
+          // top of the planning. Hidden in capacity mode (multi-booking).
+          if (isEmployeeBased)
+            SliverToBoxAdapter(
+              child: NextAppointmentBanner(viewedDate: state.selectedDate),
             ),
           SliverToBoxAdapter(
             child: _DayStatsHeader(

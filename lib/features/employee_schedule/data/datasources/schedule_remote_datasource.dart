@@ -26,6 +26,42 @@ class ScheduleRemoteDatasource {
   }
 
   // ---------------------------------------------------------------------------
+  // PATCH /my-schedule/appointments/{id}/status
+  // ---------------------------------------------------------------------------
+
+  /// Cancel or mark no-show on one of the employee's own appointments.
+  /// [status] must be 'cancelled' or 'no_show'. [reason] is optional free
+  /// text stored as the cancellation reason.
+  Future<void> updateMyAppointmentStatus(
+    String id,
+    String status, {
+    String? reason,
+  }) async {
+    await _client.put(
+      ApiConstants.myScheduleAppointmentStatus(id),
+      data: {
+        'status': status,
+        if (reason != null && reason.isNotEmpty) 'reason': reason,
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // GET /my-schedule/upcoming
+  // ---------------------------------------------------------------------------
+
+  /// Returns the closest future appointment across all days (or null when
+  /// the employee has no upcoming bookings). The `date` field is populated
+  /// so the UI can render a "tomorrow / X jours" variant when it's not today.
+  Future<ScheduleAppointment?> getUpcomingAppointment() async {
+    final response = await _client.get(ApiConstants.myScheduleUpcoming);
+    final body = response.data as Map<String, dynamic>;
+    final data = body['data'];
+    if (data == null) return null;
+    return ScheduleAppointment.fromJson(data as Map<String, dynamic>);
+  }
+
+  // ---------------------------------------------------------------------------
   // POST /my-schedule/walk-in
   // ---------------------------------------------------------------------------
 

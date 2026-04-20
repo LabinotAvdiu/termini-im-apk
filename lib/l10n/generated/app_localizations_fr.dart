@@ -1348,6 +1348,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareLinkPreviewLabel => 'Aperçu';
 
   @override
+  String get tomorrowLabel => 'Demain';
+
+  @override
+  String get noPhoneAvailable => 'Pas de numéro renseigné';
+
+  @override
   String get sharedEmployeePrefix => 'Rendez-vous avec';
 
   @override
@@ -1745,8 +1751,17 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String cancelAppointmentOwnerSubtitleWalkIn(String client) {
+    return 'Le créneau de $client sera libéré.';
+  }
+
+  @override
   String get cancelAppointmentOwnerWarning =>
       'Le créneau redeviendra disponible à la réservation et le client sera notifié.';
+
+  @override
+  String get cancelAppointmentOwnerWarningWalkIn =>
+      'Le créneau redeviendra disponible à la réservation.';
 
   @override
   String get cancelAppointmentOwnerReasonLabel =>

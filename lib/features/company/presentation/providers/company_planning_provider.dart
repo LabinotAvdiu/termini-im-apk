@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../employee_schedule/presentation/providers/schedule_provider.dart'
+    show upcomingAppointmentProvider;
+
 import '../../data/models/planning_appointment_model.dart';
 import 'company_dashboard_provider.dart';
 
@@ -312,6 +315,9 @@ class CompanyPlanningNotifier
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
       await datasource.updateAppointmentStatus(id, newStatus, reason: reason);
+      // Refresh the "next appointment" banner — a cancel or no-show might
+      // have invalidated the current upcoming (or unveiled a later one).
+      _ref.invalidate(upcomingAppointmentProvider);
       return true;
     } catch (_) {
       if (!mounted) return false;

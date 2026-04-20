@@ -80,8 +80,16 @@ class BreakTimeRange {
 
 class ScheduleAppointment {
   final String id;
+  /// Only populated when the payload can return appts from multiple days
+  /// (e.g. GET /my-schedule/upcoming). Null for the daily list — the
+  /// caller already knows the date at that level.
+  final String? date;
   final String startTime;
   final String endTime;
+  /// Appointment status — 'confirmed' | 'pending' | 'cancelled' | 'no_show'.
+  /// The daily list now includes cancelled / no-show so the employee keeps
+  /// visual context of what happened that day; UI renders those muted.
+  final String status;
   final String clientFirstName;
   final String? clientLastName;
   final String? clientPhone;
@@ -92,8 +100,10 @@ class ScheduleAppointment {
 
   const ScheduleAppointment({
     required this.id,
+    this.date,
     required this.startTime,
     required this.endTime,
+    this.status = 'confirmed',
     required this.clientFirstName,
     this.clientLastName,
     this.clientPhone,
@@ -103,6 +113,8 @@ class ScheduleAppointment {
     required this.isWalkIn,
   });
 
+  bool get isCancelled => status == 'cancelled' || status == 'no_show';
+
   String get clientFullName =>
       [clientFirstName, clientLastName]
           .where((p) => p != null && p.isNotEmpty)
@@ -111,8 +123,10 @@ class ScheduleAppointment {
   factory ScheduleAppointment.fromJson(Map<String, dynamic> json) {
     return ScheduleAppointment(
       id:               json['id'] as String,
+      date:             json['date'] as String?,
       startTime:        json['startTime'] as String,
       endTime:          json['endTime'] as String,
+      status:           (json['status'] as String?) ?? 'confirmed',
       clientFirstName:  (json['clientFirstName'] as String?) ?? '',
       clientLastName:   json['clientLastName'] as String?,
       clientPhone:      json['clientPhone'] as String?,
