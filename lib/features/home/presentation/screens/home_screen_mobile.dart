@@ -9,6 +9,7 @@ import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../../../appointments/presentation/widgets/upcoming_appointment_banner.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../company/presentation/widgets/salon_geocoding_banner.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart';
 import '../widgets/complete_profile_banner.dart';
@@ -45,6 +46,10 @@ class HomeScreenMobile extends ConsumerWidget {
 
             // Profile completion nudge (gender / phone missing).
             const SliverToBoxAdapter(child: CompleteProfileBanner()),
+
+            // Salon geocoding warning — shown to owners whose salon has no
+            // Google address + no GPS (can't be ranked in proximity search).
+            const SliverToBoxAdapter(child: SalonGeocodingBanner()),
 
             // Feature 2 — Upcoming appointment reminder banner (auth users only)
             SliverToBoxAdapter(

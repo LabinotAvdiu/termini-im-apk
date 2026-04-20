@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Partage de salon · Design Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ============================================================
+       "Prishtina Editorial" design tokens — shared with the Flutter
+       app at C:\Users\avdiu\Projetcs\hairspot_mobile (AppColors).
+       Keep these in sync.
+       ============================================================ */
+    :root {
+      --ivory:     #f7f2ea;
+      --bone:      #e8dcc8;
+      --ink:       #171311;
+      --muted:     #716059;
+      --burgundy:  #7a2232;
+      --burgundy-2:#5d1a27;
+      --gold:      #c89b47;
+      --line:      #d9cab3;
+      --cream:     #fbf7f0;
+      --whatsapp:  #25d366;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--ivory); color: var(--ink); }
+    body {
+      font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      padding: 64px 32px 96px;
+      position: relative;
+    }
+
+    /* Page grain — matches the splash texture shipped in web/index.html */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.30;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 1;
+    }
+
+    /* Soft radial atmosphere top-right */
+    body::after {
+      content: "";
+      position: fixed;
+      top: -30%;
+      right: -15%;
+      width: 70vw;
+      height: 70vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,155,71,0.10), transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       Editorial masthead — sets the tone before the mockups
+       ============================================================ */
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: end;
+      gap: 40px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px;
+      margin-bottom: 56px;
+    }
+    .mast-kicker {
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .mast-title {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(44px, 6.2vw, 88px);
+      font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 100;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-top: 10px;
+    }
+    .mast-title em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--burgundy);
+    }
+    .mast-meta {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.8;
+    }
+    .mast-meta b {
+      color: var(--burgundy);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       Frame labels ("MOBILE · 390" / "DESKTOP · 1200")
+       ============================================================ */
+    .frames {
+      display: grid;
+      gap: 96px;
+    }
+    .frame-section {
+      display: grid;
+      gap: 24px;
+    }
+    .frame-label {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--burgundy);
+      font-size: 20px;
+    }
+    .frame-label::before {
+      content: "";
+      width: 48px;
+      height: 1px;
+      background: var(--burgundy);
+      margin-right: -6px;
+      align-self: center;
+    }
+    .frame-label small {
+      font-family: "Instrument Sans", sans-serif;
+      font-style: normal;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .frame-label .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: inline-block;
+      transform: translateY(-3px);
+    }
+
+    .stage-note {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.55;
+      padding-left: 64px;
+      border-left: 1px solid var(--line);
+      margin-left: 64px;
+    }
+    .stage-note em {
+      font-family: "Instrument Serif", serif;
+      color: var(--burgundy);
+    }
+
+    /* ============================================================
+       MOBILE STAGE
+       ============================================================ */
+    .mobile-stage {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      border-radius: 44px;
+      background: #000;
+      padding: 10px;
+      box-shadow:
+        0 2px 0 0 rgba(255,255,255,0.05) inset,
+        0 40px 80px -30px rgba(23,19,17,0.35),
+        0 12px 24px -12px rgba(23,19,17,0.20);
+      position: relative;
+    }
+    .phone::after {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 30px;
+      border-radius: 20px;
+      background: #000;
+      z-index: 30;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+      background: var(--ivory);
+    }
+
+    /* Hero image — layered gradient over a real Unsplash barber photo */
+    .hero {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(23,19,17,0.55) 0%, rgba(23,19,17,0.10) 30%, rgba(23,19,17,0.05) 60%, rgba(247,242,234,0.95) 95%),
+        url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80") center/cover;
+    }
+    .hero::after {
+      /* grain inside the hero — subtle */
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.20;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      pointer-events: none;
+    }
+
+    /* Status bar faux */
+    .status-bar {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      right: 0;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 20;
+      font-family: "Instrument Sans";
+      letter-spacing: 0.02em;
+    }
+    .status-bar svg { fill: #fff; }
+
+    /* Mobile app bar — where the share button lives */
+    .mob-appbar {
+      position: absolute;
+      top: 64px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+    .mob-appbar-right {
+      display: flex;
+      gap: 10px;
+    }
+    .icon-pill {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(247, 242, 234, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(23,19,17,0.06);
+      box-shadow: 0 6px 14px -8px rgba(23,19,17,0.30);
+      color: var(--burgundy);
+      position: relative;
+      transition: transform 220ms cubic-bezier(.6,.2,.2,1), background 220ms;
+    }
+    .icon-pill:hover { transform: translateY(-1px); }
+    .icon-pill.primary::after {
+      /* tiny gold dot — signals "fresh feature" on the share button */
+      content: "";
+      position: absolute;
+      top: 4px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 2px rgba(247,242,234,0.92);
+    }
+    .icon-pill svg { width: 18px; height: 18px; stroke: currentColor; }
+
+    /* Salon name plate peeking from the hero */
+    .salon-plate {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 280px;
+      z-index: 10;
+    }
+    .salon-plate .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #fff;
+      opacity: 0.85;
+      margin-bottom: 12px;
+    }
+    .salon-plate .kicker .bar {
+      width: 18px;
+      height: 1px;
+      background: var(--gold);
+      display: inline-block;
+    }
+    .salon-plate h1 {
+      font-family: "Fraunces", serif;
+      font-weight: 400;
+      font-size: 44px;
+      line-height: 1;
+      color: #fff;
+      letter-spacing: -0.02em;
+      font-variation-settings: "SOFT" 60;
+    }
+    .salon-plate h1 em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 400;
+    }
+    .salon-plate .loc {
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ===== BOTTOM SHEET (mobile) ===== */
+    .sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(23,19,17,0.36);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 25;
+    }
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 26;
+      background: var(--ivory);
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      box-shadow: 0 -20px 50px -10px rgba(23,19,17,0.25);
+      padding: 14px 22px 32px;
+      max-height: 80%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .sheet::before {
+      /* hairline bordeaux accent */
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--burgundy), transparent);
+      opacity: 0.45;
+    }
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--line);
+      margin: 6px auto 20px;
+    }
+    .sheet-header {
+      padding: 0 4px;
+      margin-bottom: 22px;
+    }
+    .sheet-kicker {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .sheet-kicker .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+    .sheet-title {
+      font-family: "Fraunces", serif;
+      font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      font-size: 30px;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .sheet-title em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .sheet-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Employee toggle — editorial treatment */
+    .me-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px 16px 22px;
+      margin: 0 4px 18px;
+      background:
+        linear-gradient(180deg, rgba(122,34,50,0.05), rgba(200,155,71,0.04));
+      border-radius: 14px;
+      border: 1px solid rgba(122,34,50,0.14);
+    }
+    .me-card::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
+      width: 2px;
+      background: var(--burgundy);
+      border-radius: 1px;
+    }
+    .me-card .dot-gold {
+      position: absolute;
+      left: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px var(--ivory);
+    }
+    .me-card-copy {
+      flex: 1;
+    }
+    .me-card-copy .label {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-size: 17px;
+      color: var(--burgundy);
+      line-height: 1.1;
+      font-weight: 400;
+    }
+    .me-card-copy .help {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.45;
+      letter-spacing: 0.01em;
+    }
+
+    /* iOS-ish switch */
+    .switch {
+      width: 46px;
+      height: 28px;
+      border-radius: 16px;
+      background: var(--burgundy);
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.18);
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 21px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+      transition: left 200ms cubic-bezier(.4,.2,.2,1);
+    }
+    .switch.off {
+      background: var(--line);
+    }
+    .switch.off::after { left: 3px; }
+
+    /* Sheet rules — quiet dividers between sections */
+    .rule {
+      height: 1px;
+      background: var(--line);
+      margin: 2px 4px 6px;
+      position: relative;
+    }
+    .rule::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--bone);
+      border: 1px solid var(--line);
+    }
+
+    /* Destination rows — NOT material squares */
+    .dest {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 4px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 160ms;
+    }
+    .dest:hover { transform: translateX(3px); }
+    .dest + .dest { border-top: 1px dashed rgba(217,202,179,0.6); }
+    .dest-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .dest-icon.bordeaux {
+      background: rgba(122,34,50,0.10);
+      color: var(--burgundy);
+    }
+    .dest-icon.whatsapp {
+      background: rgba(37,211,102,0.14);
+      color: var(--whatsapp);
+    }
+    .dest-icon svg { width: 20px; height: 20px; }
+    .dest-body { flex: 1; min-width: 0; }
+    .dest-label {
+      font-family: "Fraunces", serif;
+      font-weight: 500;
+      font-size: 17px;
+      line-height: 1.1;
+      color: var(--ink);
+      font-variation-settings: "opsz" 72;
+    }
+    .dest-cap {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.02em;
+    }
+    .dest-caret {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    /* Link preview at the bottom of the sheet */
+    .link-preview {
+      margin: 18px 4px 0;
+      padding: 11px 14px;
+      border-radius: 10px;
+      background: var(--cream);
+      border: 1px dashed var(--line);
+      font-family: "Instrument Sans", monospace;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.01em;
+    }
+    .link-preview .chip {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--burgundy);
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(122,34,50,0.08);
+      flex-shrink: 0;
+    }
+    .link-preview .url {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--ink);
+    }
+    .link-preview .url em {
+      font-family: "Instrument Serif";
+      color: var(--burgundy);
+      font-style: italic;
+    }
+
+    /* ============================================================
+       MOBILE CAPTION (right column)
+       ============================================================ */
+    .mobile-caption {
+      padding-top: 42px;
+      max-width: 440px;
+    }
+    .caption-num {
+      font-family: "Fraunces", serif;
+      font-size: 72px;
+      font-weight: 300;
+      color: var(--burgundy);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      font-variation-settings: "SOFT" 100;
+    }
+    .caption-h {
+      font-family: "Fraunces", serif;
+      font-size: 22px;
+      font-weight: 400;
+      margin-top: 8px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .caption-h em {
+      font-family: "Instrument Serif";
+      font-style: italic;
+      color: var(--burgundy);
+    }
+    .caption-body {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .caption-notes {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .caption-notes b {
+      color: var(--burgundy);
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 10px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Visual callouts on the phone */
+    .callout {
+      position: absolute;
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--burgundy);
+      line-height: 1.2;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .callout .bar {
+      display: block;
+      width: 80px;
+      height: 1px;
+      background: var(--burgundy);
+      margin: 6px 0;
+    }
+    .callout.right { text-align: left; }
+    .callout.left  { text-align: right; }
+
+    /* ============================================================
+       DESKTOP STAGE
+       ============================================================ */
+    .desktop-stage {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--ivory);
+      border: 1px solid var(--line);
+      box-shadow: 0 30px 80px -40px rgba(23,19,17,0.25);
+    }
+
+    .desktop-chrome {
+      height: 28px;
+      background: linear-gradient(180deg, #eae0cc, #dfd2b8);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+    }
+    .desktop-chrome .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .desktop-chrome .dot.r { background: #e07474; }
+    .desktop-chrome .dot.y { background: #e0b844; }
+    .desktop-chrome .dot.g { background: #7ab24a; }
+    .desktop-chrome .addr {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .desktop-chrome .addr b {
+      color: var(--burgundy);
+      font-weight: 700;
+    }
+
+    .desktop-view {
+      height: 820px;
+      position: relative;
+      background: var(--ivory);
+      overflow: hidden;
+    }
+
+    /* Desktop top bar */
+    .dtop {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 22px 48px;
+      border-bottom: 1px solid var(--line);
+      background: var(--ivory);
+      position: relative;
+      z-index: 2;
+    }
+    .dtop .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--burgundy);
+      font-size: 15px;
+      text-decoration: none;
+    }
+    .dtop .back svg { width: 16px; height: 16px; }
+    .dtop .wordmark {
+      font-family: "Fraunces", serif;
+      font-weight: 400;
+      font-variation-settings: "SOFT" 70;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .dtop .wordmark em {
+      font-family: "Instrument Serif";
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .dtop .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .dbtn {
+      min-width: 44px;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--ivory);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms;
+      position: relative;
+    }
+    .dbtn:hover {
+      border-color: var(--burgundy);
+      color: var(--burgundy);
+    }
+    .dbtn.icon-only { padding: 0; justify-content: center; width: 44px; }
+    .dbtn svg { width: 18px; height: 18px; }
+    .dbtn.share {
+      color: var(--burgundy);
+      border-color: rgba(122,34,50,0.45);
+      background: linear-gradient(180deg, rgba(122,34,50,0.03), transparent);
+    }
+    .dbtn.share::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    /* Desktop content under the top bar — editorial hero */
+    .d-hero {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 64px;
+      padding: 48px 48px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .d-hero-copy {
+      padding-top: 32px;
+    }
+    .d-kicker {
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .d-kicker .bar { width: 28px; height: 1px; background: var(--burgundy); }
+    .d-h1 {
+      font-family: "Fraunces", serif;
+      font-weight: 400;
+      font-variation-settings: "SOFT" 70, "opsz" 144;
+      font-size: 80px;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .d-h1 em {
+      font-family: "Instrument Serif";
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .d-meta {
+      margin-top: 28px;
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .d-meta .stars {
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+    .d-meta b { color: var(--ink); font-weight: 600; }
+    .d-desc {
+      margin-top: 24px;
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 440px;
+    }
+    .d-hero-image {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background:
+        linear-gradient(135deg, rgba(122,34,50,0.10), transparent 50%),
+        url("https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=700&q=80") center/cover;
+      box-shadow: 0 30px 60px -30px rgba(23,19,17,0.30);
+    }
+    .d-hero-image::after {
+      content: "";
+      position: absolute; inset: 0;
+      opacity: 0.20;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* Dimmer for the modal */
+    .d-dim {
+      position: absolute;
+      inset: 28px 0 0 0;
+      background: rgba(23,19,17,0.28);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 5;
+    }
+
+    /* Centered modal */
+    .d-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 440px;
+      background: var(--ivory);
+      border-radius: 12px;
+      padding: 0;
+      z-index: 6;
+      box-shadow: 0 40px 80px -20px rgba(23,19,17,0.35);
+      border: 1px solid rgba(122,34,50,0.12);
+      overflow: hidden;
+    }
+    .d-modal-head {
+      padding: 24px 28px 18px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(122,34,50,0.035), transparent);
+      position: relative;
+    }
+    .d-modal-head::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--burgundy);
+    }
+    .d-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--ivory);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .d-close svg { width: 14px; height: 14px; }
+
+    .d-modal-kicker {
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .d-modal-kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    .d-modal-title {
+      font-family: "Fraunces", serif;
+      font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      font-size: 26px;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+    }
+    .d-modal-title em {
+      font-family: "Instrument Serif";
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .d-modal-sub {
+      margin-top: 6px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .d-modal-body {
+      padding: 20px 28px 24px;
+    }
+
+    /* ============================================================
+       Footer — small design-notes card
+       ============================================================ */
+    .notecards {
+      margin-top: 80px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      padding-top: 40px;
+      border-top: 1px solid var(--line);
+    }
+    .notecard {
+      position: relative;
+    }
+    .notecard .n-num {
+      font-family: "Fraunces", serif;
+      font-variation-settings: "SOFT" 100, "opsz" 144;
+      font-size: 36px;
+      color: var(--burgundy);
+      line-height: 1;
+      font-weight: 300;
+      margin-bottom: 14px;
+    }
+    .notecard h4 {
+      font-family: "Fraunces", serif;
+      font-size: 17px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .notecard h4 em {
+      font-family: "Instrument Serif";
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .notecard p {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .notecard code {
+      font-family: "Instrument Sans", monospace;
+      font-size: 11px;
+      background: rgba(122,34,50,0.06);
+      color: var(--burgundy);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .footer {
+      margin-top: 64px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .footer .burgundy { color: var(--burgundy); font-weight: 600; }
+
+    /* Subtle entry animation */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .frame-section, .masthead, .notecards { animation: rise 700ms cubic-bezier(.4,0,.2,1) both; }
+    .frame-section:nth-child(2) { animation-delay: 120ms; }
+    .notecards { animation-delay: 240ms; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- ================= MASTHEAD ================= -->
+    <header class="masthead">
+      <div>
+        <div class="mast-kicker">Termini im · Design Review · N°4</div>
+        <h1 class="mast-title">Partager,<br><em>avec grâce.</em></h1>
+      </div>
+      <div></div>
+      <div class="mast-meta">
+        Feature · <b>Share Salon</b><br>
+        Surface · Fiche publique + Mon Salon<br>
+        Variante · Employé pré-sélectionné
+      </div>
+    </header>
+
+    <!-- ================= FRAMES ================= -->
+    <div class="frames">
+      <!-- ===== MOBILE SECTION ===== -->
+      <section class="frame-section">
+        <div class="frame-label">
+          <span class="dot"></span>
+          Fiche Salon — Mobile
+          <small>390 × 844</small>
+        </div>
+        <div class="stage-note">
+          La feuille s'ouvre depuis le bas avec un léger rebond. Le toggle <em>Me recommander</em>
+          n'apparaît que pour un <em>employé du salon</em>, en mode réservation par pro. Les trois
+          tuiles sont empilées pour se lire verticalement au pouce.
+        </div>
+
+        <div class="mobile-stage">
+          <!-- PHONE -->
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="hero"></div>
+
+              <!-- fake status bar -->
+              <div class="status-bar">
+                <span>9:41</span>
+                <span style="display:flex; gap:6px; align-items:center;">
+                  <svg width="16" height="10" viewBox="0 0 16 10"><rect x="0" y="3" width="3" height="4" rx="1"/><rect x="4" y="2" width="3" height="6" rx="1"/><rect x="8" y="1" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="10" rx="1"/></svg>
+                  <svg width="15" height="11" viewBox="0 0 15 11"><path d="M1,3 A8,8 0 0 1 14,3" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M3,5 A5,5 0 0 1 12,5" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M5.5,7 A2.5,2.5 0 0 1 9.5,7" stroke="#fff" stroke-width="1.2" fill="none"/><circle cx="7.5" cy="9" r="1"/></svg>
+                  <svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="#fff" stroke-width="1" fill="none"/><rect x="2" y="3" width="14" height="6" fill="#fff"/><rect x="21" y="4" width="2" height="4" rx="1" fill="#fff"/></svg>
+                </span>
+              </div>
+
+              <!-- app bar -->
+              <div class="mob-appbar">
+                <div class="icon-pill" title="Retour">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <div class="mob-appbar-right">
+                  <!-- NEW Share button — fresh gold dot -->
+                  <div class="icon-pill primary" title="Partager">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3v13"/>
+                      <path d="M8 7l4-4 4 4"/>
+                      <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                    </svg>
+                  </div>
+                  <!-- existing Favorite button -->
+                  <div class="icon-pill" title="Favori">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- salon name plate -->
+              <div class="salon-plate">
+                <div class="kicker"><span class="bar"></span> Barbier · Prishtina</div>
+                <h1>Enisi &amp; <em>Fils</em></h1>
+                <div class="loc">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Rruga Luan Haradinaj, 10000
+                </div>
+              </div>
+
+              <!-- BACKDROP -->
+              <div class="sheet-backdrop"></div>
+
+              <!-- SHEET -->
+              <div class="sheet">
+                <div class="sheet-handle"></div>
+
+                <div class="sheet-header">
+                  <div class="sheet-kicker"><span class="dot"></span> Partager</div>
+                  <h2 class="sheet-title">Invite un <em>proche</em><br>à réserver</h2>
+                  <p class="sheet-sub">Enisi &amp; Fils · Le lien ouvre la prise de rendez-vous.</p>
+                </div>
+
+                <!-- Employee toggle -->
+                <div class="me-card">
+                  <span class="dot-gold"></span>
+                  <div class="me-card-copy">
+                    <div class="label">Me recommander</div>
+                    <div class="help">Le destinataire arrivera sur la réservation avec <b>toi</b> déjà choisi.</div>
+                  </div>
+                  <div class="switch" aria-checked="true" role="switch" title="Activé"></div>
+                </div>
+
+                <div class="rule"></div>
+
+                <!-- WhatsApp -->
+                <div class="dest">
+                  <div class="dest-icon whatsapp">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  </div>
+                  <div class="dest-body">
+                    <div class="dest-label">WhatsApp</div>
+                    <div class="dest-cap">Envoi direct · message pré-rempli</div>
+                  </div>
+                  <svg class="dest-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <!-- Native share sheet -->
+                <div class="dest">
+                  <div class="dest-icon bordeaux">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                    </svg>
+                  </div>
+                  <div class="dest-body">
+                    <div class="dest-label">Partager…</div>
+                    <div class="dest-cap">Feuille système · SMS, Instagram, Mail</div>
+                  </div>
+                  <svg class="dest-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <!-- Copy link -->
+                <div class="dest">
+                  <div class="dest-icon bordeaux">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/>
+                    </svg>
+                  </div>
+                  <div class="dest-body">
+                    <div class="dest-label">Copier le lien</div>
+                    <div class="dest-cap">termini-im.com / company / 4c2 / book</div>
+                  </div>
+                  <svg class="dest-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <!-- Link preview -->
+                <div class="link-preview">
+                  <span class="chip">Aperçu</span>
+                  <span class="url">app.termini-im.com/company/4c2/book<em>?employee=7f1</em></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caption column -->
+          <div class="mobile-caption">
+            <div class="caption-num">01</div>
+            <h3 class="caption-h">Le bouton <em>pair avec le favori.</em></h3>
+            <p class="caption-body">
+              Même cercle, même ivoire 92%, même ombre. La seule signalétique distinctive :
+              un petit point or en haut à droite du bouton Partager pour marquer la
+              nouveauté — il disparaîtra après la première utilisation.
+            </p>
+            <div class="caption-notes">
+              <b>Employé — détection</b>
+              Le toggle <em>Me recommander</em> n'apparaît que si
+              <code>auth.isAuthenticated</code>,
+              <code>bookingMode == 'employee_based'</code> et
+              <code>company.employees.any((e) =&gt; e.id == user.id)</code>.
+              Sinon, la feuille tombe directement sur les trois tuiles.
+            </div>
+            <div class="caption-notes">
+              <b>Lien construit</b>
+              Si le toggle est <em>activé</em>, le lien contient
+              <code>?employee=&lt;user.id&gt;</code>. Sinon, lien générique du salon.
+              Une seule source de vérité : <code>buildSalonShareUrl()</code>.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DESKTOP SECTION ===== -->
+      <section class="frame-section">
+        <div class="frame-label">
+          <span class="dot"></span>
+          Fiche Salon — Desktop
+          <small>1200 × 820</small>
+        </div>
+        <div class="stage-note">
+          Sur desktop, les boutons action prennent la forme <em>OutlinedButton</em> 44×44
+          carrés à rayons courts. L'appel à l'action <em>Partager</em> ouvre une modale
+          centrée (non un bottom-sheet) plus adaptée à la souris.
+        </div>
+
+        <div class="desktop-stage">
+          <!-- Browser chrome -->
+          <div class="desktop-chrome">
+            <div class="dot r"></div>
+            <div class="dot y"></div>
+            <div class="dot g"></div>
+            <div class="addr">app.termini-im.com<b>/company/4c2</b></div>
+            <div style="width:56px"></div>
+          </div>
+
+          <div class="desktop-view">
+            <!-- Top bar -->
+            <div class="dtop">
+              <a href="#" class="back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                Retour à la recherche
+              </a>
+              <div class="wordmark">Termini <em>im</em></div>
+              <div class="actions">
+                <button class="dbtn share icon-only" title="Partager">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                  </svg>
+                </button>
+                <button class="dbtn icon-only" title="Favori">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Editorial hero -->
+            <div class="d-hero">
+              <div class="d-hero-copy">
+                <div class="d-kicker"><span class="bar"></span> Barbier · Prishtina</div>
+                <h1 class="d-h1">Enisi &amp;<br><em>Fils.</em></h1>
+                <div class="d-meta">
+                  <span class="stars">★★★★★</span>
+                  <span><b>4.9</b> · 892 avis</span>
+                  <span>€€€</span>
+                  <span>Rruga Luan Haradinaj, 10000</span>
+                </div>
+                <p class="d-desc">
+                  Trois générations, un seul barbier. Du rasage à l'ancienne au fade
+                  contemporain — rendez-vous avec les pros de la maison ou découvre
+                  nos disponibilités du jour.
+                </p>
+              </div>
+              <div class="d-hero-image"></div>
+            </div>
+
+            <!-- Dim + modal overlay -->
+            <div class="d-dim"></div>
+            <div class="d-modal">
+              <div class="d-modal-head">
+                <button class="d-close" title="Fermer">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+                <div class="d-modal-kicker"><span class="dot"></span> Partager · Enisi &amp; Fils</div>
+                <h2 class="d-modal-title">Partager ce <em>salon</em></h2>
+                <p class="d-modal-sub">Le lien ouvre la prise de rendez-vous chez Enisi &amp; Fils.</p>
+              </div>
+              <div class="d-modal-body">
+                <!-- Employee toggle (desktop) -->
+                <div class="me-card" style="margin: 0 0 16px 2px;">
+                  <span class="dot-gold"></span>
+                  <div class="me-card-copy">
+                    <div class="label">Me recommander</div>
+                    <div class="help">Le destinataire arrivera sur la réservation avec <b>toi</b> déjà choisi.</div>
+                  </div>
+                  <div class="switch" aria-checked="true" role="switch" title="Activé"></div>
+                </div>
+
+                <div class="rule"></div>
+
+                <div class="dest">
+                  <div class="dest-icon whatsapp">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  </div>
+                  <div class="dest-body">
+                    <div class="dest-label">WhatsApp</div>
+                    <div class="dest-cap">Envoi direct · message pré-rempli</div>
+                  </div>
+                  <svg class="dest-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+                <div class="dest">
+                  <div class="dest-icon bordeaux">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                    </svg>
+                  </div>
+                  <div class="dest-body">
+                    <div class="dest-label">Partager…</div>
+                    <div class="dest-cap">Feuille système · autres apps</div>
+                  </div>
+                  <svg class="dest-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+                <div class="dest">
+                  <div class="dest-icon bordeaux">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/>
+                    </svg>
+                  </div>
+                  <div class="dest-body">
+                    <div class="dest-label">Copier le lien</div>
+                    <div class="dest-cap">termini-im.com / company / 4c2 / book</div>
+                  </div>
+                  <svg class="dest-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <div class="link-preview">
+                  <span class="chip">Aperçu</span>
+                  <span class="url">app.termini-im.com/company/4c2/book<em>?employee=7f1</em></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= DESIGN NOTES ================= -->
+    <section class="notecards">
+      <div class="notecard">
+        <div class="n-num">I</div>
+        <h4>Le bouton <em>pair avec le favori</em></h4>
+        <p>Cercle ivoire 92% alpha, bordeaux à 18px. Même shell que <code>_HeartButton</code>
+          (mobile) et <code>_DesktopFavoriteButton</code> (desktop). Aucun nouveau composant
+          d'ombre/border — on réutilise ce qui existe.</p>
+      </div>
+      <div class="notecard">
+        <div class="n-num">II</div>
+        <h4>Toggle <em>Me recommander</em></h4>
+        <p>Ne s'affiche que pour un employé du salon consulté, salon en mode
+          <code>employee_based</code>. Le switch est activé par défaut — l'employé
+          peut le désactiver pour un partage générique.</p>
+      </div>
+      <div class="notecard">
+        <div class="n-num">III</div>
+        <h4>Trois <em>destinations, trois voix</em></h4>
+        <p>WhatsApp vert (URI direct), Partager… bordeaux (feuille native), Copier
+          bordeaux (clipboard). Chaque ligne = icône 46px cercle + titre Fraunces +
+          caption Instrument Sans + caret. Pas de tuiles Material.</p>
+      </div>
+    </section>
+
+    <div class="footer">
+      Design Review · <span class="burgundy">Approve</span> · Revise · Ship
+    </div>
+  </div>
+</body>
+</html>

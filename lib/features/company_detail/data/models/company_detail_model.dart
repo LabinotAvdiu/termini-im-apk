@@ -137,6 +137,18 @@ class ServiceCategoryModel {
           [],
     );
   }
+
+  ServiceCategoryModel copyWith({
+    String? id,
+    String? name,
+    List<ServiceModel>? services,
+  }) {
+    return ServiceCategoryModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      services: services ?? this.services,
+    );
+  }
 }
 
 class ServiceModel {
@@ -167,7 +179,18 @@ class ServiceModel {
 }
 
 class EmployeeModel {
+  /// Company_user pivot id — what backend mutation endpoints expect
+  /// (assign service, remove from team, etc.). Use this for internal
+  /// operations, not for sharing/matching.
   final String id;
+
+  /// Underlying User id — stable across salons. **This is the id used in
+  /// share links** (`?employee=<userId>`) and for matching the logged-in
+  /// user to an employee of the current salon. Pivot ids leak across
+  /// employees (they're primary keys of a pivot table) so they're unsafe
+  /// to compare against `authState.user.id`.
+  final String userId;
+
   final String name;
   final String? photoUrl;
   final List<String> specialties;
@@ -175,6 +198,7 @@ class EmployeeModel {
 
   const EmployeeModel({
     required this.id,
+    required this.userId,
     required this.name,
     this.photoUrl,
     this.specialties = const [],
@@ -182,8 +206,14 @@ class EmployeeModel {
   });
 
   factory EmployeeModel.fromJson(Map<String, dynamic> json) {
+    final rawUserId = json['userId']?.toString() ?? '';
+    final rawId = json['id']?.toString() ?? '';
     return EmployeeModel(
-      id: json['id']?.toString() ?? '',
+      id: rawId,
+      // Fall back to `id` when the backend didn't expose userId (public
+      // endpoint didn't use EmployeeResource yet) so existing flows don't
+      // break — pivot id still beats "nothing" for historical data.
+      userId: rawUserId.isNotEmpty ? rawUserId : rawId,
       name: json['name'] as String? ?? '',
       photoUrl: json['photoUrl'] as String?,
       specialties: (json['specialties'] as List<dynamic>?)

@@ -17,6 +17,43 @@
   <title>Termini im</title>
   <link rel="manifest" href="manifest.json">
 
+  <!-- Google Sign-In (Web) — client ID "Web application" type 3 (Cloud Console) -->
+  <meta name="google-signin-client_id"
+        content="759517993388-6hqo810qjnephb8v1rb6oupb6csi9er0.apps.googleusercontent.com">
+
+  <!-- Google Identity Services SDK + JS helper called from Dart on web.
+       google_sign_in 6.2.2 `signIn()` is broken under GIS (popup returns
+       access_token but the Future never resolves). We bypass the plugin on
+       web by driving the Token Client ourselves and returning the raw
+       access_token to Flutter. -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    window._terminiGoogleClientId = '759517993388-6hqo810qjnephb8v1rb6oupb6csi9er0.apps.googleusercontent.com';
+    window.terminiGoogleSignIn = function () {
+      return new Promise(function (resolve, reject) {
+        if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+          reject(new Error('GSI SDK not loaded'));
+          return;
+        }
+        var client = window.google.accounts.oauth2.initTokenClient({
+          client_id: window._terminiGoogleClientId,
+          scope: 'openid email profile',
+          callback: function (response) {
+            if (response && response.error) {
+              reject(new Error(response.error));
+            } else {
+              resolve(response && response.access_token ? response.access_token : null);
+            }
+          },
+          error_callback: function (err) {
+            reject(new Error((err && err.type) || 'oauth_error'));
+          },
+        });
+        client.requestAccessToken({ prompt: '' });
+      });
+    };
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -188,11 +225,13 @@
         sq: { title: 'Kosova <em>krihet me stil.</em>', tagline: 'Sallone & Berberë' }
       };
       // 1) saved app locale (set by the Flutter side on change) wins
-      // 2) then browser language, 3) finally fall back to Albanian
+      // 2) otherwise fall back to Albanian — we target Kosovo first.
+      // Browser language is intentionally NOT consulted: a French-speaking
+      // visitor without a saved preference should still see SQ, matching
+      // Flutter's LocaleNotifier default.
       let saved = null;
       try { saved = localStorage.getItem('termini_locale'); } catch (_) {}
-      const browserLang = (navigator.language || 'sq').slice(0, 2).toLowerCase();
-      const candidate = (saved || browserLang || 'sq').toLowerCase();
+      const candidate = (saved || 'sq').toLowerCase();
       const lang = strings[candidate] ? candidate : 'sq';
       document.documentElement.setAttribute('lang', lang);
       document.getElementById('splash-title').innerHTML = strings[lang].title;

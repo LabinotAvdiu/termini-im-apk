@@ -27,6 +27,14 @@ class EmployeeSelection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    // Shared link pre-selected the employee — lock the choice. The recipient
+    // only sees that pro's schedule, not the team gallery. The employee's
+    // name still appears on the confirmation step so they know who they're
+    // booking with.
+    if (state.employeeLocked) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

@@ -126,12 +126,14 @@ class AuthRepository {
   // ---------------------------------------------------------------------------
 
   Future<AuthResponse> googleLogin({
-    required String idToken,
+    String? idToken,
+    String? accessToken,
     String? role,
     bool rememberMe = true,
   }) async {
     final response = await _datasource.googleLogin(
       idToken: idToken,
+      accessToken: accessToken,
       role: role,
     );
     await _persistSession(
@@ -175,9 +177,13 @@ class AuthRepository {
 
   Future<AuthResponse> facebookLogin({
     required String accessToken,
+    String? role,
     bool rememberMe = true,
   }) async {
-    final response = await _datasource.facebookLogin(accessToken: accessToken);
+    final response = await _datasource.facebookLogin(
+      accessToken: accessToken,
+      role: role,
+    );
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
@@ -192,6 +198,7 @@ class AuthRepository {
     String? authorizationCode,
     String? firstName,
     String? lastName,
+    String? role,
     bool rememberMe = true,
   }) async {
     final response = await _datasource.appleLogin(
@@ -199,6 +206,7 @@ class AuthRepository {
       authorizationCode: authorizationCode,
       firstName: firstName,
       lastName: lastName,
+      role: role,
     );
     await _persistSession(
       token: response.token,

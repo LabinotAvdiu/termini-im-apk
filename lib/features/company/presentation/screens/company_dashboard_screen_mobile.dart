@@ -11,9 +11,11 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
+import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/salon_geocoding_banner.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
@@ -111,6 +113,9 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
                             if (state.company != null) ...[
+                              // Red warning when the salon has no Google
+                              // address + no GPS — blocks proximity ranking.
+                              const SalonGeocodingBanner(),
                               _MobileCompanyInfoCard(
                                 company: state.company!,
                                 onEdit: () =>
@@ -255,6 +260,18 @@ class _MobileAppBar extends ConsumerWidget {
           ),
         ],
       ),
+      actions: [
+        if (company != null)
+          ShareIconButton(
+            companyId: company!.id,
+            salonName: company!.name,
+            bookingMode: company!.bookingMode,
+            employeeIds: {
+              for (final e in company!.employees) e.userId,
+            },
+            showFreshBadge: true,
+          ),
+      ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(0.5),
         child: Container(height: 0.5, color: AppColors.divider),

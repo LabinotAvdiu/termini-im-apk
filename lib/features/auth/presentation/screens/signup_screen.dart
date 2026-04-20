@@ -12,7 +12,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/widgets/app_text_field.dart';
-import '../../../../core/widgets/place_autocomplete_field.dart';
+import '../../../../core/widgets/salon_location_fields.dart';
 import '../../../../core/network/places_datasource.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/company_clientele_selector.dart';
@@ -218,7 +218,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Future<void> _loginWithFacebook() async {
     setState(() => _loadingSocial = 'facebook');
     try {
-      await ref.read(authStateProvider.notifier).loginWithFacebook();
+      await ref
+          .read(authStateProvider.notifier)
+          .loginWithFacebook(role: _isCompany ? 'company' : 'user');
     } finally {
       if (mounted) setState(() => _loadingSocial = null);
     }
@@ -230,7 +232,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Future<void> _loginWithApple() async {
     setState(() => _loadingSocial = 'apple');
     try {
-      await ref.read(authStateProvider.notifier).loginWithApple();
+      await ref
+          .read(authStateProvider.notifier)
+          .loginWithApple(role: _isCompany ? 'company' : 'user');
     } finally {
       if (mounted) setState(() => _loadingSocial = null);
     }
@@ -333,6 +337,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         if (details.city != null && details.city!.isNotEmpty) {
                           _cityController.text = details.city!;
                         }
+                      }),
+                      latitude: _latitude,
+                      longitude: _longitude,
+                      onLocationCaptured: (lat, lng) => setState(() {
+                        _latitude = lat;
+                        _longitude = lng;
+                      }),
+                      onLocationInvalidated: () => setState(() {
+                        _latitude = null;
+                        _longitude = null;
                       }),
                     )
                   else
@@ -820,6 +834,15 @@ class _CompanySignupForm extends StatelessWidget {
   final VoidCallback onBackFromStep4;
   final VoidCallback onSubmit;
   final void Function(PlaceDetails details) onPlaceSelected;
+  // GPS fallback — user taps "use my location" when Google can't find the
+  // salon's address (common for recent addresses in Kosovo). The callback
+  // only receives lat/lng; the typed address stays untouched.
+  final double? latitude;
+  final double? longitude;
+  final void Function(double lat, double lng) onLocationCaptured;
+  // Manual city edit after a Google Places selection invalidates the
+  // captured lat/lng — fires so the parent clears them.
+  final VoidCallback onLocationInvalidated;
 
   // Personal gender of the owner — drives the home filter after signup.
   final String? gender;
@@ -861,6 +884,10 @@ class _CompanySignupForm extends StatelessWidget {
     required this.onBackFromStep4,
     required this.onSubmit,
     required this.onPlaceSelected,
+    required this.latitude,
+    required this.longitude,
+    required this.onLocationCaptured,
+    required this.onLocationInvalidated,
     required this.gender,
     required this.onGenderChanged,
     required this.companyGender,
@@ -909,6 +936,11 @@ class _CompanySignupForm extends StatelessWidget {
             formKey: step2FormKey,
             companyNameController: companyNameController,
             addressController: addressController,
+            cityController: cityController,
+            latitude: latitude,
+            longitude: longitude,
+            onLocationCaptured: onLocationCaptured,
+            onLocationInvalidated: onLocationInvalidated,
             companyGender: companyGender,
             onCompanyGenderChanged: onCompanyGenderChanged,
             onBack: onBack,
@@ -1074,6 +1106,11 @@ class _CompanyStep2 extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController companyNameController;
   final TextEditingController addressController;
+  final TextEditingController cityController;
+  final double? latitude;
+  final double? longitude;
+  final void Function(double lat, double lng) onLocationCaptured;
+  final VoidCallback onLocationInvalidated;
   final String? companyGender;
   final ValueChanged<String> onCompanyGenderChanged;
   final VoidCallback onBack;
@@ -1085,6 +1122,11 @@ class _CompanyStep2 extends StatefulWidget {
     required this.formKey,
     required this.companyNameController,
     required this.addressController,
+    required this.cityController,
+    required this.latitude,
+    required this.longitude,
+    required this.onLocationCaptured,
+    required this.onLocationInvalidated,
     required this.companyGender,
     required this.onCompanyGenderChanged,
     required this.onBack,
@@ -1136,15 +1178,17 @@ class _CompanyStep2State extends State<_CompanyStep2> {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            PlaceAutocompleteField(
-              controller: widget.addressController,
-              label: context.l10n.address,
-              hint: context.l10n.addressHintExample,
+            // Address autocomplete + city + GPS fallback — shared widget
+            // between signup / social-auth setup / fix-geocoding dialog.
+            // Handles the "edit city → invalidate GPS" rule internally.
+            SalonLocationFields(
+              addressController: widget.addressController,
+              cityController: widget.cityController,
+              latitude: widget.latitude,
+              longitude: widget.longitude,
+              onLocationCaptured: widget.onLocationCaptured,
               onPlaceSelected: widget.onPlaceSelected,
-              validator: (v) => Validators.required(
-                v,
-                message: context.l10n.addressRequired,
-              ),
+              onLocationInvalidated: widget.onLocationInvalidated,
             ),
             const SizedBox(height: AppSpacing.md),
 
@@ -2078,3 +2122,4 @@ class _GenderChoice extends StatelessWidget {
     );
   }
 }
+

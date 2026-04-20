@@ -18,8 +18,16 @@ import 'company_detail_screen_desktop.dart';
 /// does not need to be updated.
 class CompanyDetailScreen extends ConsumerStatefulWidget {
   final String companyId;
+  /// Set by the router when a shared link carries `?employee=<userId>`.
+  /// Filters services to what the employee can do and forwards the id to
+  /// the booking flow on "Choisir".
+  final String? preselectedEmployeeId;
 
-  const CompanyDetailScreen({super.key, required this.companyId});
+  const CompanyDetailScreen({
+    super.key,
+    required this.companyId,
+    this.preselectedEmployeeId,
+  });
 
   @override
   ConsumerState<CompanyDetailScreen> createState() =>
@@ -57,8 +65,14 @@ class _CompanyDetailScreenState extends ConsumerState<CompanyDetailScreen> {
 
     // Company is loaded — hand off to the correct presentation layer
     return ResponsiveLayout(
-      mobile: CompanyDetailScreenMobile(companyId: widget.companyId),
-      desktop: CompanyDetailScreenDesktop(companyId: widget.companyId),
+      mobile: CompanyDetailScreenMobile(
+        companyId: widget.companyId,
+        preselectedEmployeeId: widget.preselectedEmployeeId,
+      ),
+      desktop: CompanyDetailScreenDesktop(
+        companyId: widget.companyId,
+        preselectedEmployeeId: widget.preselectedEmployeeId,
+      ),
     );
   }
 }

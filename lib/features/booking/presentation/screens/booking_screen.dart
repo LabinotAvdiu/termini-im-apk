@@ -24,11 +24,17 @@ import 'booking_screen_desktop.dart';
 class BookingScreen extends ConsumerStatefulWidget {
   final String companyId;
   final String? serviceId;
+  /// Set by the router when a shared link carries `?employee=<userId>`.
+  /// Forwarded to [BookingNotifier.initialize] which selects that employee
+  /// after the employee list loads — skipped silently if the id doesn't
+  /// match any available pro or if the salon is capacity_based.
+  final String? preselectedEmployeeId;
 
   const BookingScreen({
     super.key,
     required this.companyId,
     this.serviceId,
+    this.preselectedEmployeeId,
   });
 
   @override
@@ -47,6 +53,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       ref.read(bookingProvider.notifier).initialize(
             companyId: widget.companyId,
             serviceId: widget.serviceId,
+            preselectedEmployeeId: widget.preselectedEmployeeId,
           );
     });
   }
@@ -74,7 +81,17 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     if (step > 0) {
       ref.read(bookingProvider.notifier).previousStep();
     } else {
-      context.go('/company/${widget.companyId}');
+      // Preserve `?employee=<userId>` so a recipient going back from the
+      // booking flow lands on the same silently-filtered salon page they
+      // came from (otherwise the service list snaps back to "all").
+      final employee = widget.preselectedEmployeeId;
+      final uri = Uri(
+        path: '/company/${widget.companyId}',
+        queryParameters: (employee != null && employee.isNotEmpty)
+            ? {'employee': employee}
+            : null,
+      );
+      context.go(uri.toString());
     }
   }
 

@@ -350,8 +350,9 @@ class _DesktopStepSlot extends StatelessWidget {
 
         const SizedBox(height: AppSpacing.xl),
 
-        // Employee selection (only for employee_based mode)
-        if (!isCapacityBased) ...[
+        // Employee selection — hidden for capacity mode OR when the recipient
+        // came from a shared link that locked the pro (?employee=<id>).
+        if (!isCapacityBased && !state.employeeLocked) ...[
           Text(
             context.l10n.hairdresser,
             style: AppTextStyles.caption.copyWith(

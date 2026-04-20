@@ -41,9 +41,20 @@ class CompleteProfileBanner extends ConsumerWidget {
     if (!shouldShow) return const SizedBox.shrink();
 
     final l = context.l10n;
-    final message = isOwner
-        ? l.completeProfileGenderOnly
-        : l.completeProfileGenderPhone;
+    // Pick a dedicated message for each combination:
+    //  - gender + phone missing  → "add both" (client only)
+    //  - gender only missing     → "add gender"
+    //  - phone only missing      → "add phone" (client only, owner never hits this)
+    final String message;
+    if (isOwner) {
+      message = l.completeProfileGenderOnly;
+    } else if (genderMissing && phoneMissing) {
+      message = l.completeProfileGenderPhone;
+    } else if (genderMissing) {
+      message = l.completeProfileGenderOnly;
+    } else {
+      message = l.completeProfilePhoneOnly;
+    }
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(

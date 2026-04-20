@@ -1253,6 +1253,108 @@ class AppLocalizationsSq extends AppLocalizations {
       'Shto gjininë për të personalizuar filtrat.';
 
   @override
+  String get completeProfilePhoneOnly =>
+      'Shto numrin e telefonit për të konfirmuar rezervimet.';
+
+  @override
+  String get useMyGpsLocation => 'Përdor pozicionin GPS';
+
+  @override
+  String get gpsLocationCaptured => 'Pozicioni u ruajt ✓';
+
+  @override
+  String get gpsHintNoAddressOnGoogle =>
+      'Adresa nuk gjendet në Google? Përdor GPS-in për të ruajtur pozicionin e saktë — adresa që ke shkruar mbetet.';
+
+  @override
+  String get gpsErrorServiceDisabled =>
+      'Aktivizo GPS-in në pajisjen tënde dhe provo sërish.';
+
+  @override
+  String get gpsErrorPermissionDenied =>
+      'Lejo qasjen në lokacion për të ruajtur koordinatat.';
+
+  @override
+  String get gpsErrorPermissionDeniedForever =>
+      'Hap cilësimet e sistemit dhe aktivizo lokacionin për Termini im.';
+
+  @override
+  String get gpsErrorTimeout =>
+      'Nuk mund të marrim pozicionin. Dil jashtë ose provo sërish.';
+
+  @override
+  String get gpsErrorUnknown => 'Diçka shkoi keq. Provo sërish.';
+
+  @override
+  String get salonGeocodingBannerTitle => 'Përfundo lokalizimin e sallonit';
+
+  @override
+  String get salonGeocodingBannerBody =>
+      'Salloni do të shfaqet më shpejt në kërkime me një adresë Google OSE me koordinata GPS të ruajtura.';
+
+  @override
+  String get salonGeocodingDialogTitle => 'Lokacioni i sallonit';
+
+  @override
+  String get salonGeocodingDialogSubtitle =>
+      'Zgjidh një adresë nga Google OSE ruaj pozicionin me GPS.';
+
+  @override
+  String get salonGeocodingSaveCta => 'Ruaj lokacionin';
+
+  @override
+  String get salonGeocodingSuccessToast => 'Lokacioni u ruajt.';
+
+  @override
+  String get shareSalon => 'Ndaj';
+
+  @override
+  String get shareSalonSheetTitle => 'Ndaj këtë sallon';
+
+  @override
+  String get shareSalonSheetSubtitle => 'Fto dikë për të rezervuar';
+
+  @override
+  String get shareViaWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareViaWhatsAppCaption => 'Dërgim direkt · mesazh i përgatitur';
+
+  @override
+  String get shareMore => 'Ndaj…';
+
+  @override
+  String get shareMoreCaption => 'Fletë sistemi · aplikacione të tjera';
+
+  @override
+  String get shareCopyLink => 'Kopjo lidhjen';
+
+  @override
+  String get shareLinkCopied => 'Lidhja u kopjua';
+
+  @override
+  String get shareIncludeMeAsPro => 'Më rekomando';
+
+  @override
+  String get shareIncludeMeAsProHelp =>
+      'Marrësi do të hyjë në rezervim me ty të zgjedhur tashmë.';
+
+  @override
+  String get shareLinkPreviewLabel => 'Paraqitja';
+
+  @override
+  String get sharedEmployeePrefix => 'Rezervim me';
+
+  @override
+  String get sharedEmployeeHint =>
+      'Shërbimet e filtruara për këtë profesionist';
+
+  @override
+  String shareWhatsAppMessage(String salonName, String url) {
+    return 'Përshëndetje! Të rekomandoj $salonName — rezervo këtu: $url';
+  }
+
+  @override
   String get companySetupHeadline => 'Mbaro konfigurimin e sallonit';
 
   @override

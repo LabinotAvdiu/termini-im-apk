@@ -115,13 +115,14 @@ class _EmployeeAndTimeStepState extends ConsumerState<_EmployeeAndTimeStep> {
 
   @override
   Widget build(BuildContext context) {
-    final isCapacityBased = ref.watch(
-      bookingProvider.select((s) => s.bookingMode == 'capacity_based'),
+    final hideEmployeeBlock = ref.watch(
+      bookingProvider.select((s) =>
+          s.bookingMode == 'capacity_based' || s.employeeLocked),
     );
 
     return Column(
       children: [
-        if (!isCapacityBased) ...[
+        if (!hideEmployeeBlock) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,

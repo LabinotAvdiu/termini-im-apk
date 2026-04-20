@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/network/places_datasource.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -10,7 +9,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
-import '../../../../core/widgets/place_autocomplete_field.dart';
+import '../../../../core/widgets/salon_location_fields.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/company_clientele_selector.dart';
 
@@ -31,6 +30,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _companyNameController = TextEditingController();
   final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
   final _phoneController = TextEditingController();
 
   String? _companyGender;
@@ -43,6 +43,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen> {
   void dispose() {
     _companyNameController.dispose();
     _addressController.dispose();
+    _cityController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
@@ -58,6 +59,9 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen> {
           companyName: _companyNameController.text.trim().titleCase,
           address: _addressController.text.trim(),
           companyGender: _companyGender!,
+          city: _cityController.text.trim().isEmpty
+              ? null
+              : _cityController.text.trim(),
           phone: _phoneController.text.trim().isEmpty
               ? null
               : _phoneController.text.trim(),
@@ -149,18 +153,27 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen> {
                             ),
                           ),
                           const SizedBox(height: AppSpacing.md),
-                          PlaceAutocompleteField(
-                            controller: _addressController,
-                            label: l.address,
-                            hint: l.addressHintExample,
-                            onPlaceSelected: (details) {
+                          SalonLocationFields(
+                            addressController: _addressController,
+                            cityController: _cityController,
+                            latitude: _latitude,
+                            longitude: _longitude,
+                            onLocationCaptured: (lat, lng) => setState(() {
+                              _latitude = lat;
+                              _longitude = lng;
+                            }),
+                            onLocationInvalidated: () => setState(() {
+                              _latitude = null;
+                              _longitude = null;
+                            }),
+                            onPlaceSelected: (details) => setState(() {
                               _latitude = details.latitude;
                               _longitude = details.longitude;
-                            },
-                            validator: (v) => Validators.required(
-                              v,
-                              message: l.addressRequired,
-                            ),
+                              if (details.city != null &&
+                                  details.city!.isNotEmpty) {
+                                _cityController.text = details.city!;
+                              }
+                            }),
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(

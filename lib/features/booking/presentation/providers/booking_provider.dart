@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../company_detail/data/datasources/company_detail_remote_datasource.dart';
@@ -42,6 +43,11 @@ class BookingState {
   /// Salon's cancellation policy — shown on the confirmation step so the
   /// client knows their cancellation window upfront. `0` = no restriction.
   final int minCancelHours;
+  /// Locks the employee selector to the preselected employee (set by a
+  /// shared link carrying `?employee=<id>`). Hides the employee picker in
+  /// the UI and skips availability fetches on manual selection since that
+  /// can't happen.
+  final bool employeeLocked;
 
   const BookingState({
     this.currentStep = 0,
@@ -62,6 +68,7 @@ class BookingState {
     this.serviceDuration,
     this.bookingMode = 'employee_based',
     this.minCancelHours = 2,
+    this.employeeLocked = false,
   });
 
   bool get canProceedStep0 =>
@@ -103,6 +110,7 @@ class BookingState {
     int? serviceDuration,
     String? bookingMode,
     int? minCancelHours,
+    bool? employeeLocked,
   }) {
     return BookingState(
       currentStep: currentStep ?? this.currentStep,
@@ -123,6 +131,7 @@ class BookingState {
       serviceDuration: serviceDuration ?? this.serviceDuration,
       bookingMode: bookingMode ?? this.bookingMode,
       minCancelHours: minCancelHours ?? this.minCancelHours,
+      employeeLocked: employeeLocked ?? this.employeeLocked,
     );
   }
 
@@ -167,6 +176,7 @@ class BookingNotifier extends StateNotifier<BookingState> {
   Future<void> initialize({
     required String companyId,
     String? serviceId,
+    String? preselectedEmployeeId,
   }) async {
     state = state.copyWith(isLoading: true, companyId: companyId);
 
@@ -202,13 +212,39 @@ class BookingNotifier extends StateNotifier<BookingState> {
         }
       }
 
-      // Load availability (14 days) — no employee selected yet (sans préférence)
+      final isCapacityBased = company.bookingMode == 'capacity_based';
+
+      // Shared link with ?employee=<userId> — try to pre-select that pro.
+      // Match by `userId` so the id in the URL is stable across salons and
+      // doesn't collide with the unrelated company_user pivot ids.
+      // Silent fall-backs keep the flow usable:
+      //  - capacity_based mode: no employee picker → ignore the hint
+      //  - id doesn't match any available employee (left the salon, filtered
+      //    out by service): land on "no preference" like a normal open
+      EmployeeModel? preselectedEmployee;
+      if (!isCapacityBased &&
+          preselectedEmployeeId != null &&
+          preselectedEmployeeId.isNotEmpty) {
+        final match = filteredEmployees
+            .where((e) => e.userId == preselectedEmployeeId)
+            .toList();
+        if (match.isNotEmpty) {
+          preselectedEmployee = match.first;
+        } else {
+          debugPrint(
+            '[booking] preselected employee $preselectedEmployeeId '
+            'not available — falling back to no preference',
+          );
+        }
+      }
+
+      // Availability — when an employee is preselected, fetch their
+      // schedule directly so the date picker only shows their free days.
       final availability = await _bookingDatasource.getAvailability(
         companyId: companyId,
         serviceId: serviceId,
+        employeeId: preselectedEmployee?.id,
       );
-
-      final isCapacityBased = company.bookingMode == 'capacity_based';
 
       state = state.copyWith(
         employees: filteredEmployees,
@@ -217,7 +253,9 @@ class BookingNotifier extends StateNotifier<BookingState> {
         serviceName: serviceName ?? 'Service',
         servicePrice: servicePrice ?? 0.0,
         serviceDuration: serviceDuration ?? 30,
-        noPreference: isCapacityBased ? true : true,
+        selectedEmployee: preselectedEmployee,
+        noPreference: preselectedEmployee == null,
+        employeeLocked: preselectedEmployee != null,
         bookingMode: company.bookingMode,
         minCancelHours: company.minCancelHours,
         isLoading: false,

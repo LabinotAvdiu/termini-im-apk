@@ -69,10 +69,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/company-setup';
       }
 
-      // Authenticated users on landing/auth screens → home
+      // Authenticated users on landing/auth screens → home OR the original
+      // destination captured in `?returnTo=` (e.g. a shared booking link).
+      // Without this, a recipient of a shared salon link loses their URL
+      // the moment they log in during the booking flow.
       if (isLoggedIn &&
           !authState.needsCompanySetup &&
           (isLandingRoute || isAuthRoute || isCompanySetupRoute)) {
+        final returnTo = state.uri.queryParameters['returnTo'];
+        if (returnTo != null && returnTo.isNotEmpty) {
+          // Guard against loops: never honour a returnTo that points back
+          // at one of the auth pages themselves.
+          final loops = returnTo.startsWith('/login') ||
+              returnTo.startsWith('/signup') ||
+              returnTo.startsWith('/role-select') ||
+              returnTo.startsWith('/landing') ||
+              returnTo.startsWith('/forgot-password') ||
+              returnTo.startsWith('/company-setup');
+          if (!loops) return returnTo;
+        }
         return '/home';
       }
 
@@ -196,9 +211,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RouteNames.companyDetail,
         pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
+          // Shared link `/company/:id?employee={userId}` — filter services
+          // on the detail page to only those the employee can perform and
+          // forward the id to the booking flow on "Choisir".
+          final preselectedEmployeeId =
+              state.uri.queryParameters['employee'];
           return editorialSlidePage(
             key: state.pageKey,
-            child: CompanyDetailScreen(companyId: id),
+            child: CompanyDetailScreen(
+              companyId: id,
+              preselectedEmployeeId: preselectedEmployeeId,
+            ),
           );
         },
         routes: [
@@ -208,12 +231,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) {
               final companyId = state.pathParameters['id']!;
               final serviceId = state.uri.queryParameters['serviceId'];
+              // Shared salon links from employees carry ?employee={userId} so
+              // the recipient lands on the booking screen with that pro
+              // already picked. See share_url_builder.dart.
+              final preselectedEmployeeId =
+                  state.uri.queryParameters['employee'];
               return editorialSlidePage(
                 key: state.pageKey,
                 fromBottom: true,
                 child: BookingScreen(
                   companyId: companyId,
                   serviceId: serviceId,
+                  preselectedEmployeeId: preselectedEmployeeId,
                 ),
               );
             },

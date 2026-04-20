@@ -276,6 +276,10 @@ class _EmployeeScheduleScreenState
                 rows:    rows,
                 events:  events,
                 workEnd: work.endTime,
+                // Red "now" line — only on today. Minutes since midnight so
+                // the grid can clamp it to the visible opening range.
+                currentTimeMinutes:
+                    nowTime == null ? null : now.hour * 60 + now.minute,
                 onTapFreeSlot: (time) => _showWalkInDialog(context, time),
               ),
             ),
@@ -334,11 +338,16 @@ class _TimelineGrid extends StatefulWidget {
   final String workEnd;
   final void Function(String time) onTapFreeSlot;
 
+  /// Current time in minutes since midnight for the viewing day. Non-null
+  /// only when the grid is showing today — drives the red "now" line.
+  final int? currentTimeMinutes;
+
   const _TimelineGrid({
     required this.rows,
     required this.events,
     required this.workEnd,
     required this.onTapFreeSlot,
+    this.currentTimeMinutes,
   });
 
   @override
@@ -408,9 +417,34 @@ class _TimelineGridState extends State<_TimelineGrid> {
         ? expandedEv.startRow + expandedEv.rowSpan
         : -1;
 
+    // "Now" indicator — clamped to the visible opening range so the line
+    // still renders at the top/bottom edge when the current time falls
+    // before opening or after closing (otherwise Karim who opens the app
+    // at 16:08 while the salon closes at 16:00 would see nothing).
+    double? nowTopPx;
+    String? nowTimeLabel;
+    if (widget.currentTimeMinutes != null && widget.rows.isNotEmpty) {
+      final openParts = widget.rows.first.time.split(':');
+      final openMin =
+          int.parse(openParts[0]) * 60 + int.parse(openParts[1]);
+      final closeParts = widget.workEnd.split(':');
+      final closeMin =
+          int.parse(closeParts[0]) * 60 + int.parse(closeParts[1]);
+      final currentMin = widget.currentTimeMinutes!;
+      final clampedMin = currentMin.clamp(openMin, closeMin);
+      nowTopPx = (clampedMin - openMin) / 15 * _kRowHeight;
+      final h = currentMin ~/ 60;
+      final m = currentMin % 60;
+      nowTimeLabel =
+          '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+    }
+
     return SizedBox(
       height: totalHeight,
-      child: Row(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -520,6 +554,85 @@ class _TimelineGridState extends State<_TimelineGrid> {
                     ),
                   );
                 }),
+              ],
+            ),
+          ),
+        ],
+      ),
+          // Red "now" line — spans the full width, positioned at nowTopPx.
+          // Rendered above the Row children thanks to the outer Stack.
+          if (nowTopPx != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              top: nowTopPx - 8,
+              child: IgnorePointer(
+                child: _ScheduleNowIndicator(time: nowTimeLabel!),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Red pill + dot + line showing the current time on the employee's day
+/// view. Positioned absolutely inside the timeline Stack so it overlays
+/// the grid and appointment cards.
+class _ScheduleNowIndicator extends StatelessWidget {
+  final String time;
+  const _ScheduleNowIndicator({required this.time});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 16,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: _kTimeColumnWidth,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.error,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  time,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.error,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1.5,
+                    color: AppColors.error,
+                  ),
+                ),
               ],
             ),
           ),

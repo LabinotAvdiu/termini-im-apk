@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../../../core/auth/google_web_auth_stub.dart'
+    if (dart.library.js_interop) '../../../../core/auth/google_web_auth_web.dart'
+    as gwa;
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
@@ -315,18 +319,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
         isLoading: true, error: null, needsCompanySetup: false);
     try {
-      final googleSignIn = GoogleSignIn();
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        state = state.copyWith(isLoading: false);
-        return false;
+      String? idToken;
+      String? accessToken;
+
+      if (kIsWeb) {
+        // google_sign_in 6.2.2 `signIn()` is broken under GIS on web — the
+        // popup fires but the Future never resolves. We drive GIS Token Client
+        // ourselves via the helper declared in web/index.html.
+        accessToken = await gwa.signInWithGoogleWeb();
+        if (accessToken == null) {
+          state = state.copyWith(isLoading: false);
+          return false; // user closed the popup
+        }
+      } else {
+        final googleSignIn = GoogleSignIn();
+        final googleUser = await googleSignIn.signIn();
+        if (googleUser == null) {
+          state = state.copyWith(isLoading: false);
+          return false;
+        }
+        final auth = await googleUser.authentication;
+        idToken = auth.idToken;
+        if (idToken == null) throw Exception('Google ID token manquant');
       }
-      final auth = await googleUser.authentication;
-      final idToken = auth.idToken;
-      if (idToken == null) throw Exception('Google ID token manquant');
 
       final response = await _repository.googleLogin(
         idToken: idToken,
+        accessToken: accessToken,
         role: role,
         rememberMe: state.rememberMe,
       );
@@ -403,15 +422,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Facebook Login
   // ---------------------------------------------------------------------------
 
-  Future<void> loginWithFacebook() async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<bool> loginWithFacebook({String? role}) async {
+    state = state.copyWith(
+        isLoading: true, error: null, needsCompanySetup: false);
     try {
       final result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
       );
       if (result.status == LoginStatus.cancelled) {
         state = state.copyWith(isLoading: false);
-        return;
+        return false;
       }
       if (result.status != LoginStatus.success) {
         throw Exception(result.message ?? 'Facebook login échoué');
@@ -420,6 +440,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       final response = await _repository.facebookLogin(
         accessToken: accessToken,
+        role: role,
         rememberMe: state.rememberMe,
       );
 
@@ -429,14 +450,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
         token: response.token,
         user: response.user,
         role: _resolveRole(response.role, response.user),
+        needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
-      // Enregistre le token FCM après Facebook login réussi (fire-and-forget).
       unawaited(_registerFcmToken());
+      return true;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
     }
   }
 
@@ -444,8 +468,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Apple Sign-In
   // ---------------------------------------------------------------------------
 
-  Future<void> loginWithApple() async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<bool> loginWithApple({String? role}) async {
+    state = state.copyWith(
+        isLoading: true, error: null, needsCompanySetup: false);
     try {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: const [
@@ -464,6 +489,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         authorizationCode: credential.authorizationCode,
         firstName: credential.givenName,
         lastName: credential.familyName,
+        role: role,
         rememberMe: state.rememberMe,
       );
 
@@ -473,20 +499,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
         token: response.token,
         user: response.user,
         role: _resolveRole(response.role, response.user),
+        needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
       unawaited(_registerFcmToken());
+      return true;
     } on SignInWithAppleAuthorizationException catch (e) {
-      // User cancelled the Apple flow (or any other auth-layer error)
       if (e.code == AuthorizationErrorCode.canceled) {
         state = state.copyWith(isLoading: false);
       } else {
         state = state.copyWith(isLoading: false, error: e);
       }
+      return false;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e);
+      return false;
     }
   }
 
@@ -599,6 +629,15 @@ class LocaleNotifier extends StateNotifier<Locale> {
   final FlutterSecureStorage _storage;
 
   LocaleNotifier(this._storage) : super(const Locale('sq'));
+
+  /// Resets the locale back to the default (SQ) and wipes the stored value.
+  /// Called on logout so the next guest session doesn't inherit the last
+  /// logged-in user's language preference.
+  Future<void> reset() async {
+    state = const Locale('sq');
+    await _storage.delete(key: AppConstants.localeKey);
+    writeWebLocale('sq');
+  }
 
   /// Reads the persisted locale from secure storage and applies it.
   /// Call once from main() / app start — before the first frame if possible.

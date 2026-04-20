@@ -1252,6 +1252,108 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add your gender to personalise filters.';
 
   @override
+  String get completeProfilePhoneOnly =>
+      'Add your phone number so we can confirm bookings.';
+
+  @override
+  String get useMyGpsLocation => 'Use my GPS location';
+
+  @override
+  String get gpsLocationCaptured => 'Location saved ✓';
+
+  @override
+  String get gpsHintNoAddressOnGoogle =>
+      'Address not on Google? Use GPS to save the salon\'s exact location — the address you typed stays.';
+
+  @override
+  String get gpsErrorServiceDisabled =>
+      'Turn on GPS on your device then try again.';
+
+  @override
+  String get gpsErrorPermissionDenied =>
+      'Allow location access to save the coordinates.';
+
+  @override
+  String get gpsErrorPermissionDeniedForever =>
+      'Open system settings and enable location for Termini im.';
+
+  @override
+  String get gpsErrorTimeout =>
+      'Couldn\'t get your location. Step outside or try again.';
+
+  @override
+  String get gpsErrorUnknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get salonGeocodingBannerTitle =>
+      'Finish setting up your salon\'s location';
+
+  @override
+  String get salonGeocodingBannerBody =>
+      'Your salon will appear in searches sooner with a Google address OR saved GPS coordinates.';
+
+  @override
+  String get salonGeocodingDialogTitle => 'Salon location';
+
+  @override
+  String get salonGeocodingDialogSubtitle =>
+      'Pick an address from Google OR save the position via GPS.';
+
+  @override
+  String get salonGeocodingSaveCta => 'Save location';
+
+  @override
+  String get salonGeocodingSuccessToast => 'Location saved.';
+
+  @override
+  String get shareSalon => 'Share';
+
+  @override
+  String get shareSalonSheetTitle => 'Share this salon';
+
+  @override
+  String get shareSalonSheetSubtitle => 'Invite someone to book';
+
+  @override
+  String get shareViaWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareViaWhatsAppCaption => 'Direct send · pre-filled message';
+
+  @override
+  String get shareMore => 'Share…';
+
+  @override
+  String get shareMoreCaption => 'System sheet · other apps';
+
+  @override
+  String get shareCopyLink => 'Copy link';
+
+  @override
+  String get shareLinkCopied => 'Link copied';
+
+  @override
+  String get shareIncludeMeAsPro => 'Recommend me';
+
+  @override
+  String get shareIncludeMeAsProHelp =>
+      'The recipient will land on the booking with you already picked.';
+
+  @override
+  String get shareLinkPreviewLabel => 'Preview';
+
+  @override
+  String get sharedEmployeePrefix => 'Booking with';
+
+  @override
+  String get sharedEmployeeHint => 'Services filtered for this pro';
+
+  @override
+  String shareWhatsAppMessage(String salonName, String url) {
+    return 'Hey! I recommend $salonName — book here: $url';
+  }
+
+  @override
   String get companySetupHeadline => 'Finish setting up your salon';
 
   @override

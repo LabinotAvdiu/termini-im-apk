@@ -182,10 +182,21 @@ class _RoleCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        onTap: () => context.goNamed(
-          RouteNames.signup,
-          queryParameters: {'role': role},
-        ),
+        onTap: () {
+          // Forward the returnTo query param to /signup so the post-auth
+          // redirect can land the user back on their original page (e.g. a
+          // shared booking link).
+          final returnTo = GoRouterState.of(context)
+              .uri
+              .queryParameters['returnTo'];
+          context.goNamed(
+            RouteNames.signup,
+            queryParameters: {
+              'role': role,
+              if (returnTo != null && returnTo.isNotEmpty) 'returnTo': returnTo,
+            },
+          );
+        },
         child: Ink(
           decoration: BoxDecoration(
             color: Colors.white,

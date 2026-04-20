@@ -140,6 +140,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onPressed: () {
               Navigator.of(ctx).pop();
               ref.read(authStateProvider.notifier).logout();
+              // Reset locale so the next guest session defaults to SQ
+              // instead of inheriting the previous user's preference.
+              ref.read(localeProvider.notifier).reset();
               context.go('/login');
             },
             style: ElevatedButton.styleFrom(
@@ -261,6 +264,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
           children: [
             // ── Section "Mon profil" ─────────────────────────────────────
+            // Avatar + email en lecture + formulaire éditable, tout dans
+            // une seule carte pour éviter la redondance des titres
+            // "Mon profil" / "Informations personnelles".
+            //
             // Clients (no company role) only get a read-only avatar — the
             // public avatar is mainly a pro feature (clients book, they
             // don't need to be "found" by photo on the search page).
@@ -276,115 +283,89 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 return _SectionCard(
                   title: context.l10n.myProfile,
                   icon: Icons.person_outline_rounded,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: AppSpacing.sm),
-                      if (isPro)
-                        AvatarEditor(
-                          size: 120,
-                          initials: initials,
-                        )
-                      else
-                        AvatarDisplay(
-                          size: 120,
-                          initials: initials,
-                          photoUrl: authUser?.thumbnailUrl ??
-                              authUser?.profileImageUrl,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: AppSpacing.sm),
+                        if (isPro)
+                          AvatarEditor(
+                            size: 120,
+                            initials: initials,
+                          )
+                        else
+                          AvatarDisplay(
+                            size: 120,
+                            initials: initials,
+                            photoUrl: authUser?.thumbnailUrl ??
+                                authUser?.profileImageUrl,
+                          ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          authUser?.email ?? '',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        '${_firstNameController.text} ${_lastNameController.text}'
-                            .trim(),
-                        style: AppTextStyles.h3,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        authUser?.email ?? '',
-                        style: AppTextStyles.bodySmall,
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                    ],
+                        const SizedBox(height: AppSpacing.lg),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                controller: _firstNameController,
+                                label: context.l10n.firstName,
+                                prefixIcon: Icons.person_outline,
+                                validator: (v) => Validators.required(v,
+                                    message: context.l10n.firstNameRequired),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: AppTextField(
+                                controller: _lastNameController,
+                                label: context.l10n.lastName,
+                                prefixIcon: Icons.person_outline,
+                                validator: (v) => Validators.required(v,
+                                    message: context.l10n.lastNameRequired),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        AppTextField(
+                          controller: _phoneController,
+                          label: context.l10n.phone,
+                          prefixIcon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                        ),
+
+                        const SizedBox(height: AppSpacing.md),
+
+                        PersonalGenderSelector(
+                          value: _gender,
+                          onChanged: (g) {
+                            setState(() => _gender = g);
+                            _checkChanges();
+                          },
+                        ),
+
+                        // Update button — only visible when changes detected
+                        if (_hasChanges) ...[
+                          const SizedBox(height: AppSpacing.lg),
+                          AppButton(
+                            text: context.l10n.saveChanges,
+                            isLoading: _isSaving,
+                            onPressed: _saveChanges,
+                            width: double.infinity,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 );
               },
-            ),
-
-            const SizedBox(height: AppSpacing.md),
-
-            // Personal info form
-            _SectionCard(
-              title: context.l10n.personalInfo,
-              icon: Icons.person_outline_rounded,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // Email (read-only)
-                    AppTextField(
-                      controller: TextEditingController(
-                        text: ref.watch(authStateProvider).user?.email ?? '',
-                      ),
-                      label: context.l10n.email,
-                      enabled: false,
-                      prefixIcon: Icons.email_outlined,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppTextField(
-                            controller: _firstNameController,
-                            label: context.l10n.firstName,
-                            prefixIcon: Icons.person_outline,
-                            validator: (v) => Validators.required(v,
-                                message: context.l10n.firstNameRequired),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: AppTextField(
-                            controller: _lastNameController,
-                            label: context.l10n.lastName,
-                            prefixIcon: Icons.person_outline,
-                            validator: (v) => Validators.required(v,
-                                message: context.l10n.lastNameRequired),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    AppTextField(
-                      controller: _phoneController,
-                      label: context.l10n.phone,
-                      prefixIcon: Icons.phone_outlined,
-                      keyboardType: TextInputType.phone,
-                    ),
-
-                    const SizedBox(height: AppSpacing.md),
-
-                    PersonalGenderSelector(
-                      value: _gender,
-                      onChanged: (g) {
-                        setState(() => _gender = g);
-                        _checkChanges();
-                      },
-                    ),
-
-                    // Update button — only visible when changes detected
-                    if (_hasChanges) ...[
-                      const SizedBox(height: AppSpacing.lg),
-                      AppButton(
-                        text: context.l10n.saveChanges,
-                        isLoading: _isSaving,
-                        onPressed: _saveChanges,
-                        width: double.infinity,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
             ),
 
             const SizedBox(height: AppSpacing.md),
@@ -519,27 +500,19 @@ class _SectionCard extends StatelessWidget {
                 AppSpacing.md,
                 AppSpacing.md,
                 AppSpacing.md,
-                AppSpacing.xs,
+                AppSpacing.sm,
               ),
               child: Row(
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 14, color: AppColors.textHint),
-                    const SizedBox(width: AppSpacing.xs),
+                    Icon(icon, size: 18, color: AppColors.primary),
+                    const SizedBox(width: AppSpacing.sm),
                   ],
-                  Text(
-                    title.toUpperCase(),
-                    style: AppTextStyles.overline.copyWith(letterSpacing: 1.8),
+                  Expanded(
+                    child: Text(title, style: AppTextStyles.h3),
                   ),
                 ],
               ),
-            ),
-          if (title.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs,
-              ),
-              child: Text(title, style: AppTextStyles.h3),
             ),
           const Divider(height: 1, color: AppColors.divider),
           Padding(

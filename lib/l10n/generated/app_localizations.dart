@@ -2458,6 +2458,186 @@ abstract class AppLocalizations {
   /// **'Ajoute ton genre pour personnaliser les filtres.'**
   String get completeProfileGenderOnly;
 
+  /// No description provided for @completeProfilePhoneOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute ton numéro pour recevoir les confirmations de rendez-vous.'**
+  String get completeProfilePhoneOnly;
+
+  /// No description provided for @useMyGpsLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser ma position GPS'**
+  String get useMyGpsLocation;
+
+  /// No description provided for @gpsLocationCaptured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position enregistrée ✓'**
+  String get gpsLocationCaptured;
+
+  /// No description provided for @gpsHintNoAddressOnGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse introuvable sur Google ? Utilise ton GPS pour enregistrer la position exacte du salon — l\'adresse reste telle que tu l\'as écrite.'**
+  String get gpsHintNoAddressOnGoogle;
+
+  /// No description provided for @gpsErrorServiceDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Active le GPS sur ton appareil puis réessaie.'**
+  String get gpsErrorServiceDisabled;
+
+  /// No description provided for @gpsErrorPermissionDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorise l\'accès à la position pour enregistrer les coordonnées.'**
+  String get gpsErrorPermissionDenied;
+
+  /// No description provided for @gpsErrorPermissionDeniedForever.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvre les paramètres système et autorise la localisation pour Termini im.'**
+  String get gpsErrorPermissionDeniedForever;
+
+  /// No description provided for @gpsErrorTimeout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'obtenir la position. Va dehors ou réessaie.'**
+  String get gpsErrorTimeout;
+
+  /// No description provided for @gpsErrorUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue. Réessaie.'**
+  String get gpsErrorUnknown;
+
+  /// No description provided for @salonGeocodingBannerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Finalise la localisation du salon'**
+  String get salonGeocodingBannerTitle;
+
+  /// No description provided for @salonGeocodingBannerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton salon apparaîtra plus rapidement dans les recherches avec une adresse Google OU des coordonnées GPS enregistrées.'**
+  String get salonGeocodingBannerBody;
+
+  /// No description provided for @salonGeocodingDialogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Localisation du salon'**
+  String get salonGeocodingDialogTitle;
+
+  /// No description provided for @salonGeocodingDialogSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisis une adresse depuis Google OU enregistre la position via GPS.'**
+  String get salonGeocodingDialogSubtitle;
+
+  /// No description provided for @salonGeocodingSaveCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer la localisation'**
+  String get salonGeocodingSaveCta;
+
+  /// No description provided for @salonGeocodingSuccessToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Localisation enregistrée.'**
+  String get salonGeocodingSuccessToast;
+
+  /// No description provided for @shareSalon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get shareSalon;
+
+  /// No description provided for @shareSalonSheetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager ce salon'**
+  String get shareSalonSheetTitle;
+
+  /// No description provided for @shareSalonSheetSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invite un proche à réserver'**
+  String get shareSalonSheetSubtitle;
+
+  /// No description provided for @shareViaWhatsApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'WhatsApp'**
+  String get shareViaWhatsApp;
+
+  /// No description provided for @shareViaWhatsAppCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi direct · message pré-rempli'**
+  String get shareViaWhatsAppCaption;
+
+  /// No description provided for @shareMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager…'**
+  String get shareMore;
+
+  /// No description provided for @shareMoreCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuille système · autres apps'**
+  String get shareMoreCaption;
+
+  /// No description provided for @shareCopyLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le lien'**
+  String get shareCopyLink;
+
+  /// No description provided for @shareLinkCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien copié'**
+  String get shareLinkCopied;
+
+  /// No description provided for @shareIncludeMeAsPro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Me recommander'**
+  String get shareIncludeMeAsPro;
+
+  /// No description provided for @shareIncludeMeAsProHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le destinataire arrivera sur la réservation avec toi déjà choisi.'**
+  String get shareIncludeMeAsProHelp;
+
+  /// No description provided for @shareLinkPreviewLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get shareLinkPreviewLabel;
+
+  /// No description provided for @sharedEmployeePrefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendez-vous avec'**
+  String get sharedEmployeePrefix;
+
+  /// No description provided for @sharedEmployeeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Services filtrés pour ce pro'**
+  String get sharedEmployeeHint;
+
+  /// No description provided for @shareWhatsAppMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salut ! Je te recommande {salonName} — prends ton rendez-vous ici : {url}'**
+  String shareWhatsAppMessage(String salonName, String url);
+
   /// No description provided for @companySetupHeadline.
   ///
   /// In fr, this message translates to:

@@ -124,6 +124,32 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
 
   // ── Company info ──────────────────────────────────────────────────────────
 
+  /// Lightweight alternative to [load] that only fetches the salon's
+  /// core info (no categories / employees / gallery). Used by the
+  /// geocoding banner on `/home` so we can show the warning without
+  /// paying for the full dashboard payload.
+  ///
+  /// Preserves existing categories/employees/gallery if they were already
+  /// loaded by [load].
+  Future<void> loadCompanyOnly() async {
+    try {
+      final fetched = await _datasource.getMyCompany();
+      final existing = state.company;
+      state = state.copyWith(
+        // Merge so we don't drop categories/employees loaded by load().
+        company: existing == null
+            ? fetched
+            : fetched.copyWith(
+                categories: existing.categories,
+                employees: existing.employees,
+              ),
+        error: null,
+      );
+    } catch (_) {
+      // Silent — the banner will simply not show. Full load() will retry.
+    }
+  }
+
   Future<bool> updateCompanyInfo(Map<String, dynamic> data) async {
     try {
       final updated = await _datasource.updateCompany(data);

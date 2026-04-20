@@ -1258,6 +1258,107 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ajoute ton genre pour personnaliser les filtres.';
 
   @override
+  String get completeProfilePhoneOnly =>
+      'Ajoute ton numéro pour recevoir les confirmations de rendez-vous.';
+
+  @override
+  String get useMyGpsLocation => 'Utiliser ma position GPS';
+
+  @override
+  String get gpsLocationCaptured => 'Position enregistrée ✓';
+
+  @override
+  String get gpsHintNoAddressOnGoogle =>
+      'Adresse introuvable sur Google ? Utilise ton GPS pour enregistrer la position exacte du salon — l\'adresse reste telle que tu l\'as écrite.';
+
+  @override
+  String get gpsErrorServiceDisabled =>
+      'Active le GPS sur ton appareil puis réessaie.';
+
+  @override
+  String get gpsErrorPermissionDenied =>
+      'Autorise l\'accès à la position pour enregistrer les coordonnées.';
+
+  @override
+  String get gpsErrorPermissionDeniedForever =>
+      'Ouvre les paramètres système et autorise la localisation pour Termini im.';
+
+  @override
+  String get gpsErrorTimeout =>
+      'Impossible d\'obtenir la position. Va dehors ou réessaie.';
+
+  @override
+  String get gpsErrorUnknown => 'Une erreur est survenue. Réessaie.';
+
+  @override
+  String get salonGeocodingBannerTitle => 'Finalise la localisation du salon';
+
+  @override
+  String get salonGeocodingBannerBody =>
+      'Ton salon apparaîtra plus rapidement dans les recherches avec une adresse Google OU des coordonnées GPS enregistrées.';
+
+  @override
+  String get salonGeocodingDialogTitle => 'Localisation du salon';
+
+  @override
+  String get salonGeocodingDialogSubtitle =>
+      'Choisis une adresse depuis Google OU enregistre la position via GPS.';
+
+  @override
+  String get salonGeocodingSaveCta => 'Enregistrer la localisation';
+
+  @override
+  String get salonGeocodingSuccessToast => 'Localisation enregistrée.';
+
+  @override
+  String get shareSalon => 'Partager';
+
+  @override
+  String get shareSalonSheetTitle => 'Partager ce salon';
+
+  @override
+  String get shareSalonSheetSubtitle => 'Invite un proche à réserver';
+
+  @override
+  String get shareViaWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareViaWhatsAppCaption => 'Envoi direct · message pré-rempli';
+
+  @override
+  String get shareMore => 'Partager…';
+
+  @override
+  String get shareMoreCaption => 'Feuille système · autres apps';
+
+  @override
+  String get shareCopyLink => 'Copier le lien';
+
+  @override
+  String get shareLinkCopied => 'Lien copié';
+
+  @override
+  String get shareIncludeMeAsPro => 'Me recommander';
+
+  @override
+  String get shareIncludeMeAsProHelp =>
+      'Le destinataire arrivera sur la réservation avec toi déjà choisi.';
+
+  @override
+  String get shareLinkPreviewLabel => 'Aperçu';
+
+  @override
+  String get sharedEmployeePrefix => 'Rendez-vous avec';
+
+  @override
+  String get sharedEmployeeHint => 'Services filtrés pour ce pro';
+
+  @override
+  String shareWhatsAppMessage(String salonName, String url) {
+    return 'Salut ! Je te recommande $salonName — prends ton rendez-vous ici : $url';
+  }
+
+  @override
   String get companySetupHeadline => 'Termine la configuration de ton salon';
 
   @override

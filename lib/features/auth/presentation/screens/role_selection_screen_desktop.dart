@@ -364,10 +364,19 @@ class _DesktopRoleCardState extends State<_DesktopRoleCard>
             return Transform.translate(
               offset: Offset(0, _translateYAnim.value),
               child: GestureDetector(
-                onTap: () => context.goNamed(
-                  RouteNames.signup,
-                  queryParameters: {'role': widget.role},
-                ),
+                onTap: () {
+                  final returnTo = GoRouterState.of(context)
+                      .uri
+                      .queryParameters['returnTo'];
+                  context.goNamed(
+                    RouteNames.signup,
+                    queryParameters: {
+                      'role': widget.role,
+                      if (returnTo != null && returnTo.isNotEmpty)
+                        'returnTo': returnTo,
+                    },
+                  );
+                },
                 child: Container(
                   decoration: BoxDecoration(
                     color: widget.cardBackground,

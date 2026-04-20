@@ -116,14 +116,18 @@ class AuthRemoteDatasource {
   // Google OAuth
   // ---------------------------------------------------------------------------
   Future<AuthResponse> googleLogin({
-    required String idToken,
+    String? idToken,
+    String? accessToken,
     String? role, // 'user' | 'company' — only used for first-time creation
   }) async {
+    assert(idToken != null || accessToken != null,
+        'googleLogin requires either idToken (mobile) or accessToken (web)');
     try {
       final response = await _client.post(
         ApiConstants.googleAuth,
         data: {
-          'id_token': idToken,
+          if (idToken != null) 'id_token': idToken,
+          if (accessToken != null) 'access_token': accessToken,
           if (role != null) 'role': role,
         },
       );
@@ -172,11 +176,17 @@ class AuthRemoteDatasource {
   // ---------------------------------------------------------------------------
   // Facebook OAuth
   // ---------------------------------------------------------------------------
-  Future<AuthResponse> facebookLogin({required String accessToken}) async {
+  Future<AuthResponse> facebookLogin({
+    required String accessToken,
+    String? role, // 'user' | 'company' — only used for first-time creation
+  }) async {
     try {
       final response = await _client.post(
         ApiConstants.facebookAuth,
-        data: {'access_token': accessToken},
+        data: {
+          'access_token': accessToken,
+          if (role != null) 'role': role,
+        },
       );
       return AuthResponse.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
@@ -195,6 +205,7 @@ class AuthRemoteDatasource {
     String? authorizationCode,
     String? firstName,
     String? lastName,
+    String? role, // 'user' | 'company' — only used for first-time creation
   }) async {
     try {
       final response = await _client.post(
@@ -204,6 +215,7 @@ class AuthRemoteDatasource {
           if (authorizationCode != null) 'authorization_code': authorizationCode,
           if (firstName != null) 'first_name': firstName,
           if (lastName != null) 'last_name': lastName,
+          if (role != null) 'role': role,
         },
       );
       return AuthResponse.fromJson(response.data as Map<String, dynamic>);

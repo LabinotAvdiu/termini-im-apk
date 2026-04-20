@@ -9,21 +9,24 @@ import '../../../../core/utils/extensions.dart';
 /// Shows a bottom-sheet modal asking the guest to authenticate before
 /// proceeding with a booking action.
 ///
-/// Usage:
-/// ```dart
-/// showAuthRequiredModal(context);
-/// ```
+/// Captures the caller's current location so that after a successful
+/// login/signup the router can redirect back there instead of dropping the
+/// user on `/home`. Without this, a shared booking link (e.g.
+/// `/company/5/book?employee=7f1`) would be lost the moment the user taps
+/// "Se connecter".
 Future<void> showAuthRequiredModal(BuildContext context) {
+  final returnTo = GoRouterState.of(context).uri.toString();
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (_) => const _AuthRequiredSheet(),
+    builder: (_) => _AuthRequiredSheet(returnTo: returnTo),
   );
 }
 
 class _AuthRequiredSheet extends StatelessWidget {
-  const _AuthRequiredSheet();
+  final String returnTo;
+  const _AuthRequiredSheet({required this.returnTo});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +111,10 @@ class _AuthRequiredSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.goNamed(RouteNames.login);
+                context.goNamed(
+                  RouteNames.login,
+                  queryParameters: {'returnTo': returnTo},
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -134,7 +140,10 @@ class _AuthRequiredSheet extends StatelessWidget {
             child: OutlinedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.goNamed(RouteNames.roleSelect);
+                context.goNamed(
+                  RouteNames.roleSelect,
+                  queryParameters: {'returnTo': returnTo},
+                );
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primary,

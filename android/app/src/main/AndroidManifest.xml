@@ -14,6 +14,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- Facebook Login — Chrome Custom Tabs fallback needs network access -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Geolocation — GPS fallback pour le signup salon quand Google Places
+         ne connaît pas l'adresse (cas fréquent pour les adresses récentes au Kosovo) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:label="Termini im"
         android:name="${applicationName}"

@@ -226,12 +226,19 @@ keytool -list -v -keystore release.keystore -alias upload
 ```
 
 ### 🔴 Remplacer les fichiers placeholder
-| Fichier | Comment |
-|---|---|
-| `android/app/google-services.json` | Firebase Console → Paramètres projet → Apps Android → télécharger. **Regénérer après ajout des OAuth clients Android** dans GCP (les `oauth_client` n'apparaissent que si les SHA-1 sont enregistrés). |
-| `ios/Runner/GoogleService-Info.plist` | Firebase Console → Apps iOS → télécharger |
-| `ios/Runner/Info.plist` | Ajouter un `CFBundleURLType` avec `CFBundleURLSchemes = [REVERSED_CLIENT_ID]` (valeur depuis `GoogleService-Info.plist`) |
-| `web/index.html` | Ajouter dans `<head>` : `<meta name="google-signin-client_id" content="WEB_CLIENT_ID.apps.googleusercontent.com">` |
+| Fichier | Comment | Statut |
+|---|---|---|
+| `android/app/google-services.json` | Firebase Console → Paramètres projet → Apps Android → télécharger. **Regénérer après ajout des OAuth clients Android** dans GCP (les `oauth_client` n'apparaissent que si les SHA-1 sont enregistrés). | ✅ Fait (debug) |
+| `ios/Runner/GoogleService-Info.plist` | Firebase Console → Apps iOS → télécharger | ⏳ TODO |
+| `ios/Runner/Info.plist` | Ajouter un `CFBundleURLType` avec `CFBundleURLSchemes = [REVERSED_CLIENT_ID]` (valeur depuis `GoogleService-Info.plist`) | ⏳ TODO |
+| `web/index.html` | Meta tag `google-signin-client_id` → **Web Client ID `759517993388-6hqo810qjnephb8v1rb6oupb6csi9er0`** | ✅ Fait |
+
+### 🟠 Web — Authorized JS origins (à vérifier dans GCP)
+[console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials → OAuth 2.0 Client IDs → **Web client** (type 3) → Authorized JavaScript origins doit contenir :
+- `http://localhost:PORT` — **récupère le port exact** que `flutter run -d chrome` ouvre (ex. `http://localhost:51234`). Astuce : fixer le port avec `flutter run -d chrome --web-port=8080` pour éviter le port random à chaque lancement.
+- `https://app.termini-im.com` (prod, quand déployé)
+
+Pas de redirect URI nécessaire pour le flow `google_sign_in` côté web (il utilise le Google One Tap JS SDK, pas un redirect OAuth).
 
 ### 🔴 Backend — env var anti-replay
 Dans `backend/.env` :
@@ -304,6 +311,85 @@ docker exec lagedi-php-1 php artisan route:list | grep apple
 - Apple n'envoie **`first_name` + `last_name` qu'au PREMIER sign-in**. Le client forward les valeurs reçues ; le backend les persiste à la création du User. Les logins suivants résolvent le compte par email.
 - "Hide my email" → Apple génère un email relais stable par app (`xyz@privaterelay.appleid.com`) : traité comme un email normal.
 - Si aucun email n'est retourné (cas rare), fallback sur `<sub>@apple.invalid` pour garantir l'unicité.
+
+---
+
+## 12. Géolocalisation — configuration iOS
+
+Le package `geolocator` est intégré pour le fallback GPS du salon (signup + banner "Mon Salon"). Android et Web sont OK. iOS exige d'ajouter 2 clés dans `ios/Runner/Info.plist` :
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Termini im utilise ta position pour enregistrer l'emplacement exact du salon quand l'adresse n'est pas sur Google Maps.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Termini im utilise ta position pour enregistrer l'emplacement exact du salon.</string>
+```
+
+Sans ces clés, iOS refuse de demander la permission et `Geolocator.getCurrentPosition()` throw.
+
+---
+
+## 13. Web — URL propres + fallback SPA
+
+`main.dart` appelle `usePathUrlStrategy()` (Flutter Web) pour servir des URLs propres (`/company/5`) au lieu du hash routing par défaut (`/#/company/5`). Les liens partagés via `buildSalonShareUrl()` supposent les URLs propres.
+
+**Côté serveur (nginx sur le VPS OVH)** — il faut que toutes les routes inconnues retombent sur `index.html` :
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+Sans ça, le navigateur qui ouvre directement `https://app.termini-im.com/company/5` reçoit un 404 nginx au lieu de l'app Flutter. Concerne **tous** les chemins de l'app (fiche salon, booking, settings, mes rdv, etc.).
+
+### Vérification
+```bash
+# Après déploiement :
+curl -I https://app.termini-im.com/company/5
+# → doit retourner 200 + le HTML de l'app (pas un 404)
+```
+
+---
+
+## 14. Facebook Login — configuration Web
+
+Android fonctionne déjà (clé hash debug enregistrée + `email`/`public_profile` activés). Le web a besoin d'une config supplémentaire dans le portail Facebook.
+
+### ✅ Flutter — init Web SDK
+Déjà fait dans `lib/main.dart` (init conditionnel `if (kIsWeb) FacebookAuth.i.webAndDesktopInitialize(...)`). Aucune action.
+
+### 🔴 Facebook Developer Portal — ajouter la plateforme Web
+[developers.facebook.com/apps/1262066146100608](https://developers.facebook.com/apps/1262066146100608) → **Paramètres → Général → + Ajouter une plateforme → Site Web**.
+
+| Champ | Valeur |
+|---|---|
+| URL du site | `http://localhost:8080/` (dev) · `https://app.termini-im.com/` (prod) |
+| Domaines de l'app | `localhost` (dev) · `app.termini-im.com` (prod) |
+
+Puis **Cas d'utilisation → Authentification et demande de données → Paramètres** :
+| Option | Valeur |
+|---|---|
+| Connexion client OAuth | ✅ Activé |
+| Connexion OAuth web | ✅ Activé |
+| Forcer HTTPS sur les redirections OAuth web | ❌ Désactivé **en dev** (sinon localhost échoue) — ✅ Activé en prod |
+| URI de redirection OAuth valides | `http://localhost:8080/` (dev) + prod |
+
+### 🔴 Port Flutter Web — fixe pour que FB l'accepte
+Facebook exige le domaine/port exact dans "Domaines de l'app". Lance toujours Chrome sur le même port :
+```bash
+flutter run -d chrome --web-port=8080
+```
+
+### 🟠 Vérification rapide
+1. `flutter run -d chrome --web-port=8080`
+2. `/landing` → clic **Continuer avec Facebook**
+3. Popup FB s'ouvre → autoriser → retour sur `/home`
+
+### Erreurs courantes
+- **`URL bloquée`** : le port actuel (`localhost:XXXXX`) n'est pas dans l'URL du site / les domaines de l'app du portail Facebook
+- **`App Not Active`** : l'app est en mode "Développement" → seuls les dev/testeurs peuvent se connecter (c'est normal avant la revue Meta)
+- **Popup s'ouvre puis reste blanche** : le SDK JS Facebook a été bloqué (AdBlock ? extensions ?) ou `webAndDesktopInitialize` n'a pas été appelé avant `FacebookAuth.login()`
 
 ---
 

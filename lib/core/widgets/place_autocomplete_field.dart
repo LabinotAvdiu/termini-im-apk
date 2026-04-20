@@ -62,7 +62,15 @@ class _PlaceAutocompleteFieldState
   void _onFocusChanged() {
     if (!_focusNode.hasFocus) {
       _debounce?.cancel();
-      _removeOverlay();
+      // Defer removal so a tap on a suggestion tile has time to register.
+      // On web the overlay sits in a separate subtree — clicking a tile
+      // makes the TextField lose focus before InkWell.onTap fires, so
+      // closing the overlay synchronously here would eat the selection.
+      Future.delayed(const Duration(milliseconds: 180), () {
+        if (mounted && !_focusNode.hasFocus) {
+          _removeOverlay();
+        }
+      });
     }
   }
 
@@ -107,7 +115,14 @@ class _PlaceAutocompleteFieldState
     final lang = ref.read(localeProvider).languageCode;
     final details =
         await _datasource.details(suggestion.placeId, language: lang);
-    final finalText = details?.formattedAddress ?? suggestion.mainText;
+    // Keep the street-level part only — the city has its own dedicated field
+    // so we strip city/country from the formatted address here.
+    // Fallback order: mainText (from autocomplete, already street-only) →
+    // first segment of formattedAddress → full text.
+    final finalText = suggestion.mainText.isNotEmpty
+        ? suggestion.mainText
+        : (details?.formattedAddress.split(',').first.trim() ??
+            suggestion.mainText);
     _justSelected = true;
     widget.controller.text = finalText;
     widget.controller.selection = TextSelection.collapsed(
@@ -127,21 +142,28 @@ class _PlaceAutocompleteFieldState
     _removeOverlay();
     final overlay = Overlay.of(context);
     final box = context.findRenderObject() as RenderBox?;
-    final width = box?.size.width ?? MediaQuery.sizeOf(context).width - 48;
+    // Field's measured width is our upper bound (mobile / tight forms) but
+    // we cap at 420 px so the dropdown doesn't stretch across a half-page
+    // desktop form when the suggestions are short.
+    final fieldWidth =
+        box?.size.width ?? MediaQuery.sizeOf(context).width - 48;
+    final width = fieldWidth > 420 ? 420.0 : fieldWidth;
     final height = box?.size.height ?? 80;
-    debugPrint('[places] showOverlay: width=$width height=$height');
     _overlay = OverlayEntry(
       builder: (ctx) => CompositedTransformFollower(
         link: _layerLink,
         showWhenUnlinked: false,
         offset: Offset(0, height + 6),
-        child: Material(
-          color: Colors.transparent,
-          child: SizedBox(
-            width: width,
-            child: _SuggestionDropdown(
-              suggestions: _suggestions,
-              onTap: _selectSuggestion,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            color: Colors.transparent,
+            child: SizedBox(
+              width: width,
+              child: _SuggestionDropdown(
+                suggestions: _suggestions,
+                onTap: _selectSuggestion,
+              ),
             ),
           ),
         ),
@@ -238,64 +260,58 @@ class _SuggestionTile extends StatefulWidget {
 }
 
 class _SuggestionTileState extends State<_SuggestionTile> {
-  bool _hovered = false;
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    // InkWell handles hover/tap hit-testing on web (GestureDetector was
+    // getting eaten by the overlay's pointer region on some desktop builds
+    // and the suggestion tap did nothing — see bug report 2026-04-20).
+    return InkWell(
       onTap: widget.onTap,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          color: _hovered
-              ? AppColors.secondary.withValues(alpha: 0.07)
-              : Colors.transparent,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm + 2,
-          ),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.place_outlined,
-                size: 16,
-                color: AppColors.secondary,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+      hoverColor: AppColors.secondary.withValues(alpha: 0.07),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.place_outlined,
+              size: 16,
+              color: AppColors.secondary,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.suggestion.mainText,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (widget.suggestion.secondaryText.isNotEmpty) ...[
+                    const SizedBox(height: 2),
                     Text(
-                      widget.suggestion.mainText,
+                      widget.suggestion.secondaryText,
                       style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        fontSize: 11,
+                        color: AppColors.textHint,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (widget.suggestion.secondaryText.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.suggestion.secondaryText,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textHint,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

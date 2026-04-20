@@ -8,9 +8,11 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/auth_prompt_sheet.dart';
+import '../../../../core/widgets/language_sheet.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
+import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../../reviews/data/models/review_model.dart';
 import '../../../reviews/presentation/providers/review_provider.dart';
 import '../../data/models/company_detail_model.dart';
@@ -25,8 +27,13 @@ import '../widgets/service_category_section.dart';
 /// because they are leaf actions (no shared logic with the desktop layout).
 class CompanyDetailScreenMobile extends ConsumerWidget {
   final String companyId;
+  final String? preselectedEmployeeId;
 
-  const CompanyDetailScreenMobile({super.key, required this.companyId});
+  const CompanyDetailScreenMobile({
+    super.key,
+    required this.companyId,
+    this.preselectedEmployeeId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,6 +55,21 @@ class CompanyDetailScreenMobile extends ConsumerWidget {
             backgroundColor: AppColors.background,
             leading: _BackButton(),
             actions: [
+              // Guest-only: small language pill + login CTA. Shown inline so
+              // a recipient of a shared link can switch language / auth
+              // without leaving the salon page.
+              const _MobileGuestActions(),
+              ShareIconButton(
+                companyId: companyId,
+                salonName: company.name,
+                bookingMode: company.bookingMode,
+                // Pass user ids so matching against authState.user.id works —
+                // pivot ids (EmployeeModel.id) are unrelated to user ids.
+                employeeIds: {
+                  for (final e in company.employees) e.userId,
+                },
+                showFreshBadge: true,
+              ),
               _HeartButton(
                 companyId: companyId,
                 isFavorite: company.isFavorite,
@@ -98,6 +120,7 @@ class CompanyDetailScreenMobile extends ConsumerWidget {
                 _MobileInfoSheet(
                   company: company,
                   companyId: companyId,
+                  preselectedEmployeeId: preselectedEmployeeId,
                 ),
                 const SizedBox(height: AppSpacing.xxl),
               ],
@@ -116,10 +139,12 @@ class CompanyDetailScreenMobile extends ConsumerWidget {
 class _MobileInfoSheet extends StatelessWidget {
   final CompanyDetailModel company;
   final String companyId;
+  final String? preselectedEmployeeId;
 
   const _MobileInfoSheet({
     required this.company,
     required this.companyId,
+    this.preselectedEmployeeId,
   });
 
   Future<void> _dialPhone(BuildContext context, String phone) async {
@@ -139,9 +164,33 @@ class _MobileInfoSheet extends StatelessWidget {
     final hasPhoneSecondary =
         company.phoneSecondary != null && company.phoneSecondary!.isNotEmpty;
 
-    // Total services count
-    final totalServices =
-        company.categories.fold<int>(0, (sum, c) => sum + c.services.length);
+    // Resolve the preselected employee (from a shared link) so we can
+    // filter services to what they're qualified to do. An empty
+    // `serviceIds` means "can do anything" — no filter is applied.
+    // Match by `userId` — the pivot `id` would collide across salons.
+    final preselectedEmployee = preselectedEmployeeId == null
+        ? null
+        : company.employees
+            .where((e) => e.userId == preselectedEmployeeId)
+            .cast<EmployeeModel?>()
+            .firstWhere((e) => true, orElse: () => null);
+
+    final visibleCategories = preselectedEmployee == null ||
+            preselectedEmployee.serviceIds.isEmpty
+        ? company.categories
+        : company.categories
+            .map((c) => c.copyWith(
+                  services: c.services
+                      .where((s) =>
+                          preselectedEmployee.serviceIds.contains(s.id))
+                      .toList(),
+                ))
+            .where((c) => c.services.isNotEmpty)
+            .toList();
+
+    // Total services count (after filter)
+    final totalServices = visibleCategories.fold<int>(
+        0, (sum, c) => sum + c.services.length);
 
     // Dynamic overline based on the salon's target gender — same copy as
     // desktop (see company_detail_screen_desktop.dart).
@@ -283,15 +332,22 @@ class _MobileInfoSheet extends StatelessWidget {
             ),
           ),
 
-          // ── Service categories ───────────────────────────────────────────
-          ...company.categories.map(
+          // ── Service categories (filtered by preselected employee) ────────
+          // No visible banner — the filter happens silently so the
+          // recipient experiences the salon page as anyone else would.
+          ...visibleCategories.map(
             (cat) => ServiceCategorySection(
               category: cat,
               onServiceChosen: (service) {
                 context.goNamed(
                   RouteNames.booking,
                   pathParameters: {'id': companyId},
-                  queryParameters: {'serviceId': service.id},
+                  queryParameters: {
+                    'serviceId': service.id,
+                    if (preselectedEmployeeId != null &&
+                        preselectedEmployeeId!.isNotEmpty)
+                      'employee': preselectedEmployeeId!,
+                  },
                 );
               },
             ),
@@ -308,6 +364,113 @@ class _MobileInfoSheet extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Stats strip — rating / reviews / services, bordered top+bottom
 // ---------------------------------------------------------------------------
+
+/// Guest-only inline actions in the mobile SliverAppBar — a tiny language
+/// pill and a login pill. Invisible to authenticated users.
+class _MobileGuestActions extends ConsumerWidget {
+  const _MobileGuestActions();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAuth = ref.watch(
+      authStateProvider.select((s) => s.isAuthenticated),
+    );
+    if (isAuth) return const SizedBox.shrink();
+
+    final lang = ref.watch(localeProvider).languageCode.toUpperCase();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Language pill — 3-letter uppercase code on ivory bg
+          Material(
+            color: AppColors.background.withValues(alpha: 0.92),
+            shape: StadiumBorder(
+              side: BorderSide(
+                color: AppColors.textPrimary.withValues(alpha: 0.08),
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => showLanguageSheet(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.language_rounded,
+                      size: 13,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      lang,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+
+          // Login pill — primary filled
+          Material(
+            color: AppColors.primary,
+            shape: const StadiumBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () {
+                final returnTo = GoRouterState.of(context).uri.toString();
+                context.goNamed(
+                  RouteNames.login,
+                  queryParameters: {'returnTo': returnTo},
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.person_outline_rounded,
+                      size: 13,
+                      color: AppColors.background,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      context.l10n.login,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        color: AppColors.background,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _StatsStrip extends StatelessWidget {
   final double rating;

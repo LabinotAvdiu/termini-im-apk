@@ -14,9 +14,11 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../../reviews/data/models/review_model.dart';
 import '../../../reviews/presentation/providers/review_provider.dart';
+import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/salon_geocoding_banner.dart';
 import 'company_dashboard_screen_mobile.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
@@ -191,6 +193,10 @@ class _DesktopMainContent extends StatelessWidget {
             const SizedBox(height: AppSpacing.xl),
             const Divider(color: AppColors.divider, height: 1),
             const SizedBox(height: AppSpacing.xl),
+
+            // Red warning when the salon lacks geocoding — hidden once
+            // address/GPS is set.
+            const SalonGeocodingBanner(),
 
             // ── Metric tiles ──────────────────────────────────────────────
             if (company != null)
@@ -384,6 +390,15 @@ class _DesktopGreeting extends ConsumerWidget {
             ),
           ],
         ),
+        const Spacer(),
+        if (company != null)
+          ShareOutlinedButton(
+            companyId: company!.id,
+            salonName: company!.name,
+            bookingMode: company!.bookingMode,
+            employeeIds: {for (final e in company!.employees) e.userId},
+            showFreshBadge: true,
+          ),
       ],
     );
   }
@@ -861,25 +876,32 @@ class _DesktopTeamSection extends StatelessWidget {
               icon: Icons.person_add_outlined,
             )
           else
-            // Avatar grid — 2 per row on desktop
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 360,
-                mainAxisExtent: 72,
-                crossAxisSpacing: AppSpacing.sm,
-                mainAxisSpacing: AppSpacing.sm,
-              ),
-              itemCount: company.employees.length,
-              itemBuilder: (_, i) {
-                final emp = company.employees[i];
-                return DashboardEmployeeTile(
-                  employee: emp,
-                  allServices: allServices,
-                  companyHoursLabel: companyHoursLabel,
-                  onEdit: () => onEdit(emp, allServices),
-                  onRemove: () => onRemove(emp),
+            // 2 tiles per row — Wrap so each tile has intrinsic height,
+            // otherwise tiles with many service chips overflow the fixed
+            // mainAxisExtent of a GridView by up to 30+ px and push the
+            // "Inviter / Créer" buttons on top of the cards.
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Two columns above 680 px, one column below.
+                final twoCols = constraints.maxWidth >= 680;
+                final tileWidth = twoCols
+                    ? (constraints.maxWidth - AppSpacing.sm) / 2
+                    : constraints.maxWidth;
+                return Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: company.employees.map((emp) {
+                    return SizedBox(
+                      width: tileWidth,
+                      child: DashboardEmployeeTile(
+                        employee: emp,
+                        allServices: allServices,
+                        companyHoursLabel: companyHoursLabel,
+                        onEdit: () => onEdit(emp, allServices),
+                        onRemove: () => onRemove(emp),
+                      ),
+                    );
+                  }).toList(),
                 );
               },
             ),

@@ -8,11 +8,13 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/auth_prompt_sheet.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
+import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../data/models/company_detail_model.dart';
 import '../providers/company_detail_provider.dart';
 import '../widgets/desktop_reviews_section.dart';
@@ -27,8 +29,13 @@ import '../widgets/gallery_lightbox.dart';
 /// display data. Navigation is issued locally (leaf actions only).
 class CompanyDetailScreenDesktop extends ConsumerStatefulWidget {
   final String companyId;
+  final String? preselectedEmployeeId;
 
-  const CompanyDetailScreenDesktop({super.key, required this.companyId});
+  const CompanyDetailScreenDesktop({
+    super.key,
+    required this.companyId,
+    this.preselectedEmployeeId,
+  });
 
   @override
   ConsumerState<CompanyDetailScreenDesktop> createState() =>
@@ -79,6 +86,7 @@ class _CompanyDetailScreenDesktopState
                 _DesktopBody(
                   company: company,
                   companyId: widget.companyId,
+                  preselectedEmployeeId: widget.preselectedEmployeeId,
                   servicesKey: _servicesKey,
                   onViewServices: _scrollToServices,
                 ),
@@ -169,10 +177,141 @@ class _DesktopTopBar extends ConsumerWidget {
 
           const Spacer(),
 
-          // Favorite button (right side)
+          // Guest actions — language + login (only shown when unauthenticated;
+          // logged-in users already see the same controls in the main shell
+          // and don't need a login shortcut here).
+          _GuestTopActions(),
+
+          // Share + Favorite — right side
+          _DesktopShareButton(companyId: companyId),
+          const SizedBox(width: 10),
           _DesktopFavoriteButton(companyId: companyId),
         ],
       ),
+    );
+  }
+}
+
+/// Language pill + "Connexion" button — only for guest visitors on the salon
+/// detail page so they can switch language or authenticate without leaving
+/// the screen (this page is reachable from shared links without ever going
+/// through /landing).
+class _GuestTopActions extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAuth = ref.watch(
+      authStateProvider.select((s) => s.isAuthenticated),
+    );
+    if (isAuth) return const SizedBox.shrink();
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Language pill
+        MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () => showLanguageSheet(context),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.language_rounded,
+                    size: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    ref.watch(localeProvider).languageCode.toUpperCase(),
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textSecondary,
+                      letterSpacing: 0.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+
+        // Login pill — primary color
+        MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () {
+              final returnTo = GoRouterState.of(context).uri.toString();
+              context.goNamed(
+                RouteNames.login,
+                queryParameters: {'returnTo': returnTo},
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.person_outline_rounded,
+                    size: 14,
+                    color: AppColors.background,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    context.l10n.login,
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.background,
+                      letterSpacing: 0.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+      ],
+    );
+  }
+}
+
+/// Wraps [ShareOutlinedButton] so the top bar stays ignorant of the provider
+/// plumbing. Mirrors the [_DesktopFavoriteButton] pattern of reading
+/// [companyDetailProvider] inline.
+class _DesktopShareButton extends ConsumerWidget {
+  final String companyId;
+  const _DesktopShareButton({required this.companyId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final company = ref.watch(
+      companyDetailProvider.select((s) => s.company),
+    );
+    if (company == null) return const SizedBox.shrink();
+    return ShareOutlinedButton(
+      companyId: companyId,
+      salonName: company.name,
+      bookingMode: company.bookingMode,
+      employeeIds: {for (final e in company.employees) e.userId},
+      showFreshBadge: true,
     );
   }
 }
@@ -274,18 +413,21 @@ class _DesktopFavoriteButtonState
         onPressed: _handleTap,
         icon: Icon(
           isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-          size: 16,
+          size: 18,
           color: AppColors.primary,
         ),
         label: const SizedBox.shrink(),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           side: BorderSide(
-            color: isFav ? AppColors.primary : AppColors.border,
+            color: isFav
+                ? AppColors.primary
+                : AppColors.primary.withValues(alpha: 0.50),
+            width: 1.2,
           ),
           backgroundColor: isFav
-              ? AppColors.primary.withValues(alpha: 0.06)
-              : Colors.transparent,
+              ? AppColors.primary.withValues(alpha: 0.10)
+              : AppColors.primary.withValues(alpha: 0.04),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,
@@ -637,12 +779,14 @@ class _GalleryPlaceholder extends StatelessWidget {
 class _DesktopBody extends StatelessWidget {
   final CompanyDetailModel company;
   final String companyId;
+  final String? preselectedEmployeeId;
   final GlobalKey servicesKey;
   final VoidCallback onViewServices;
 
   const _DesktopBody({
     required this.company,
     required this.companyId,
+    required this.preselectedEmployeeId,
     required this.servicesKey,
     required this.onViewServices,
   });
@@ -660,6 +804,7 @@ class _DesktopBody extends StatelessWidget {
             child: _DesktopMainColumn(
               company: company,
               companyId: companyId,
+              preselectedEmployeeId: preselectedEmployeeId,
               servicesKey: servicesKey,
             ),
           ),
@@ -688,18 +833,44 @@ class _DesktopBody extends StatelessWidget {
 class _DesktopMainColumn extends StatelessWidget {
   final CompanyDetailModel company;
   final String companyId;
+  final String? preselectedEmployeeId;
   final GlobalKey servicesKey;
 
   const _DesktopMainColumn({
     required this.company,
     required this.companyId,
+    required this.preselectedEmployeeId,
     required this.servicesKey,
   });
 
   @override
   Widget build(BuildContext context) {
-    final totalServices =
-        company.categories.fold<int>(0, (sum, c) => sum + c.services.length);
+    // Resolve the preselected employee (shared-link entry) and filter the
+    // service list to what they can perform. Empty `serviceIds` means the
+    // employee covers everything — no filter applied. Matches by `userId`
+    // because the pivot `id` isn't stable across contexts.
+    final preselectedEmployee = preselectedEmployeeId == null
+        ? null
+        : company.employees
+            .where((e) => e.userId == preselectedEmployeeId)
+            .cast<EmployeeModel?>()
+            .firstWhere((e) => true, orElse: () => null);
+
+    final visibleCategories = preselectedEmployee == null ||
+            preselectedEmployee.serviceIds.isEmpty
+        ? company.categories
+        : company.categories
+            .map((c) => c.copyWith(
+                  services: c.services
+                      .where((s) =>
+                          preselectedEmployee.serviceIds.contains(s.id))
+                      .toList(),
+                ))
+            .where((c) => c.services.isNotEmpty)
+            .toList();
+
+    final totalServices = visibleCategories.fold<int>(
+        0, (sum, c) => sum + c.services.length);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -777,15 +948,21 @@ class _DesktopMainColumn extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // Services — D2 layout per category
-        ...company.categories.map(
+        // Services — D2 layout per category. Filtered silently by the
+        // preselected pro (shared-link entry) — no banner shown on purpose.
+        ...visibleCategories.map(
           (cat) => _DesktopCategorySection(
             category: cat,
             onServiceChosen: (service) {
               context.goNamed(
                 RouteNames.booking,
                 pathParameters: {'id': companyId},
-                queryParameters: {'serviceId': service.id},
+                queryParameters: {
+                  'serviceId': service.id,
+                  if (preselectedEmployeeId != null &&
+                      preselectedEmployeeId!.isNotEmpty)
+                    'employee': preselectedEmployeeId!,
+                },
               );
             },
           ),

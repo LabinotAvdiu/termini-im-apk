@@ -1747,18 +1747,21 @@ class _PlanningTimelineGridState extends State<PlanningTimelineGrid> {
     final expandedBottomRow =
         expandedEv != null ? expandedEv.startRow + expandedEv.rowSpan : -1;
 
-    // "Now" indicator offset: compute only if currentTimeMinutes falls
-    // inside the opening range. Null → don't render.
+    // "Now" indicator offset: shown whenever we're looking at today,
+    // clamped to the visible range so the owner still sees "we're before
+    // opening" / "we're after closing" instead of the line vanishing.
+    // Null → we're not on today (past/future day view), don't render.
     double? nowTopPx;
     String? nowTimeLabel;
     if (widget.currentTimeMinutes != null && widget.rows.isNotEmpty) {
       final openMin = planningTimeToMinutes(widget.rows.first.time);
       final closeMin = planningTimeToMinutes(widget.workEnd);
       final currentMin = widget.currentTimeMinutes!;
-      if (currentMin >= openMin && currentMin <= closeMin) {
-        nowTopPx = (currentMin - openMin) / 15 * kPlanningRowHeight;
-        nowTimeLabel = planningMinutesToTime(currentMin);
-      }
+      final clampedMin = currentMin.clamp(openMin, closeMin);
+      nowTopPx = (clampedMin - openMin) / 15 * kPlanningRowHeight;
+      // Show the *actual* time in the label so it stays truthful even when
+      // the dot is clamped to the edge.
+      nowTimeLabel = planningMinutesToTime(currentMin);
     }
 
     return SizedBox(
