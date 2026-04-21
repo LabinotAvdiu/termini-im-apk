@@ -186,15 +186,16 @@ Quand un call réseau tourne, les autres boutons qui pourraient lancer une actio
 ### Pattern implémenté
 - `lib/features/auth/presentation/screens/signup_screen.dart` + `login_screen.dart` — `String? _loadingSocial` track le bouton social tapé ; `submitLoading = isLoading && _loadingSocial == null` pour que le bouton submit principal ne tourne **pas** pendant un Google/Facebook/Apple. Chaque bouton social passe `onPressed: _loadingSocial != null || isLoading ? null : _...`.
 
-### 🟠 À propager dans le reste de l'app
-Les écrans suivants ont plusieurs CTA sans garde mutual-exclusion — à auditer :
-- `booking_screen*` : tap "Confirmer" + tap "Retour" → peut créer un RDV puis annuler le flow
-- `company_planning_screen_*` : boutons accepter / refuser / no-show / libérer créneau — s'il y a plusieurs cartes ouvertes, tapper 2 actions différentes lance 2 requêtes
-- `company_dashboard` : tap walk-in pendant qu'une action statut tourne
-- `gallery_*` : upload + reorder simultanés
-- `appointment_card` client : tap "Annuler" + swipe → double action
+### 🟠 À propager dans le reste de l'app ✅ (partiel)
+Pattern : garde au niveau du **provider** (drop les requêtes entrantes quand une mutation de même id est déjà en vol), avec `Set<String>` ou `bool` exposé dans le state pour que l'UI désactive visuellement les CTAs concernés.
 
-Pattern reco : un seul flag `String? _inFlight` ou `Set<String> _inFlight` par screen, gaté dans le `onPressed` de chaque CTA. Le widget custom `AppActionGuard(active: ..., child: ...)` pourrait encapsuler ce comportement pour standardiser.
+Implémenté :
+- `booking_provider` : `_handleConfirm` / `_handleBack` / `_handlePrevious` bail out si `state.isLoading`
+- `company_planning_provider` : `mutatingIds` + drop same-id dans `_updateStatus` ; `addWalkIn` drop si `isSubmittingWalkIn`
+- `appointments_provider` (client) : `cancellingIds` + drop same-id dans `cancel()`
+- `company_dashboard_provider` : `uploadPhoto` drop si `galleryUploading` ; `reorderGalleryPhotos` refuse si upload en vol
+
+Les CTAs cross-card (accept salon A + reject salon B) restent permis volontairement — opérations indépendantes. Le risque concret (double-tap sur le même bouton) est couvert.
 
 ---
 
@@ -314,18 +315,9 @@ docker exec lagedi-php-1 php artisan route:list | grep apple
 
 ---
 
-## 12. Géolocalisation — configuration iOS
+## 12. Géolocalisation — configuration iOS ✅
 
-Le package `geolocator` est intégré pour le fallback GPS du salon (signup + banner "Mon Salon"). Android et Web sont OK. iOS exige d'ajouter 2 clés dans `ios/Runner/Info.plist` :
-
-```xml
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>Termini im utilise ta position pour enregistrer l'emplacement exact du salon quand l'adresse n'est pas sur Google Maps.</string>
-<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>Termini im utilise ta position pour enregistrer l'emplacement exact du salon.</string>
-```
-
-Sans ces clés, iOS refuse de demander la permission et `Geolocator.getCurrentPosition()` throw.
+Le package `geolocator` est intégré pour le fallback GPS du salon (signup + banner "Mon Salon"). Android et Web sont OK. Les 2 clés sont en place dans `ios/Runner/Info.plist` — `NSLocationWhenInUseUsageDescription` + `NSLocationAlwaysAndWhenInUseUsageDescription`.
 
 ---
 

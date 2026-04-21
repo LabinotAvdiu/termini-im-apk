@@ -193,6 +193,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get confirm => 'Konfirmo';
 
   @override
+  String get edit => 'Modifiko';
+
+  @override
   String get loading => 'Duke u ngarkuar...';
 
   @override
@@ -592,6 +595,21 @@ class AppLocalizationsSq extends AppLocalizations {
   String get scheduleSettings => 'Oraret';
 
   @override
+  String get capacitySettings => 'Salloni im — Orari';
+
+  @override
+  String get noBreaksYet => 'Asnjë pushim i konfiguruar';
+
+  @override
+  String get noDaysOffYet => 'Asnjë mbyllje e afërt';
+
+  @override
+  String get deleteBreakConfirm => 'Të fshihet ky pushim?';
+
+  @override
+  String get deleteDayOffConfirm => 'Të fshihet kjo mbyllje?';
+
+  @override
   String get myWorkHours => 'Oraret e mia të punës';
 
   @override
@@ -615,10 +633,91 @@ class AppLocalizationsSq extends AppLocalizations {
   String get addDayOff => 'Shto ditë pushimi';
 
   @override
-  String get reason => 'Arsyeja (opsionale)';
+  String get reason => 'Arsyeja';
 
   @override
   String get dayOffReasonHint => 'P.sh.: Pushim vjetor';
+
+  @override
+  String get fromDate => 'Nga';
+
+  @override
+  String get untilDate => 'Deri më';
+
+  @override
+  String get addUntilDate => 'Zgjero për disa ditë';
+
+  @override
+  String get closureKicker => 'Mbyllje · Orari im';
+
+  @override
+  String get closureSubtitle => 'Zgjidh datën ose datat e mbylljes.';
+
+  @override
+  String get addDayOffPrefix => 'Shto një';
+
+  @override
+  String get addDayOffAccent => 'pushim';
+
+  @override
+  String get ofClosure => 'mbyllje';
+
+  @override
+  String get optional => 'Opsional';
+
+  @override
+  String get confirmClosure => 'Konfirmo mbylljen';
+
+  @override
+  String dayOffRangePreview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ditë',
+      one: '1 ditë',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dayOffConflictTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count takime në konflikt',
+      one: '1 takim në konflikt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dayOffConflictHint =>
+      'Anulo ose refuzo takimet më poshtë para se të shtosh mbylljen.';
+
+  @override
+  String andNOthers(int count) {
+    return '… dhe $count të tjerë';
+  }
+
+  @override
+  String get breakConflictTitle => 'Takime gjatë pushimit';
+
+  @override
+  String get breakConflictHint => 'Këto takime fillojnë gjatë pushimit.';
+
+  @override
+  String breakConflictMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count takime fillojnë gjatë këtij pushimi.',
+      one: 'Një takim fillon gjatë këtij pushimi.',
+    );
+    return '$_temp0 Ruaj pushimin gjithsesi?';
+  }
+
+  @override
+  String get breakConflictContinue => 'Ruaj gjithsesi';
 
   @override
   String get everyDay => 'Çdo ditë';
@@ -1760,4 +1859,124 @@ class AppLocalizationsSq extends AppLocalizations {
   @override
   String get cancelAppointmentOwnerReasonLabel =>
       'Arsyeja e anulimit (opsionale)';
+
+  @override
+  String get helpAndSupport => 'Ndihmë & mbështetje';
+
+  @override
+  String get contactSupport => 'Kontakto mbështetjen';
+
+  @override
+  String get needHelpFooter => 'Nevojë për ndihmë?';
+
+  @override
+  String get needHelpFooterLink => 'Kontakto mbështetjen';
+
+  @override
+  String get problemWithSalon => 'Problem me këtë sallon?';
+
+  @override
+  String get supportKicker => 'MBËSHTETJE';
+
+  @override
+  String get supportTitle => 'Kontakto';
+
+  @override
+  String get supportTitleAccent => 'ekipin';
+
+  @override
+  String get supportSubtitle =>
+      'Të përgjigjemi në kohën më të shkurtër të mundshme';
+
+  @override
+  String get supportFirstNameLabel => 'EMRI';
+
+  @override
+  String get supportFirstNamePlaceholder => 'Emri yt';
+
+  @override
+  String get supportPhoneLabel => 'TELEFONI';
+
+  @override
+  String get supportPhonePlaceholder => '+383 44 000 000';
+
+  @override
+  String get supportEmailLabel => 'EMAIL';
+
+  @override
+  String get supportEmailPlaceholder => 'email.yt@shembull.com';
+
+  @override
+  String get supportMessageLabel => 'MESAZHI';
+
+  @override
+  String get supportMessagePlaceholder =>
+      'Përshkruaj problemin ose pyetjen tënde…';
+
+  @override
+  String supportMessageCounter(int count, int max) {
+    return '$count / $max';
+  }
+
+  @override
+  String get supportAttachmentsLabel => 'BASHKËNGJITJE';
+
+  @override
+  String get supportAttachmentsHint =>
+      '3 skedarë maks • JPG, PNG, PDF • 5 MB secili';
+
+  @override
+  String get supportAddAttachment => 'Shto një skedar';
+
+  @override
+  String get supportSubmit => 'DËRGO MESAZHIN';
+
+  @override
+  String get supportSubmitting => 'PO DËRGOHET…';
+
+  @override
+  String get supportSuccessTitle => 'Mesazhi';
+
+  @override
+  String get supportSuccessTitleAccent => 'u dërgua';
+
+  @override
+  String get supportSuccessSubtitle =>
+      'Të përgjigjemi në kohën më të shkurtër të mundshme.';
+
+  @override
+  String get supportSuccessClose => 'MBYLL';
+
+  @override
+  String get supportErrorTitle => 'Dërgimi dështoi';
+
+  @override
+  String get supportErrorSubtitle => 'Kontrollo lidhjen dhe provo përsëri.';
+
+  @override
+  String get supportErrorRetry => 'Provo përsëri';
+
+  @override
+  String get supportFileTooLarge => 'Skedar shumë i madh • maks 5 MB';
+
+  @override
+  String get supportFileUnsupported => 'Format i pa-mbështetur';
+
+  @override
+  String get supportMaxThreeFiles => 'Maksimum 3 skedarë';
+
+  @override
+  String get supportFieldRequired => 'Fusha është e detyrueshme';
+
+  @override
+  String get supportMessageMinLength => 'Minimum 10 karaktere';
+
+  @override
+  String get supportPrefilledBadge => 'I PARA-PLOTËSUAR';
+
+  @override
+  String get fullName => 'Emri i plotë';
+
+  @override
+  String get gender => 'Gjinia';
 }

@@ -428,6 +428,9 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
     required Uint8List bytes,
     required String filename,
   }) async {
+    // Drop a second upload attempt while one is already in flight — the UI
+    // already disables the button, this is belt-and-braces for rapid taps.
+    if (state.galleryUploading) return false;
     state = state.copyWith(
       galleryUploading: true,
       galleryUploadProgress: 0.0,
@@ -479,6 +482,9 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
   }
 
   Future<bool> reorderGalleryPhotos(List<GalleryPhotoModel> reordered) async {
+    // Refuse reorder while an upload is pending — otherwise the new photo
+    // lands with a position that collides with the reordered ones.
+    if (state.galleryUploading) return false;
     // Optimistic update: reflect new order immediately in UI.
     final updated = reordered
         .asMap()

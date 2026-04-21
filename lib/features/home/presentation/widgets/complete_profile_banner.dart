@@ -66,7 +66,10 @@ class CompleteProfileBanner extends ConsumerWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => context.pushNamed(RouteNames.settings),
+          onTap: () => context.pushNamed(
+            RouteNames.settings,
+            queryParameters: const {'edit': 'profile'},
+          ),
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           child: Ink(
             padding: const EdgeInsets.symmetric(

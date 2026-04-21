@@ -5,9 +5,12 @@ import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../employee_schedule/data/models/schedule_settings_models.dart'
+    show ScheduleConflictAppointment, ScheduleConflictException;
 import '../models/gallery_photo_model.dart';
 import '../models/my_company_model.dart';
 import '../models/planning_appointment_model.dart';
+import '../models/planning_overlay_model.dart';
 
 /// Remote datasource for all authenticated owner operations on /my-company.
 class MyCompanyRemoteDatasource {
@@ -223,6 +226,8 @@ class MyCompanyRemoteDatasource {
     }
   }
 
+  /// Throws [ScheduleConflictException] on 409 so the UI can surface the
+  /// list of conflicting RDVs and offer the "save anyway" confirm.
   Future<CompanyBreakModel> createBreak(Map<String, dynamic> data) async {
     try {
       final response =
@@ -231,7 +236,7 @@ class MyCompanyRemoteDatasource {
       return CompanyBreakModel.fromJson(
           (body['data'] ?? body) as Map<String, dynamic>);
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      _rethrowConflictOr(e);
     }
   }
 
@@ -241,6 +246,68 @@ class MyCompanyRemoteDatasource {
     } on DioException catch (e) {
       throw _mapDioException(e);
     }
+  }
+
+  // ── Company days off (capacity mode) ──────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getCompanyDaysOff() async {
+    try {
+      final response = await _client.get('/my-company/days-off');
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as List<dynamic>? ?? [];
+      return data.cast<Map<String, dynamic>>();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  /// Returns the list of created day-off rows (one per day in the range).
+  /// Throws [ScheduleConflictException] on 409.
+  Future<List<Map<String, dynamic>>> createCompanyDayOff(
+      Map<String, dynamic> data) async {
+    try {
+      final response =
+          await _client.post('/my-company/days-off', data: data);
+      final body = response.data as Map<String, dynamic>;
+      final raw = body['data'];
+      if (raw is List) return raw.cast<Map<String, dynamic>>();
+      if (raw is Map<String, dynamic>) return [raw];
+      return const [];
+    } on DioException catch (e) {
+      _rethrowConflictOr(e);
+    }
+  }
+
+  Future<void> deleteCompanyDayOff(String id) async {
+    try {
+      await _client.delete('/my-company/days-off/$id');
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  /// Interpret a 409 with a conflict payload as a `ScheduleConflictException`
+  /// and rethrow everything else through the generic mapper. Shared by the
+  /// break + day-off write endpoints on the capacity side.
+  Never _rethrowConflictOr(DioException e) {
+    final resp = e.response;
+    if (resp?.statusCode == 409 && resp?.data is Map) {
+      final body = resp!.data as Map;
+      final code = body['code']?.toString();
+      if (code == 'break_conflict' || code == 'day_off_conflict') {
+        final raw = (body['conflicts'] as List<dynamic>? ?? const []);
+        final conflicts = raw
+            .map((e) => ScheduleConflictAppointment.fromJson(
+                e as Map<String, dynamic>))
+            .toList();
+        throw ScheduleConflictException(
+          code: code!,
+          message: body['message']?.toString() ?? '',
+          conflicts: conflicts,
+        );
+      }
+    }
+    throw _mapDioException(e);
   }
 
   // ── Capacity overrides ────────────────────────────────────────────────────
@@ -342,6 +409,38 @@ class MyCompanyRemoteDatasource {
           .map((e) =>
               PlanningAppointmentModel.fromJson(e as Map<String, dynamic>))
           .toList();
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  /// Shared planning overlays (breaks + days off) for the current role.
+  /// Owner capacity → company-level ; employee → own ; owner emp-based → days off only.
+  Future<PlanningOverlaysModel> getPlanningOverlays(
+    String start,
+    String end,
+  ) async {
+    try {
+      final response = await _client.get(
+        ApiConstants.myCompanyPlanningOverlays(start, end),
+      );
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as Map<String, dynamic>;
+      return PlanningOverlaysModel.fromJson(data);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  /// UI-driving flags that tell the planning screen what sections to render.
+  /// See docs/PLANNING_CONTRACT.md.
+  Future<PlanningSettingsModel> getPlanningSettings() async {
+    try {
+      final response =
+          await _client.get(ApiConstants.myCompanyPlanningSettings);
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as Map<String, dynamic>;
+      return PlanningSettingsModel.fromJson(data);
     } on DioException catch (e) {
       throw _mapDioException(e);
     }

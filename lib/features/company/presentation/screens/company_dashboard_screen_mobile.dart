@@ -12,6 +12,8 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../../sharing/presentation/widgets/share_button.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
@@ -166,6 +168,8 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
                                 onDeletePhoto: onDeleteGalleryPhoto,
                                 onReorder: onReorderGalleryPhotos,
                               ),
+                              const SizedBox(height: AppSpacing.md),
+                              _MobileSupportCard(company: state.company!),
                             ],
                           ]),
                         ),
@@ -2098,3 +2102,71 @@ class _MobileErrorView extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// Support card — mobile
+// ---------------------------------------------------------------------------
+
+class _MobileSupportCard extends ConsumerWidget {
+  final MyCompanyModel company;
+  const _MobileSupportCard({required this.company});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        onTap: () => showContactSupportDialog(
+          context,
+          ref: ref,
+          sourcePage: SupportSourcePage.myCompany,
+          sourceContext: {'companyId': company.id},
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            border: Border.all(color: AppColors.divider, width: 1),
+          ),
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: const Icon(Icons.headset_mic_rounded,
+                    size: 18, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l.contactSupport,
+                      style: AppTextStyles.subtitle
+                          .copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l.supportSubtitle,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textHint),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded,
+                  color: AppColors.textHint),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

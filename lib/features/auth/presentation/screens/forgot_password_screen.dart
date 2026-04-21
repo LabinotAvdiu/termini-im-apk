@@ -477,6 +477,9 @@ class _ResetCard extends StatelessWidget {
                 v,
                 requiredMessage: context.l10n.passwordRequired,
                 tooShortMessage: context.l10n.passwordTooShort,
+                needsUpperMessage: context.l10n.passwordNeedsUpper,
+                needsLowerMessage: context.l10n.passwordNeedsLower,
+                needsNumberMessage: context.l10n.passwordNeedsNumber,
               ),
             ),
 
