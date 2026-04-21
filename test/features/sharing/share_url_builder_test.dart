@@ -5,17 +5,17 @@ void main() {
   group('buildSalonShareUrl', () {
     test('returns the bare salon URL when no employee id is passed', () {
       final url = buildSalonShareUrl('42');
-      expect(url, 'https://app.termini-im.com/company/42');
+      expect(url, 'https://www.termini-im.com/company/42');
     });
 
     test('omits the employee param when an empty string is passed', () {
       final url = buildSalonShareUrl('42', employeeId: '');
-      expect(url, 'https://app.termini-im.com/company/42');
+      expect(url, 'https://www.termini-im.com/company/42');
     });
 
     test('appends ?employee= when an id is provided', () {
       final url = buildSalonShareUrl('42', employeeId: '7f1');
-      expect(url, 'https://app.termini-im.com/company/42?employee=7f1');
+      expect(url, 'https://www.termini-im.com/company/42?employee=7f1');
     });
 
     test('percent-encodes tricky characters in both companyId and employeeId',

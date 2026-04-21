@@ -2,7 +2,7 @@
 /// to the web app, which then either serves the booking flow directly (web
 /// recipient) or — once App Links / Universal Links are configured — opens
 /// the native app on Android/iOS.
-const String kShareBaseUrl = 'https://app.termini-im.com';
+const String kShareBaseUrl = 'https://www.termini-im.com';
 
 /// Build the canonical "share salon" URL. The link always points at the
 /// salon detail page (NOT the booking flow) so the recipient can pick a
@@ -13,8 +13,8 @@ const String kShareBaseUrl = 'https://app.termini-im.com';
 /// booking screen on "Choisir".
 ///
 /// Shape:
-///   https://app.termini-im.com/company/{companyId}
-///   https://app.termini-im.com/company/{companyId}?employee={employeeId}
+///   https://www.termini-im.com/company/{companyId}
+///   https://www.termini-im.com/company/{companyId}?employee={employeeId}
 String buildSalonShareUrl(String companyId, {String? employeeId}) {
   final base = Uri.parse('$kShareBaseUrl/company/$companyId');
   if (employeeId == null || employeeId.isEmpty) return base.toString();
