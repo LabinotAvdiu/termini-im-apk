@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Contact Support · Design Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ivory:      #f7f2ea;
+      --bone:       #e8dcc8;
+      --ink:        #171311;
+      --muted:      #716059;
+      --burgundy:   #7a2232;
+      --burgundy-2: #5d1a27;
+      --gold:       #c89b47;
+      --line:       #d9cab3;
+      --cream:      #fcf7ee;
+      --surface:    #fcf7ee;
+      --error:      #b83d3d;
+      --error-bg:   #fdf3f3;
+      --error-line: rgba(184,61,61,0.22);
+      --pink-ivory: #fdf3f3;
+      --success:    #6f7e55;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--ivory); color: var(--ink); }
+    body {
+      font-family: "Instrument Sans", -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      padding: 64px 32px 96px;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; opacity: 0.28; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 1;
+    }
+    body::after {
+      content: "";
+      position: fixed; top: -30%; right: -15%;
+      width: 70vw; height: 70vw; border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,155,71,0.09), transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .page { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: end; gap: 40px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px; margin-bottom: 56px;
+    }
+    .mast-kicker { font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .mast-title {
+      font-family: "Fraunces", serif; font-size: clamp(40px, 5.2vw, 76px);
+      font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 100;
+      line-height: 0.92; letter-spacing: -0.025em; color: var(--ink); margin-top: 10px;
+    }
+    .mast-title em { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; color: var(--burgundy); }
+    .mast-meta { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-align: right; line-height: 1.8; }
+    .mast-meta b { color: var(--burgundy); font-weight: 600; }
+
+    /* ── INTRO BLOCK ── */
+    .intro-block {
+      margin-bottom: 72px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+    }
+    .intro-text { }
+    .intro-text p { font-size: 14px; color: var(--muted); line-height: 1.75; max-width: 480px; }
+    .decisions-list { list-style: none; }
+    .decisions-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+      font-size: 13px; color: var(--ink); line-height: 1.5;
+    }
+    .decisions-list li:last-child { border-bottom: none; }
+    .d-num {
+      font-family: "Fraunces", serif; font-size: 22px; font-weight: 300;
+      color: var(--burgundy); line-height: 1; flex-shrink: 0; width: 24px;
+      font-variation-settings: "SOFT" 100;
+    }
+    .d-label { font-weight: 600; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
+
+    /* ── SECTION HEADER ── */
+    .section-header { margin-bottom: 36px; padding-top: 64px; border-top: 1px solid var(--line); }
+    .section-header:first-child { border-top: none; padding-top: 0; }
+    .section-num {
+      font-family: "Fraunces", serif; font-size: 11px; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--muted); font-weight: 400; margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: "Fraunces", serif; font-size: clamp(28px, 3vw, 42px);
+      font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 72;
+      line-height: 1.05; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .section-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .section-sub { margin-top: 8px; font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 580px; }
+
+    /* ── PHONE FRAME ── */
+    .phone-frame {
+      width: 390px; border-radius: 44px; background: #1a1a1a;
+      padding: 10px;
+      box-shadow: 0 2px 0 rgba(255,255,255,0.05) inset, 0 40px 80px -30px rgba(23,19,17,0.35), 0 12px 24px -12px rgba(23,19,17,0.20);
+      position: relative; flex-shrink: 0;
+    }
+    .phone-frame::after {
+      content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 30px; border-radius: 20px; background: #1a1a1a; z-index: 30;
+    }
+    .phone-screen { width: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--ivory); }
+
+    /* Status bar */
+    .status-bar {
+      position: relative; height: 50px; display: flex; align-items: flex-end;
+      justify-content: space-between; padding: 0 28px 8px;
+      font-size: 13px; font-weight: 600; font-family: "Instrument Sans"; z-index: 20;
+    }
+    .status-bar.dark { color: #fff; }
+    .status-bar.light { color: var(--ink); }
+
+    /* Home screen inside phone */
+    .home-screen { background: var(--ivory); min-height: 400px; }
+    .home-appbar {
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; border-bottom: 1px solid var(--line);
+      background: var(--ivory); position: relative; z-index: 10;
+    }
+    .home-wordmark {
+      font-family: "Fraunces", serif; font-size: 20px; font-weight: 400;
+      color: var(--ink); font-variation-settings: "SOFT" 60;
+    }
+    .home-wordmark em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .appbar-icons { display: flex; gap: 6px; align-items: center; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: transparent; border: 1px solid var(--line);
+      display: grid; place-items: center; color: var(--muted); position: relative;
+    }
+    .icon-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; }
+    .icon-btn.active { color: var(--burgundy); border-color: rgba(122,34,50,0.3); background: rgba(122,34,50,0.05); }
+    .icon-btn .notif-dot {
+      position: absolute; top: 4px; right: 4px; width: 7px; height: 7px;
+      border-radius: 50%; background: var(--burgundy); border: 1.5px solid var(--ivory);
+    }
+    /* FAB */
+    .fab {
+      position: absolute; bottom: 24px; right: 20px;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--ivory); border: 1px solid rgba(122,34,50,0.3);
+      display: grid; place-items: center; color: var(--burgundy);
+      box-shadow: 0 8px 24px -8px rgba(23,19,17,0.25), 0 2px 8px -4px rgba(122,34,50,0.20);
+      z-index: 20;
+    }
+    .fab svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
+
+    /* Home content preview */
+    .home-content { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .home-greeting { font-family: "Fraunces", serif; font-size: 18px; font-weight: 400; color: var(--ink); }
+    .home-greeting em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .home-card {
+      background: var(--cream); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; position: relative; overflow: hidden;
+    }
+    .home-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--burgundy), rgba(122,34,50,0.4) 70%, transparent); }
+    .home-card-label { font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .home-card-val { font-family: "Fraunces", serif; font-size: 15px; color: var(--ink); font-variation-settings: "opsz" 72; }
+    .home-card-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .home-mini-row { display: flex; gap: 8px; }
+    .home-mini-card { flex: 1; background: var(--cream); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .home-mini-card .hmc-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .home-mini-card .hmc-val { font-family: "Fraunces", serif; font-size: 14px; color: var(--ink); margin-top: 3px; }
+
+    /* Settings screen */
+    .settings-screen { background: var(--ivory); }
+    .settings-appbar {
+      height: 56px; display: flex; align-items: center; padding: 0 20px;
+      border-bottom: 1px solid var(--line); gap: 12px;
+    }
+    .settings-back { color: var(--muted); display: flex; align-items: center; }
+    .settings-back svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+    .settings-title { font-family: "Fraunces", serif; font-size: 17px; font-weight: 400; color: var(--ink); }
+    .settings-section-title { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 14px 20px 6px; }
+    .settings-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 20px; border-bottom: 1px solid rgba(217,202,179,0.5);
+      background: var(--cream); transition: background 160ms;
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row .sr-icon { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; }
+    .settings-row .sr-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; }
+    .settings-row .sr-icon.burgundy { background: rgba(122,34,50,0.09); color: var(--burgundy); }
+    .settings-row .sr-icon.muted { background: rgba(113,96,89,0.10); color: var(--muted); }
+    .settings-row .sr-icon.gold { background: rgba(200,155,71,0.12); color: var(--gold); }
+    .settings-row .sr-body { flex: 1; }
+    .settings-row .sr-label { font-size: 14px; color: var(--ink); font-weight: 500; }
+    .settings-row .sr-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .settings-row .sr-caret { color: var(--muted); opacity: 0.5; }
+    .settings-row .sr-caret svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+    .settings-row.highlighted { background: rgba(122,34,50,0.03); }
+    .settings-row.highlighted .sr-label { color: var(--burgundy); }
+
+    /* Option card wrapper */
+    .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-bottom: 0; }
+    .option-col { display: flex; flex-direction: column; gap: 14px; }
+    .option-header { display: flex; align-items: center; gap: 12px; }
+    .option-letter {
+      font-family: "Fraunces", serif; font-size: 36px; font-weight: 300;
+      color: var(--burgundy); line-height: 1; font-variation-settings: "SOFT" 100;
+    }
+    .option-meta { }
+    .option-tag { font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); font-weight: 600; display: block; margin-bottom: 3px; }
+    .option-name { font-family: "Instrument Serif", serif; font-style: italic; font-size: 17px; color: var(--ink); }
+    .option-name em { color: var(--burgundy); }
+    .recommended-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(200,155,71,0.15); border: 1px solid rgba(200,155,71,0.4);
+      color: #8a6820; border-radius: 999px; padding: 3px 10px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .recommended-chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+    .option-screens { display: flex; flex-direction: column; gap: 14px; }
+    .screen-label { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .proscons {
+      padding: 12px 0 0;
+      border-top: 1px solid var(--line);
+    }
+    .proscons p { font-size: 12px; line-height: 1.65; color: var(--muted); }
+    .proscons p em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .proscons strong { color: var(--ink); font-weight: 600; }
+
+    /* ── MODAL / BOTTOM SHEET ── */
+    .sheet-backdrop-wrap { position: relative; background: rgba(23,19,17,0.45); border-radius: 36px; overflow: hidden; }
+    .sheet-backdrop-wrap::before {
+      content: ""; position: absolute; inset: 0; border-radius: 36px; pointer-events: none; opacity: 0.14; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+    .bottom-sheet {
+      background: var(--surface); border-top-left-radius: 24px; border-top-right-radius: 24px;
+      padding: 12px 20px 28px; position: relative;
+      box-shadow: 0 -16px 40px -10px rgba(23,19,17,0.22);
+    }
+    .bottom-sheet::before {
+      content: ""; position: absolute; top: 0; left: 28px; right: 28px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--burgundy), transparent); opacity: 0.4;
+    }
+    .bottom-sheet::after {
+      content: ""; position: absolute; inset: 0; border-top-left-radius: 24px; border-top-right-radius: 24px;
+      pointer-events: none; opacity: 0.18; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 0;
+    }
+    .sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: var(--line); margin: 8px auto 18px; position: relative; z-index: 1; }
+    .sheet-kicker {
+      font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted);
+      font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 9px;
+      position: relative; z-index: 1;
+    }
+    .sheet-kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    .sheet-title {
+      font-family: "Fraunces", serif; font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 72;
+      font-size: 26px; line-height: 1.05; letter-spacing: -0.015em; color: var(--ink);
+      margin-bottom: 4px; position: relative; z-index: 1;
+    }
+    .sheet-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .sheet-sub { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; position: relative; z-index: 1; }
+
+    /* Form fields */
+    .field-group { margin-bottom: 12px; position: relative; z-index: 1; }
+    .field-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+    .field-lbl {
+      font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+    .field-badge {
+      font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase;
+      background: rgba(113,96,89,0.10); color: var(--muted); border-radius: 999px;
+      padding: 2px 7px; font-weight: 600;
+    }
+    .field-badge.prefilled { background: rgba(122,34,50,0.07); color: var(--burgundy); }
+    .tf {
+      width: 100%; height: 42px; padding: 0 12px;
+      background: var(--ivory); border: 1px solid var(--line); border-radius: 8px;
+      font-family: "Instrument Sans", sans-serif; font-size: 13px; color: var(--ink);
+      outline: none;
+    }
+    .tf.filled { border-color: rgba(122,34,50,0.25); background: rgba(122,34,50,0.02); }
+    .tf::placeholder { color: var(--muted); }
+    .tf-area {
+      width: 100%; padding: 10px 12px;
+      background: var(--ivory); border: 1px solid var(--line); border-radius: 8px;
+      font-family: "Instrument Sans", sans-serif; font-size: 13px; color: var(--ink);
+      outline: none; resize: none; min-height: 80px;
+    }
+    .tf-area::placeholder { color: var(--muted); }
+    .char-counter-row { display: flex; justify-content: flex-end; margin-top: 3px; }
+    .char-counter { font-size: 10px; color: var(--muted); opacity: 0.6; }
+
+    /* Attachments */
+    .attach-label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; position: relative; z-index: 1; }
+    .attach-lbl { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .attach-slots { display: flex; gap: 7px; position: relative; z-index: 1; }
+    .attach-slot {
+      flex: 1; border-radius: 8px; border: 1px dashed var(--line);
+      background: var(--ivory); aspect-ratio: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px; cursor: pointer;
+      font-size: 9px; color: var(--muted); text-align: center; padding: 8px 4px;
+      min-height: 72px; overflow: hidden; position: relative;
+    }
+    .attach-slot svg { width: 18px; height: 18px; stroke: currentColor; fill: none; opacity: 0.5; }
+    .attach-slot .plus { font-size: 20px; color: var(--muted); opacity: 0.4; line-height: 1; }
+    .attach-slot.filled { border-style: solid; border-color: var(--line); background: var(--cream); }
+    .attach-slot.filled .thumb { width: 100%; height: 36px; object-fit: cover; border-radius: 4px; background: var(--bone); }
+    .attach-slot .attach-filename { font-size: 8px; color: var(--ink); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; }
+    .attach-slot .attach-size { font-size: 8px; color: var(--muted); }
+    .attach-slot .attach-remove {
+      position: absolute; top: 3px; right: 3px; width: 14px; height: 14px;
+      border-radius: 50%; background: var(--burgundy); color: #fff;
+      display: grid; place-items: center; font-size: 9px; line-height: 1;
+    }
+    .attach-slot.error { border-color: var(--burgundy); border-style: solid; background: var(--error-bg); }
+    .attach-slot.error svg { opacity: 1; color: var(--burgundy); }
+    .attach-slot .attach-error-txt { font-size: 7.5px; color: var(--burgundy); font-weight: 600; text-align: center; line-height: 1.3; }
+    .attach-hint { font-size: 10px; color: var(--muted); line-height: 1.5; margin-top: 5px; position: relative; z-index: 1; }
+
+    /* Modal rule */
+    .modal-rule { height: 1px; background: var(--line); position: relative; margin: 12px 0; z-index: 1; }
+    .modal-rule::before {
+      content: ""; position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+      width: 5px; height: 5px; border-radius: 50%; background: var(--bone); border: 1px solid var(--line);
+    }
+
+    /* CTA */
+    .btn-cta {
+      width: 100%; height: 46px; border-radius: 8px; border: none;
+      background: var(--burgundy); color: #fff;
+      font-family: "Instrument Sans", sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 6px 16px -6px rgba(122,34,50,0.45); position: relative; overflow: hidden; z-index: 1;
+    }
+    .btn-cta::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 60%); pointer-events: none; }
+    .btn-cta svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+    .btn-cta.loading { background: var(--muted); opacity: 0.7; cursor: wait; }
+
+    /* ── SECTION 2: side-by-side modal states ── */
+    .modal-pair { display: grid; grid-template-columns: 390px 390px; gap: 48px; }
+    .modal-col { display: flex; flex-direction: column; gap: 14px; }
+    .modal-col-label { }
+    .modal-col-label .v-num { font-family: "Fraunces", serif; font-size: 28px; font-weight: 300; color: var(--burgundy); line-height: 1; font-variation-settings: "SOFT" 100; }
+    .modal-col-label .v-tag { font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); font-weight: 600; display: block; margin-bottom: 3px; }
+    .modal-col-label .v-name { font-family: "Instrument Serif", serif; font-style: italic; font-size: 16px; color: var(--ink); }
+
+    /* ── SECTION 3: Desktop dialog ── */
+    .desktop-stage {
+      border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
+      box-shadow: 0 30px 70px -30px rgba(23,19,17,0.22);
+    }
+    .desktop-chrome {
+      height: 28px; background: linear-gradient(180deg, #ece2ce, #dfd2b8);
+      border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 6px; padding: 0 12px;
+    }
+    .desktop-chrome .dc-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .desktop-chrome .dc-dot.r { background: #e07474; }
+    .desktop-chrome .dc-dot.y { background: #e0b844; }
+    .desktop-chrome .dc-dot.g { background: #7ab24a; }
+    .desktop-chrome .addr { flex: 1; text-align: center; font-size: 11px; color: var(--muted); }
+    .desktop-chrome .addr b { color: var(--burgundy); }
+    .desktop-body {
+      position: relative; background: var(--ivory); height: 640px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .desktop-bg-blur { position: absolute; inset: 0; background: rgba(23,19,17,0.22); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+    .desktop-bg-content {
+      position: absolute; inset: 0; padding: 32px 48px;
+      background: var(--ivory);
+    }
+    .desktop-bg-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 28px;
+    }
+    .desktop-wordmark { font-family: "Fraunces", serif; font-size: 20px; font-weight: 400; font-variation-settings: "SOFT" 60; }
+    .desktop-wordmark em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .desktop-nav { display: flex; gap: 28px; }
+    .desktop-nav span { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+    .desktop-nav span.active { color: var(--burgundy); font-weight: 600; }
+    .desktop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .desktop-card { background: var(--cream); border: 1px solid var(--line); border-radius: 10px; padding: 16px; position: relative; overflow: hidden; }
+    .desktop-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--burgundy), rgba(122,34,50,0.4) 70%, transparent); }
+    .desktop-card-lbl { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .desktop-card-val { font-family: "Fraunces", serif; font-size: 18px; color: var(--ink); font-variation-settings: "opsz" 72; }
+
+    /* Desktop dialog */
+    .d-dialog {
+      position: relative; z-index: 10; width: 460px;
+      background: var(--surface); border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(122,34,50,0.12);
+      box-shadow: 0 2px 0 rgba(255,255,255,0.06) inset, 0 48px 80px -24px rgba(23,19,17,0.42), 0 12px 24px -8px rgba(23,19,17,0.22);
+    }
+    .d-dialog::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+      opacity: 0.20; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 0;
+    }
+    .d-dialog-head {
+      padding: 22px 28px 18px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(122,34,50,0.04), transparent);
+      position: relative; z-index: 1;
+    }
+    .d-dialog-head::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--burgundy), rgba(122,34,50,0.55) 70%, transparent);
+    }
+    .d-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--line); background: var(--ivory);
+      display: grid; place-items: center; color: var(--muted); cursor: pointer;
+      z-index: 2;
+    }
+    .d-close svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+    .d-dialog-body { padding: 20px 28px 24px; position: relative; z-index: 1; }
+
+    /* ── SECTION 4: State cards ── */
+    .states-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .state-card {
+      background: var(--cream); border: 1px solid var(--line); border-radius: 12px;
+      padding: 20px; position: relative; overflow: hidden;
+    }
+    .state-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--burgundy), rgba(122,34,50,0.4) 70%, transparent); }
+    .state-card-title { font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 14px; }
+
+    /* Loading state btn */
+    .btn-loading {
+      width: 100%; height: 42px; border-radius: 8px;
+      background: var(--muted); opacity: 0.55;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-family: "Instrument Sans", sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; color: #fff;
+    }
+    .spinner {
+      width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success card */
+    .success-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 8px 0; }
+    .success-circle {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(200,155,71,0.14); border: 2px solid rgba(200,155,71,0.35);
+      display: grid; place-items: center; color: var(--gold);
+    }
+    .success-circle svg { width: 24px; height: 24px; stroke: currentColor; fill: none; }
+    .success-title { font-family: "Fraunces", serif; font-size: 20px; font-weight: 400; color: var(--ink); font-variation-settings: "opsz" 72; }
+    .success-title em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .success-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .btn-outline {
+      height: 38px; padding: 0 20px; border-radius: 8px;
+      border: 1px solid rgba(122,34,50,0.35); background: transparent;
+      color: var(--burgundy); font-family: "Instrument Sans"; font-size: 10px;
+      font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+    }
+
+    /* Error card */
+    .error-block {
+      background: var(--error-bg); border: 1px solid var(--error-line); border-radius: 8px;
+      padding: 13px 14px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .error-icon { width: 26px; height: 26px; border-radius: 50%; background: rgba(184,61,61,0.12); display: grid; place-items: center; color: var(--error); flex-shrink: 0; margin-top: 1px; }
+    .error-icon svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+    .error-title { font-family: "Fraunces", serif; font-size: 13px; color: var(--error); font-variation-settings: "opsz" 72; margin-bottom: 2px; }
+    .error-body { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .error-retry { font-size: 10px; color: var(--burgundy); font-weight: 600; letter-spacing: 0.08em; margin-top: 6px; display: block; cursor: pointer; }
+
+    /* ── SECTION 5: Navigation map ── */
+    .nav-map { display: flex; flex-direction: column; gap: 20px; max-width: 680px; }
+    .nav-flow { display: flex; align-items: center; gap: 0; }
+    .nav-node {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      flex-shrink: 0;
+    }
+    .nav-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: var(--cream); border: 1px solid var(--line);
+      display: grid; place-items: center; color: var(--muted);
+      position: relative;
+    }
+    .nav-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
+    .nav-icon.active { background: rgba(122,34,50,0.07); border-color: rgba(122,34,50,0.25); color: var(--burgundy); }
+    .nav-icon .nav-badge {
+      position: absolute; top: -5px; right: -5px; width: 16px; height: 16px;
+      border-radius: 50%; background: var(--burgundy); border: 2px solid var(--ivory);
+      display: grid; place-items: center;
+    }
+    .nav-icon .nav-badge svg { width: 8px; height: 8px; stroke: #fff; fill: none; }
+    .nav-node-label { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 600; text-align: center; max-width: 70px; }
+    .nav-arrow {
+      display: flex; align-items: center; padding: 0 6px; color: var(--gold); flex-shrink: 0; margin-bottom: 18px;
+    }
+    .nav-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
+    .nav-flow-label {
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--burgundy); font-weight: 600; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-flow-label::before { content: ""; width: 16px; height: 1px; background: var(--burgundy); }
+
+    /* ── LEGEND ── */
+    .legend {
+      margin-top: 72px; padding: 28px 32px; border: 1px solid var(--line);
+      border-radius: 12px; background: var(--cream);
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .legend-item { }
+    .legend-letter { font-family: "Fraunces", serif; font-size: 28px; font-weight: 300; color: var(--burgundy); line-height: 1; margin-bottom: 6px; font-variation-settings: "SOFT" 100; }
+    .legend-name { font-family: "Instrument Serif", serif; font-style: italic; font-size: 15px; color: var(--ink); margin-bottom: 6px; }
+    .legend-desc { font-size: 11.5px; color: var(--muted); line-height: 1.6; }
+    .legend-rec { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 10px; color: #8a6820; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+    .legend-rec::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+    /* ── FOOTER ── */
+    .footer { margin-top: 64px; text-align: center; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .footer b { color: var(--burgundy); font-weight: 600; }
+
+    /* Entry animation */
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .masthead { animation: rise 600ms cubic-bezier(.4,0,.2,1) both; }
+    .intro-block { animation: rise 700ms cubic-bezier(.4,0,.2,1) 60ms both; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MASTHEAD
+  ═══════════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div>
+      <div class="mast-kicker">Termini im · Design Review · N°7</div>
+      <h1 class="mast-title">Contacter<br><em>le support.</em></h1>
+    </div>
+    <div></div>
+    <div class="mast-meta">
+      Feature · <b>Contact Support</b><br>
+      Surface · Home · Settings · Partout<br>
+      Variantes · A · B (rec.) · C
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       INTRO — 5 decisions
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="intro-block">
+    <div class="intro-text">
+      <p>Avant de coder, 5 décisions UX à valider. Cette page montre toutes les options visuellement — revue, choix, ship.</p>
+    </div>
+    <ul class="decisions-list">
+      <li>
+        <span class="d-num">1</span>
+        <div>
+          <span class="d-label">Point d'entrée</span>
+          Option A (settings seul), B (icône appbar + settings), ou C (FAB) ?
+        </div>
+      </li>
+      <li>
+        <span class="d-num">2</span>
+        <div>
+          <span class="d-label">Pré-remplissage</span>
+          Prénom + téléphone auto-remplis si authentifié — confirmer ce comportement.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">3</span>
+        <div>
+          <span class="d-label">Pièces jointes</span>
+          3 fichiers max. 5 Mo chacun. JPG, PNG, PDF. Slots visuels ou liste ?
+        </div>
+      </li>
+      <li>
+        <span class="d-num">4</span>
+        <div>
+          <span class="d-label">Types de fichiers</span>
+          JPG + PNG + PDF uniquement, ou ouvrir à d'autres formats (HEIC, WebP) ?
+        </div>
+      </li>
+      <li>
+        <span class="d-num">5</span>
+        <div>
+          <span class="d-label">Feedback post-envoi</span>
+          Message de confirmation puis fermeture auto vs. rester ouvert avec résumé.
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 1 — TROIS POINTS D'ENTRÉE
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="section-num">Section 01</div>
+    <h2 class="section-title">Trois points <em>d'entrée</em></h2>
+    <p class="section-sub">Même écran d'accueil, trois façons d'accéder au support. Compare A, B et C en un coup d'œil.</p>
+  </div>
+
+  <div class="options-grid">
+
+    <!-- OPTION A -->
+    <div class="option-col">
+      <div class="option-header">
+        <span class="option-letter">A</span>
+        <div class="option-meta">
+          <span class="option-tag">Option</span>
+          <span class="option-name">Settings <em>uniquement</em></span>
+        </div>
+      </div>
+      <div class="option-screens">
+        <div>
+          <div class="screen-label">Écran d'accueil — inchangé</div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar light"><span>9:41</span><span>···</span></div>
+              <div class="home-screen">
+                <div class="home-appbar">
+                  <div class="home-wordmark">Termini <em>im</em></div>
+                  <div class="appbar-icons">
+                    <div class="icon-btn">
+                      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <div class="home-content">
+                  <div class="home-greeting">Bonjour, <em>Labinot</em></div>
+                  <div class="home-card">
+                    <div class="home-card-label">Prochains rendez-vous</div>
+                    <div class="home-card-val">Aujourd'hui · 14h30</div>
+                    <div class="home-card-sub">Artan Krasniqi — Coupe + barbe</div>
+                  </div>
+                  <div class="home-mini-row">
+                    <div class="home-mini-card"><div class="hmc-label">Cette semaine</div><div class="hmc-val">12 rdv</div></div>
+                    <div class="home-mini-card"><div class="hmc-label">En attente</div><div class="hmc-val">3</div></div>
+                  </div>
+                  <div class="home-card">
+                    <div class="home-card-label">Mon salon</div>
+                    <div class="home-card-val">Enisi &amp; Fils</div>
+                    <div class="home-card-sub">Ouvert · jusqu'à 19h00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="screen-label">Paramètres — nouvelle ligne</div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar light"><span>9:41</span><span>···</span></div>
+              <div class="settings-screen">
+                <div class="settings-appbar">
+                  <div class="settings-back"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+                  <div class="settings-title">Paramètres</div>
+                </div>
+                <div class="settings-section-title">Mon compte</div>
+                <div class="settings-row">
+                  <div class="sr-icon muted"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                  <div class="sr-body"><div class="sr-label">Profil</div></div>
+                  <div class="sr-caret"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+                <div class="settings-row">
+                  <div class="sr-icon muted"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+                  <div class="sr-body"><div class="sr-label">Notifications</div></div>
+                  <div class="sr-caret"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+                <div class="settings-section-title">Aide</div>
+                <div class="settings-row highlighted">
+                  <div class="sr-icon burgundy"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <div class="sr-body"><div class="sr-label">Aide &amp; support</div><div class="sr-sub">Contacter l'équipe</div></div>
+                  <div class="sr-caret"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+                <div class="settings-row">
+                  <div class="sr-icon muted"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></div>
+                  <div class="sr-body"><div class="sr-label">FAQ</div></div>
+                  <div class="sr-caret"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="proscons">
+        <p><strong>Pour :</strong> <em>zéro bruit</em> sur l'écran principal. Cohérent avec les apps (iOS Settings). Utilisateurs expérimentés savent chercher dans les paramètres.</p>
+        <p style="margin-top:6px"><strong>Contre :</strong> support enterré — un utilisateur en panique ne cherche pas dans les réglages. Friction max au moment où elle est la moins bienvenue.</p>
+      </div>
+    </div>
+
+    <!-- OPTION B — RECOMMENDED -->
+    <div class="option-col">
+      <div class="option-header">
+        <span class="option-letter">B</span>
+        <div class="option-meta">
+          <span class="option-tag">Option</span>
+          <span class="option-name">Icône appbar <em>+ Settings</em></span>
+        </div>
+        <span class="recommended-chip">Recommandé</span>
+      </div>
+      <div class="option-screens">
+        <div>
+          <div class="screen-label">Écran d'accueil — icône help ajoutée</div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar light"><span>9:41</span><span>···</span></div>
+              <div class="home-screen">
+                <div class="home-appbar">
+                  <div class="home-wordmark">Termini <em>im</em></div>
+                  <div class="appbar-icons">
+                    <!-- NEW help icon -->
+                    <div class="icon-btn active" title="Aide &amp; support">
+                      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="icon-btn">
+                      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                      <span class="notif-dot"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="home-content">
+                  <div class="home-greeting">Bonjour, <em>Labinot</em></div>
+                  <div class="home-card">
+                    <div class="home-card-label">Prochains rendez-vous</div>
+                    <div class="home-card-val">Aujourd'hui · 14h30</div>
+                    <div class="home-card-sub">Artan Krasniqi — Coupe + barbe</div>
+                  </div>
+                  <div class="home-mini-row">
+                    <div class="home-mini-card"><div class="hmc-label">Cette semaine</div><div class="hmc-val">12 rdv</div></div>
+                    <div class="home-mini-card"><div class="hmc-label">En attente</div><div class="hmc-val">3</div></div>
+                  </div>
+                  <div class="home-card">
+                    <div class="home-card-label">Mon salon</div>
+                    <div class="home-card-val">Enisi &amp; Fils</div>
+                    <div class="home-card-sub">Ouvert · jusqu'à 19h00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="screen-label">Paramètres — même ligne que A</div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar light"><span>9:41</span><span>···</span></div>
+              <div class="settings-screen">
+                <div class="settings-appbar">
+                  <div class="settings-back"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+                  <div class="settings-title">Paramètres</div>
+                </div>
+                <div class="settings-section-title">Mon compte</div>
+                <div class="settings-row">
+                  <div class="sr-icon muted"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                  <div class="sr-body"><div class="sr-label">Profil</div></div>
+                  <div class="sr-caret"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+                <div class="settings-section-title">Aide</div>
+                <div class="settings-row highlighted">
+                  <div class="sr-icon burgundy"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <div class="sr-body"><div class="sr-label">Aide &amp; support</div><div class="sr-sub">Contacter l'équipe</div></div>
+                  <div class="sr-caret"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="proscons">
+        <p><strong>Pour :</strong> <em>deux chemins</em> — visible en home pour les urgences, trouvable en settings pour les utilisateurs méthodiques. 36 dp tap-target cohérent avec le bouton cloche existant.</p>
+        <p style="margin-top:6px"><strong>Contre :</strong> ajoute un icône à la barre — à surveiller si d'autres icônes arrivent. Limiter home + settings à ces deux accès.</p>
+      </div>
+    </div>
+
+    <!-- OPTION C -->
+    <div class="option-col">
+      <div class="option-header">
+        <span class="option-letter">C</span>
+        <div class="option-meta">
+          <span class="option-tag">Option</span>
+          <span class="option-name">Bouton <em>flottant</em></span>
+        </div>
+      </div>
+      <div class="option-screens">
+        <div>
+          <div class="screen-label">Écran d'accueil — FAB bordeaux</div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar light"><span>9:41</span><span>···</span></div>
+              <div class="home-screen" style="position:relative">
+                <div class="home-appbar">
+                  <div class="home-wordmark">Termini <em>im</em></div>
+                  <div class="appbar-icons">
+                    <div class="icon-btn">
+                      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <div class="home-content">
+                  <div class="home-greeting">Bonjour, <em>Labinot</em></div>
+                  <div class="home-card">
+                    <div class="home-card-label">Prochains rendez-vous</div>
+                    <div class="home-card-val">Aujourd'hui · 14h30</div>
+                    <div class="home-card-sub">Artan Krasniqi — Coupe + barbe</div>
+                  </div>
+                  <div class="home-mini-row">
+                    <div class="home-mini-card"><div class="hmc-label">Cette semaine</div><div class="hmc-val">12 rdv</div></div>
+                    <div class="home-mini-card"><div class="hmc-label">En attente</div><div class="hmc-val">3</div></div>
+                  </div>
+                  <div class="home-card">
+                    <div class="home-card-label">Mon salon</div>
+                    <div class="home-card-val">Enisi &amp; Fils</div>
+                    <div class="home-card-sub">Ouvert · jusqu'à 19h00</div>
+                  </div>
+                </div>
+                <!-- FAB -->
+                <div class="fab" title="Contacter le support">
+                  <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="proscons" style="margin-top:auto">
+        <p><strong>Pour :</strong> impossible à rater. Accessible depuis tous les sous-écrans si global. Maximum Fitts's Law — grand, en bas à droite.</p>
+        <p style="margin-top:6px"><strong>Contre :</strong> <em>très intrusif</em> pour une feature rare. Risque de masquer du contenu. Le FAB Material est attendu pour une action primaire (créer un rdv), pas du support. Incohérence sémantique.</p>
+      </div>
+    </div>
+
+  </div><!-- /options-grid -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 2 — LE FORMULAIRE (deux états)
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="section-num">Section 02</div>
+    <h2 class="section-title">La modale de <em>contact</em></h2>
+    <p class="section-sub">Utilisateur authentifié (champs pré-remplis) vs. visiteur invité (champs vides). Bottom sheet mobile 390 px.</p>
+  </div>
+
+  <div class="modal-pair">
+
+    <!-- STATE 1: AUTHENTICATED -->
+    <div class="modal-col">
+      <div class="modal-col-label">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="v-num" style="font-family:'Fraunces',serif;font-size:28px;font-weight:300;color:var(--burgundy);font-variation-settings:'SOFT' 100">1</span>
+          <div>
+            <span class="v-tag" style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">État</span>
+            <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:var(--ink)">Utilisateur <span style="color:var(--burgundy)">authentifié</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="status-bar light"><span>9:41</span><span>···</span></div>
+          <!-- Dimmed home behind -->
+          <div style="background:var(--ivory);padding:12px 20px 0;opacity:0.3">
+            <div style="font-family:'Fraunces',serif;font-size:16px;color:var(--ink)">Bonjour, <span style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--burgundy)">Labinot</span></div>
+          </div>
+          <div class="sheet-backdrop-wrap">
+            <div style="height:30px"></div>
+            <div class="bottom-sheet">
+              <div class="sheet-handle"></div>
+              <div class="sheet-kicker"><span class="dot"></span> Support</div>
+              <h2 class="sheet-title">Contacter <em>l'équipe</em></h2>
+              <p class="sheet-sub">On te répond sous 24 heures</p>
+
+              <div class="field-group">
+                <div class="field-label-row">
+                  <span class="field-lbl">Prénom</span>
+                  <span class="field-badge prefilled">Pré-rempli</span>
+                </div>
+                <input class="tf filled" type="text" value="Labinot" readonly />
+              </div>
+
+              <div class="field-group">
+                <div class="field-label-row">
+                  <span class="field-lbl">Téléphone</span>
+                  <span class="field-badge prefilled">Pré-rempli</span>
+                </div>
+                <input class="tf filled" type="text" value="+383 44 123 456" readonly />
+              </div>
+
+              <div class="field-group">
+                <div class="field-label-row"><span class="field-lbl">Message</span></div>
+                <textarea class="tf-area" placeholder="Décris ton problème ou ta question…" rows="4"></textarea>
+                <div class="char-counter-row"><span class="char-counter">0 / 1000</span></div>
+              </div>
+
+              <div class="attach-label-row">
+                <span class="attach-lbl">Pièces jointes</span>
+              </div>
+              <div class="attach-slots">
+                <!-- Slot 1 — filled image -->
+                <div class="attach-slot filled">
+                  <div style="width:100%;height:34px;background:linear-gradient(135deg,var(--bone),var(--line));border-radius:5px;margin-bottom:4px"></div>
+                  <span class="attach-filename">capture.jpg</span>
+                  <span class="attach-size">1.2 Mo</span>
+                  <span class="attach-remove">×</span>
+                </div>
+                <!-- Slot 2 — filled pdf -->
+                <div class="attach-slot filled">
+                  <div style="width:100%;height:34px;background:rgba(122,34,50,0.10);border-radius:5px;margin-bottom:4px;display:grid;place-items:center">
+                    <svg style="width:14px;height:14px;stroke:var(--burgundy);fill:none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  </div>
+                  <span class="attach-filename">facture.pdf</span>
+                  <span class="attach-size">340 Ko</span>
+                  <span class="attach-remove">×</span>
+                </div>
+                <!-- Slot 3 — empty -->
+                <div class="attach-slot">
+                  <span class="plus">+</span>
+                  <span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Ajouter</span>
+                </div>
+              </div>
+              <p class="attach-hint">3 fichiers max · JPG, PNG, PDF · 5 Mo chacun</p>
+
+              <div class="modal-rule"></div>
+
+              <button class="btn-cta">
+                <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Envoyer le message
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 2: GUEST -->
+    <div class="modal-col">
+      <div class="modal-col-label">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="v-num" style="font-family:'Fraunces',serif;font-size:28px;font-weight:300;color:var(--burgundy);font-variation-settings:'SOFT' 100">2</span>
+          <div>
+            <span class="v-tag" style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">État</span>
+            <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:var(--ink)">Visiteur <span style="color:var(--burgundy)">invité</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="status-bar light"><span>9:41</span><span>···</span></div>
+          <div style="background:var(--ivory);padding:12px 20px 0;opacity:0.3">
+            <div style="font-family:'Fraunces',serif;font-size:16px;color:var(--ink)">Termini <span style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--burgundy)">im</span></div>
+          </div>
+          <div class="sheet-backdrop-wrap">
+            <div style="height:30px"></div>
+            <div class="bottom-sheet">
+              <div class="sheet-handle"></div>
+              <div class="sheet-kicker"><span class="dot"></span> Support</div>
+              <h2 class="sheet-title">Contacter <em>l'équipe</em></h2>
+              <p class="sheet-sub">On te répond sous 24 heures</p>
+
+              <div class="field-group">
+                <div class="field-label-row">
+                  <span class="field-lbl">Prénom</span>
+                  <span class="field-badge">Optionnel</span>
+                </div>
+                <input class="tf" type="text" placeholder="Ton prénom" />
+              </div>
+
+              <div class="field-group">
+                <div class="field-label-row">
+                  <span class="field-lbl">Téléphone</span>
+                  <span class="field-badge">Optionnel</span>
+                </div>
+                <input class="tf" type="text" placeholder="+383 44 …" />
+              </div>
+
+              <div class="field-group">
+                <div class="field-label-row"><span class="field-lbl">Message</span></div>
+                <textarea class="tf-area" placeholder="Décris ton problème ou ta question…" rows="4"></textarea>
+                <div class="char-counter-row"><span class="char-counter">0 / 1000</span></div>
+              </div>
+
+              <div class="attach-label-row">
+                <span class="attach-lbl">Pièces jointes</span>
+              </div>
+              <div class="attach-slots">
+                <div class="attach-slot"><span class="plus">+</span><span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Ajouter</span></div>
+                <div class="attach-slot"><span class="plus">+</span><span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Ajouter</span></div>
+                <div class="attach-slot"><span class="plus">+</span><span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Ajouter</span></div>
+              </div>
+              <p class="attach-hint">3 fichiers max · JPG, PNG, PDF · 5 Mo chacun</p>
+
+              <div class="modal-rule"></div>
+
+              <button class="btn-cta">
+                <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Envoyer le message
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /modal-pair -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 3 — DESKTOP DIALOG
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="section-num">Section 03</div>
+    <h2 class="section-title">Variante <em>desktop</em></h2>
+    <p class="section-sub">Dialog centré 460 px, fond flouté, stripe bordeaux en haut. Même contenu, layout adapté au curseur.</p>
+  </div>
+
+  <div class="desktop-stage">
+    <div class="desktop-chrome">
+      <div class="dc-dot r"></div><div class="dc-dot y"></div><div class="dc-dot g"></div>
+      <div class="addr">app.termini-im.com<b>/dashboard</b></div>
+      <div style="width:56px"></div>
+    </div>
+    <div class="desktop-body">
+      <!-- Background content (blurred) -->
+      <div class="desktop-bg-content">
+        <div class="desktop-bg-topbar">
+          <div class="desktop-wordmark">Termini <em>im</em></div>
+          <div class="desktop-nav">
+            <span class="active">Dashboard</span>
+            <span>Planning</span>
+            <span>Horaires</span>
+            <span>Mon Salon</span>
+            <span>Paramètres</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(122,34,50,0.09);display:grid;place-items:center;color:var(--burgundy)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="desktop-grid">
+          <div class="desktop-card"><div class="desktop-card-lbl">Aujourd'hui</div><div class="desktop-card-val">8 rdv</div></div>
+          <div class="desktop-card"><div class="desktop-card-lbl">Cette semaine</div><div class="desktop-card-val">42 rdv</div></div>
+          <div class="desktop-card"><div class="desktop-card-lbl">En attente</div><div class="desktop-card-val">3</div></div>
+        </div>
+      </div>
+      <!-- Blur overlay -->
+      <div class="desktop-bg-blur"></div>
+      <!-- Dialog -->
+      <div class="d-dialog">
+        <div class="d-dialog-head">
+          <button class="d-close"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <div style="font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:9px">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block"></span>
+            Support
+          </div>
+          <h2 style="font-family:'Fraunces',serif;font-size:24px;font-weight:400;font-variation-settings:'SOFT' 60,'opsz' 72;letter-spacing:-0.015em;color:var(--ink)">Contacter <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--burgundy)">l'équipe</em></h2>
+          <p style="margin-top:4px;font-size:12px;color:var(--muted)">On te répond sous 24 heures</p>
+        </div>
+        <div class="d-dialog-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div>
+              <div class="field-label-row" style="margin-bottom:5px"><span class="field-lbl">Prénom</span><span class="field-badge prefilled">Pré-rempli</span></div>
+              <input class="tf filled" type="text" value="Labinot" readonly style="width:100%" />
+            </div>
+            <div>
+              <div class="field-label-row" style="margin-bottom:5px"><span class="field-lbl">Téléphone</span><span class="field-badge prefilled">Pré-rempli</span></div>
+              <input class="tf filled" type="text" value="+383 44 123 456" readonly style="width:100%" />
+            </div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div class="field-label-row" style="margin-bottom:5px"><span class="field-lbl">Message</span></div>
+            <textarea class="tf-area" placeholder="Décris ton problème ou ta question…" rows="4" style="width:100%"></textarea>
+            <div class="char-counter-row"><span class="char-counter">0 / 1000</span></div>
+          </div>
+          <div class="attach-label-row"><span class="attach-lbl">Pièces jointes</span></div>
+          <div class="attach-slots" style="margin-bottom:6px">
+            <div class="attach-slot filled" style="max-width:90px">
+              <div style="width:100%;height:32px;background:linear-gradient(135deg,var(--bone),var(--line));border-radius:5px;margin-bottom:4px"></div>
+              <span class="attach-filename">capture.jpg</span>
+              <span class="attach-size">1.2 Mo</span>
+              <span class="attach-remove">×</span>
+            </div>
+            <div class="attach-slot" style="max-width:90px"><span class="plus">+</span><span style="font-size:8px;color:var(--muted)">Ajouter</span></div>
+            <div class="attach-slot" style="max-width:90px"><span class="plus">+</span><span style="font-size:8px;color:var(--muted)">Ajouter</span></div>
+          </div>
+          <p class="attach-hint" style="margin-bottom:12px">3 fichiers max · JPG, PNG, PDF · 5 Mo chacun</p>
+          <div class="modal-rule"></div>
+          <button class="btn-cta" style="margin-top:4px">
+            <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Envoyer le message
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 4 — ÉTATS
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="section-num">Section 04</div>
+    <h2 class="section-title">Tous les <em>états</em></h2>
+    <p class="section-sub">Chaque micro-état du formulaire, tel qu'il apparaîtrait dans l'app.</p>
+  </div>
+
+  <div class="states-grid">
+
+    <!-- 1. Submitting -->
+    <div class="state-card">
+      <div class="state-card-title">Envoi en cours</div>
+      <div class="btn-loading">
+        <div class="spinner"></div>
+        Envoi en cours…
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">Le CTA passe en état <code style="font-size:10px;background:rgba(122,34,50,0.06);color:var(--burgundy);padding:1px 5px;border-radius:3px">loading</code> — fond muted, opacity 55%, spinner inline. Input désactivés pendant la requête.</p>
+    </div>
+
+    <!-- 2. Success -->
+    <div class="state-card">
+      <div class="state-card-title">Succès — message envoyé</div>
+      <div class="success-inner">
+        <div class="success-circle">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">Message <em>envoyé</em></div>
+        <p class="success-sub">On te répond sous 24 heures<br>sur ton email ou par téléphone.</p>
+        <button class="btn-outline">Fermer</button>
+      </div>
+    </div>
+
+    <!-- 3. Error -->
+    <div class="state-card">
+      <div class="state-card-title">Erreur réseau</div>
+      <div class="error-block">
+        <div class="error-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <div class="error-title">Envoi impossible</div>
+          <p class="error-body">Vérifie ta connexion et réessaie. Ton message a été conservé.</p>
+          <a class="error-retry">Réessayer →</a>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">Fond <code style="font-size:10px;background:rgba(122,34,50,0.06);color:var(--burgundy);padding:1px 5px;border-radius:3px">#fdf3f3</code>, icône triangle bordeaux pâle. Message conservé dans le champ.</p>
+    </div>
+
+    <!-- 4. Attachment over limit -->
+    <div class="state-card">
+      <div class="state-card-title">Fichier trop lourd (&gt; 5 Mo)</div>
+      <div class="attach-slots">
+        <div class="attach-slot filled" style="max-width:90px">
+          <div style="width:100%;height:32px;background:linear-gradient(135deg,var(--bone),var(--line));border-radius:5px;margin-bottom:4px"></div>
+          <span class="attach-filename">ok.jpg</span>
+          <span class="attach-size">2.1 Mo</span>
+          <span class="attach-remove">×</span>
+        </div>
+        <div class="attach-slot error" style="max-width:90px">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span class="attach-error-txt">Fichier trop lourd<br>7 Mo</span>
+          <span class="attach-remove">×</span>
+        </div>
+        <div class="attach-slot" style="max-width:90px"><span class="plus">+</span></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">Bordure bordeaux pleine, fond <code style="font-size:10px;background:rgba(122,34,50,0.06);color:var(--burgundy);padding:1px 5px;border-radius:3px">#fdf3f3</code>, icône warning, taille affichée en rouge. CTA désactivé tant que le slot est en erreur.</p>
+    </div>
+
+    <!-- 5. Attachments empty -->
+    <div class="state-card">
+      <div class="state-card-title">Pièces jointes — état vide</div>
+      <div class="attach-slots">
+        <div class="attach-slot" style="max-width:90px"><span class="plus">+</span><span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Photo</span></div>
+        <div class="attach-slot" style="max-width:90px"><span class="plus">+</span><span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Photo</span></div>
+        <div class="attach-slot" style="max-width:90px"><span class="plus">+</span><span style="font-size:8px;color:var(--muted);text-align:center;line-height:1.3">Photo</span></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">Trois slots en pointillé, fond ivoire. Tap sur n'importe lequel → image picker system. La section est purement optionnelle — CTA actif dès que le message est rempli.</p>
+    </div>
+
+    <!-- 6. Message required -->
+    <div class="state-card">
+      <div class="state-card-title">Validation — message requis</div>
+      <div class="field-group" style="margin-bottom:8px">
+        <div class="field-label-row" style="margin-bottom:5px"><span class="field-lbl">Message</span></div>
+        <textarea class="tf-area" style="border-color:var(--error);box-shadow:0 0 0 3px rgba(184,61,61,0.10)" placeholder="Décris ton problème…" rows="3"></textarea>
+        <p style="font-size:10px;color:var(--error);margin-top:4px;font-weight:600;letter-spacing:0.04em">Ce champ est requis avant d'envoyer.</p>
+      </div>
+      <button class="btn-cta" style="opacity:0.35;cursor:not-allowed;background:var(--muted)">
+        <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Envoyer le message
+      </button>
+    </div>
+
+  </div><!-- /states-grid -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 5 — CARTE DE NAVIGATION
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="section-num">Section 05</div>
+    <h2 class="section-title">Chemins <em>d'accès</em></h2>
+    <p class="section-sub">Deux chemins pour l'option B (recommandée). La modale est partagée — une seule implémentation.</p>
+  </div>
+
+  <div class="nav-map">
+    <!-- Path 1 -->
+    <div>
+      <div class="nav-flow-label">Chemin 1 · Icône appbar</div>
+      <div class="nav-flow">
+        <div class="nav-node">
+          <div class="nav-icon active">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+            <div class="nav-badge"><svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          </div>
+          <span class="nav-node-label">Home Screen</span>
+        </div>
+        <div class="nav-arrow"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="nav-node">
+          <div class="nav-icon" style="background:rgba(122,34,50,0.07);border-color:rgba(122,34,50,0.25);color:var(--burgundy)">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="nav-node-label">Tap icône chat</span>
+        </div>
+        <div class="nav-arrow"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="nav-node">
+          <div class="nav-icon" style="background:rgba(122,34,50,0.09);border-color:rgba(122,34,50,0.3);color:var(--burgundy)">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 14h5"/></svg>
+          </div>
+          <span class="nav-node-label">Modale support</span>
+        </div>
+        <div class="nav-arrow"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="nav-node">
+          <div class="nav-icon" style="background:rgba(111,126,85,0.10);border-color:rgba(111,126,85,0.3);color:#6f7e55">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="nav-node-label">Confirmation</span>
+        </div>
+      </div>
+    </div>
+    <!-- Path 2 -->
+    <div>
+      <div class="nav-flow-label">Chemin 2 · Paramètres</div>
+      <div class="nav-flow">
+        <div class="nav-node">
+          <div class="nav-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <span class="nav-node-label">Paramètres</span>
+        </div>
+        <div class="nav-arrow"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="nav-node">
+          <div class="nav-icon" style="background:rgba(122,34,50,0.07);border-color:rgba(122,34,50,0.2);color:var(--burgundy)">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="nav-node-label">Aide &amp; support</span>
+        </div>
+        <div class="nav-arrow"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="nav-node">
+          <div class="nav-icon" style="background:rgba(122,34,50,0.09);border-color:rgba(122,34,50,0.3);color:var(--burgundy)">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 14h5"/></svg>
+          </div>
+          <span class="nav-node-label">Modale support</span>
+        </div>
+        <div class="nav-arrow"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div class="nav-node">
+          <div class="nav-icon" style="background:rgba(111,126,85,0.10);border-color:rgba(111,126,85,0.3);color:#6f7e55">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="nav-node-label">Confirmation</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);line-height:1.7;max-width:520px;border-left:1px solid var(--line);padding-left:18px">
+      Les deux chemins ouvrent la même <code style="font-size:10px;background:rgba(122,34,50,0.06);color:var(--burgundy);padding:1px 5px;border-radius:3px">ContactSupportSheet</code>. Une seule implémentation, deux triggers. Sur desktop, la sheet devient dialog. Accessible aussi depuis l'écran d'erreur global (si applicable).
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LÉGENDE — RÉCAPITULATIF DES OPTIONS
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-letter">A</div>
+      <div class="legend-name">Settings uniquement</div>
+      <p class="legend-desc">Entrée unique dans Paramètres → Aide &amp; support. Zéro impact sur la home, mais friction maximale en urgence.</p>
+    </div>
+    <div class="legend-item">
+      <div class="legend-letter">B</div>
+      <div class="legend-name">Icône appbar + Settings</div>
+      <p class="legend-desc">Double accès — icône chat dans l'appbar de la home ET ligne settings. Balances visibilité et sobriété sans FAB intrusif.</p>
+      <span class="legend-rec">Recommandé</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-letter">C</div>
+      <div class="legend-name">Floating Action Button</div>
+      <p class="legend-desc">FAB bordeaux bottom-right. Maximal en visibilité, maximal en intrusivité. Sémantiquement ambigu (FAB = action primaire en Material).</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    Design Review · <b>Approve</b> · Revise · Ship &nbsp;·&nbsp; Termini im N°7
+  </div>
+
+</div>
+</body>
+</html>

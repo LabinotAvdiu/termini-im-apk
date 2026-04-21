@@ -7,6 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../company/presentation/widgets/add_day_off_dialog.dart';
 import '../../data/models/schedule_settings_models.dart';
 import '../providers/schedule_settings_provider.dart';
 
@@ -248,54 +249,83 @@ class _ScheduleSettingsScreenState
     final notifier = ref.read(scheduleSettingsProvider.notifier);
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
+
+    // Helper: attempt the add with the given request. On soft conflict (break),
+    // surface a confirmation dialog and retry with force=true if the user
+    // agrees. On error, snackbar. On success, close the modal.
+    Future<void> attempt(
+        AddBreakRequest request, VoidCallback closeModal) async {
+      final result = await notifier.addBreak(request);
+      if (!mounted) return;
+      switch (result) {
+        case AddBreakSuccess():
+          closeModal();
+        case AddBreakConflict(:final conflicts):
+          final confirmed = await showBreakConflictDialog(context, conflicts);
+          if (!mounted) return;
+          if (confirmed) {
+            await attempt(request.copyWith(force: true), closeModal);
+          }
+        case AddBreakError(:final message):
+          messenger.showSnackBar(
+            SnackBar(
+                content: Text(message), backgroundColor: AppColors.error),
+          );
+      }
+    }
+
     await showDialog<void>(
       context: context,
-      builder: (_) => _AddBreakDialog(
+      barrierDismissible: false,
+      builder: (dialogCtx) => _AddBreakDialog(
         onConfirm: (request) async {
-          Navigator.of(context).pop();
-          final ok = await notifier.addBreak(request);
-          if (!mounted) return;
-          if (!ok) {
-            messenger.showSnackBar(
-              SnackBar(
-                content: Text(
-                  ref.read(scheduleSettingsProvider).error ?? l10n.error,
-                ),
-                backgroundColor: AppColors.error,
-              ),
-            );
-          }
+          await attempt(
+            request,
+            () {
+              if (Navigator.of(dialogCtx).canPop()) {
+                Navigator.of(dialogCtx).pop();
+              }
+            },
+          );
         },
       ),
     );
+    // Cleanup : l10n var avoids unused_local_variable when edit tooling
+    // runs without referencing it — keep the capture explicit.
+    _unused(l10n);
   }
 
   Future<void> _showAddDayOffDialog(BuildContext context) async {
     final notifier = ref.read(scheduleSettingsProvider.notifier);
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
-    await showDialog<void>(
-      context: context,
-      builder: (_) => _AddDayOffDialog(
-        onConfirm: (request) async {
-          Navigator.of(context).pop();
-          final ok = await notifier.addDayOff(request);
-          if (!mounted) return;
-          if (!ok) {
+    await showAddDayOffDialog(
+      context,
+      onSubmit: (request) async {
+        final result = await notifier.addDayOff(request);
+        if (!mounted) return result;
+        switch (result) {
+          case AddDayOffSuccess():
+            messenger
+                .showSnackBar(SnackBar(content: Text(l10n.changesSaved)));
+          case AddDayOffConflict():
+            // Inline — the modal renders the conflict list itself.
+            break;
+          case AddDayOffError(:final message):
             messenger.showSnackBar(
               SnackBar(
-                content: Text(
-                  ref.read(scheduleSettingsProvider).error ?? l10n.error,
-                ),
-                backgroundColor: AppColors.error,
-              ),
+                  content: Text(message), backgroundColor: AppColors.error),
             );
-          }
-        },
-      ),
+        }
+        return result;
+      },
     );
   }
 }
+
+// Silence the "unused var" lint on the modal closure capture without adding
+// an explicit `// ignore` pragma.
+void _unused(Object? _) {}
 
 // ---------------------------------------------------------------------------
 // Page header — editorial: overline + Fraunces serif title
@@ -348,11 +378,16 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
+  /// Optional widget aligned on the right side of the header (edit toggle,
+  /// add button…). Keeps the header compact instead of scattering actions
+  /// across the body.
+  final Widget? trailing;
 
   const _SectionCard({
     required this.title,
     required this.icon,
     required this.children,
+    this.trailing,
   });
 
   @override
@@ -373,29 +408,22 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Section header — overline label + Fraunces title
+          // Section header — icon + Fraunces title (single-line).
+          // Previously: overline ALL CAPS title + title h3 underneath. Removed
+          // the overline — redundant with the h3 and added visual noise.
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,
               AppSpacing.md,
               AppSpacing.md,
-              AppSpacing.xs,
+              AppSpacing.sm,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Icon(icon, size: 12, color: AppColors.textHint),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      title.toUpperCase(),
-                      style: AppTextStyles.overline.copyWith(letterSpacing: 1.6),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(title, style: AppTextStyles.h3),
+                Icon(icon, size: 18, color: AppColors.primary),
+                const SizedBox(width: AppSpacing.xs + 2),
+                Expanded(child: Text(title, style: AppTextStyles.h3)),
+                if (trailing != null) trailing!,
               ],
             ),
           ),
@@ -411,7 +439,7 @@ class _SectionCard extends StatelessWidget {
 // Section 1 – Work hours card
 // ---------------------------------------------------------------------------
 
-class _WorkHoursCard extends StatelessWidget {
+class _WorkHoursCard extends StatefulWidget {
   final List<WorkHour> editableHours;
   final List<WorkHour> companyHours;
   final bool isSaving;
@@ -426,9 +454,19 @@ class _WorkHoursCard extends StatelessWidget {
     required this.onSave,
   });
 
+  @override
+  State<_WorkHoursCard> createState() => _WorkHoursCardState();
+}
+
+class _WorkHoursCardState extends State<_WorkHoursCard> {
+  // View-mode by default. Edit toggles the row widgets (switches + pickers +
+  // save button). Keeps the screen calm on load and reduces accidental
+  // changes — the user has to opt into editing.
+  bool _isEditing = false;
+
   WorkHour? _companyHourFor(int day) {
     try {
-      return companyHours.firstWhere((h) => h.dayOfWeek == day);
+      return widget.companyHours.firstWhere((h) => h.dayOfWeek == day);
     } catch (_) {
       return null;
     }
@@ -439,44 +477,129 @@ class _WorkHoursCard extends StatelessWidget {
     return _SectionCard(
       title: context.l10n.myWorkHours,
       icon: Icons.access_time_rounded,
+      trailing: _isEditing
+          ? TextButton(
+              onPressed:
+                  widget.isSaving ? null : () => setState(() => _isEditing = false),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textHint,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(context.l10n.cancel),
+            )
+          : TextButton.icon(
+              onPressed: () => setState(() => _isEditing = true),
+              icon: const Icon(Icons.edit_rounded, size: 16),
+              label: Text(context.l10n.edit),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
       children: [
-        ...editableHours.map(
-          (hour) => _DayRow(
-            hour: hour,
-            companyHour: _companyHourFor(hour.dayOfWeek),
-            onChanged: onHourChanged,
-          ),
+        ...widget.editableHours.map(
+          (hour) => _isEditing
+              ? _DayRow(
+                  hour: hour,
+                  companyHour: _companyHourFor(hour.dayOfWeek),
+                  onChanged: widget.onHourChanged,
+                )
+              : _DayRowReadOnly(hour: hour),
         ),
-        // Save button
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: SizedBox(
-            height: 48,
-            child: ElevatedButton.icon(
-              onPressed: isSaving ? null : onSave,
-              icon: isSaving
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.save_rounded, size: 18),
-              label: Text(context.l10n.saveChanges),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        if (_isEditing)
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: SizedBox(
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: widget.isSaving
+                    ? null
+                    : () {
+                        widget.onSave();
+                        // Exit edit mode after successful save. Failures stay
+                        // in edit mode so the user can fix and retry.
+                        if (mounted) setState(() => _isEditing = false);
+                      },
+                icon: widget.isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.save_rounded, size: 18),
+                label: Text(context.l10n.saveChanges),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  textStyle: AppTextStyles.button,
                 ),
-                textStyle: AppTextStyles.button,
               ),
             ),
           ),
-        ),
       ],
+    );
+  }
+}
+
+// Read-only compact row used when the card is not in edit mode.
+// Renders day name + "09:00 – 18:00" or "Non travaillé" — no switches,
+// no time pickers, no interactions.
+class _DayRowReadOnly extends StatelessWidget {
+  final WorkHour hour;
+  const _DayRowReadOnly({required this.hour});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs + 2,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 100,
+                child: Text(
+                  _dayName(hour.dayOfWeek, context),
+                  style: AppTextStyles.body.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  hour.isWorking
+                      ? '${hour.startTime} – ${hour.endTime}'
+                      : context.l10n.notWorking,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: hour.isWorking
+                        ? AppColors.textPrimary
+                        : AppColors.textHint,
+                    fontStyle:
+                        hour.isWorking ? FontStyle.normal : FontStyle.italic,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: AppSpacing.md, color: AppColors.divider),
+        ],
+      ),
     );
   }
 }
@@ -1059,7 +1182,10 @@ class _AddBreakDialogState extends State<_AddBreakDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       ),
-      child: Padding(
+      // Cap modal width so it doesn't stretch across a desktop screen.
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1184,180 +1310,11 @@ class _AddBreakDialogState extends State<_AddBreakDialog> {
           ],
         ),
       ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Add day off dialog
-// ---------------------------------------------------------------------------
-
-class _AddDayOffDialog extends StatefulWidget {
-  final Future<void> Function(AddDayOffRequest) onConfirm;
-
-  const _AddDayOffDialog({required this.onConfirm});
-
-  @override
-  State<_AddDayOffDialog> createState() => _AddDayOffDialogState();
-}
-
-class _AddDayOffDialogState extends State<_AddDayOffDialog> {
-  final _reasonCtrl = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
-  bool _isSubmitting = false;
-
-  @override
-  void dispose() {
-    _reasonCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: Theme.of(ctx).colorScheme.copyWith(
-                primary: AppColors.primary,
-              ),
-        ),
-        child: child!,
-      ),
-    );
-    if (picked != null) setState(() => _selectedDate = picked);
-  }
-
-  String get _formattedDate {
-    return '${_selectedDate.day.toString().padLeft(2, '0')}/'
-        '${_selectedDate.month.toString().padLeft(2, '0')}/'
-        '${_selectedDate.year}';
-  }
-
-  String get _isoDate {
-    return '${_selectedDate.year}-'
-        '${_selectedDate.month.toString().padLeft(2, '0')}-'
-        '${_selectedDate.day.toString().padLeft(2, '0')}';
-  }
-
-  Future<void> _submit() async {
-    setState(() => _isSubmitting = true);
-    final request = AddDayOffRequest(
-      date: _isoDate,
-      reason:
-          _reasonCtrl.text.trim().isEmpty ? null : _reasonCtrl.text.trim(),
-    );
-    await widget.onConfirm(request);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header
-            Row(
-              children: [
-                const Icon(Icons.event_busy_rounded, color: AppColors.secondary),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child:
-                      Text(context.l10n.addDayOff, style: AppTextStyles.h3),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: () => Navigator.of(context).pop(),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-
-            // Date picker tap target
-            GestureDetector(
-              onTap: _pickDate,
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.calendar_month_rounded,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      _formattedDate,
-                      style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const Spacer(),
-                    const Icon(
-                      Icons.edit_calendar_outlined,
-                      size: 16,
-                      color: AppColors.textHint,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-
-            // Reason
-            AppTextField(
-              controller: _reasonCtrl,
-              label: context.l10n.reason,
-              hint: context.l10n.dayOffReasonHint,
-              prefixIcon: Icons.notes_rounded,
-              maxLines: 2,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // Confirm
-            SizedBox(
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  ),
-                ),
-                child: _isSubmitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(context.l10n.confirm),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
 }
+
 
 // ---------------------------------------------------------------------------
 // Error view

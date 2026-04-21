@@ -74,6 +74,7 @@
   "previous": "E mëparshmja",
   "cancel": "Anulo",
   "confirm": "Konfirmo",
+  "edit": "Modifiko",
   "loading": "Duke u ngarkuar...",
   "error": "Ndodhi një gabim",
   "retry": "Provo përsëri",
@@ -215,6 +216,11 @@
   "clientLastName": "Mbiemri i klientit (opsionale)",
   "clientPhone": "Telefoni (opsionale)",
   "scheduleSettings": "Oraret",
+  "capacitySettings": "Salloni im — Orari",
+  "noBreaksYet": "Asnjë pushim i konfiguruar",
+  "noDaysOffYet": "Asnjë mbyllje e afërt",
+  "deleteBreakConfirm": "Të fshihet ky pushim?",
+  "deleteDayOffConfirm": "Të fshihet kjo mbyllje?",
   "myWorkHours": "Oraret e mia të punës",
   "companyHoursHint": "Salloni: {hours}",
   "@companyHoursHint": {
@@ -229,8 +235,38 @@
   "breakLabel": "Emërtimi (opsionale)",
   "daysOff": "Ditët e pushimit",
   "addDayOff": "Shto ditë pushimi",
-  "reason": "Arsyeja (opsionale)",
+  "reason": "Arsyeja",
   "dayOffReasonHint": "P.sh.: Pushim vjetor",
+  "fromDate": "Nga",
+  "untilDate": "Deri më",
+  "addUntilDate": "Zgjero për disa ditë",
+  "closureKicker": "Mbyllje · Orari im",
+  "closureSubtitle": "Zgjidh datën ose datat e mbylljes.",
+  "addDayOffPrefix": "Shto një",
+  "addDayOffAccent": "pushim",
+  "ofClosure": "mbyllje",
+  "optional": "Opsional",
+  "confirmClosure": "Konfirmo mbylljen",
+  "dayOffRangePreview": "{count, plural, =1{1 ditë} other{{count} ditë}}",
+  "@dayOffRangePreview": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "dayOffConflictTitle": "{count, plural, =1{1 takim në konflikt} other{{count} takime në konflikt}}",
+  "@dayOffConflictTitle": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "dayOffConflictHint": "Anulo ose refuzo takimet më poshtë para se të shtosh mbylljen.",
+  "andNOthers": "… dhe {count} të tjerë",
+  "@andNOthers": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "breakConflictTitle": "Takime gjatë pushimit",
+  "breakConflictHint": "Këto takime fillojnë gjatë pushimit.",
+  "breakConflictMessage": "{count, plural, =1{Një takim fillon gjatë këtij pushimi.} other{{count} takime fillojnë gjatë këtij pushimi.}} Ruaj pushimin gjithsesi?",
+  "@breakConflictMessage": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "breakConflictContinue": "Ruaj gjithsesi",
   "everyDay": "Çdo ditë",
   "breakSlot": "Pushim",
   "working": "Punon",
@@ -709,5 +745,51 @@
   },
   "cancelAppointmentOwnerWarning": "Termini do të bëhet sërish i disponueshëm dhe klienti do të njoftohet.",
   "cancelAppointmentOwnerWarningWalkIn": "Termini do të bëhet sërish i disponueshëm.",
-  "cancelAppointmentOwnerReasonLabel": "Arsyeja e anulimit (opsionale)"
+  "cancelAppointmentOwnerReasonLabel": "Arsyeja e anulimit (opsionale)",
+
+  "helpAndSupport": "Ndihmë & mbështetje",
+  "contactSupport": "Kontakto mbështetjen",
+  "needHelpFooter": "Nevojë për ndihmë?",
+  "needHelpFooterLink": "Kontakto mbështetjen",
+  "problemWithSalon": "Problem me këtë sallon?",
+  "supportKicker": "MBËSHTETJE",
+  "supportTitle": "Kontakto",
+  "supportTitleAccent": "ekipin",
+  "supportSubtitle": "Të përgjigjemi në kohën më të shkurtër të mundshme",
+  "supportFirstNameLabel": "EMRI",
+  "supportFirstNamePlaceholder": "Emri yt",
+  "supportPhoneLabel": "TELEFONI",
+  "supportPhonePlaceholder": "+383 44 000 000",
+  "supportEmailLabel": "EMAIL",
+  "supportEmailPlaceholder": "email.yt@shembull.com",
+  "supportMessageLabel": "MESAZHI",
+  "supportMessagePlaceholder": "Përshkruaj problemin ose pyetjen tënde…",
+  "supportMessageCounter": "{count} / {max}",
+  "@supportMessageCounter": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "supportAttachmentsLabel": "BASHKËNGJITJE",
+  "supportAttachmentsHint": "3 skedarë maks • JPG, PNG, PDF • 5 MB secili",
+  "supportAddAttachment": "Shto një skedar",
+  "supportSubmit": "DËRGO MESAZHIN",
+  "supportSubmitting": "PO DËRGOHET…",
+  "supportSuccessTitle": "Mesazhi",
+  "supportSuccessTitleAccent": "u dërgua",
+  "supportSuccessSubtitle": "Të përgjigjemi në kohën më të shkurtër të mundshme.",
+  "supportSuccessClose": "MBYLL",
+  "supportErrorTitle": "Dërgimi dështoi",
+  "supportErrorSubtitle": "Kontrollo lidhjen dhe provo përsëri.",
+  "supportErrorRetry": "Provo përsëri",
+  "supportFileTooLarge": "Skedar shumë i madh • maks 5 MB",
+  "supportFileUnsupported": "Format i pa-mbështetur",
+  "supportMaxThreeFiles": "Maksimum 3 skedarë",
+  "supportFieldRequired": "Fusha është e detyrueshme",
+  "supportMessageMinLength": "Minimum 10 karaktere",
+  "supportPrefilledBadge": "I PARA-PLOTËSUAR",
+
+  "fullName": "Emri i plotë",
+  "gender": "Gjinia"
 }

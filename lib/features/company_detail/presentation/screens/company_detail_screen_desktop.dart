@@ -15,6 +15,8 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
 import '../../../sharing/presentation/widgets/share_button.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../../data/models/company_detail_model.dart';
 import '../providers/company_detail_provider.dart';
 import '../widgets/desktop_reviews_section.dart';
@@ -971,8 +973,52 @@ class _DesktopMainColumn extends StatelessWidget {
         // ── Reviews section ──────────────────────────────────────────────
         const SizedBox(height: 56),
         DesktopReviewsSection(companyId: companyId),
+        const SizedBox(height: 32),
+
+        // ── Discreet support link ────────────────────────────────────────
+        _DesktopSupportLink(companyId: companyId),
         const SizedBox(height: 24),
       ],
+    );
+  }
+}
+
+class _DesktopSupportLink extends ConsumerWidget {
+  final String companyId;
+  const _DesktopSupportLink({required this.companyId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            '${l.problemWithSalon} ',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textHint,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => showContactSupportDialog(
+              context,
+              ref: ref,
+              sourcePage: SupportSourcePage.companyDetail,
+              sourceContext: {'companyId': companyId},
+            ),
+            child: Text(
+              l.contactSupport,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.primary,
+                decoration: TextDecoration.underline,
+                decorationColor: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

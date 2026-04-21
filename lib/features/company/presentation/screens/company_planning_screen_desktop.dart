@@ -49,12 +49,12 @@ class CompanyPlanningScreenDesktop extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(companyPlanningProvider);
-    // employee_based salons skip the pending-approvals side panel: their
-    // appointments are auto-confirmed on booking, nothing to approve.
-    final bookingMode = ref.watch(
-      companyDashboardProvider.select((s) => s.company?.bookingMode),
+    // Pending-approvals side panel visibility is a backend-decided flag —
+    // see docs/PLANNING_CONTRACT.md. The screen no longer reads bookingMode.
+    final showApprovalsPanel = ref.watch(
+      companyPlanningProvider
+          .select((s) => s.settings.showPendingApprovalsPanel),
     );
-    final isCapacityBased = bookingMode == 'capacity_based';
 
     // Sidebar is now provided by the shell (MainShell) on desktop.
     return Scaffold(
@@ -69,7 +69,7 @@ class CompanyPlanningScreenDesktop extends ConsumerWidget {
               onPickDate: onPickDate,
             ),
           ),
-          if (isCapacityBased) _DesktopApprovalsPanel(state: state),
+          if (showApprovalsPanel) _DesktopApprovalsPanel(state: state),
         ],
       ),
     );
@@ -446,16 +446,23 @@ class _DesktopTimelineContentState
       return const PlanningDayOffView();
     }
 
+    // Specific day-off (employee or company) — takes precedence over the
+    // weekly opening-hours check above.
+    if (state.overlays.isDayOff(state.selectedDate)) {
+      return const PlanningDayOffView();
+    }
+
     final rows = buildPlanningRows(todayHours);
-    // In employee_based mode cancelled/rejected cards add noise — the slot
-    // has already been freed on the timeline. We keep them in the counters
-    // at the top so the day's audit numbers stay accurate.
-    final isEmployeeBased = company.bookingMode != 'capacity_based';
-    final visibleAppointments = isEmployeeBased
-        ? state.appointments
-            .where((a) => a.status != 'cancelled' && a.status != 'rejected')
-            .toList()
-        : state.appointments;
+    final breakBands = buildPlanningBreaks(
+      hours: todayHours,
+      breaks: state.overlays.breaks,
+      selectedDate: selectedDate,
+    );
+    // Timeline filtering is a backend concern (see PLANNING_CONTRACT.md) —
+    // the visibleStatuses list is the source of truth.
+    final visibleAppointments = state.appointments
+        .where((a) => state.settings.visibleStatuses.contains(a.status))
+        .toList();
     final events = buildPlanningEvents(
       hours: todayHours,
       appointments: visibleAppointments,
@@ -467,18 +474,19 @@ class _DesktopTimelineContentState
     final nowMinutes = isToday ? now.hour * 60 + now.minute : null;
     _maybeAutoScrollToNow(state, todayHours);
 
-    // Per-day totals — feeds the stats header above the timeline.
+    // Per-day totals — counted from visibleAppointments so the header and
+    // timeline never disagree (individual mode hides pending/cancelled).
     final dayConfirmed =
-        state.appointments.where((a) => a.status == 'confirmed').length;
+        visibleAppointments.where((a) => a.status == 'confirmed').length;
     final dayPending =
-        state.appointments.where((a) => a.status == 'pending').length;
+        visibleAppointments.where((a) => a.status == 'pending').length;
     final dayNoShow =
-        state.appointments.where((a) => a.status == 'no_show').length;
+        visibleAppointments.where((a) => a.status == 'no_show').length;
     final dayCancelled =
-        state.appointments.where((a) => a.status == 'cancelled').length;
+        visibleAppointments.where((a) => a.status == 'cancelled').length;
     final dayRejected =
-        state.appointments.where((a) => a.status == 'rejected').length;
-    final dayTotal = state.appointments.length;
+        visibleAppointments.where((a) => a.status == 'rejected').length;
+    final dayTotal = visibleAppointments.length;
 
     return RefreshIndicator(
       color: AppColors.primary,
@@ -494,9 +502,8 @@ class _DesktopTimelineContentState
                 backgroundColor: AppColors.divider,
               ),
             ),
-          // Employee-based mode: surface the next upcoming booking at the
-          // top of the planning. Hidden in capacity mode (multi-booking).
-          if (isEmployeeBased)
+          // "Next appointment" banner — backend decides (see PLANNING_CONTRACT.md).
+          if (state.settings.showNextAppointmentBanner)
             SliverToBoxAdapter(
               child: NextAppointmentBanner(viewedDate: state.selectedDate),
             ),
@@ -517,6 +524,9 @@ class _DesktopTimelineContentState
               child: PlanningTimelineGrid(
                 rows: rows,
                 events: events,
+                breaks: breakBands,
+                allowOverlappingWalkIns:
+                    state.settings.allowOverlappingWalkIns,
                 workEnd: todayHours.closeTime!,
                 services: services,
                 currentTimeMinutes: nowMinutes,
@@ -583,6 +593,7 @@ class _DesktopTimelineContentState
             weekStart: weekStart,
             appointmentsByDate: state.rangeAppointments,
             selectedDate: selected,
+            daysOff: {for (final d in state.overlays.daysOff) d.date},
             onTapDay: (day) {
               ref
                   .read(companyPlanningProvider.notifier)
@@ -607,6 +618,7 @@ class _DesktopTimelineContentState
       month: DateTime(selected.year, selected.month, 1),
       appointmentsByDate: state.rangeAppointments,
       selectedDate: selected,
+      daysOff: {for (final d in state.overlays.daysOff) d.date},
       // Desktop: wider aspect ratio so the 6-week grid fits without scrolling.
       childAspectRatio: 1.4,
       compact: true,
@@ -640,16 +652,14 @@ class _DesktopApprovalsPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isMonthView = state.viewMode == CompanyPlanningViewMode.month;
 
-    // In month view, show ALL appointments for the selected day (from
-    // rangeAppointments). Otherwise, show pending appointments for today.
+    // In month view (and week), show ALL appointments for the selected day
+    // so the owner has a scan of the day's activity. In day view we narrow to
+    // actionable pendings — backend's can.accept flag is authoritative (covers
+    // role + mode + status + "not past").
     final List<PlanningAppointmentModel> dayList = isMonthView
         ? (state.rangeAppointments[state.selectedDate] ?? const [])
             .toList()
-        // Pending-to-approve panel: hide slots that have already started —
-        // the owner has nothing useful to decide on a past time.
-        : state.appointments
-            .where((a) => a.status == 'pending' && !a.isPast)
-            .toList();
+        : state.appointments.where((a) => a.can.accept).toList();
 
     dayList.sort((a, b) => a.startTime.compareTo(b.startTime));
 
@@ -1160,11 +1170,7 @@ class _DayAppointmentCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isWalkIn = appointment.isWalkIn;
     final status = appointment.status;
-    final isCancelled =
-        status == 'rejected' || status == 'cancelled' || status == 'no_show';
-    // Past appointments shouldn't offer confirm/reject/cancel actions —
-    // the owner can no longer act on them as a booking decision.
-    final isPast = appointment.isPast;
+    final can = appointment.can;
 
     return Container(
       decoration: BoxDecoration(
@@ -1225,7 +1231,10 @@ class _DayAppointmentCard extends ConsumerWidget {
                       ),
                     ),
                   ),
-                _StatusPill(status: status),
+                // Status pill hidden on walk-ins — they're always "confirmed"
+                // by construction (owner-created), showing the pill adds noise.
+                // The gold walk-in badge already identifies the card type.
+                if (!isWalkIn) _StatusPill(status: status),
               ],
             ),
           ),
@@ -1336,128 +1345,123 @@ class _DayAppointmentCard extends ConsumerWidget {
                   reason: appointment.cancellationReason!),
             ),
 
-          // Action buttons:
-          //   pending + future    → [Reject] [Confirm]
-          //   confirmed + future  → [Cancel]
-          //   confirmed + past, within 24h → [Mark no-show]
-          //   confirmed + past, >24h → no buttons (too old)
-          //   anything else       → no buttons
-          if (!isCancelled &&
-              (status == 'pending'
-                  ? !isPast
-                  : (!isPast || appointment.canMarkNoShow)))
+          // Action buttons — driven by backend capability flags.
+          // See docs/PLANNING_CONTRACT.md : no role/mode/time logic here.
+          if (can.accept || can.reject)
             Padding(
               padding: const EdgeInsets.all(AppSpacing.sm),
-              child: status == 'pending'
-                  ? Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.error,
-                              side: BorderSide(
-                                  color: AppColors.error
-                                      .withValues(alpha: 0.5)),
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 6),
-                              minimumSize: const Size(0, 32),
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppSpacing.radiusSm),
-                              ),
-                            ),
-                            onPressed: onReject,
-                            child: Text(
-                              context.l10n.reject,
-                              style: GoogleFonts.instrumentSans(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+              child: Row(
+                children: [
+                  if (can.reject)
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.error,
+                          side: BorderSide(
+                              color: AppColors.error.withValues(alpha: 0.5)),
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          minimumSize: const Size(0, 32),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.radiusSm),
                           ),
                         ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(
-                          child: FilledButton(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 6),
-                              minimumSize: const Size(0, 32),
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppSpacing.radiusSm),
-                              ),
-                            ),
-                            onPressed: onConfirm,
-                            child: Text(
-                              context.l10n.confirm,
-                              style: GoogleFonts.instrumentSans(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.background,
-                              ),
-                            ),
+                        onPressed: onReject,
+                        child: Text(
+                          context.l10n.reject,
+                          style: GoogleFonts.instrumentSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      child: isPast
-                          ? OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.error
-                                    .withValues(alpha: 0.7),
-                                side: BorderSide(
-                                    color: AppColors.error
-                                        .withValues(alpha: 0.4)),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6),
-                                minimumSize: const Size(0, 32),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppSpacing.radiusSm),
-                                ),
-                              ),
-                              onPressed: onMarkNoShow,
-                              icon: const Icon(Icons.person_off_outlined,
-                                  size: 16),
-                              label: Text(
-                                context.l10n.markNoShow,
-                                style: GoogleFonts.instrumentSans(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            )
-                          : OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.error,
-                                side: BorderSide(
-                                    color: AppColors.error
-                                        .withValues(alpha: 0.5)),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6),
-                                minimumSize: const Size(0, 32),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppSpacing.radiusSm),
-                                ),
-                              ),
-                              onPressed: onCancel,
-                              child: Text(
-                                context.l10n.cancelAppointment,
-                                style: GoogleFonts.instrumentSans(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+                      ),
                     ),
+                  if (can.accept && can.reject)
+                    const SizedBox(width: AppSpacing.xs),
+                  if (can.accept)
+                    Expanded(
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          minimumSize: const Size(0, 32),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.radiusSm),
+                          ),
+                        ),
+                        onPressed: onConfirm,
+                        child: Text(
+                          context.l10n.confirm,
+                          style: GoogleFonts.instrumentSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.background,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            )
+          else if (can.markNoShow)
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.error.withValues(alpha: 0.7),
+                    side: BorderSide(
+                        color: AppColors.error.withValues(alpha: 0.4)),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    minimumSize: const Size(0, 32),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                  ),
+                  onPressed: onMarkNoShow,
+                  icon: const Icon(Icons.person_off_outlined, size: 16),
+                  label: Text(
+                    context.l10n.markNoShow,
+                    style: GoogleFonts.instrumentSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else if (can.cancel)
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                    side: BorderSide(
+                        color: AppColors.error.withValues(alpha: 0.5)),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    minimumSize: const Size(0, 32),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                  ),
+                  onPressed: onCancel,
+                  child: Text(
+                    context.l10n.cancelAppointment,
+                    style: GoogleFonts.instrumentSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          // "Libérer le créneau" — only shown on rejected appointments.
-          if (status == 'rejected')
+          if (can.freeSlot)
             Padding(
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.sm, 0, AppSpacing.sm, AppSpacing.sm),

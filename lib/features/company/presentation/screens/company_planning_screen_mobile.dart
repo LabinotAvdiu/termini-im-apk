@@ -16,6 +16,7 @@ import '../widgets/cancellation_reason_box.dart';
 import '../widgets/reject_appointment_dialog.dart';
 import '../widgets/rejection_reason_box.dart';
 import '../../data/models/planning_appointment_model.dart';
+import '../../data/models/planning_overlay_model.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/company_planning_provider.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
@@ -102,6 +103,52 @@ class PlanningGridEvent {
     this.laneIndex = 0,
     this.laneCount = 1,
   });
+}
+
+// Break bands are rendered as a non-clickable overlay behind appointments —
+// they mark "not working" windows without eating the lane layout.
+class PlanningGridBreak {
+  final int startRow;
+  final int rowSpan;
+  final String? label;
+
+  const PlanningGridBreak({
+    required this.startRow,
+    required this.rowSpan,
+    this.label,
+  });
+}
+
+/// Clip a break window to today's opening hours and translate into grid rows.
+/// Appointments drawn on top of a break naturally cover it thanks to the
+/// Stack order (breaks → free-slots → appointments) combined with an opaque
+/// card background — no geometric splitting needed here.
+List<PlanningGridBreak> buildPlanningBreaks({
+  required OpeningHourModel hours,
+  required List<PlanningBreakModel> breaks,
+  required DateTime selectedDate,
+}) {
+  final openMin = planningTimeToMinutes(hours.openTime!);
+  final closeMin = planningTimeToMinutes(hours.closeTime!);
+  final weekday = selectedDate.weekday; // 1=Mon … 7=Sun
+
+  final result = <PlanningGridBreak>[];
+  for (final brk in breaks) {
+    if (!brk.appliesOn(weekday)) continue;
+    final brkStart = planningTimeToMinutes(brk.startTime);
+    final brkEnd = planningTimeToMinutes(brk.endTime);
+    final clippedStart = brkStart < openMin ? openMin : brkStart;
+    final clippedEnd = brkEnd > closeMin ? closeMin : brkEnd;
+    if (clippedEnd <= clippedStart) continue;
+    final startRow = (clippedStart - openMin) ~/ 15;
+    final rowSpan = planningSlotsFor(clippedEnd - clippedStart).clamp(1, 9999);
+    result.add(PlanningGridBreak(
+      startRow: startRow,
+      rowSpan: rowSpan,
+      label: brk.label,
+    ));
+  }
+  return result;
 }
 
 List<PlanningGridEvent> assignPlanningLanes(List<PlanningGridEvent> raw) {
@@ -333,17 +380,25 @@ class _CompanyPlanningScreenMobileState
       return const PlanningDayOffView();
     }
 
+    // User-level day-off (employee off today / company-wide day-off). Takes
+    // precedence over the opening-hours check above because a salon open on
+    // Monday can still be closed on a specific Monday (holiday).
+    if (state.overlays.isDayOff(state.selectedDate)) {
+      return const PlanningDayOffView();
+    }
+
     final rows = buildPlanningRows(todayHours);
-    // In employee_based mode an appointment is owned by exactly one pro, so
-    // a cancelled/rejected card brings no informational value on the timeline
-    // (the slot is instantly free again). We keep them in the stats counters
-    // to preserve audit context but hide the cards themselves.
-    final isEmployeeBased = company.bookingMode != 'capacity_based';
-    final visibleAppointments = isEmployeeBased
-        ? state.appointments
-            .where((a) => a.status != 'cancelled' && a.status != 'rejected')
-            .toList()
-        : state.appointments;
+    final breakBands = buildPlanningBreaks(
+      hours: todayHours,
+      breaks: state.overlays.breaks,
+      selectedDate: selectedDate,
+    );
+    // Which statuses render on the timeline is a backend decision — capacity
+    // owners see everything (audit context), individual-mode views hide
+    // cancelled/rejected since the slot is instantly free again.
+    final visibleAppointments = state.appointments
+        .where((a) => state.settings.visibleStatuses.contains(a.status))
+        .toList();
     final events = buildPlanningEvents(
       hours: todayHours,
       appointments: visibleAppointments,
@@ -358,17 +413,20 @@ class _CompanyPlanningScreenMobileState
     // Trigger one-time auto-scroll to "now - 15 min" when on today's day view.
     _maybeAutoScrollToNow(state, todayHours);
 
-    // Per-day totals for the stats header (non-zero chips only).
+    // Per-day totals — count only what the timeline actually shows. Using
+    // visibleAppointments keeps header and timeline in sync (otherwise the
+    // count says "2 RDV" while the list only has 1 because pending/cancelled
+    // are hidden by visibleStatuses in individual mode).
     final dayConfirmed =
-        state.appointments.where((a) => a.status == 'confirmed').length;
+        visibleAppointments.where((a) => a.status == 'confirmed').length;
     final dayPending =
-        state.appointments.where((a) => a.status == 'pending').length;
+        visibleAppointments.where((a) => a.status == 'pending').length;
     final dayNoShow =
-        state.appointments.where((a) => a.status == 'no_show').length;
+        visibleAppointments.where((a) => a.status == 'no_show').length;
     final dayCancelled =
-        state.appointments.where((a) => a.status == 'cancelled').length;
+        visibleAppointments.where((a) => a.status == 'cancelled').length;
     final dayRejected =
-        state.appointments.where((a) => a.status == 'rejected').length;
+        visibleAppointments.where((a) => a.status == 'rejected').length;
 
     return RefreshIndicator(
       color: AppColors.primary,
@@ -384,16 +442,16 @@ class _CompanyPlanningScreenMobileState
                 backgroundColor: AppColors.divider,
               ),
             ),
-          // Employee-based mode: "next appointment" banner at the top.
-          // Hidden in capacity mode (multiple bookings may overlap → "next"
-          // would be ambiguous).
-          if (isEmployeeBased)
+          // "Next appointment" banner — backend decides visibility (individual
+          // mode only ; hidden in capacity where multi-booking overlaps make
+          // "next" ambiguous).
+          if (state.settings.showNextAppointmentBanner)
             SliverToBoxAdapter(
               child: NextAppointmentBanner(viewedDate: state.selectedDate),
             ),
           SliverToBoxAdapter(
             child: _MobileDayStatsHeader(
-              total: state.appointments.length,
+              total: visibleAppointments.length,
               confirmed: dayConfirmed,
               pending: dayPending,
               noShow: dayNoShow,
@@ -408,6 +466,9 @@ class _CompanyPlanningScreenMobileState
               child: PlanningTimelineGrid(
                 rows: rows,
                 events: events,
+                breaks: breakBands,
+                allowOverlappingWalkIns:
+                    state.settings.allowOverlappingWalkIns,
                 workEnd: todayHours.closeTime!,
                 services: services,
                 currentTimeMinutes: nowMinutes,
@@ -456,6 +517,7 @@ class _CompanyPlanningScreenMobileState
             weekStart: weekStart,
             appointmentsByDate: state.rangeAppointments,
             selectedDate: selected,
+            daysOff: {for (final d in state.overlays.daysOff) d.date},
             onTapDay: (day) {
               ref
                   .read(companyPlanningProvider.notifier)
@@ -508,6 +570,7 @@ class _CompanyPlanningScreenMobileState
       month: DateTime(selected.year, selected.month, 1),
       appointmentsByDate: state.rangeAppointments,
       selectedDate: selected,
+      daysOff: {for (final d in state.overlays.daysOff) d.date},
       onTapDay: (day) {
         ref
             .read(companyPlanningProvider.notifier)
@@ -808,6 +871,9 @@ class PlanningWeekView extends StatelessWidget {
   final DateTime weekStart;
   final Map<String, List<PlanningAppointmentModel>> appointmentsByDate;
   final DateTime selectedDate;
+  /// ISO dates closed for this user (employee off + company closed merged
+  /// server-side). A column that matches gets the "Fermé" treatment.
+  final Set<String> daysOff;
   final void Function(DateTime) onTapDay;
 
   const PlanningWeekView({
@@ -815,6 +881,7 @@ class PlanningWeekView extends StatelessWidget {
     required this.weekStart,
     required this.appointmentsByDate,
     required this.selectedDate,
+    this.daysOff = const {},
     required this.onTapDay,
   });
 
@@ -827,12 +894,14 @@ class PlanningWeekView extends StatelessWidget {
         final iso = planningToIso(day);
         final appts = appointmentsByDate[iso] ?? const [];
         final isSelected = planningIsSameDay(day, selectedDate);
+        final isDayOff = daysOff.contains(iso);
 
         return Expanded(
           child: _PlanningWeekDayColumn(
             day: day,
             appointments: appts,
             isSelected: isSelected,
+            isDayOff: isDayOff,
             onTapHeader: () => onTapDay(day),
             onTapEmpty: () => onTapDay(day),
           ),
@@ -846,6 +915,7 @@ class _PlanningWeekDayColumn extends StatelessWidget {
   final DateTime day;
   final List<PlanningAppointmentModel> appointments;
   final bool isSelected;
+  final bool isDayOff;
   final VoidCallback onTapHeader;
   final VoidCallback onTapEmpty;
 
@@ -853,6 +923,7 @@ class _PlanningWeekDayColumn extends StatelessWidget {
     required this.day,
     required this.appointments,
     required this.isSelected,
+    this.isDayOff = false,
     required this.onTapHeader,
     required this.onTapEmpty,
   });
@@ -937,30 +1008,56 @@ class _PlanningWeekDayColumn extends StatelessWidget {
         ),
         Expanded(
           child: GestureDetector(
-            onTap: appointments.isEmpty ? onTapEmpty : null,
+            onTap: (isDayOff || appointments.isEmpty) ? onTapEmpty : null,
             child: Container(
               decoration: BoxDecoration(
+                // Muted fill for closed days — reads instantly as "not active"
+                // without competing with the selected-day treatment.
+                color: isDayOff
+                    ? AppColors.textHint.withValues(alpha: 0.06)
+                    : Colors.transparent,
                 border: Border(
                   right: BorderSide(color: AppColors.divider, width: 0.5),
                 ),
               ),
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                children: [
-                  ...visible.map((appt) =>
-                      PlanningWeekEventPill(appointment: appt)),
-                  if (overflow > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        '+$overflow',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.instrumentSans(
-                            fontSize: 9, color: AppColors.textHint),
+              child: isDayOff
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.beach_access_rounded,
+                              size: 18, color: AppColors.textHint),
+                          const SizedBox(height: 4),
+                          Text(
+                            context.l10n.dayOff,
+                            style: GoogleFonts.fraunces(
+                              fontSize: 10,
+                              fontStyle: FontStyle.italic,
+                              color: AppColors.textHint,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
+                    )
+                  : ListView(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                      children: [
+                        ...visible.map((appt) =>
+                            PlanningWeekEventPill(appointment: appt)),
+                        if (overflow > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(
+                              '+$overflow',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.instrumentSans(
+                                  fontSize: 9, color: AppColors.textHint),
+                            ),
+                          ),
+                      ],
                     ),
-                ],
-              ),
             ),
           ),
         ),
@@ -978,6 +1075,10 @@ class PlanningWeekEventPill extends StatelessWidget {
   const PlanningWeekEventPill({super.key, required this.appointment});
 
   Color get _accentColor {
+    // Walk-ins always read as "gold" across modes to make them instantly
+    // distinguishable from client bookings (which stay on the primary/warning
+    // scale). The status is irrelevant for walk-ins — they're manual.
+    if (appointment.isWalkIn) return AppColors.secondary;
     switch (appointment.status) {
       case 'confirmed': return AppColors.primary;
       case 'pending': return AppColors.warning;
@@ -1034,6 +1135,8 @@ class PlanningMonthView extends StatelessWidget {
   final DateTime month;
   final Map<String, List<PlanningAppointmentModel>> appointmentsByDate;
   final DateTime selectedDate;
+  /// ISO dates closed for this user (employee off + company closed).
+  final Set<String> daysOff;
   final void Function(DateTime) onTapDay;
   final double childAspectRatio;
   final bool compact;
@@ -1043,6 +1146,7 @@ class PlanningMonthView extends StatelessWidget {
     required this.month,
     required this.appointmentsByDate,
     required this.selectedDate,
+    this.daysOff = const {},
     required this.onTapDay,
     this.childAspectRatio = 0.8,
     this.compact = false,
@@ -1159,6 +1263,7 @@ class PlanningMonthView extends StatelessWidget {
                 isSelected: isSelected,
                 isCurrentMonth: isCurrentMonth,
                 isToday: isToday,
+                isDayOff: daysOff.contains(iso),
                 compact: compact,
                 onTap: () => onTapDay(day),
               );
@@ -1361,6 +1466,7 @@ class _MonthDayCell extends StatelessWidget {
   final bool isSelected;
   final bool isCurrentMonth;
   final bool isToday;
+  final bool isDayOff;
   final bool compact;
   final VoidCallback onTap;
 
@@ -1370,6 +1476,7 @@ class _MonthDayCell extends StatelessWidget {
     required this.isSelected,
     required this.isCurrentMonth,
     required this.isToday,
+    this.isDayOff = false,
     required this.onTap,
     this.compact = false,
   });
@@ -1411,6 +1518,12 @@ class _MonthDayCell extends StatelessWidget {
           offset: const Offset(0, 3),
         ),
       ];
+    } else if (isDayOff) {
+      // Muted fill + dashed-look border for closed days. Still tappable so
+      // the user can review that day's details (no appointments will show).
+      bgColor = AppColors.textHint.withValues(alpha: 0.08);
+      border = Border.all(color: AppColors.border, width: 1);
+      shadows = const [];
     } else if (isToday) {
       bgColor = AppColors.background;
       border = Border.all(color: AppColors.primary, width: 1.5);
@@ -1468,7 +1581,7 @@ class _MonthDayCell extends StatelessWidget {
                 ),
               ),
               // Dots + (total) dead-centered in the cell
-              if (hasAppointments)
+              if (hasAppointments && !isDayOff)
                 Center(
                   child: _AppointmentDotsRow(
                     confirmed: confirmedCount,
@@ -1478,6 +1591,16 @@ class _MonthDayCell extends StatelessWidget {
                     total: count,
                     isSelected: isSelected,
                     compact: compact,
+                  ),
+                ),
+              // Closed-day marker — tiny lock icon middle. Reads "inactive"
+              // without competing with the day number's visual weight.
+              if (isDayOff && !isSelected)
+                Center(
+                  child: Icon(
+                    Icons.beach_access_rounded,
+                    size: compact ? 13 : 16,
+                    color: AppColors.textHint.withValues(alpha: 0.7),
                   ),
                 ),
               // "Tap again" pill pinned bottom-center when selected — desktop only.
@@ -1668,6 +1791,9 @@ class _TapAgainBadge extends StatelessWidget {
 class PlanningTimelineGrid extends StatefulWidget {
   final List<PlanningGridRow> rows;
   final List<PlanningGridEvent> events;
+  /// Breaks drawn as translucent grey bands behind appointments. Empty when
+  /// no break overlaps today (also used to prevent walk-ins inside breaks).
+  final List<PlanningGridBreak> breaks;
   final String workEnd;
   final List<MyServiceModel> services;
   final Future<void> Function(String time) onTapFreeSlot;
@@ -1676,16 +1802,23 @@ class PlanningTimelineGrid extends StatefulWidget {
   // Non-null only when the grid shows the current day — enables the
   // "now" indicator line.
   final int? currentTimeMinutes;
+  /// When true, the "+" glyph next to already-occupied rows stays visible so
+  /// the owner can stack a second walk-in on the same slot (capacity mode).
+  /// Individual mode hides it — one employee can't serve two clients at once.
+  /// Source of truth: backend `planning-settings.allowOverlappingWalkIns`.
+  final bool allowOverlappingWalkIns;
 
   const PlanningTimelineGrid({
     super.key,
     required this.rows,
     required this.events,
+    this.breaks = const [],
     required this.workEnd,
     required this.services,
     required this.onTapFreeSlot,
     required this.isTimeInPast,
     this.currentTimeMinutes,
+    this.allowOverlappingWalkIns = false,
   });
 
   @override
@@ -1757,6 +1890,10 @@ class _PlanningTimelineGridState extends State<PlanningTimelineGrid> {
         coveredRows.add(i);
       }
     }
+    // Break rows stay tappable on purpose — the pro keeps the right to
+    // squeeze a walk-in during a break (emergency / favor) in any mode.
+    // The break band (rendered later) uses IgnorePointer so it doesn't
+    // eat the tap ; the row underneath still triggers the walk-in dialog.
 
     final naturalHeight = widget.rows.length * kPlanningRowHeight;
     final totalHeight = naturalHeight + _expandedExtra;
@@ -1822,7 +1959,9 @@ class _PlanningTimelineGridState extends State<PlanningTimelineGrid> {
                                 height: 1,
                                 color: AppColors.border,
                               ),
-                        if (hasEvent && !widget.isTimeInPast(row.time))
+                        if (hasEvent &&
+                            !widget.isTimeInPast(row.time) &&
+                            widget.allowOverlappingWalkIns)
                           _PlanningAddAtRowButton(
                               onTap: () => widget.onTapFreeSlot(row.time)),
                       ],
@@ -1848,6 +1987,21 @@ class _PlanningTimelineGridState extends State<PlanningTimelineGrid> {
                         expandedExtra: _expandedExtra,
                       ),
                     ),
+                    // Break bands — rendered BEFORE the free-slot targets and
+                    // appointments so they sit at the back of the stack. Shown
+                    // as a muted taupe band with a coffee glyph + label.
+                    ...widget.breaks.map((brk) {
+                      final top = brk.startRow * kPlanningRowHeight +
+                          _shiftBelow(brk.startRow);
+                      final height = brk.rowSpan * kPlanningRowHeight;
+                      return _animated(
+                        top: top,
+                        left: 0,
+                        width: totalWidth,
+                        height: height,
+                        child: _PlanningBreakBand(label: brk.label),
+                      );
+                    }),
                     ...widget.rows
                         .where((r) =>
                             !coveredRows.contains(r.index) &&
@@ -2060,6 +2214,10 @@ class PlanningAppointmentCard extends StatelessWidget {
   });
 
   Color get _accentColor {
+    // Walk-ins always read as "gold" across modes to make them instantly
+    // distinguishable from client bookings (which stay on the primary/warning
+    // scale). The status is irrelevant for walk-ins — they're manual.
+    if (appointment.isWalkIn) return AppColors.secondary;
     switch (appointment.status) {
       case 'confirmed': return AppColors.primary;
       case 'pending': return AppColors.warning;
@@ -2086,7 +2244,14 @@ class PlanningAppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 600;
     final accentColor = _accentColor;
-    final bgColor = accentColor.withValues(alpha: 0.08);
+    // Pre-blend the accent tint onto the page surface so the card is fully
+    // opaque. An alpha-8% tint would otherwise let the break band grey bleed
+    // through when a walk-in overlaps a pause — muddy visual. alphaBlend
+    // computes the end pixel as if the tint were painted over the surface.
+    final bgColor = Color.alphaBlend(
+      accentColor.withValues(alpha: 0.08),
+      AppColors.surface,
+    );
     final isRejected = appointment.status == 'rejected' ||
         appointment.status == 'cancelled' ||
         appointment.status == 'no_show';
@@ -2139,11 +2304,15 @@ class PlanningAppointmentCard extends StatelessWidget {
                   ),
                 ),
                 if (!isMobile) ...[
-                  if (appointment.isWalkIn && laneCount == 1) ...[
+                  // Walk-in badge is always visible regardless of lane layout
+                  // (the gold dot is the fastest way to identify a walk-in).
+                  if (appointment.isWalkIn) ...[
                     const SizedBox(width: AppSpacing.xs),
                     PlanningWalkInBadge(),
                   ],
-                  if (laneCount == 1) ...[
+                  // Status pill is hidden for walk-ins — they're confirmed by
+                  // construction, the walk-in badge already identifies them.
+                  if (!appointment.isWalkIn && laneCount == 1) ...[
                     const SizedBox(width: AppSpacing.xs),
                     PlanningStatusBadge(status: appointment.status),
                   ],
@@ -2331,11 +2500,11 @@ class _PlanningAppointmentDetailSheetState
     }
   }
 
-  bool _isPast() => appt.isPast;
-
-  /// No-show is only offered within 24h of the start time — keeps the
-  /// planning UI focused on recent events.
-  bool _canMarkNoShow() => appt.canMarkNoShow;
+  // Capability shortcuts — delegate to backend flags (see PLANNING_CONTRACT.md).
+  bool _canAccept() => appt.can.accept;
+  bool _canReject() => appt.can.reject;
+  bool _canCancel() => appt.can.cancel;
+  bool _canMarkNoShow() => appt.can.markNoShow;
 
   Future<void> _markNoShow() async {
     final confirmed = await showDialog<bool>(
@@ -2425,9 +2594,10 @@ class _PlanningAppointmentDetailSheetState
                     if (appt.isWalkIn) ...[
                       const SizedBox(width: AppSpacing.xs),
                       PlanningWalkInBadge(),
+                    ] else ...[
+                      const SizedBox(width: AppSpacing.xs),
+                      PlanningStatusBadge(status: appt.status),
                     ],
-                    const SizedBox(width: AppSpacing.xs),
-                    PlanningStatusBadge(status: appt.status),
                   ],
                 ),
                 const Divider(height: AppSpacing.lg, color: AppColors.divider),
@@ -2474,71 +2644,70 @@ class _PlanningAppointmentDetailSheetState
                 if (_loading)
                   const Center(
                       child: CircularProgressIndicator(color: AppColors.primary))
-                else if (appt.status == 'pending' && !appt.isPast) ...[
+                else if (_canAccept() || _canReject()) ...[
                   Row(
                     children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _reject,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.error,
-                            side: const BorderSide(color: AppColors.error),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: AppSpacing.xs),
+                      if (_canReject())
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: _reject,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.error,
+                              side: const BorderSide(color: AppColors.error),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: AppSpacing.xs),
+                            ),
+                            child: Text(context.l10n.rejectAppointment),
                           ),
-                          child: Text(context.l10n.rejectAppointment),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: _confirm,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: AppSpacing.xs),
+                      if (_canAccept() && _canReject())
+                        const SizedBox(width: AppSpacing.sm),
+                      if (_canAccept())
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: _confirm,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: AppSpacing.xs),
+                            ),
+                            child: Text(context.l10n.confirmAppointment),
                           ),
-                          child: Text(context.l10n.confirmAppointment),
                         ),
-                      ),
                     ],
                   ),
-                ] else if (appt.status == 'confirmed') ...[
-                  // Not yet started → Cancel.
-                  // Past start, within 24h → Mark no-show.
-                  // Past start, >24h → no action (too old to act on).
-                  if (!_isPast())
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: _cancel,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.error,
-                          side: const BorderSide(color: AppColors.error),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: AppSpacing.xs),
-                        ),
-                        child: Text(context.l10n.cancel),
+                ] else if (_canCancel()) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _cancel,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(color: AppColors.error),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.xs),
                       ),
-                    )
-                  else if (_canMarkNoShow())
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _markNoShow,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              AppColors.error.withValues(alpha: 0.7),
-                          side: BorderSide(
-                              color: AppColors.error.withValues(alpha: 0.4)),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: AppSpacing.xs),
-                        ),
-                        icon: const Icon(Icons.person_off_outlined, size: 18),
-                        label: Text(context.l10n.markNoShow),
-                      ),
+                      child: Text(context.l10n.cancel),
                     ),
-                ] else if (appt.status == 'rejected') ...[
+                  ),
+                ] else if (_canMarkNoShow()) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _markNoShow,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor:
+                            AppColors.error.withValues(alpha: 0.7),
+                        side: BorderSide(
+                            color: AppColors.error.withValues(alpha: 0.4)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.xs),
+                      ),
+                      icon: const Icon(Icons.person_off_outlined, size: 18),
+                      label: Text(context.l10n.markNoShow),
+                    ),
+                  ),
+                ] else if (appt.can.freeSlot) ...[
                   // Slot is still blocked — offer to free it.
                   SizedBox(
                     width: double.infinity,
@@ -2742,80 +2911,91 @@ class PlanningAppointmentDetail extends ConsumerWidget {
         ],
         if (appointment.status == 'rejected') ...[
           const SizedBox(height: AppSpacing.sm),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () => _freeSlot(context, ref),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.secondary,
-                side: BorderSide(
-                    color: AppColors.secondary.withValues(alpha: 0.6)),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+          // Cap width so the action doesn't stretch the full width of a
+          // wide desktop card. On mobile the cap never bites (card < 220px).
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: OutlinedButton.icon(
+                onPressed: () => _freeSlot(context, ref),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.secondary,
+                  side: BorderSide(
+                      color: AppColors.secondary.withValues(alpha: 0.6)),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                ),
+                icon: const Icon(Icons.lock_open_rounded, size: 16),
+                label: Text(context.l10n.freeSlotButton),
               ),
-              icon: const Icon(Icons.lock_open_rounded, size: 16),
-              label: Text(context.l10n.freeSlotButton),
             ),
           ),
         ],
-        if (appointment.status == 'pending' && !appointment.isPast) ...[
+        if (appointment.can.accept || appointment.can.reject) ...[
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => _reject(context, ref),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  ),
-                  child: Text(context.l10n.rejectAppointment),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: FilledButton(
-                  onPressed: () => _confirm(context, ref),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  ),
-                  child: Text(context.l10n.confirmAppointment),
-                ),
-              ),
-            ],
-          ),
-        ] else if (appointment.status == 'confirmed' &&
-            (!appointment.isPast || appointment.canMarkNoShow)) ...[
-          const SizedBox(height: AppSpacing.sm),
-          SizedBox(
-            width: double.infinity,
-            child: appointment.isPast
-                ? OutlinedButton.icon(
-                    onPressed: () => _markNoShow(context, ref),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor:
-                          AppColors.error.withValues(alpha: 0.7),
-                      side: BorderSide(
-                          color: AppColors.error.withValues(alpha: 0.4)),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.xs),
-                    ),
-                    icon: const Icon(Icons.person_off_outlined, size: 18),
-                    label: Text(context.l10n.markNoShow),
-                  )
-                : OutlinedButton(
-                    onPressed: () => _cancel(context, ref),
+              if (appointment.can.reject)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _reject(context, ref),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
                       side: const BorderSide(color: AppColors.error),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.xs),
+                      padding:
+                          const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                     ),
-                    child: Text(context.l10n.cancel),
+                    child: Text(context.l10n.rejectAppointment),
                   ),
+                ),
+              if (appointment.can.accept && appointment.can.reject)
+                const SizedBox(width: AppSpacing.sm),
+              if (appointment.can.accept)
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () => _confirm(context, ref),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding:
+                          const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                    ),
+                    child: Text(context.l10n.confirmAppointment),
+                  ),
+                ),
+            ],
+          ),
+        ] else if (appointment.can.cancel || appointment.can.markNoShow) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: appointment.can.markNoShow
+                  ? OutlinedButton.icon(
+                      onPressed: () => _markNoShow(context, ref),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor:
+                            AppColors.error.withValues(alpha: 0.7),
+                        side: BorderSide(
+                            color: AppColors.error.withValues(alpha: 0.4)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.xs),
+                      ),
+                      icon: const Icon(Icons.person_off_outlined, size: 18),
+                      label: Text(context.l10n.markNoShow),
+                    )
+                  : OutlinedButton(
+                      onPressed: () => _cancel(context, ref),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(color: AppColors.error),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.xs),
+                      ),
+                      child: Text(context.l10n.cancel),
+                    ),
+            ),
           ),
         ],
       ],
@@ -3064,14 +3244,19 @@ class _PlanningWalkInDialogState extends ConsumerState<PlanningWalkInDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+      // Dialog defaults to min(85% screen, 560px) which becomes huge on
+      // desktop (up to ~1600px). Cap it to a comfortable form width so the
+      // modal stays centred and readable on wide screens.
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               Row(
                 children: [
                   const Icon(Icons.person_add_rounded,
@@ -3202,6 +3387,7 @@ class _PlanningWalkInDialogState extends ConsumerState<PlanningWalkInDialog> {
           ),
         ),
       ),
+      ),
     );
   }
 }
@@ -3331,6 +3517,58 @@ class _PlanningFreeSlotTarget extends StatelessWidget {
       label: '${context.l10n.addWalkIn} $time',
       button: true,
       child: InkWell(onTap: onTap, child: const SizedBox.expand()),
+    );
+  }
+}
+
+// Subtle editorial break band — diagonal stripes so the band reads as
+// "inactive" without shouting. The label (fallback: "Pause") floats center.
+class _PlanningBreakBand extends StatelessWidget {
+  final String? label;
+  const _PlanningBreakBand({this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 1),
+        decoration: BoxDecoration(
+          color: AppColors.textHint.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          border: Border.all(
+            color: AppColors.textHint.withValues(alpha: 0.25),
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.coffee_rounded,
+                size: 13,
+                color: AppColors.textSecondary.withValues(alpha: 0.7),
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label?.isNotEmpty == true ? label! : context.l10n.breakSlot,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.fraunces(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

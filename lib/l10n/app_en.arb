@@ -74,6 +74,7 @@
   "previous": "Previous",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "edit": "Edit",
   "loading": "Loading...",
   "error": "An error occurred",
   "retry": "Retry",
@@ -215,6 +216,11 @@
   "clientLastName": "Client last name (optional)",
   "clientPhone": "Phone (optional)",
   "scheduleSettings": "Schedule",
+  "capacitySettings": "My salon — Schedule",
+  "noBreaksYet": "No break configured yet",
+  "noDaysOffYet": "No upcoming closure",
+  "deleteBreakConfirm": "Delete this break?",
+  "deleteDayOffConfirm": "Delete this closure?",
   "myWorkHours": "My work hours",
   "companyHoursHint": "Salon: {hours}",
   "@companyHoursHint": {
@@ -229,8 +235,38 @@
   "breakLabel": "Label (optional)",
   "daysOff": "Days off",
   "addDayOff": "Add day off",
-  "reason": "Reason (optional)",
+  "reason": "Reason",
   "dayOffReasonHint": "E.g.: Annual leave",
+  "fromDate": "From",
+  "untilDate": "Until",
+  "addUntilDate": "Extend over several days",
+  "closureKicker": "Closure · My schedule",
+  "closureSubtitle": "Pick the date or dates of the closure.",
+  "addDayOffPrefix": "Add a",
+  "addDayOffAccent": "day off",
+  "ofClosure": "of closure",
+  "optional": "Optional",
+  "confirmClosure": "Confirm the closure",
+  "dayOffRangePreview": "{count, plural, =1{1 day} other{{count} days}}",
+  "@dayOffRangePreview": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "dayOffConflictTitle": "{count, plural, =1{1 appointment in conflict} other{{count} appointments in conflict}}",
+  "@dayOffConflictTitle": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "dayOffConflictHint": "Cancel or refuse the appointments below before adding the closure.",
+  "andNOthers": "… and {count} others",
+  "@andNOthers": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "breakConflictTitle": "Appointments during the break",
+  "breakConflictHint": "These appointments start during the break.",
+  "breakConflictMessage": "{count, plural, =1{1 appointment starts during this break.} other{{count} appointments start during this break.}} Save the break anyway?",
+  "@breakConflictMessage": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "breakConflictContinue": "Save anyway",
   "everyDay": "Every day",
   "breakSlot": "Break",
   "working": "Working",
@@ -709,5 +745,51 @@
   },
   "cancelAppointmentOwnerWarning": "The slot will become available again and the client will be notified.",
   "cancelAppointmentOwnerWarningWalkIn": "The slot will become available again.",
-  "cancelAppointmentOwnerReasonLabel": "Reason for cancellation (optional)"
+  "cancelAppointmentOwnerReasonLabel": "Reason for cancellation (optional)",
+
+  "helpAndSupport": "Help & support",
+  "contactSupport": "Contact support",
+  "needHelpFooter": "Need help?",
+  "needHelpFooterLink": "Contact support",
+  "problemWithSalon": "Issue with this salon?",
+  "supportKicker": "SUPPORT",
+  "supportTitle": "Contact",
+  "supportTitleAccent": "the team",
+  "supportSubtitle": "We'll get back to you as soon as possible",
+  "supportFirstNameLabel": "FIRST NAME",
+  "supportFirstNamePlaceholder": "Your first name",
+  "supportPhoneLabel": "PHONE",
+  "supportPhonePlaceholder": "+383 44 000 000",
+  "supportEmailLabel": "EMAIL",
+  "supportEmailPlaceholder": "your.email@example.com",
+  "supportMessageLabel": "MESSAGE",
+  "supportMessagePlaceholder": "Describe your issue or question…",
+  "supportMessageCounter": "{count} / {max}",
+  "@supportMessageCounter": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "supportAttachmentsLabel": "ATTACHMENTS",
+  "supportAttachmentsHint": "3 files max • JPG, PNG, PDF • 5 MB each",
+  "supportAddAttachment": "Add a file",
+  "supportSubmit": "SEND MESSAGE",
+  "supportSubmitting": "SENDING…",
+  "supportSuccessTitle": "Message",
+  "supportSuccessTitleAccent": "sent",
+  "supportSuccessSubtitle": "We'll get back to you as soon as possible.",
+  "supportSuccessClose": "CLOSE",
+  "supportErrorTitle": "Could not send",
+  "supportErrorSubtitle": "Check your connection and try again.",
+  "supportErrorRetry": "Retry",
+  "supportFileTooLarge": "File too large • max 5 MB",
+  "supportFileUnsupported": "Unsupported format",
+  "supportMaxThreeFiles": "3 files maximum",
+  "supportFieldRequired": "Required field",
+  "supportMessageMinLength": "Minimum 10 characters",
+  "supportPrefilledBadge": "PREFILLED",
+
+  "fullName": "Full name",
+  "gender": "Gender"
 }

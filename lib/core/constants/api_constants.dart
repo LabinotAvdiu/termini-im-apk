@@ -92,6 +92,10 @@ abstract class ApiConstants {
   static const String myCompanyCapacityOverrides = '/my-company/capacity-overrides';
   static const String myCompanyPendingAppointments = '/my-company/appointments/pending';
   static const String myCompanyWalkIn = '/my-company/walk-in';
+  static String myCompanyPlanningOverlays(String start, String end) =>
+      '/my-company/planning-overlays?start=$start&end=$end';
+  static const String myCompanyPlanningSettings =
+      '/my-company/planning-settings';
   static String myCompanyAppointments(String date, List<String> statuses) {
     final statusParam = statuses.join(',');
     return '/my-company/appointments?date=$date&status=$statusParam';
@@ -117,6 +121,11 @@ abstract class ApiConstants {
   // Avatar (user profile photo)
   // ---------------------------------------------------------------------------
   static const String meAvatar = '/me/avatar';
+
+  // ---------------------------------------------------------------------------
+  // Support (public — guest or authenticated)
+  // ---------------------------------------------------------------------------
+  static const String supportTickets = '/support-tickets';
 
   // ---------------------------------------------------------------------------
   // Notifications push

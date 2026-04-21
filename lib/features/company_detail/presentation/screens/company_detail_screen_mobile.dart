@@ -15,6 +15,8 @@ import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
 import '../../../sharing/presentation/widgets/share_button.dart';
 import '../../../reviews/data/models/review_model.dart';
 import '../../../reviews/presentation/providers/review_provider.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../../data/models/company_detail_model.dart';
 import '../providers/company_detail_provider.dart';
 import '../widgets/photo_gallery.dart';
@@ -355,7 +357,58 @@ class _MobileInfoSheet extends StatelessWidget {
 
           // ── Reviews section — after services ─────────────────────────────
           _ReviewsSection(companyId: companyId),
+
+          // ── Discreet support link at the very bottom ────────────────────
+          _SupportFooterLink(companyId: companyId),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Discreet "Problème avec ce salon ? Contacter le support" link
+// ---------------------------------------------------------------------------
+
+class _SupportFooterLink extends ConsumerWidget {
+  final String companyId;
+  const _SupportFooterLink({required this.companyId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.xl),
+      child: Center(
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              '${l.problemWithSalon} ',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textHint,
+              ),
+            ),
+            GestureDetector(
+              onTap: () => showContactSupportDialog(
+                context,
+                ref: ref,
+                sourcePage: SupportSourcePage.companyDetail,
+                sourceContext: {'companyId': companyId},
+              ),
+              child: Text(
+                l.contactSupport,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.primary,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

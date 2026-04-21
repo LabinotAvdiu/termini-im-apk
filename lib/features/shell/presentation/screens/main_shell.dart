@@ -17,6 +17,8 @@ import '../../../company/presentation/screens/company_planning_screen.dart';
 import '../../../company/presentation/screens/pending_approvals_screen.dart';
 import '../../../employee_schedule/presentation/screens/schedule_settings_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 
 /// Main shell shown only to authenticated users.
 ///
@@ -270,18 +272,76 @@ class _ShellSidebarState extends State<_ShellSidebar> {
               ),
             ),
           ),
-          // Toggle at bottom — intentionally NOT aligned with nav icons
+          // Contact support — always above the toggle, last item in the menu
           const SizedBox(height: AppSpacing.sm),
           Divider(
               height: 1,
               thickness: 1,
               color: AppColors.background.withValues(alpha: 0.08)),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.sm),
+          _SidebarSupportItem(isExpanded: _isExpanded),
+          const SizedBox(height: AppSpacing.sm),
           _SidebarToggleButton(
             isExpanded: _isExpanded,
             onToggle: () => setState(() => _isExpanded = !_isExpanded),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Contact support link — styled like a sidebar item but never "selected"
+/// (opens a dialog, doesn't route).
+class _SidebarSupportItem extends ConsumerWidget {
+  final bool isExpanded;
+  const _SidebarSupportItem({required this.isExpanded});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => showContactSupportDialog(
+          context,
+          ref: ref,
+          sourcePage: SupportSourcePage.desktopMenu,
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isExpanded ? 14 : 10,
+            vertical: 10,
+          ),
+          child: Row(
+            mainAxisAlignment: isExpanded
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.chat_bubble_outline_rounded,
+                size: 20,
+                color: AppColors.background.withValues(alpha: 0.72),
+              ),
+              if (isExpanded) ...[
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    l.contactSupport,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.instrumentSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.background.withValues(alpha: 0.85),
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

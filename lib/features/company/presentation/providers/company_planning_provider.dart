@@ -6,6 +6,7 @@ import '../../../employee_schedule/presentation/providers/schedule_provider.dart
     show upcomingAppointmentProvider;
 
 import '../../data/models/planning_appointment_model.dart';
+import '../../data/models/planning_overlay_model.dart';
 import 'company_dashboard_provider.dart';
 
 // ---------------------------------------------------------------------------
@@ -27,6 +28,20 @@ class CompanyPlanningState {
   final CompanyPlanningViewMode viewMode;
   final Map<String, List<PlanningAppointmentModel>> rangeAppointments;
 
+  /// Ids of appointments with an in-flight status mutation (accept / reject /
+  /// cancel / no-show / free-slot). Callers gate their CTAs on
+  /// `mutatingIds.isNotEmpty` so tapping accept on one card while reject is
+  /// pending on another card can't fire two requests in parallel.
+  final Set<String> mutatingIds;
+
+  /// Non-appointment overlays — recurring breaks + concrete days off.
+  /// Scoped server-side to the caller's role.
+  final PlanningOverlaysModel overlays;
+
+  /// UI-driving flags — see docs/PLANNING_CONTRACT.md. The screens read
+  /// these instead of deriving from bookingMode/role.
+  final PlanningSettingsModel settings;
+
   const CompanyPlanningState({
     required this.selectedDate,
     this.appointments = const [],
@@ -35,7 +50,12 @@ class CompanyPlanningState {
     this.error,
     this.viewMode = CompanyPlanningViewMode.day,
     this.rangeAppointments = const {},
+    this.mutatingIds = const <String>{},
+    this.overlays = const PlanningOverlaysModel(),
+    this.settings = const PlanningSettingsModel(),
   });
+
+  bool get isMutating => mutatingIds.isNotEmpty;
 
   CompanyPlanningState copyWith({
     String? selectedDate,
@@ -45,6 +65,9 @@ class CompanyPlanningState {
     String? error,
     CompanyPlanningViewMode? viewMode,
     Map<String, List<PlanningAppointmentModel>>? rangeAppointments,
+    Set<String>? mutatingIds,
+    PlanningOverlaysModel? overlays,
+    PlanningSettingsModel? settings,
   }) =>
       CompanyPlanningState(
         selectedDate: selectedDate ?? this.selectedDate,
@@ -54,6 +77,9 @@ class CompanyPlanningState {
         error: error,
         viewMode: viewMode ?? this.viewMode,
         rangeAppointments: rangeAppointments ?? this.rangeAppointments,
+        mutatingIds: mutatingIds ?? this.mutatingIds,
+        overlays: overlays ?? this.overlays,
+        settings: settings ?? this.settings,
       );
 }
 
@@ -101,14 +127,25 @@ class CompanyPlanningNotifier
     state = state.copyWith(isLoading: true, error: null);
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
-      // Use the datasource default (confirmed + pending + no_show + cancelled)
-      // so the owner keeps seeing the full activity of the day, including
-      // slots they just marked as no-show.
-      final appts = await datasource.listCompanyAppointments(
-        state.selectedDate,
-      );
+      // Fetch appointments + overlays + settings in parallel. Settings are
+      // cheap (a few bools) and rarely change, but refreshing them on each
+      // load keeps things simple — the user never sees a stale capacity-mode
+      // vs individual-mode layout after switching the booking mode.
+      final results = await Future.wait([
+        datasource.listCompanyAppointments(state.selectedDate),
+        datasource.getPlanningOverlays(
+          state.selectedDate,
+          state.selectedDate,
+        ),
+        datasource.getPlanningSettings(),
+      ]);
       if (!mounted || reqId != _latestRequestId) return; // stale
-      state = state.copyWith(isLoading: false, appointments: appts);
+      state = state.copyWith(
+        isLoading: false,
+        appointments: results[0] as List<PlanningAppointmentModel>,
+        overlays: results[1] as PlanningOverlaysModel,
+        settings: results[2] as PlanningSettingsModel,
+      );
     } catch (e) {
       if (!mounted || reqId != _latestRequestId) return;
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -122,11 +159,21 @@ class CompanyPlanningNotifier
 
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
-      final appts = await datasource.listCompanyAppointmentsRange(
-        _toIso(start),
-        _toIso(endInclusive),
-      );
+      final results = await Future.wait([
+        datasource.listCompanyAppointmentsRange(
+          _toIso(start),
+          _toIso(endInclusive),
+        ),
+        datasource.getPlanningOverlays(
+          _toIso(start),
+          _toIso(endInclusive),
+        ),
+        datasource.getPlanningSettings(),
+      ]);
       if (!mounted || reqId != _latestRequestId) return; // stale
+      final appts = results[0] as List<PlanningAppointmentModel>;
+      final overlays = results[1] as PlanningOverlaysModel;
+      final settings = results[2] as PlanningSettingsModel;
       final map = <String, List<PlanningAppointmentModel>>{};
       for (var d = start;
           !d.isAfter(endInclusive);
@@ -137,7 +184,12 @@ class CompanyPlanningNotifier
         final key = a.date;
         map[key] = [...(map[key] ?? const []), a];
       }
-      state = state.copyWith(isLoading: false, rangeAppointments: map);
+      state = state.copyWith(
+        isLoading: false,
+        rangeAppointments: map,
+        overlays: overlays,
+        settings: settings,
+      );
     } catch (e) {
       if (!mounted || reqId != _latestRequestId) return;
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -223,6 +275,10 @@ class CompanyPlanningNotifier
     String? phone,
   }) async {
     if (!mounted) return false;
+    // Drop concurrent taps — the submit button is already gated on
+    // isSubmittingWalkIn in the dialog, but a rapid double-tap can sneak past
+    // the first rebuild.
+    if (state.isSubmittingWalkIn) return false;
     state = state.copyWith(isSubmittingWalkIn: true, error: null);
     try {
       final datasource = _ref.read(myCompanyDatasourceProvider);
@@ -276,9 +332,14 @@ class CompanyPlanningNotifier
 
   Future<bool> _updateStatus(String id, String newStatus, {String? reason}) async {
     if (!mounted) return false;
+    // Drop the call if the same appointment is already being mutated (rapid
+    // double-tap on the same CTA). Other appointments can still be in flight —
+    // UI-level gating (mutatingIds.isNotEmpty) prevents cross-card races.
+    if (state.mutatingIds.contains(id)) return false;
 
     final previousAppointments = state.appointments;
     final previousRange = state.rangeAppointments;
+    state = state.copyWith(mutatingIds: {...state.mutatingIds, id});
 
     // Mirror the change into today's list.
     final updatedAppointments = previousAppointments.map((a) {
@@ -318,12 +379,18 @@ class CompanyPlanningNotifier
       // Refresh the "next appointment" banner — a cancel or no-show might
       // have invalidated the current upcoming (or unveiled a later one).
       _ref.invalidate(upcomingAppointmentProvider);
+      if (mounted) {
+        state = state.copyWith(
+          mutatingIds: state.mutatingIds.difference({id}),
+        );
+      }
       return true;
     } catch (_) {
       if (!mounted) return false;
       state = state.copyWith(
         appointments: previousAppointments,
         rangeAppointments: previousRange,
+        mutatingIds: state.mutatingIds.difference({id}),
       );
       return false;
     }

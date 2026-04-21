@@ -460,6 +460,12 @@ abstract class AppLocalizations {
   /// **'Confirmer'**
   String get confirm;
 
+  /// No description provided for @edit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get edit;
+
   /// No description provided for @loading.
   ///
   /// In fr, this message translates to:
@@ -1228,6 +1234,36 @@ abstract class AppLocalizations {
   /// **'Horaires'**
   String get scheduleSettings;
 
+  /// No description provided for @capacitySettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon salon — Horaires'**
+  String get capacitySettings;
+
+  /// No description provided for @noBreaksYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune pause configurée'**
+  String get noBreaksYet;
+
+  /// No description provided for @noDaysOffYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun jour de fermeture à venir'**
+  String get noDaysOffYet;
+
+  /// No description provided for @deleteBreakConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cette pause ?'**
+  String get deleteBreakConfirm;
+
+  /// No description provided for @deleteDayOffConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce jour de fermeture ?'**
+  String get deleteDayOffConfirm;
+
   /// No description provided for @myWorkHours.
   ///
   /// In fr, this message translates to:
@@ -1273,7 +1309,7 @@ abstract class AppLocalizations {
   /// No description provided for @reason.
   ///
   /// In fr, this message translates to:
-  /// **'Motif (optionnel)'**
+  /// **'Motif'**
   String get reason;
 
   /// No description provided for @dayOffReasonHint.
@@ -1281,6 +1317,114 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ex: Congé annuel'**
   String get dayOffReasonHint;
+
+  /// No description provided for @fromDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Du'**
+  String get fromDate;
+
+  /// No description provided for @untilDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jusqu\'à'**
+  String get untilDate;
+
+  /// No description provided for @addUntilDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étendre sur plusieurs jours'**
+  String get addUntilDate;
+
+  /// No description provided for @closureKicker.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermeture · Mes horaires'**
+  String get closureKicker;
+
+  /// No description provided for @closureSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la ou les dates de fermeture.'**
+  String get closureSubtitle;
+
+  /// No description provided for @addDayOffPrefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un'**
+  String get addDayOffPrefix;
+
+  /// No description provided for @addDayOffAccent.
+  ///
+  /// In fr, this message translates to:
+  /// **'congé'**
+  String get addDayOffAccent;
+
+  /// No description provided for @ofClosure.
+  ///
+  /// In fr, this message translates to:
+  /// **'de fermeture'**
+  String get ofClosure;
+
+  /// No description provided for @optional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Optionnel'**
+  String get optional;
+
+  /// No description provided for @confirmClosure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer la fermeture'**
+  String get confirmClosure;
+
+  /// No description provided for @dayOffRangePreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 jour} other{{count} jours}}'**
+  String dayOffRangePreview(int count);
+
+  /// No description provided for @dayOffConflictTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 rendez-vous en conflit} other{{count} rendez-vous en conflit}}'**
+  String dayOffConflictTitle(int count);
+
+  /// No description provided for @dayOffConflictHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulez ou refusez les rendez-vous ci-dessous avant d\'ajouter la fermeture.'**
+  String get dayOffConflictHint;
+
+  /// No description provided for @andNOthers.
+  ///
+  /// In fr, this message translates to:
+  /// **'… et {count} autres'**
+  String andNOthers(int count);
+
+  /// No description provided for @breakConflictTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendez-vous pendant la pause'**
+  String get breakConflictTitle;
+
+  /// No description provided for @breakConflictHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces rendez-vous commencent pendant la pause.'**
+  String get breakConflictHint;
+
+  /// No description provided for @breakConflictMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Un rendez-vous commence pendant cette pause.} other{{count} rendez-vous commencent pendant cette pause.}} Voulez-vous enregistrer la pause malgré tout ?'**
+  String breakConflictMessage(int count);
+
+  /// No description provided for @breakConflictContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer quand même'**
+  String get breakConflictContinue;
 
   /// No description provided for @everyDay.
   ///
@@ -3327,6 +3471,234 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Motif de l\'annulation (facultatif)'**
   String get cancelAppointmentOwnerReasonLabel;
+
+  /// No description provided for @helpAndSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aide & support'**
+  String get helpAndSupport;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacter le support'**
+  String get contactSupport;
+
+  /// No description provided for @needHelpFooter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Besoin d\'aide ?'**
+  String get needHelpFooter;
+
+  /// No description provided for @needHelpFooterLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacter le support'**
+  String get needHelpFooterLink;
+
+  /// No description provided for @problemWithSalon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un problème avec ce salon ?'**
+  String get problemWithSalon;
+
+  /// No description provided for @supportKicker.
+  ///
+  /// In fr, this message translates to:
+  /// **'SUPPORT'**
+  String get supportKicker;
+
+  /// No description provided for @supportTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacter'**
+  String get supportTitle;
+
+  /// No description provided for @supportTitleAccent.
+  ///
+  /// In fr, this message translates to:
+  /// **'l\'équipe'**
+  String get supportTitleAccent;
+
+  /// No description provided for @supportSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'On te répond dans les meilleurs délais'**
+  String get supportSubtitle;
+
+  /// No description provided for @supportFirstNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'PRÉNOM'**
+  String get supportFirstNameLabel;
+
+  /// No description provided for @supportFirstNamePlaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton prénom'**
+  String get supportFirstNamePlaceholder;
+
+  /// No description provided for @supportPhoneLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'TÉLÉPHONE'**
+  String get supportPhoneLabel;
+
+  /// No description provided for @supportPhonePlaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'+383 44 000 000'**
+  String get supportPhonePlaceholder;
+
+  /// No description provided for @supportEmailLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'EMAIL'**
+  String get supportEmailLabel;
+
+  /// No description provided for @supportEmailPlaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'ton.email@exemple.com'**
+  String get supportEmailPlaceholder;
+
+  /// No description provided for @supportMessageLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'MESSAGE'**
+  String get supportMessageLabel;
+
+  /// No description provided for @supportMessagePlaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décris ton problème ou ta question…'**
+  String get supportMessagePlaceholder;
+
+  /// No description provided for @supportMessageCounter.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} / {max}'**
+  String supportMessageCounter(int count, int max);
+
+  /// No description provided for @supportAttachmentsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'PIÈCES JOINTES'**
+  String get supportAttachmentsLabel;
+
+  /// No description provided for @supportAttachmentsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'3 fichiers max • JPG, PNG, PDF • 5 Mo chacun'**
+  String get supportAttachmentsHint;
+
+  /// No description provided for @supportAddAttachment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un fichier'**
+  String get supportAddAttachment;
+
+  /// No description provided for @supportSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'ENVOYER LE MESSAGE'**
+  String get supportSubmit;
+
+  /// No description provided for @supportSubmitting.
+  ///
+  /// In fr, this message translates to:
+  /// **'ENVOI EN COURS…'**
+  String get supportSubmitting;
+
+  /// No description provided for @supportSuccessTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message'**
+  String get supportSuccessTitle;
+
+  /// No description provided for @supportSuccessTitleAccent.
+  ///
+  /// In fr, this message translates to:
+  /// **'envoyé'**
+  String get supportSuccessTitleAccent;
+
+  /// No description provided for @supportSuccessSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'On te répond dans les meilleurs délais.'**
+  String get supportSuccessSubtitle;
+
+  /// No description provided for @supportSuccessClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'FERMER'**
+  String get supportSuccessClose;
+
+  /// No description provided for @supportErrorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi impossible'**
+  String get supportErrorTitle;
+
+  /// No description provided for @supportErrorSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifie ta connexion et réessaie.'**
+  String get supportErrorSubtitle;
+
+  /// No description provided for @supportErrorRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get supportErrorRetry;
+
+  /// No description provided for @supportFileTooLarge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fichier trop lourd • max 5 Mo'**
+  String get supportFileTooLarge;
+
+  /// No description provided for @supportFileUnsupported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Format non accepté'**
+  String get supportFileUnsupported;
+
+  /// No description provided for @supportMaxThreeFiles.
+  ///
+  /// In fr, this message translates to:
+  /// **'3 fichiers maximum'**
+  String get supportMaxThreeFiles;
+
+  /// No description provided for @supportFieldRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champ requis'**
+  String get supportFieldRequired;
+
+  /// No description provided for @supportMessageMinLength.
+  ///
+  /// In fr, this message translates to:
+  /// **'Minimum 10 caractères'**
+  String get supportMessageMinLength;
+
+  /// No description provided for @supportPrefilledBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'PRÉ-REMPLI'**
+  String get supportPrefilledBadge;
+
+  /// No description provided for @fullName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom complet'**
+  String get fullName;
+
+  /// No description provided for @gender.
+  ///
+  /// In fr, this message translates to:
+  /// **'Genre'**
+  String get gender;
 }
 
 class _AppLocalizationsDelegate

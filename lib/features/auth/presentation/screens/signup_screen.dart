@@ -14,6 +14,8 @@ import '../../../../core/network/dio_provider.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/salon_location_fields.dart';
 import '../../../../core/network/places_datasource.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/company_clientele_selector.dart';
 
@@ -411,6 +413,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
                   // ---- Login link ----
                   _LoginLink(),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // ---- Contact support footer (guest) ----
+                  _SupportLink(ref: ref),
 
                   const SizedBox(height: AppSpacing.lg),
                 ],
@@ -1810,6 +1817,41 @@ class _LoginLink extends StatelessWidget {
             context.l10n.loginNow,
             style: GoogleFonts.instrumentSerif(
               fontSize: 14,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.primary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SupportLink extends StatelessWidget {
+  final WidgetRef ref;
+  const _SupportLink({required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '${context.l10n.needHelpFooter} ',
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+        ),
+        GestureDetector(
+          onTap: () => showContactSupportDialog(
+            context,
+            ref: ref,
+            sourcePage: SupportSourcePage.signup,
+          ),
+          child: Text(
+            context.l10n.needHelpFooterLink,
+            style: GoogleFonts.instrumentSerif(
+              fontSize: 13,
               fontStyle: FontStyle.italic,
               color: AppColors.primary,
               decoration: TextDecoration.underline,

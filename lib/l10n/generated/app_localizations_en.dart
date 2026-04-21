@@ -194,6 +194,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
+  String get edit => 'Edit';
+
+  @override
   String get loading => 'Loading...';
 
   @override
@@ -592,6 +595,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scheduleSettings => 'Schedule';
 
   @override
+  String get capacitySettings => 'My salon — Schedule';
+
+  @override
+  String get noBreaksYet => 'No break configured yet';
+
+  @override
+  String get noDaysOffYet => 'No upcoming closure';
+
+  @override
+  String get deleteBreakConfirm => 'Delete this break?';
+
+  @override
+  String get deleteDayOffConfirm => 'Delete this closure?';
+
+  @override
   String get myWorkHours => 'My work hours';
 
   @override
@@ -615,10 +633,91 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addDayOff => 'Add day off';
 
   @override
-  String get reason => 'Reason (optional)';
+  String get reason => 'Reason';
 
   @override
   String get dayOffReasonHint => 'E.g.: Annual leave';
+
+  @override
+  String get fromDate => 'From';
+
+  @override
+  String get untilDate => 'Until';
+
+  @override
+  String get addUntilDate => 'Extend over several days';
+
+  @override
+  String get closureKicker => 'Closure · My schedule';
+
+  @override
+  String get closureSubtitle => 'Pick the date or dates of the closure.';
+
+  @override
+  String get addDayOffPrefix => 'Add a';
+
+  @override
+  String get addDayOffAccent => 'day off';
+
+  @override
+  String get ofClosure => 'of closure';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get confirmClosure => 'Confirm the closure';
+
+  @override
+  String dayOffRangePreview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dayOffConflictTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count appointments in conflict',
+      one: '1 appointment in conflict',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dayOffConflictHint =>
+      'Cancel or refuse the appointments below before adding the closure.';
+
+  @override
+  String andNOthers(int count) {
+    return '… and $count others';
+  }
+
+  @override
+  String get breakConflictTitle => 'Appointments during the break';
+
+  @override
+  String get breakConflictHint => 'These appointments start during the break.';
+
+  @override
+  String breakConflictMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count appointments start during this break.',
+      one: '1 appointment starts during this break.',
+    );
+    return '$_temp0 Save the break anyway?';
+  }
+
+  @override
+  String get breakConflictContinue => 'Save anyway';
 
   @override
   String get everyDay => 'Every day';
@@ -1758,4 +1857,122 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cancelAppointmentOwnerReasonLabel =>
       'Reason for cancellation (optional)';
+
+  @override
+  String get helpAndSupport => 'Help & support';
+
+  @override
+  String get contactSupport => 'Contact support';
+
+  @override
+  String get needHelpFooter => 'Need help?';
+
+  @override
+  String get needHelpFooterLink => 'Contact support';
+
+  @override
+  String get problemWithSalon => 'Issue with this salon?';
+
+  @override
+  String get supportKicker => 'SUPPORT';
+
+  @override
+  String get supportTitle => 'Contact';
+
+  @override
+  String get supportTitleAccent => 'the team';
+
+  @override
+  String get supportSubtitle => 'We\'ll get back to you as soon as possible';
+
+  @override
+  String get supportFirstNameLabel => 'FIRST NAME';
+
+  @override
+  String get supportFirstNamePlaceholder => 'Your first name';
+
+  @override
+  String get supportPhoneLabel => 'PHONE';
+
+  @override
+  String get supportPhonePlaceholder => '+383 44 000 000';
+
+  @override
+  String get supportEmailLabel => 'EMAIL';
+
+  @override
+  String get supportEmailPlaceholder => 'your.email@example.com';
+
+  @override
+  String get supportMessageLabel => 'MESSAGE';
+
+  @override
+  String get supportMessagePlaceholder => 'Describe your issue or question…';
+
+  @override
+  String supportMessageCounter(int count, int max) {
+    return '$count / $max';
+  }
+
+  @override
+  String get supportAttachmentsLabel => 'ATTACHMENTS';
+
+  @override
+  String get supportAttachmentsHint =>
+      '3 files max • JPG, PNG, PDF • 5 MB each';
+
+  @override
+  String get supportAddAttachment => 'Add a file';
+
+  @override
+  String get supportSubmit => 'SEND MESSAGE';
+
+  @override
+  String get supportSubmitting => 'SENDING…';
+
+  @override
+  String get supportSuccessTitle => 'Message';
+
+  @override
+  String get supportSuccessTitleAccent => 'sent';
+
+  @override
+  String get supportSuccessSubtitle =>
+      'We\'ll get back to you as soon as possible.';
+
+  @override
+  String get supportSuccessClose => 'CLOSE';
+
+  @override
+  String get supportErrorTitle => 'Could not send';
+
+  @override
+  String get supportErrorSubtitle => 'Check your connection and try again.';
+
+  @override
+  String get supportErrorRetry => 'Retry';
+
+  @override
+  String get supportFileTooLarge => 'File too large • max 5 MB';
+
+  @override
+  String get supportFileUnsupported => 'Unsupported format';
+
+  @override
+  String get supportMaxThreeFiles => '3 files maximum';
+
+  @override
+  String get supportFieldRequired => 'Required field';
+
+  @override
+  String get supportMessageMinLength => 'Minimum 10 characters';
+
+  @override
+  String get supportPrefilledBadge => 'PREFILLED';
+
+  @override
+  String get fullName => 'Full name';
+
+  @override
+  String get gender => 'Gender';
 }

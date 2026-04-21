@@ -13,6 +13,8 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/brand_logo.dart';
 import '../../../../core/widgets/language_sheet.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -25,7 +27,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: Remove default values before push
-  // final _emailController = TextEditingController(text: ');
+  // final _emailController = TextEditingController(text: 'karim@barbier-parisien.fr');
   final _emailController = TextEditingController(text: 'donjeta@termini.im');
   final _passwordController = TextEditingController(text: 'Password1');
   bool _passwordVisible = false;
@@ -199,6 +201,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // ---- Sign-up link ----
                   _SignupLink(),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // ---- Contact support footer (guest) ----
+                  _SupportLink(ref: ref),
 
                   const SizedBox(height: AppSpacing.lg),
                 ],
@@ -613,6 +620,41 @@ class _SignupLink extends StatelessWidget {
             context.l10n.signupNow,
             style: GoogleFonts.instrumentSerif(
               fontSize: 14,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.primary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SupportLink extends StatelessWidget {
+  final WidgetRef ref;
+  const _SupportLink({required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '${context.l10n.needHelpFooter} ',
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+        ),
+        GestureDetector(
+          onTap: () => showContactSupportDialog(
+            context,
+            ref: ref,
+            sourcePage: SupportSourcePage.login,
+          ),
+          child: Text(
+            context.l10n.needHelpFooterLink,
+            style: GoogleFonts.instrumentSerif(
+              fontSize: 13,
               fontStyle: FontStyle.italic,
               color: AppColors.primary,
               decoration: TextDecoration.underline,

@@ -77,6 +77,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   void _handleBack() {
+    // Ignore back taps while a confirm request is in flight — otherwise the
+    // booking can land in the DB *and* the user leaves the flow before
+    // seeing the success dialog.
+    if (ref.read(bookingProvider).isLoading) return;
     final step = ref.read(bookingProvider).currentStep;
     if (step > 0) {
       ref.read(bookingProvider.notifier).previousStep();
@@ -107,11 +111,16 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   void _handlePrevious() {
+    if (ref.read(bookingProvider).isLoading) return;
     ref.read(uxPrefsProvider.notifier).selectionClick();
     ref.read(bookingProvider.notifier).previousStep();
   }
 
   Future<void> _handleConfirm() async {
+    // Guard against double-tap — if a confirm is already in flight, drop
+    // the second tap. The button opacity/onPressed already reflect this
+    // but a rapid double-tap can sneak past the first rebuild.
+    if (ref.read(bookingProvider).isLoading) return;
     // Déclenchement de la confirmation — lightImpact avant la requête
     ref.read(uxPrefsProvider.notifier).lightImpact();
 

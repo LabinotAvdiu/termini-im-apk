@@ -21,6 +21,35 @@ class PlanningAppointmentServiceModel {
   }
 }
 
+/// Capability flags computed server-side (see docs/PLANNING_CONTRACT.md).
+/// The UI renders a button ssi the matching flag is true — no role/status/
+/// time checks live on the client.
+class AppointmentCapabilities {
+  final bool accept;
+  final bool reject;
+  final bool cancel;
+  final bool markNoShow;
+  final bool freeSlot;
+
+  const AppointmentCapabilities({
+    this.accept = false,
+    this.reject = false,
+    this.cancel = false,
+    this.markNoShow = false,
+    this.freeSlot = false,
+  });
+
+  factory AppointmentCapabilities.fromJson(Map<String, dynamic> json) {
+    return AppointmentCapabilities(
+      accept: json['accept'] as bool? ?? false,
+      reject: json['reject'] as bool? ?? false,
+      cancel: json['cancel'] as bool? ?? false,
+      markNoShow: json['markNoShow'] as bool? ?? false,
+      freeSlot: json['freeSlot'] as bool? ?? false,
+    );
+  }
+}
+
 class PlanningAppointmentModel {
   final String id;
   final String date;
@@ -44,6 +73,8 @@ class PlanningAppointmentModel {
   final String? rejectionReason;
   /// ISO timestamp when the owner rejected the appointment (null otherwise).
   final String? rejectedByOwnerAt;
+  /// Capability flags — source of truth is the backend. See PLANNING_CONTRACT.md.
+  final AppointmentCapabilities can;
 
   const PlanningAppointmentModel({
     required this.id,
@@ -62,12 +93,15 @@ class PlanningAppointmentModel {
     this.cancelledByClientAt,
     this.rejectionReason,
     this.rejectedByOwnerAt,
+    this.can = const AppointmentCapabilities(),
   });
 
   String get clientFullName =>
       '$clientFirstName $clientLastName'.trim();
 
   /// Parsed start datetime (null if the stored strings can't be parsed).
+  /// Kept for display-only computations (e.g. "in 2 hours" formatting) —
+  /// never gate actions on this, the backend `can.*` flags are authoritative.
   DateTime? get startDateTime {
     try {
       return DateTime.parse('${date}T$startTime:00');
@@ -76,29 +110,11 @@ class PlanningAppointmentModel {
     }
   }
 
-  /// Returns true when the appointment start time is in the past. Used to
-  /// hide confirm/reject actions on stale appointments — an owner shouldn't
-  /// be able to approve a slot that already happened.
-  bool get isPast {
-    final dt = startDateTime;
-    return dt != null && dt.isBefore(DateTime.now());
-  }
-
-  /// Window during which the owner can still mark this appointment as
-  /// a no-show. Starts once the slot begins, closes 24h later. After that
-  /// the no-show action is no longer offered — keeps the planning UI focused
-  /// on fresh events rather than historical bookkeeping.
-  bool get canMarkNoShow {
-    final dt = startDateTime;
-    if (dt == null) return false;
-    final now = DateTime.now();
-    return dt.isBefore(now) && now.difference(dt).inHours < 24;
-  }
-
   PlanningAppointmentModel copyWith({
     String? status,
     String? rejectionReason,
     String? rejectedByOwnerAt,
+    AppointmentCapabilities? can,
   }) {
     return PlanningAppointmentModel(
       id: id,
@@ -117,6 +133,7 @@ class PlanningAppointmentModel {
       cancelledByClientAt: cancelledByClientAt,
       rejectionReason: rejectionReason ?? this.rejectionReason,
       rejectedByOwnerAt: rejectedByOwnerAt ?? this.rejectedByOwnerAt,
+      can: can ?? this.can,
     );
   }
 
@@ -146,6 +163,9 @@ class PlanningAppointmentModel {
           json['rejection_reason'] as String?,
       rejectedByOwnerAt: json['rejectedByOwnerAt'] as String? ??
           json['rejected_by_owner_at'] as String?,
+      can: json['can'] is Map<String, dynamic>
+          ? AppointmentCapabilities.fromJson(json['can'] as Map<String, dynamic>)
+          : const AppointmentCapabilities(),
     );
   }
 }

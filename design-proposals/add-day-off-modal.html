@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Ajouter un congé · Design Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ============================================================
+       "Prishtina Editorial" — design tokens (Termini im)
+       ============================================================ */
+    :root {
+      --ivory:      #f7f2ea;
+      --bone:       #e8dcc8;
+      --ink:        #171311;
+      --muted:      #716059;
+      --burgundy:   #7a2232;
+      --burgundy-2: #5d1a27;
+      --gold:       #c89b47;
+      --line:       #d9cab3;
+      --cream:      #fcf7ee;
+      --surface:    #fcf7ee;
+      --error:      #b83d3d;
+      --error-bg:   #fdf3f3;
+      --error-line: rgba(184,61,61,0.22);
+      --success:    #6f7e55;
+      --border:     #d9cab3;
+
+      --radius-sm:  4px;
+      --radius-md:  8px;
+      --radius-lg:  16px;
+      --radius-xl:  24px;
+
+      --sp-xs:  4px;
+      --sp-sm:  8px;
+      --sp-md:  16px;
+      --sp-lg:  24px;
+      --sp-xl:  32px;
+      --sp-xxl: 48px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--ivory);
+      color: var(--ink);
+    }
+    body {
+      font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      padding: 64px 32px 96px;
+      position: relative;
+    }
+
+    /* Grain — same noise filter as the Flutter app's web shell */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none;
+      opacity: 0.28;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 1;
+    }
+    body::after {
+      content: "";
+      position: fixed; top: -30%; right: -15%;
+      width: 70vw; height: 70vw; border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,155,71,0.09), transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ============================================================
+       Page wrapper
+       ============================================================ */
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ============================================================
+       Masthead
+       ============================================================ */
+    .masthead {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: end;
+      gap: 40px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px;
+      margin-bottom: 64px;
+    }
+    .mast-kicker {
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .mast-title {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(40px, 5.5vw, 78px);
+      font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 100;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-top: 10px;
+    }
+    .mast-title em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--burgundy);
+    }
+    .mast-meta {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.8;
+    }
+    .mast-meta b { color: var(--burgundy); font-weight: 600; }
+
+    /* ============================================================
+       Variants row
+       ============================================================ */
+    .variants-row {
+      display: grid;
+      grid-template-columns: repeat(3, 420px);
+      gap: 48px;
+      justify-content: center;
+    }
+
+    @media (max-width: 1380px) {
+      .variants-row {
+        grid-template-columns: repeat(auto-fit, 420px);
+      }
+    }
+
+    /* Variant column */
+    .variant-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Variant label above the modal */
+    .variant-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .variant-label .v-num {
+      font-family: "Fraunces", serif;
+      font-weight: 300;
+      font-variation-settings: "SOFT" 100, "opsz" 144;
+      font-size: 32px;
+      color: var(--burgundy);
+      line-height: 1;
+    }
+    .variant-label .v-info {}
+    .variant-label .v-tag {
+      font-size: 9px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .variant-label .v-name {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+    .variant-label .v-name em { color: var(--burgundy); }
+
+    /* ============================================================
+       Overlay stage — simulates the dimmed screen behind the modal
+       ============================================================ */
+    .overlay-stage {
+      background: rgba(23, 19, 17, 0.58);
+      border-radius: var(--radius-xl);
+      padding: 32px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      /* subtle grain on the overlay itself */
+    }
+    .overlay-stage::before {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: var(--radius-xl);
+      pointer-events: none;
+      opacity: 0.18;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* ============================================================
+       Modal
+       ============================================================ */
+    .modal {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(122, 34, 50, 0.13);
+      box-shadow:
+        0 2px 0 rgba(255,255,255,0.06) inset,
+        0 48px 80px -24px rgba(23,19,17,0.42),
+        0 12px 24px -8px rgba(23,19,17,0.22);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Grain overlay on the modal surface */
+    .modal::after {
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      border-radius: var(--radius-lg);
+      opacity: 0.22;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 0;
+    }
+
+    /* ---- Modal header ---- */
+    .modal-head {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(122,34,50,0.04), transparent);
+      position: relative;
+      z-index: 1;
+    }
+    /* burgundy top accent stripe */
+    .modal-head::before {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--burgundy), rgba(122,34,50,0.55) 70%, transparent);
+    }
+
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--ivory);
+      display: grid; place-items: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 180ms, color 180ms;
+    }
+    .modal-close:hover { border-color: var(--burgundy); color: var(--burgundy); }
+    .modal-close svg { width: 13px; height: 13px; }
+
+    .modal-kicker {
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .modal-kicker .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%; background: var(--gold);
+    }
+    .modal-title {
+      font-family: "Fraunces", serif;
+      font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .modal-title em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .modal-sub {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ---- Modal body ---- */
+    .modal-body {
+      padding: 20px 24px 24px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-md);
+    }
+
+    /* ---- Field group label ---- */
+    .field-label {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .field-label em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+
+    /* ---- Date range row ---- */
+    .date-range {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ---- Date picker tap-target ---- */
+    .date-picker {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 48px;
+      padding: 0 12px;
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color 200ms, box-shadow 200ms;
+      position: relative;
+    }
+    .date-picker:hover {
+      border-color: rgba(122,34,50,0.55);
+      box-shadow: 0 0 0 3px rgba(122,34,50,0.06);
+    }
+    .date-picker.focused {
+      border-color: var(--burgundy);
+      box-shadow: 0 0 0 3px rgba(122,34,50,0.10);
+    }
+    .date-picker.empty {
+      border-style: dashed;
+    }
+    .date-picker .dp-icon {
+      width: 16px; height: 16px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .date-picker .dp-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .date-picker .dp-label {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      display: block;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+    .date-picker .dp-value {
+      font-family: "Fraunces", serif;
+      font-size: 15px;
+      font-variation-settings: "opsz" 72, "SOFT" 40;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .date-picker .dp-value.placeholder {
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      font-style: normal;
+    }
+    .date-picker .dp-chevron {
+      width: 14px; height: 14px;
+      color: var(--muted);
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* Arrow between date pickers */
+    .date-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .date-arrow svg { width: 16px; height: 16px; }
+
+    /* ---- Preview badge ---- */
+    .preview-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: linear-gradient(135deg, rgba(122,34,50,0.04), rgba(200,155,71,0.05));
+      border: 1px solid rgba(122,34,50,0.12);
+      border-radius: var(--radius-md);
+    }
+    .preview-badge .pb-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(122,34,50,0.08);
+      display: grid; place-items: center;
+      color: var(--burgundy);
+      flex-shrink: 0;
+    }
+    .preview-badge .pb-icon svg { width: 15px; height: 15px; }
+    .preview-badge .pb-body { flex: 1; min-width: 0; }
+    .preview-badge .pb-count {
+      font-family: "Fraunces", serif;
+      font-weight: 500;
+      font-variation-settings: "opsz" 72;
+      font-size: 15px;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+    .preview-badge .pb-count em {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .preview-badge .pb-range {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ---- Text field (raison) ---- */
+    .text-field {
+      position: relative;
+    }
+    .text-field .tf-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 200ms, box-shadow 200ms;
+    }
+    .text-field .tf-input::placeholder { color: var(--muted); }
+    .text-field .tf-input:focus {
+      border-color: var(--burgundy);
+      box-shadow: 0 0 0 3px rgba(122,34,50,0.10);
+    }
+    .text-field .tf-optional {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    /* ---- Error block ---- */
+    .conflict-block {
+      background: var(--error-bg);
+      border: 1px solid var(--error-line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .conflict-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--error-line);
+    }
+    .conflict-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(184,61,61,0.12);
+      display: grid; place-items: center;
+      color: var(--error);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .conflict-icon svg { width: 13px; height: 13px; }
+    .conflict-msg {
+      flex: 1;
+    }
+    .conflict-msg .cm-title {
+      font-family: "Fraunces", serif;
+      font-size: 14px;
+      font-variation-settings: "opsz" 72;
+      color: var(--error);
+      font-weight: 500;
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+    .conflict-msg .cm-body {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .conflict-msg .cm-body strong { color: var(--error); font-weight: 600; }
+
+    /* RDV list inside conflict block */
+    .conflict-list {
+      padding: 4px 0;
+    }
+    .rdv-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      transition: background 160ms;
+    }
+    .rdv-row + .rdv-row { border-top: 1px solid rgba(184,61,61,0.10); }
+    .rdv-row:hover { background: rgba(184,61,61,0.04); }
+    .rdv-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--error);
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+    .rdv-when {
+      font-family: "Fraunces", serif;
+      font-size: 13px;
+      font-variation-settings: "opsz" 72;
+      color: var(--error);
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 110px;
+    }
+    .rdv-who {
+      font-size: 12px;
+      color: var(--muted);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .rdv-more {
+      padding: 8px 16px 10px;
+      font-size: 11px;
+      color: var(--error);
+      font-style: italic;
+      font-family: "Instrument Serif", serif;
+      opacity: 0.8;
+    }
+
+    /* ---- Rule ---- */
+    .modal-rule {
+      height: 1px;
+      background: var(--line);
+      position: relative;
+    }
+    .modal-rule::before {
+      content: "";
+      position: absolute;
+      top: -2px; left: 50%; transform: translateX(-50%);
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--bone);
+      border: 1px solid var(--line);
+    }
+
+    /* ---- CTA button ---- */
+    .btn-confirm {
+      width: 100%;
+      height: 50px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--burgundy);
+      color: #fff;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 200ms, transform 150ms, box-shadow 200ms;
+      box-shadow: 0 6px 16px -6px rgba(122,34,50,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-confirm::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .btn-confirm:hover:not(:disabled) {
+      background: var(--burgundy-2);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px -8px rgba(122,34,50,0.50);
+    }
+    .btn-confirm:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .btn-confirm:disabled {
+      background: var(--muted);
+      opacity: 0.35;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-confirm svg { width: 16px; height: 16px; }
+
+    /* ============================================================
+       Design notes footer
+       ============================================================ */
+    .notecards {
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .notecard .n-num {
+      font-family: "Fraunces", serif;
+      font-variation-settings: "SOFT" 100, "opsz" 144;
+      font-size: 34px;
+      color: var(--burgundy);
+      font-weight: 300;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .notecard h4 {
+      font-family: "Fraunces", serif;
+      font-size: 17px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .notecard h4 em {
+      font-family: "Instrument Serif";
+      font-style: italic;
+      color: var(--burgundy);
+      font-weight: 400;
+    }
+    .notecard p {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .notecard code {
+      font-family: "Instrument Sans", monospace;
+      font-size: 11px;
+      background: rgba(122,34,50,0.06);
+      color: var(--burgundy);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .footer {
+      margin-top: 64px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .footer .burgundy { color: var(--burgundy); font-weight: 600; }
+
+    /* Entry animation */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .masthead    { animation: rise 600ms cubic-bezier(.4,0,.2,1) both; }
+    .variant-col { animation: rise 700ms cubic-bezier(.4,0,.2,1) both; }
+    .variant-col:nth-child(2) { animation-delay: 80ms; }
+    .variant-col:nth-child(3) { animation-delay: 160ms; }
+    .notecards   { animation: rise 700ms cubic-bezier(.4,0,.2,1) 220ms both; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ====================== MASTHEAD ====================== -->
+  <header class="masthead">
+    <div>
+      <div class="mast-kicker">Termini im · Design Review · N°5</div>
+      <h1 class="mast-title">Congés &amp;<br><em>fermetures.</em></h1>
+    </div>
+    <div></div>
+    <div class="mast-meta">
+      Feature · <b>Ajouter un jour de congé</b><br>
+      Surface · Mes horaires &amp; Mon salon<br>
+      Variantes · Un jour · Plage · Conflit
+    </div>
+  </header>
+
+  <!-- ====================== VARIANTS ROW ====================== -->
+  <div class="variants-row">
+
+    <!-- ================== VARIANTE A — UN JOUR ================== -->
+    <div class="variant-col">
+      <div class="variant-label">
+        <span class="v-num">A</span>
+        <div class="v-info">
+          <span class="v-tag">Variante</span>
+          <span class="v-name">Un seul <em>jour</em></span>
+        </div>
+      </div>
+
+      <div class="overlay-stage">
+        <div class="modal">
+
+          <!-- Header -->
+          <div class="modal-head">
+            <button class="modal-close" title="Fermer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+            <div class="modal-kicker">
+              <span class="dot"></span>
+              Fermeture · Mes horaires
+            </div>
+            <h2 class="modal-title">Ajouter un <em>congé</em></h2>
+            <p class="modal-sub">Choisissez la ou les dates de fermeture.</p>
+          </div>
+
+          <!-- Body -->
+          <div class="modal-body">
+
+            <!-- Date range -->
+            <div>
+              <div class="field-label"><em>du</em> &nbsp;·&nbsp; jusqu'à</div>
+              <div class="date-range">
+                <!-- FROM -->
+                <div class="date-picker focused">
+                  <svg class="dp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <div class="dp-body">
+                    <span class="dp-label">Du</span>
+                    <span class="dp-value">Lundi 28 avril</span>
+                  </div>
+                  <svg class="dp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+
+                <!-- Arrow -->
+                <div class="date-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </div>
+
+                <!-- TO — same day by default -->
+                <div class="date-picker">
+                  <svg class="dp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <div class="dp-body">
+                    <span class="dp-label">Jusqu'à</span>
+                    <span class="dp-value">Lundi 28 avril</span>
+                  </div>
+                  <svg class="dp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview badge — 1 day -->
+            <div class="preview-badge">
+              <div class="pb-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              </div>
+              <div class="pb-body">
+                <div class="pb-count"><em>1 jour</em> de fermeture</div>
+                <div class="pb-range">Lundi 28 avril 2025</div>
+              </div>
+            </div>
+
+            <!-- Raison -->
+            <div>
+              <div class="field-label">Raison</div>
+              <div class="text-field">
+                <input class="tf-input" type="text" placeholder="Ex : Jour férié, congé personnel…" />
+                <span class="tf-optional">Optionnel</span>
+              </div>
+            </div>
+
+            <div class="modal-rule"></div>
+
+            <!-- CTA -->
+            <button class="btn-confirm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Confirmer la fermeture
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div><!-- /variant A -->
+
+
+    <!-- ================== VARIANTE B — PLAGE ================== -->
+    <div class="variant-col">
+      <div class="variant-label">
+        <span class="v-num">B</span>
+        <div class="v-info">
+          <span class="v-tag">Variante</span>
+          <span class="v-name">Plage <em>étendue</em></span>
+        </div>
+      </div>
+
+      <div class="overlay-stage">
+        <div class="modal">
+
+          <div class="modal-head">
+            <button class="modal-close" title="Fermer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+            <div class="modal-kicker">
+              <span class="dot"></span>
+              Fermeture · Mes horaires
+            </div>
+            <h2 class="modal-title">Ajouter un <em>congé</em></h2>
+            <p class="modal-sub">Choisissez la ou les dates de fermeture.</p>
+          </div>
+
+          <div class="modal-body">
+
+            <div>
+              <div class="field-label"><em>du</em> &nbsp;·&nbsp; jusqu'à</div>
+              <div class="date-range">
+                <div class="date-picker focused">
+                  <svg class="dp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <div class="dp-body">
+                    <span class="dp-label">Du</span>
+                    <span class="dp-value">Lun. 28 avril</span>
+                  </div>
+                  <svg class="dp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+
+                <div class="date-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </div>
+
+                <!-- TO — extended to May 2 -->
+                <div class="date-picker focused">
+                  <svg class="dp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <div class="dp-body">
+                    <span class="dp-label">Jusqu'à</span>
+                    <span class="dp-value">Ven. 2 mai</span>
+                  </div>
+                  <svg class="dp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview badge — 5 days -->
+            <div class="preview-badge">
+              <div class="pb-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              </div>
+              <div class="pb-body">
+                <div class="pb-count"><em>5 jours</em> de fermeture</div>
+                <div class="pb-range">Lun. 28 avril → Ven. 2 mai 2025</div>
+              </div>
+            </div>
+
+            <!-- Raison — filled -->
+            <div>
+              <div class="field-label">Raison</div>
+              <div class="text-field">
+                <input class="tf-input" type="text" value="Vacances de printemps" />
+                <span class="tf-optional">Optionnel</span>
+              </div>
+            </div>
+
+            <div class="modal-rule"></div>
+
+            <button class="btn-confirm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Confirmer la fermeture
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div><!-- /variant B -->
+
+
+    <!-- ================== VARIANTE C — CONFLIT ================== -->
+    <div class="variant-col">
+      <div class="variant-label">
+        <span class="v-num">C</span>
+        <div class="v-info">
+          <span class="v-tag">Variante</span>
+          <span class="v-name">Conflit <em>bloquant</em></span>
+        </div>
+      </div>
+
+      <div class="overlay-stage">
+        <div class="modal">
+
+          <div class="modal-head">
+            <button class="modal-close" title="Fermer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+            <div class="modal-kicker">
+              <span class="dot"></span>
+              Fermeture · Mes horaires
+            </div>
+            <h2 class="modal-title">Ajouter un <em>congé</em></h2>
+            <p class="modal-sub">Choisissez la ou les dates de fermeture.</p>
+          </div>
+
+          <div class="modal-body">
+
+            <div>
+              <div class="field-label"><em>du</em> &nbsp;·&nbsp; jusqu'à</div>
+              <div class="date-range">
+                <div class="date-picker focused">
+                  <svg class="dp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <div class="dp-body">
+                    <span class="dp-label">Du</span>
+                    <span class="dp-value">Lun. 28 avril</span>
+                  </div>
+                  <svg class="dp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+
+                <div class="date-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </div>
+
+                <div class="date-picker focused">
+                  <svg class="dp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <div class="dp-body">
+                    <span class="dp-label">Jusqu'à</span>
+                    <span class="dp-value">Mer. 30 avril</span>
+                  </div>
+                  <svg class="dp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview badge — 3 days -->
+            <div class="preview-badge">
+              <div class="pb-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              </div>
+              <div class="pb-body">
+                <div class="pb-count"><em>3 jours</em> de fermeture</div>
+                <div class="pb-range">Lun. 28 avril → Mer. 30 avril 2025</div>
+              </div>
+            </div>
+
+            <!-- CONFLICT BLOCK -->
+            <div class="conflict-block">
+              <div class="conflict-head">
+                <div class="conflict-icon">
+                  <!-- Warning triangle -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="conflict-msg">
+                  <div class="cm-title">3 rendez-vous en conflit</div>
+                  <div class="cm-body">Annulez ou refusez-les avant d'ajouter la fermeture.</div>
+                </div>
+              </div>
+              <div class="conflict-list">
+                <div class="rdv-row">
+                  <span class="rdv-dot"></span>
+                  <span class="rdv-when">Lun. 28 · 09h30</span>
+                  <span class="rdv-who">Artan Krasniqi — Coupe + barbe</span>
+                </div>
+                <div class="rdv-row">
+                  <span class="rdv-dot"></span>
+                  <span class="rdv-when">Mar. 29 · 11h00</span>
+                  <span class="rdv-who">Fisnik Berisha — Coupe enfant</span>
+                </div>
+                <div class="rdv-row">
+                  <span class="rdv-dot"></span>
+                  <span class="rdv-when">Mer. 30 · 14h30</span>
+                  <span class="rdv-who">Luan Gashi — Rasage traditionnel</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Raison -->
+            <div>
+              <div class="field-label">Raison</div>
+              <div class="text-field">
+                <input class="tf-input" type="text" placeholder="Ex : Jour férié, congé personnel…" />
+                <span class="tf-optional">Optionnel</span>
+              </div>
+            </div>
+
+            <div class="modal-rule"></div>
+
+            <!-- CTA disabled -->
+            <button class="btn-confirm" disabled title="Résolvez les conflits avant de confirmer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Confirmer la fermeture
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div><!-- /variant C -->
+
+  </div><!-- /variants-row -->
+
+
+  <!-- ====================== DESIGN NOTES ====================== -->
+  <section class="notecards">
+    <div class="notecard">
+      <div class="n-num">I</div>
+      <h4>Date picker <em>as tap-target</em></h4>
+      <p>Chaque champ date est un conteneur 48 dp de hauteur avec icône calendrier, label
+        superposé en 10px uppercase, valeur en Fraunces 15 px, et chevron. L'état
+        <code>.focused</code> impose <code>border-color: --burgundy</code> + halo 3 px.
+        L'état vide (champ "jusqu'à" non étendu) utilise une bordure en pointillé pour
+        inviter à l'interaction sans alarmer.</p>
+    </div>
+    <div class="notecard">
+      <div class="n-num">II</div>
+      <h4>Prévisualisation <em>immédiate</em></h4>
+      <p>Le badge de prévisualisation recalcule en temps réel le nombre de jours et la
+        plage en langage naturel. Il suit la même esthétique que les cartes de résumé de
+        l'app (fond bordeaux-or 4%, bordure 12% alpha). Les mots clés
+        (<em>«&nbsp;5 jours&nbsp;»</em>) utilisent l'italique Fraunces pour attirer
+        l'œil sur la donnée critique sans surcharge typographique.</p>
+    </div>
+    <div class="notecard">
+      <div class="n-num">III</div>
+      <h4>Conflit <em>calme mais net</em></h4>
+      <p>Fond <code>#fdf3f3</code> (ivoire rosé, non criard), bordure à 22% alpha, icône
+        triangle en cercle bordeaux pâle. Le message principal est en Fraunces rouge — la
+        hiérarchie dit «&nbsp;attention&nbsp;» sans hurler. Le bouton disabled passe à
+        <code>opacity: 0.35</code> + <code>cursor: not-allowed</code> + fond muted —
+        visuellement mort, intentionnellement impossible à manquer.</p>
+    </div>
+  </section>
+
+  <div class="footer">
+    Design Review · <span class="burgundy">Approve</span> · Revise · Ship
+  </div>
+
+</div>
+</body>
+</html>

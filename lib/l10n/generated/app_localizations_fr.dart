@@ -195,6 +195,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirm => 'Confirmer';
 
   @override
+  String get edit => 'Modifier';
+
+  @override
   String get loading => 'Chargement...';
 
   @override
@@ -594,6 +597,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scheduleSettings => 'Horaires';
 
   @override
+  String get capacitySettings => 'Mon salon — Horaires';
+
+  @override
+  String get noBreaksYet => 'Aucune pause configurée';
+
+  @override
+  String get noDaysOffYet => 'Aucun jour de fermeture à venir';
+
+  @override
+  String get deleteBreakConfirm => 'Supprimer cette pause ?';
+
+  @override
+  String get deleteDayOffConfirm => 'Supprimer ce jour de fermeture ?';
+
+  @override
   String get myWorkHours => 'Mes horaires de travail';
 
   @override
@@ -617,10 +635,92 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addDayOff => 'Ajouter un jour de congé';
 
   @override
-  String get reason => 'Motif (optionnel)';
+  String get reason => 'Motif';
 
   @override
   String get dayOffReasonHint => 'Ex: Congé annuel';
+
+  @override
+  String get fromDate => 'Du';
+
+  @override
+  String get untilDate => 'Jusqu\'à';
+
+  @override
+  String get addUntilDate => 'Étendre sur plusieurs jours';
+
+  @override
+  String get closureKicker => 'Fermeture · Mes horaires';
+
+  @override
+  String get closureSubtitle => 'Choisissez la ou les dates de fermeture.';
+
+  @override
+  String get addDayOffPrefix => 'Ajouter un';
+
+  @override
+  String get addDayOffAccent => 'congé';
+
+  @override
+  String get ofClosure => 'de fermeture';
+
+  @override
+  String get optional => 'Optionnel';
+
+  @override
+  String get confirmClosure => 'Confirmer la fermeture';
+
+  @override
+  String dayOffRangePreview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours',
+      one: '1 jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dayOffConflictTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rendez-vous en conflit',
+      one: '1 rendez-vous en conflit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dayOffConflictHint =>
+      'Annulez ou refusez les rendez-vous ci-dessous avant d\'ajouter la fermeture.';
+
+  @override
+  String andNOthers(int count) {
+    return '… et $count autres';
+  }
+
+  @override
+  String get breakConflictTitle => 'Rendez-vous pendant la pause';
+
+  @override
+  String get breakConflictHint =>
+      'Ces rendez-vous commencent pendant la pause.';
+
+  @override
+  String breakConflictMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rendez-vous commencent pendant cette pause.',
+      one: 'Un rendez-vous commence pendant cette pause.',
+    );
+    return '$_temp0 Voulez-vous enregistrer la pause malgré tout ?';
+  }
+
+  @override
+  String get breakConflictContinue => 'Enregistrer quand même';
 
   @override
   String get everyDay => 'Tous les jours';
@@ -1766,4 +1866,122 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get cancelAppointmentOwnerReasonLabel =>
       'Motif de l\'annulation (facultatif)';
+
+  @override
+  String get helpAndSupport => 'Aide & support';
+
+  @override
+  String get contactSupport => 'Contacter le support';
+
+  @override
+  String get needHelpFooter => 'Besoin d\'aide ?';
+
+  @override
+  String get needHelpFooterLink => 'Contacter le support';
+
+  @override
+  String get problemWithSalon => 'Un problème avec ce salon ?';
+
+  @override
+  String get supportKicker => 'SUPPORT';
+
+  @override
+  String get supportTitle => 'Contacter';
+
+  @override
+  String get supportTitleAccent => 'l\'équipe';
+
+  @override
+  String get supportSubtitle => 'On te répond dans les meilleurs délais';
+
+  @override
+  String get supportFirstNameLabel => 'PRÉNOM';
+
+  @override
+  String get supportFirstNamePlaceholder => 'Ton prénom';
+
+  @override
+  String get supportPhoneLabel => 'TÉLÉPHONE';
+
+  @override
+  String get supportPhonePlaceholder => '+383 44 000 000';
+
+  @override
+  String get supportEmailLabel => 'EMAIL';
+
+  @override
+  String get supportEmailPlaceholder => 'ton.email@exemple.com';
+
+  @override
+  String get supportMessageLabel => 'MESSAGE';
+
+  @override
+  String get supportMessagePlaceholder => 'Décris ton problème ou ta question…';
+
+  @override
+  String supportMessageCounter(int count, int max) {
+    return '$count / $max';
+  }
+
+  @override
+  String get supportAttachmentsLabel => 'PIÈCES JOINTES';
+
+  @override
+  String get supportAttachmentsHint =>
+      '3 fichiers max • JPG, PNG, PDF • 5 Mo chacun';
+
+  @override
+  String get supportAddAttachment => 'Ajouter un fichier';
+
+  @override
+  String get supportSubmit => 'ENVOYER LE MESSAGE';
+
+  @override
+  String get supportSubmitting => 'ENVOI EN COURS…';
+
+  @override
+  String get supportSuccessTitle => 'Message';
+
+  @override
+  String get supportSuccessTitleAccent => 'envoyé';
+
+  @override
+  String get supportSuccessSubtitle =>
+      'On te répond dans les meilleurs délais.';
+
+  @override
+  String get supportSuccessClose => 'FERMER';
+
+  @override
+  String get supportErrorTitle => 'Envoi impossible';
+
+  @override
+  String get supportErrorSubtitle => 'Vérifie ta connexion et réessaie.';
+
+  @override
+  String get supportErrorRetry => 'Réessayer';
+
+  @override
+  String get supportFileTooLarge => 'Fichier trop lourd • max 5 Mo';
+
+  @override
+  String get supportFileUnsupported => 'Format non accepté';
+
+  @override
+  String get supportMaxThreeFiles => '3 fichiers maximum';
+
+  @override
+  String get supportFieldRequired => 'Champ requis';
+
+  @override
+  String get supportMessageMinLength => 'Minimum 10 caractères';
+
+  @override
+  String get supportPrefilledBadge => 'PRÉ-REMPLI';
+
+  @override
+  String get fullName => 'Nom complet';
+
+  @override
+  String get gender => 'Genre';
 }

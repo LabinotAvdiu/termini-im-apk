@@ -1,7 +1,32 @@
+import 'package:dio/dio.dart';
+
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../models/schedule_models.dart';
 import '../models/schedule_settings_models.dart';
+
+/// Interpret a Dio exception as a schedule-conflict 409 or rethrow.
+/// Used by addBreak / addDayOff so the UI can surface the conflict list.
+Never _throwFromDio(DioException e) {
+  final resp = e.response;
+  if (resp?.statusCode == 409 && resp?.data is Map) {
+    final body = resp!.data as Map;
+    final code = body['code']?.toString();
+    if (code == 'break_conflict' || code == 'day_off_conflict') {
+      final raw = (body['conflicts'] as List<dynamic>? ?? const []);
+      final conflicts = raw
+          .map((e) =>
+              ScheduleConflictAppointment.fromJson(e as Map<String, dynamic>))
+          .toList();
+      throw ScheduleConflictException(
+        code: code!,
+        message: body['message']?.toString() ?? '',
+        conflicts: conflicts,
+      );
+    }
+  }
+  throw e;
+}
 
 /// Remote datasource for the employee daily schedule.
 ///
@@ -103,13 +128,17 @@ class ScheduleRemoteDatasource {
   // ---------------------------------------------------------------------------
 
   Future<BreakModel> addBreak(AddBreakRequest request) async {
-    final response = await _client.post(
-      ApiConstants.myScheduleBreaks,
-      data: request.toJson(),
-    );
-    final body = response.data as Map<String, dynamic>;
-    final data = (body['data'] ?? body) as Map<String, dynamic>;
-    return BreakModel.fromJson(data);
+    try {
+      final response = await _client.post(
+        ApiConstants.myScheduleBreaks,
+        data: request.toJson(),
+      );
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as Map<String, dynamic>;
+      return BreakModel.fromJson(data);
+    } on DioException catch (e) {
+      _throwFromDio(e);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -124,14 +153,31 @@ class ScheduleRemoteDatasource {
   // POST /my-schedule/days-off
   // ---------------------------------------------------------------------------
 
-  Future<DayOffModel> addDayOff(AddDayOffRequest request) async {
-    final response = await _client.post(
-      ApiConstants.myScheduleDaysOff,
-      data: request.toJson(),
-    );
-    final body = response.data as Map<String, dynamic>;
-    final data = (body['data'] ?? body) as Map<String, dynamic>;
-    return DayOffModel.fromJson(data);
+  /// Returns the list of created day-off rows (one per day in the range).
+  /// Throws `ScheduleConflictException` on 409 — the caller must surface
+  /// the conflict list to the user and abort.
+  Future<List<DayOffModel>> addDayOff(AddDayOffRequest request) async {
+    try {
+      final response = await _client.post(
+        ApiConstants.myScheduleDaysOff,
+        data: request.toJson(),
+      );
+      final body = response.data as Map<String, dynamic>;
+      final data = body['data'];
+      // Backend now returns an array (one row per day). Handle legacy
+      // single-object shape just in case an older build is hit.
+      if (data is List) {
+        return data
+            .map((e) => DayOffModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      if (data is Map<String, dynamic>) {
+        return [DayOffModel.fromJson(data)];
+      }
+      return const [];
+    } on DioException catch (e) {
+      _throwFromDio(e);
+    }
   }
 
   // ---------------------------------------------------------------------------

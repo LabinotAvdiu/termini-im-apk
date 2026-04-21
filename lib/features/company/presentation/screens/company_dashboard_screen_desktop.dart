@@ -15,6 +15,8 @@ import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../../reviews/data/models/review_model.dart';
 import '../../../reviews/presentation/providers/review_provider.dart';
 import '../../../sharing/presentation/widgets/share_button.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
@@ -292,6 +294,11 @@ class _DesktopMainContent extends StatelessWidget {
                 onDeletePhoto: onDeleteGalleryPhoto,
                 onReorder: onReorderGalleryPhotos,
               ),
+
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── Support card ──────────────────────────────────────────
+              _DesktopSupportCard(company: company),
             ],
           ],
         ),
@@ -1435,6 +1442,95 @@ class _DesktopErrorView extends StatelessWidget {
             label: Text(context.l10n.retry),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Support card — desktop
+// ---------------------------------------------------------------------------
+
+class _DesktopSupportCard extends ConsumerWidget {
+  final MyCompanyModel company;
+  const _DesktopSupportCard({required this.company});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        onTap: () => showContactSupportDialog(
+          context,
+          ref: ref,
+          sourcePage: SupportSourcePage.myCompany,
+          sourceContext: {'companyId': company.id},
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            border: Border.all(color: AppColors.divider, width: 1),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: const Icon(Icons.headset_mic_rounded,
+                    size: 22, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l.contactSupport,
+                      style: AppTextStyles.h3
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l.supportSubtitle,
+                      style: AppTextStyles.body
+                          .copyWith(color: AppColors.textHint),
+                    ),
+                  ],
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => showContactSupportDialog(
+                  context,
+                  ref: ref,
+                  sourcePage: SupportSourcePage.myCompany,
+                  sourceContext: {'companyId': company.id},
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm + 4),
+                ),
+                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
+                label: Text(l.contactSupport),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

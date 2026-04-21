@@ -109,7 +109,10 @@ class ScheduleSettingsNotifier
 
   // ── Add break ─────────────────────────────────────────────────────────────
 
-  Future<bool> addBreak(AddBreakRequest request) async {
+  /// Returns `AddBreakResult.success()` / `.conflict(list)` / `.error(msg)`.
+  /// Keeping conflicts structured (vs stuffed in `error`) lets the UI render
+  /// the confirmation dialog with the actual RDV list.
+  Future<AddBreakResult> addBreak(AddBreakRequest request) async {
     state = state.copyWith(isAddingBreak: true, error: null);
     try {
       final newBreak = await _datasource.addBreak(request);
@@ -124,10 +127,13 @@ class ScheduleSettingsNotifier
         settings: updated,
         error: null,
       );
-      return true;
+      return const AddBreakResult.success();
+    } on ScheduleConflictException catch (e) {
+      state = state.copyWith(isAddingBreak: false, error: null);
+      return AddBreakResult.conflict(e.conflicts);
     } catch (e) {
       state = state.copyWith(isAddingBreak: false, error: e.toString());
-      return false;
+      return AddBreakResult.error(e.toString());
     }
   }
 
@@ -159,25 +165,31 @@ class ScheduleSettingsNotifier
 
   // ── Add day off ───────────────────────────────────────────────────────────
 
-  Future<bool> addDayOff(AddDayOffRequest request) async {
+  /// Returns `AddDayOffResult.success()` / `.conflict(list)` / `.error(msg)`.
+  /// Day-off conflicts are a hard block — the UI shows the list and the user
+  /// must go cancel the RDVs first.
+  Future<AddDayOffResult> addDayOff(AddDayOffRequest request) async {
     state = state.copyWith(isAddingDayOff: true, error: null);
     try {
-      final newDayOff = await _datasource.addDayOff(request);
+      final created = await _datasource.addDayOff(request);
       final updated = ScheduleSettings(
         companyHours:  state.settings?.companyHours  ?? [],
         employeeHours: state.settings?.employeeHours ?? [],
         breaks:        state.settings?.breaks        ?? [],
-        daysOff:       [...(state.settings?.daysOff ?? []), newDayOff],
+        daysOff:       [...(state.settings?.daysOff ?? []), ...created],
       );
       state = state.copyWith(
         isAddingDayOff: false,
         settings: updated,
         error: null,
       );
-      return true;
+      return const AddDayOffResult.success();
+    } on ScheduleConflictException catch (e) {
+      state = state.copyWith(isAddingDayOff: false, error: null);
+      return AddDayOffResult.conflict(e.conflicts);
     } catch (e) {
       state = state.copyWith(isAddingDayOff: false, error: e.toString());
-      return false;
+      return AddDayOffResult.error(e.toString());
     }
   }
 
@@ -218,3 +230,7 @@ final scheduleSettingsProvider =
     datasource: ref.watch(scheduleDatasourceProvider),
   ),
 );
+
+// AddBreakResult + AddDayOffResult sealed types now live in
+// `schedule_settings_models.dart` so the company capacity screen can reuse
+// them identically. See docs/PLANNING_CONTRACT.md.

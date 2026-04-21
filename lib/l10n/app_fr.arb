@@ -74,6 +74,7 @@
   "previous": "Précédent",
   "cancel": "Annuler",
   "confirm": "Confirmer",
+  "edit": "Modifier",
   "loading": "Chargement...",
   "error": "Une erreur est survenue",
   "retry": "Réessayer",
@@ -215,6 +216,11 @@
   "clientLastName": "Nom du client (optionnel)",
   "clientPhone": "Téléphone (optionnel)",
   "scheduleSettings": "Horaires",
+  "capacitySettings": "Mon salon — Horaires",
+  "noBreaksYet": "Aucune pause configurée",
+  "noDaysOffYet": "Aucun jour de fermeture à venir",
+  "deleteBreakConfirm": "Supprimer cette pause ?",
+  "deleteDayOffConfirm": "Supprimer ce jour de fermeture ?",
   "myWorkHours": "Mes horaires de travail",
   "companyHoursHint": "Salon : {hours}",
   "@companyHoursHint": {
@@ -229,8 +235,38 @@
   "breakLabel": "Libellé (optionnel)",
   "daysOff": "Jours de congé",
   "addDayOff": "Ajouter un jour de congé",
-  "reason": "Motif (optionnel)",
+  "reason": "Motif",
   "dayOffReasonHint": "Ex: Congé annuel",
+  "fromDate": "Du",
+  "untilDate": "Jusqu'à",
+  "addUntilDate": "Étendre sur plusieurs jours",
+  "closureKicker": "Fermeture · Mes horaires",
+  "closureSubtitle": "Choisissez la ou les dates de fermeture.",
+  "addDayOffPrefix": "Ajouter un",
+  "addDayOffAccent": "congé",
+  "ofClosure": "de fermeture",
+  "optional": "Optionnel",
+  "confirmClosure": "Confirmer la fermeture",
+  "dayOffRangePreview": "{count, plural, =1{1 jour} other{{count} jours}}",
+  "@dayOffRangePreview": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "dayOffConflictTitle": "{count, plural, =1{1 rendez-vous en conflit} other{{count} rendez-vous en conflit}}",
+  "@dayOffConflictTitle": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "dayOffConflictHint": "Annulez ou refusez les rendez-vous ci-dessous avant d'ajouter la fermeture.",
+  "andNOthers": "… et {count} autres",
+  "@andNOthers": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "breakConflictTitle": "Rendez-vous pendant la pause",
+  "breakConflictHint": "Ces rendez-vous commencent pendant la pause.",
+  "breakConflictMessage": "{count, plural, =1{Un rendez-vous commence pendant cette pause.} other{{count} rendez-vous commencent pendant cette pause.}} Voulez-vous enregistrer la pause malgré tout ?",
+  "@breakConflictMessage": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "breakConflictContinue": "Enregistrer quand même",
   "everyDay": "Tous les jours",
   "breakSlot": "Pause",
   "working": "Travaille",
@@ -709,5 +745,51 @@
   },
   "cancelAppointmentOwnerWarning": "Le créneau redeviendra disponible à la réservation et le client sera notifié.",
   "cancelAppointmentOwnerWarningWalkIn": "Le créneau redeviendra disponible à la réservation.",
-  "cancelAppointmentOwnerReasonLabel": "Motif de l'annulation (facultatif)"
+  "cancelAppointmentOwnerReasonLabel": "Motif de l'annulation (facultatif)",
+
+  "helpAndSupport": "Aide & support",
+  "contactSupport": "Contacter le support",
+  "needHelpFooter": "Besoin d'aide ?",
+  "needHelpFooterLink": "Contacter le support",
+  "problemWithSalon": "Un problème avec ce salon ?",
+  "supportKicker": "SUPPORT",
+  "supportTitle": "Contacter",
+  "supportTitleAccent": "l'équipe",
+  "supportSubtitle": "On te répond dans les meilleurs délais",
+  "supportFirstNameLabel": "PRÉNOM",
+  "supportFirstNamePlaceholder": "Ton prénom",
+  "supportPhoneLabel": "TÉLÉPHONE",
+  "supportPhonePlaceholder": "+383 44 000 000",
+  "supportEmailLabel": "EMAIL",
+  "supportEmailPlaceholder": "ton.email@exemple.com",
+  "supportMessageLabel": "MESSAGE",
+  "supportMessagePlaceholder": "Décris ton problème ou ta question…",
+  "supportMessageCounter": "{count} / {max}",
+  "@supportMessageCounter": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "supportAttachmentsLabel": "PIÈCES JOINTES",
+  "supportAttachmentsHint": "3 fichiers max • JPG, PNG, PDF • 5 Mo chacun",
+  "supportAddAttachment": "Ajouter un fichier",
+  "supportSubmit": "ENVOYER LE MESSAGE",
+  "supportSubmitting": "ENVOI EN COURS…",
+  "supportSuccessTitle": "Message",
+  "supportSuccessTitleAccent": "envoyé",
+  "supportSuccessSubtitle": "On te répond dans les meilleurs délais.",
+  "supportSuccessClose": "FERMER",
+  "supportErrorTitle": "Envoi impossible",
+  "supportErrorSubtitle": "Vérifie ta connexion et réessaie.",
+  "supportErrorRetry": "Réessayer",
+  "supportFileTooLarge": "Fichier trop lourd • max 5 Mo",
+  "supportFileUnsupported": "Format non accepté",
+  "supportMaxThreeFiles": "3 fichiers maximum",
+  "supportFieldRequired": "Champ requis",
+  "supportMessageMinLength": "Minimum 10 caractères",
+  "supportPrefilledBadge": "PRÉ-REMPLI",
+
+  "fullName": "Nom complet",
+  "gender": "Genre"
 }

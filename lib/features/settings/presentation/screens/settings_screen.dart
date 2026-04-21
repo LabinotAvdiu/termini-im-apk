@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -15,9 +16,16 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/personal_gender_selector.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
+import '../../../support/data/models/support_models.dart';
+import '../../../support/presentation/widgets/contact_support_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
-  const SettingsScreen({super.key});
+  /// When true, the "Mon profil" section opens directly in edit mode.
+  /// Used by the "Complete your profile" banner on /home so the user lands
+  /// with the phone / gender inputs ready instead of on a read-only view.
+  final bool startInProfileEdit;
+
+  const SettingsScreen({super.key, this.startInProfileEdit = false});
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
@@ -30,6 +38,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _phoneController;
   bool _isSaving = false;
   bool _hasChanges = false;
+  late bool _isEditingProfile = widget.startInProfileEdit;
 
   // Original values to detect changes
   late String _origFirstName;
@@ -109,6 +118,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       setState(() {
         _isSaving = false;
         _hasChanges = false;
+        _isEditingProfile = false;
       });
 
       context.showSnackBar(context.l10n.changesSaved);
@@ -180,7 +190,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 obscureText: true,
                 prefixIcon: Icons.lock_outline_rounded,
                 validator: (v) => Validators.password(v,
-                    requiredMessage: context.l10n.passwordRequired),
+                    requiredMessage: context.l10n.passwordRequired,
+                    tooShortMessage: context.l10n.passwordTooShort,
+                    needsUpperMessage: context.l10n.passwordNeedsUpper,
+                    needsLowerMessage: context.l10n.passwordNeedsLower,
+                    needsNumberMessage: context.l10n.passwordNeedsNumber),
               ),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
@@ -190,7 +204,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 prefixIcon: Icons.lock_rounded,
                 validator: (v) => Validators.password(v,
                     requiredMessage: context.l10n.passwordRequired,
-                    tooShortMessage: context.l10n.passwordTooShort),
+                    tooShortMessage: context.l10n.passwordTooShort,
+                    needsUpperMessage: context.l10n.passwordNeedsUpper,
+                    needsLowerMessage: context.l10n.passwordNeedsLower,
+                    needsNumberMessage: context.l10n.passwordNeedsNumber),
               ),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
@@ -283,6 +300,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 return _SectionCard(
                   title: context.l10n.myProfile,
                   icon: Icons.person_outline_rounded,
+                  trailing: _ProfileEditToggle(
+                    editing: _isEditingProfile,
+                    onPressed: () {
+                      setState(() {
+                        if (_isEditingProfile) {
+                          // Cancel — reset fields to originals
+                          _firstNameController.text = _origFirstName;
+                          _lastNameController.text = _origLastName;
+                          _phoneController.text = _origPhone;
+                          _gender = _origGender;
+                          _hasChanges = false;
+                        }
+                        _isEditingProfile = !_isEditingProfile;
+                      });
+                    },
+                  ),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -309,57 +342,85 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppTextField(
-                                controller: _firstNameController,
-                                label: context.l10n.firstName,
-                                prefixIcon: Icons.person_outline,
-                                validator: (v) => Validators.required(v,
-                                    message: context.l10n.firstNameRequired),
+                        if (_isEditingProfile) ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppTextField(
+                                  controller: _firstNameController,
+                                  label: context.l10n.firstName,
+                                  prefixIcon: Icons.person_outline,
+                                  validator: (v) => Validators.required(v,
+                                      message: context.l10n.firstNameRequired),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: AppTextField(
-                                controller: _lastNameController,
-                                label: context.l10n.lastName,
-                                prefixIcon: Icons.person_outline,
-                                validator: (v) => Validators.required(v,
-                                    message: context.l10n.lastNameRequired),
+                              const SizedBox(width: AppSpacing.sm),
+                              Expanded(
+                                child: AppTextField(
+                                  controller: _lastNameController,
+                                  label: context.l10n.lastName,
+                                  prefixIcon: Icons.person_outline,
+                                  validator: (v) => Validators.required(v,
+                                      message: context.l10n.lastNameRequired),
+                                ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          AppTextField(
+                            controller: _phoneController,
+                            label: context.l10n.phone,
+                            prefixIcon: Icons.phone_outlined,
+                            keyboardType: TextInputType.phone,
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          PersonalGenderSelector(
+                            value: _gender,
+                            onChanged: (g) {
+                              setState(() => _gender = g);
+                              _checkChanges();
+                            },
+                          ),
+                          if (_hasChanges) ...[
+                            const SizedBox(height: AppSpacing.lg),
+                            AppButton(
+                              text: context.l10n.saveChanges,
+                              isLoading: _isSaving,
+                              onPressed: _saveChanges,
+                              width: double.infinity,
                             ),
                           ],
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-
-                        AppTextField(
-                          controller: _phoneController,
-                          label: context.l10n.phone,
-                          prefixIcon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                        ),
-
-                        const SizedBox(height: AppSpacing.md),
-
-                        PersonalGenderSelector(
-                          value: _gender,
-                          onChanged: (g) {
-                            setState(() => _gender = g);
-                            _checkChanges();
-                          },
-                        ),
-
-                        // Update button — only visible when changes detected
-                        if (_hasChanges) ...[
-                          const SizedBox(height: AppSpacing.lg),
-                          AppButton(
-                            text: context.l10n.saveChanges,
-                            isLoading: _isSaving,
-                            onPressed: _saveChanges,
-                            width: double.infinity,
+                        ] else ...[
+                          _ProfileReadRow(
+                            icon: Icons.person_outline,
+                            label: context.l10n.fullName,
+                            value: [
+                              _firstNameController.text,
+                              _lastNameController.text,
+                            ].where((s) => s.trim().isNotEmpty).join(' '),
                           ),
+                          const Divider(
+                              height: 1, color: AppColors.divider, indent: 44),
+                          _ProfileReadRow(
+                            icon: Icons.phone_outlined,
+                            label: context.l10n.phone,
+                            value: _phoneController.text.trim(),
+                          ),
+                          if (_gender != null) ...[
+                            const Divider(
+                                height: 1,
+                                color: AppColors.divider,
+                                indent: 44),
+                            _ProfileReadRow(
+                              icon: _gender == 'women'
+                                  ? Icons.female_rounded
+                                  : Icons.male_rounded,
+                              label: context.l10n.gender,
+                              value: _gender == 'women'
+                                  ? context.l10n.filterWomen
+                                  : context.l10n.filterMen,
+                            ),
+                          ],
                         ],
                       ],
                     ),
@@ -401,6 +462,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.changePassword,
                     onTap: _showChangePasswordDialog,
                   ),
+
+                  // Mes rendez-vous — visible uniquement pour les pros
+                  // (owner/employee). Les clients ont déjà la vue dans le shell.
+                  if (ref.watch(authStateProvider.select(
+                    (s) => s.isOwner || s.isEmployee,
+                  ))) ...[
+                    const Divider(
+                        height: 1, color: AppColors.divider, indent: 48),
+                    _SettingsTile(
+                      icon: Icons.calendar_month_rounded,
+                      title: context.l10n.myAppointments,
+                      onTap: () => context.goNamed(RouteNames.myAppointments),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -416,6 +491,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SizedBox(height: AppSpacing.md),
               const NotificationPreferencesSection(),
             ],
+
+            const SizedBox(height: AppSpacing.md),
+
+            // Help & Support
+            _SectionCard(
+              title: '',
+              icon: null,
+              child: _SettingsTile(
+                icon: Icons.help_outline_rounded,
+                title: context.l10n.helpAndSupport,
+                subtitle: context.l10n.contactSupport,
+                onTap: () => showContactSupportDialog(
+                  context,
+                  ref: ref,
+                  sourcePage: SupportSourcePage.settings,
+                ),
+              ),
+            ),
 
             const SizedBox(height: AppSpacing.md),
 
@@ -468,11 +561,13 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData? icon;
   final Widget child;
+  final Widget? trailing;
 
   const _SectionCard({
     required this.title,
     required this.icon,
     required this.child,
+    this.trailing,
   });
 
   @override
@@ -511,6 +606,7 @@ class _SectionCard extends StatelessWidget {
                   Expanded(
                     child: Text(title, style: AppTextStyles.h3),
                   ),
+                  if (trailing != null) trailing!,
                 ],
               ),
             ),
@@ -675,6 +771,90 @@ class _UxPrefsSection extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Profile section helpers — view mode rows + edit/cancel toggle
+// ---------------------------------------------------------------------------
+
+class _ProfileReadRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _ProfileReadRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm + 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: AppColors.textHint),
+          const SizedBox(width: AppSpacing.sm + 4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.textHint),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value.isEmpty ? '—' : value,
+                  style: AppTextStyles.body.copyWith(
+                    color: value.isEmpty
+                        ? AppColors.textHint
+                        : AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileEditToggle extends StatelessWidget {
+  final bool editing;
+  final VoidCallback onPressed;
+  const _ProfileEditToggle({required this.editing, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm + 4, vertical: AppSpacing.xs),
+        minimumSize: const Size(0, 32),
+        visualDensity: VisualDensity.compact,
+      ),
+      icon: Icon(
+        editing ? Icons.close_rounded : Icons.edit_outlined,
+        size: 16,
+      ),
+      label: Text(
+        editing ? context.l10n.cancel : context.l10n.edit,
+        style: AppTextStyles.bodySmall.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

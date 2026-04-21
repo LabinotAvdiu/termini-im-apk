@@ -6,6 +6,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/appointments/presentation/screens/appointments_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/landing_screen.dart';
 import '../../features/company_detail/presentation/screens/company_detail_screen.dart';
@@ -165,9 +166,25 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         name: RouteNames.settings,
+        pageBuilder: (context, state) {
+          // `?edit=profile` → open the Mon profil section in edit mode (used
+          // by the "Complete your profile" banner on /home).
+          final editProfile = state.uri.queryParameters['edit'] == 'profile';
+          return editorialSlidePage(
+            key: state.pageKey,
+            child: SettingsScreen(startInProfileEdit: editProfile),
+          );
+        },
+      ),
+      // "Mes rendez-vous" — accessible via Settings for company members
+      // (owner/employee) who also book as clients elsewhere. Clients see the
+      // same screen inside the shell as a tab.
+      GoRoute(
+        path: '/my-appointments',
+        name: RouteNames.myAppointments,
         pageBuilder: (context, state) => editorialSlidePage(
           key: state.pageKey,
-          child: const SettingsScreen(),
+          child: const _StandaloneAppointments(),
         ),
       ),
       GoRoute(
@@ -278,5 +295,43 @@ class _HomeDispatcher extends ConsumerWidget {
       return const MainShell();
     }
     return const HomeScreen();
+  }
+}
+
+/// Wraps [AppointmentsScreen] in a Scaffold with a back button when shown
+/// outside of the shell (i.e. reached from Settings as a pro).
+class _StandaloneAppointments extends StatelessWidget {
+  const _StandaloneAppointments();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          const Positioned.fill(child: AppointmentsScreen()),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            left: 8,
+            child: Material(
+              color: Colors.transparent,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                ),
+                onPressed: () => context.canPop()
+                    ? context.pop()
+                    : context.go('/settings'),
+                style: IconButton.styleFrom(
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
