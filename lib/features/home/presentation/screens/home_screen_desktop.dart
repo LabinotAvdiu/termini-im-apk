@@ -142,6 +142,7 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
                           _ResultsHeader(
                             count: companies.length,
                             isFiltered: isSearching,
+                            query: ref.watch(searchQueryProvider),
                           ),
                           const SizedBox(height: AppSpacing.lg),
 
@@ -738,8 +739,13 @@ class _SearchField extends StatelessWidget {
 class _ResultsHeader extends StatelessWidget {
   final int count;
   final bool isFiltered;
+  final String query;
 
-  const _ResultsHeader({required this.count, required this.isFiltered});
+  const _ResultsHeader({
+    required this.count,
+    required this.isFiltered,
+    required this.query,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -747,6 +753,14 @@ class _ResultsHeader extends StatelessWidget {
     final label = isFiltered
         ? context.l10n.resultsFound(count, plural)
         : context.l10n.salonsNearby(count, plural);
+
+    final base = isFiltered
+        ? context.l10n.homeResultsOverlineSearch
+        : context.l10n.homeResultsOverline;
+    final trimmedQuery = query.trim();
+    final overline = trimmedQuery.isEmpty
+        ? base
+        : '$base · ${trimmedQuery.capitalize}';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -759,10 +773,7 @@ class _ResultsHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    (isFiltered
-                            ? context.l10n.homeResultsOverlineSearch
-                            : context.l10n.homeResultsOverline)
-                        .toUpperCase(),
+                    overline.toUpperCase(),
                     style: AppTextStyles.overline.copyWith(
                       color: AppColors.textHint,
                       letterSpacing: 1.8,
@@ -961,52 +972,55 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
                           ),
                         ),
                       ),
-                      // Rating badge top-left
-                      Positioned(
-                        top: 14,
-                        left: 14,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            '★ ${company.rating.toStringAsFixed(1)}',
-                            style: AppTextStyles.overline.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
+                      // Rating + review count badges — hidden when the salon
+                      // has no reviews yet (nothing useful to show).
+                      if (company.reviewCount > 0) ...[
+                        Positioned(
+                          top: 14,
+                          left: 14,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
                             ),
-                          ),
-                        ),
-                      ),
-                      // Review count bottom-left
-                      Positioned(
-                        bottom: 14,
-                        left: 14,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.textPrimary.withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            context.l10n.reviews(company.reviewCount),
-                            style: AppTextStyles.caption.copyWith(
+                            decoration: BoxDecoration(
                               color: AppColors.background,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              '★ ${company.rating.toStringAsFixed(1)}',
+                              style: AppTextStyles.overline.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 14,
+                          left: 14,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  AppColors.textPrimary.withValues(alpha: 0.7),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              context.l10n.reviews(company.reviewCount),
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.background,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                       // Favorite badge — only shown when the company is
                       // already in the user's favorites.
                       if (company.isFavorite)
@@ -1056,15 +1070,23 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
 
                       const SizedBox(height: 18),
 
-                      // Slot chips
-                      if (allSlots.isNotEmpty)
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: allSlots
-                              .map((slot) => _DesktopSlotChip(slot: slot))
-                              .toList(),
-                        ),
+                      // Slot chips — always reserves a single-row height
+                      // (32px ≈ chip size) so salons with no upcoming slots
+                      // don't make their card shorter than the others.
+                      SizedBox(
+                        height: 32,
+                        child: allSlots.isEmpty
+                            ? const SizedBox()
+                            : Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: allSlots
+                                    .map(
+                                      (slot) => _DesktopSlotChip(slot: slot),
+                                    )
+                                    .toList(),
+                              ),
+                      ),
 
                       const SizedBox(height: 18),
 

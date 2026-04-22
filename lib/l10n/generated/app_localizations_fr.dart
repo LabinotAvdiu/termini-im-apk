@@ -429,7 +429,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchWhen => 'Quand';
 
   @override
-  String get searchWho => 'Qui';
+  String get searchWho => 'Pour';
 
   @override
   String get cityHint => 'Ex: Prishtinë, Prizren...';
@@ -1124,10 +1124,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errorUnknown => 'Une erreur est survenue. Réessayez.';
 
   @override
-  String get homeBrandTagline => 'Salons & Barbiers · Prishtina';
+  String get homeBrandTagline => 'Beauté & Style';
 
   @override
-  String get homeHeroOverline => 'Annuaire · Salons & Barbiers';
+  String get homeHeroOverline => 'Annuaire · Beauté & Style';
 
   @override
   String get homeHeroTitlePrefix => 'Prishtina\nse ';
@@ -1137,13 +1137,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeHeroSubtitle =>
-      'Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation sous 2 minutes.';
+      'Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation en quelques minutes.';
 
   @override
-  String get homeResultsOverline => 'Résultats · Prishtinë';
+  String get homeResultsOverline => 'Résultats';
 
   @override
-  String get homeResultsOverlineSearch => 'Résultats · Recherche';
+  String get homeResultsOverlineSearch => 'Résultats';
 
   @override
   String get homeSortLabel => 'Tri : Note · Distance';
@@ -1984,4 +1984,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get gender => 'Genre';
+
+  @override
+  String get personalGenderMen => 'Homme';
+
+  @override
+  String get personalGenderWomen => 'Femme';
 }

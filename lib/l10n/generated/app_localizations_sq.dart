@@ -90,10 +90,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get searchPlaceholder => 'Kërko një sallon...';
 
   @override
-  String get filterMen => 'Burra';
+  String get filterMen => 'Meshkuj';
 
   @override
-  String get filterWomen => 'Gra';
+  String get filterWomen => 'Femra';
 
   @override
   String get filterBoth => 'Të dyja';
@@ -428,7 +428,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get searchWhen => 'Kur';
 
   @override
-  String get searchWho => 'Kush';
+  String get searchWho => 'Për';
 
   @override
   String get cityHint => 'P.sh.: Prishtinë, Prizren...';
@@ -1118,10 +1118,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get errorUnknown => 'Diçka shkoi keq. Provo përsëri.';
 
   @override
-  String get homeBrandTagline => 'Sallone & Berberë · Prishtinë';
+  String get homeBrandTagline => 'Bukuri & Stil';
 
   @override
-  String get homeHeroOverline => 'Direktori · Sallone & Berberë';
+  String get homeHeroOverline => 'Direktori · Bukuri & Stil';
 
   @override
   String get homeHeroTitlePrefix => 'Kosova\nkrihet ';
@@ -1131,13 +1131,13 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get homeHeroSubtitle =>
-      'Një përzgjedhje sallonesh në mbarë Kosovën.\nRezervim i menjëhershëm, konfirmim brenda 2 minutash.';
+      'Një përzgjedhje sallonesh në mbarë Kosovën.\nRezervim i menjëhershëm, konfirmim brenda minutash.';
 
   @override
-  String get homeResultsOverline => 'Rezultatet · Prishtinë';
+  String get homeResultsOverline => 'Rezultatet';
 
   @override
-  String get homeResultsOverlineSearch => 'Rezultatet · Kërkim';
+  String get homeResultsOverlineSearch => 'Rezultatet';
 
   @override
   String get homeSortLabel => 'Renditja: Vlerësimi · Distanca';
@@ -1979,4 +1979,10 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get gender => 'Gjinia';
+
+  @override
+  String get personalGenderMen => 'Mashkull';
+
+  @override
+  String get personalGenderWomen => 'Femër';
 }

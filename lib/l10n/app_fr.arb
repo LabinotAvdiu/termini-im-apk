@@ -159,7 +159,7 @@
   "addressRequired": "L'adresse est requise",
   "city": "Ville",
   "searchWhen": "Quand",
-  "searchWho": "Qui",
+  "searchWho": "Pour",
   "cityHint": "Ex: Prishtinë, Prizren...",
   "cityDescription": "Nous utiliserons votre ville pour vous recommander les salons les plus proches de chez vous.",
   "cityCompany": "Ville de l'entreprise",
@@ -421,13 +421,13 @@
   "errorNotFound": "Élément introuvable.",
   "errorServer": "Erreur serveur. Réessayez plus tard.",
   "errorUnknown": "Une erreur est survenue. Réessayez.",
-  "homeBrandTagline": "Salons & Barbiers · Prishtina",
-  "homeHeroOverline": "Annuaire · Salons & Barbiers",
+  "homeBrandTagline": "Beauté & Style",
+  "homeHeroOverline": "Annuaire · Beauté & Style",
   "homeHeroTitlePrefix": "Prishtina\nse ",
   "homeHeroTitleItalic": "coiffe.",
-  "homeHeroSubtitle": "Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation sous 2 minutes.",
-  "homeResultsOverline": "Résultats · Prishtinë",
-  "homeResultsOverlineSearch": "Résultats · Recherche",
+  "homeHeroSubtitle": "Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation en quelques minutes.",
+  "homeResultsOverline": "Résultats",
+  "homeResultsOverlineSearch": "Résultats",
   "homeSortLabel": "Tri : Note · Distance",
   "landingHeroLine1": "Salons du",
   "landingHeroLine2": "Kosovo",
@@ -791,5 +791,7 @@
   "supportPrefilledBadge": "PRÉ-REMPLI",
 
   "fullName": "Nom complet",
-  "gender": "Genre"
+  "gender": "Genre",
+  "personalGenderMen": "Homme",
+  "personalGenderWomen": "Femme"
 }

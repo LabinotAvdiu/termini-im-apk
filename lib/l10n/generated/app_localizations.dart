@@ -913,7 +913,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchWho.
   ///
   /// In fr, this message translates to:
-  /// **'Qui'**
+  /// **'Pour'**
   String get searchWho;
 
   /// No description provided for @cityHint.
@@ -2161,13 +2161,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeBrandTagline.
   ///
   /// In fr, this message translates to:
-  /// **'Salons & Barbiers · Prishtina'**
+  /// **'Beauté & Style'**
   String get homeBrandTagline;
 
   /// No description provided for @homeHeroOverline.
   ///
   /// In fr, this message translates to:
-  /// **'Annuaire · Salons & Barbiers'**
+  /// **'Annuaire · Beauté & Style'**
   String get homeHeroOverline;
 
   /// No description provided for @homeHeroTitlePrefix.
@@ -2185,19 +2185,19 @@ abstract class AppLocalizations {
   /// No description provided for @homeHeroSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation sous 2 minutes.'**
+  /// **'Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation en quelques minutes.'**
   String get homeHeroSubtitle;
 
   /// No description provided for @homeResultsOverline.
   ///
   /// In fr, this message translates to:
-  /// **'Résultats · Prishtinë'**
+  /// **'Résultats'**
   String get homeResultsOverline;
 
   /// No description provided for @homeResultsOverlineSearch.
   ///
   /// In fr, this message translates to:
-  /// **'Résultats · Recherche'**
+  /// **'Résultats'**
   String get homeResultsOverlineSearch;
 
   /// No description provided for @homeSortLabel.
@@ -3699,6 +3699,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Genre'**
   String get gender;
+
+  /// No description provided for @personalGenderMen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Homme'**
+  String get personalGenderMen;
+
+  /// No description provided for @personalGenderWomen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Femme'**
+  String get personalGenderWomen;
 }
 
 class _AppLocalizationsDelegate
