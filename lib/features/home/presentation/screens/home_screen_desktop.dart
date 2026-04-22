@@ -897,10 +897,9 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
   Widget build(BuildContext context) {
     final company = widget.company;
     // Combine morning + afternoon slots, take first 4
-    final allSlots = [
-      ...company.morningSlots,
-      ...company.afternoonSlots,
-    ].take(4).toList();
+    // Backend already trims to 4 day entries and collapses morning/afternoon
+    // into a single `available` flag — just read `slots` as-is.
+    final allSlots = company.slots;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -1175,7 +1174,8 @@ class _DesktopSlotChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        '${slot.date.day}/${slot.date.month}',
+        '${slot.date.day.toString().padLeft(2, '0')}/'
+        '${slot.date.month.toString().padLeft(2, '0')}',
         style: AppTextStyles.caption.copyWith(
           color: slot.available ? AppColors.background : AppColors.textHint,
           fontWeight: FontWeight.w600,

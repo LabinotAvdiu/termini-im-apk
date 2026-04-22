@@ -114,12 +114,7 @@ class CompanyCard extends ConsumerWidget {
                           // "MATIN / APRÈS-MIDI" split. Reserves a fixed height
                           // so a salon without upcoming slots keeps card
                           // dimensions aligned with the rest of the grid.
-                          _CombinedSlotsRow(
-                            slots: [
-                              ...company.morningSlots,
-                              ...company.afternoonSlots,
-                            ].take(4).toList(),
-                          ),
+                          _CombinedSlotsRow(slots: company.slots),
                         ],
                       ),
                     ),
@@ -440,7 +435,8 @@ class _UnifiedSlotChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        '${slot.date.day}/${slot.date.month}',
+        '${slot.date.day.toString().padLeft(2, '0')}/'
+        '${slot.date.month.toString().padLeft(2, '0')}',
         style: AppTextStyles.caption.copyWith(
           color: slot.available ? AppColors.background : AppColors.textHint,
           fontWeight: FontWeight.w600,
