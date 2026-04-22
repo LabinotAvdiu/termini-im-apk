@@ -2173,13 +2173,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeHeroTitlePrefix.
   ///
   /// In fr, this message translates to:
-  /// **'Prishtina\nse '**
+  /// **'Kosova\na du '**
   String get homeHeroTitlePrefix;
 
   /// No description provided for @homeHeroTitleItalic.
   ///
   /// In fr, this message translates to:
-  /// **'coiffe.'**
+  /// **'style.'**
   String get homeHeroTitleItalic;
 
   /// No description provided for @homeHeroSubtitle.

@@ -1125,10 +1125,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeHeroOverline => 'Directory · Beauty & Style';
 
   @override
-  String get homeHeroTitlePrefix => 'Prishtina\nstyled ';
+  String get homeHeroTitlePrefix => 'Kosovo\nhas ';
 
   @override
-  String get homeHeroTitleItalic => 'just right.';
+  String get homeHeroTitleItalic => 'style.';
 
   @override
   String get homeHeroSubtitle =>

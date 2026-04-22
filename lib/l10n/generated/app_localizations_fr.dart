@@ -1130,10 +1130,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeHeroOverline => 'Annuaire · Beauté & Style';
 
   @override
-  String get homeHeroTitlePrefix => 'Prishtina\nse ';
+  String get homeHeroTitlePrefix => 'Kosova\na du ';
 
   @override
-  String get homeHeroTitleItalic => 'coiffe.';
+  String get homeHeroTitleItalic => 'style.';
 
   @override
   String get homeHeroSubtitle =>
