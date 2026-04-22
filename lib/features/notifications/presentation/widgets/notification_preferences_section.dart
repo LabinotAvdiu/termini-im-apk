@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,6 +39,12 @@ class _NotificationPreferencesSectionState
   }
 
   Future<void> _checkPermission() async {
+    // Web: permission_handler doesn't apply — browsers have their own
+    // Notification API flow and showing a "notifications disabled" banner
+    // here would be a false positive on every desktop session. Treat as
+    // granted so the banner is hidden and skip the plugin call entirely.
+    if (kIsWeb) return;
+
     final status = await Permission.notification.status;
     if (mounted) {
       setState(() {
