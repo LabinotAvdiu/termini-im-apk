@@ -1,0 +1,26 @@
+# Flutter Web SPA fallback.
+#
+# go_router uses path-based URLs (/, /login, /company/:id, /booking/...).
+# Apache serves static files from build/web/, but non-file URLs like /login
+# have no matching file on disk and return 404 by default. This rule falls
+# back to index.html so the SPA can pick up the path and client-route it.
+
+RewriteEngine On
+
+# Pretty URLs for static legal pages. Needs to come BEFORE the SPA fallback
+# so Apache serves the real HTML file instead of index.html. Add a rule per
+# legal page as they ship (terms.html is planned, not deployed yet).
+RewriteRule ^privacy/?$ privacy.html [L]
+
+# If the request matches an existing file or directory, serve it directly.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Otherwise, send everything else to the SPA entry point.
+RewriteRule ^ index.html [L]
+
+# Security — don't serve dotfiles to the browser (including this one).
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
