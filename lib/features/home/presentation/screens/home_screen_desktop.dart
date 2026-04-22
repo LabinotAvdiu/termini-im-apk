@@ -48,7 +48,7 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
   void initState() {
     super.initState();
     // Sync text field from provider initial state
-    _cityController.text = ref.read(cityFilterProvider);
+    _cityController.text = ref.read(searchQueryProvider);
     _selectedDate = ref.read(dateFilterProvider);
     _gender = ref.read(genderFilterProvider);
   }
@@ -60,7 +60,11 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
   }
 
   void _search() {
-    ref.read(cityFilterProvider.notifier).state = _cityController.text.trim();
+    // Unified fuzzy search: feeds the term into searchQueryProvider so the
+    // backend matches it against name / address / city / employee names
+    // via LIKE, instead of demanding an exact city match. The field is
+    // still labelled "Ville" in the UI but acts as a general search.
+    ref.read(searchQueryProvider.notifier).state = _cityController.text.trim();
     ref.read(dateFilterProvider.notifier).state = _selectedDate;
     ref.read(genderFilterProvider.notifier).state = _gender;
   }
