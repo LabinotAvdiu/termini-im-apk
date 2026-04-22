@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -583,10 +584,26 @@ class _SectionCard extends StatelessWidget {
           ),
         ],
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title.isNotEmpty)
+          if (title.isNotEmpty) ...[
+            // Thin bordeaux gradient stripe — editorial accent that
+            // separates each section without a hard divider.
+            Container(
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withValues(alpha: 0.5),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.6, 1.0],
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
@@ -601,12 +618,13 @@ class _SectionCard extends StatelessWidget {
                     const SizedBox(width: AppSpacing.sm),
                   ],
                   Expanded(
-                    child: Text(title, style: AppTextStyles.h3),
+                    child: _EditorialTitle(title),
                   ),
                   if (trailing != null) trailing!,
                 ],
               ),
             ),
+          ],
           const Divider(height: 1, color: AppColors.divider),
           Padding(
             padding: EdgeInsets.fromLTRB(
@@ -991,6 +1009,56 @@ class _ComingSoonBadge extends StatelessWidget {
           letterSpacing: 1.2,
           fontSize: 9,
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Editorial section title — Fraunces with the last word in italic bordeaux
+// when the title has at least two words. Single-word titles stay upright.
+// ---------------------------------------------------------------------------
+
+class _EditorialTitle extends StatelessWidget {
+  final String text;
+  const _EditorialTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return const SizedBox.shrink();
+
+    // Split on the last whitespace to isolate prefix + accent suffix.
+    final lastSpace = trimmed.lastIndexOf(' ');
+    final base = GoogleFonts.fraunces(
+      fontSize: 19,
+      fontWeight: FontWeight.w500,
+      height: 1.15,
+      letterSpacing: -0.2,
+      color: AppColors.textPrimary,
+    );
+
+    if (lastSpace <= 0) {
+      return Text(trimmed, style: base);
+    }
+
+    final prefix = trimmed.substring(0, lastSpace + 1);
+    final accent = trimmed.substring(lastSpace + 1);
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          TextSpan(text: prefix),
+          TextSpan(
+            text: accent,
+            style: GoogleFonts.instrumentSerif(
+              fontSize: 20,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
       ),
     );
   }
