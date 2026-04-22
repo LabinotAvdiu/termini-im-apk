@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "759517993388-o6q228u2ostbvtgh4hf8m7e5bbabvkpu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.terminiim.app",
+            "certificate_hash": "0e847cc69e64886db7d7f7680b4be0dc0b4bf3e9"
+          }
+        },
+        {
           "client_id": "759517993388-6hqo810qjnephb8v1rb6oupb6csi9er0.apps.googleusercontent.com",
           "client_type": 3
         }
