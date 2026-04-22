@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,6 +39,12 @@ class _NotificationPreferencesSectionState
   }
 
   Future<void> _checkPermission() async {
+    // Web: permission_handler doesn't apply — browsers have their own
+    // Notification API flow and showing a "notifications disabled" banner
+    // here would be a false positive on every desktop session. Treat as
+    // granted so the banner is hidden and skip the plugin call entirely.
+    if (kIsWeb) return;
+
     final status = await Permission.notification.status;
     if (mounted) {
       setState(() {
@@ -117,11 +124,12 @@ class _NotificationCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // En-tête éditorial
+          // En-tête éditorial — titre Fraunces seul, pas de kicker
+          // (l'overline "NOTIFICATIONS" dupliquait le titre juste en dessous).
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,
-              AppSpacing.md,
+              AppSpacing.md + 2,
               AppSpacing.md,
               AppSpacing.xs,
             ),
@@ -129,33 +137,23 @@ class _NotificationCard extends ConsumerWidget {
               children: [
                 const Icon(
                   Icons.notifications_outlined,
-                  size: 14,
-                  color: AppColors.textHint,
+                  size: 18,
+                  color: AppColors.primary,
                 ),
-                const SizedBox(width: AppSpacing.xs),
-                Text(
-                  context.l10n.notifications.toUpperCase(),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.textHint,
-                        letterSpacing: 1.8,
-                        fontWeight: FontWeight.w600,
-                      ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    context.l10n.notifications,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary,
+                      height: 1.15,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs,
-            ),
-            child: Text(
-              context.l10n.notifications,
-              style: GoogleFonts.fraunces(
-                fontSize: 22,
-                fontWeight: FontWeight.w400,
-                color: AppColors.textPrimary,
-                height: 1.1,
-              ),
             ),
           ),
           Padding(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -14,6 +15,7 @@ import '../../../../core/network/dio_provider.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/personal_gender_selector.dart';
+import '../../../company/presentation/providers/company_dashboard_provider.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../../support/data/models/support_models.dart';
@@ -39,6 +41,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _isSaving = false;
   bool _hasChanges = false;
   late bool _isEditingProfile = widget.startInProfileEdit;
+
+  // Anchor keys — used by the desktop sidebar to scroll-to-section when
+  // the user clicks a nav item. Ignored on mobile (single column layout).
+  final _profileAnchor = GlobalKey();
+  final _pagesAnchor = GlobalKey();
+  final _ownerSpaceAnchor = GlobalKey();
+  final _settingsAnchor = GlobalKey();
+  final _experienceAnchor = GlobalKey();
+  final _notificationsAnchor = GlobalKey();
+  final _supportAnchor = GlobalKey();
+  final _dangerAnchor = GlobalKey();
+
+  Future<void> _scrollToAnchor(GlobalKey key) async {
+    final ctx = key.currentContext;
+    if (ctx == null) return;
+    await Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeInOut,
+      alignment: 0.02,
+    );
+  }
 
   // Original values to detect changes
   late String _origFirstName;
@@ -264,32 +288,89 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.sizeOf(context).width >= 1024;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(context.l10n.settingsTitle, style: AppTextStyles.h3),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          onPressed: () => context.go('/home'),
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              title: Text(context.l10n.settingsTitle, style: AppTextStyles.h3),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                onPressed: () => context.go('/home'),
+              ),
+            ),
+      body: isDesktop ? _buildDesktop(context) : _buildMobile(context),
+    );
+  }
+
+  Widget _buildMobile(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Column(
+            children: _buildSections(context),
+          ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: Column(
+    );
+  }
+
+  Widget _buildDesktop(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1240),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Left sidebar — 260px, sticky once scrolled
+            SizedBox(
+              width: 260,
+              child: _DesktopSidebar(
+                onProfile: () => _scrollToAnchor(_profileAnchor),
+                onPages: () => _scrollToAnchor(_pagesAnchor),
+                onOwnerSpace: () => _scrollToAnchor(_ownerSpaceAnchor),
+                onSettings: () => _scrollToAnchor(_settingsAnchor),
+                onExperience: () => _scrollToAnchor(_experienceAnchor),
+                onNotifications: () => _scrollToAnchor(_notificationsAnchor),
+                onSupport: () => _scrollToAnchor(_supportAnchor),
+                onDanger: () => _scrollToAnchor(_dangerAnchor),
+                onBack: () => context.go('/home'),
+              ),
+            ),
+            // Right content — scrollable
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xl + AppSpacing.sm,
+                  vertical: AppSpacing.xl,
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 820),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _buildSections(context),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildSections(BuildContext context) {
+    // We keep the original large children tree below; each top-level block
+    // that the desktop sidebar targets is wrapped in a KeyedSubtree so
+    // Scrollable.ensureVisible can reach it.
+    return [
             // ── Section "Mon profil" ─────────────────────────────────────
-            // Avatar + email en lecture + formulaire éditable, tout dans
-            // une seule carte pour éviter la redondance des titres
-            // "Mon profil" / "Informations personnelles".
-            //
-            // Clients (no company role) only get a read-only avatar — the
-            // public avatar is mainly a pro feature (clients book, they
-            // don't need to be "found" by photo on the search page).
-            // Owners & employees get the editable version with camera button.
-            Builder(
+            KeyedSubtree(
+              key: _profileAnchor,
+              child: Builder(
               builder: (context) {
                 final authUser = ref.watch(authStateProvider).user;
                 final isPro = (authUser?.companyRole ?? '').isNotEmpty;
@@ -428,11 +509,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 );
               },
             ),
+            ),
+
+            // ── Mes pages (navigation vers d'autres vues) ─────────────────
+            KeyedSubtree(
+              key: _pagesAnchor,
+              child: const _MyPagesSection(),
+            ),
+
+            // ── Espace propriétaire (horaires + pauses) ───────────────────
+            KeyedSubtree(
+              key: _ownerSpaceAnchor,
+              child: const _OwnerSpaceSection(),
+            ),
 
             const SizedBox(height: AppSpacing.md),
 
             // Settings options
-            _SectionCard(
+            KeyedSubtree(
+              key: _settingsAnchor,
+              child: _SectionCard(
               title: context.l10n.settingsTitle,
               icon: Icons.tune_rounded,
               child: Column(
@@ -462,40 +558,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.changePassword,
                     onTap: _showChangePasswordDialog,
                   ),
-
-                  // Mes rendez-vous — visible uniquement pour les pros
-                  // (owner/employee). Les clients ont déjà la vue dans le shell.
-                  if (ref.watch(authStateProvider.select(
-                    (s) => s.isOwner || s.isEmployee,
-                  ))) ...[
-                    const Divider(
-                        height: 1, color: AppColors.divider, indent: 48),
-                    _SettingsTile(
-                      icon: Icons.calendar_month_rounded,
-                      title: context.l10n.myAppointments,
-                      onTap: () => context.goNamed(RouteNames.myAppointments),
-                    ),
-                  ],
                 ],
               ),
+            ),
             ),
 
             // ── Section Expérience — haptic, sons, animations ──────────────
             const SizedBox(height: AppSpacing.md),
-            _UxPrefsSection(),
+            KeyedSubtree(
+              key: _experienceAnchor,
+              child: _UxPrefsSection(),
+            ),
 
             // Section Notifications — uniquement pour owner et employee.
             // Les clients (UserRole.user) n'ont pas de préférences configurables :
             // leurs notifications sont toutes forcées côté serveur.
             if (ref.watch(authStateProvider.select((s) => !s.isClient))) ...[
               const SizedBox(height: AppSpacing.md),
-              const NotificationPreferencesSection(),
+              KeyedSubtree(
+                key: _notificationsAnchor,
+                child: const NotificationPreferencesSection(),
+              ),
             ],
 
             const SizedBox(height: AppSpacing.md),
 
             // Help & Support
-            _SectionCard(
+            KeyedSubtree(
+              key: _supportAnchor,
+              child: _SectionCard(
               title: '',
               icon: null,
               child: _SettingsTile(
@@ -509,11 +600,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
             ),
+            ),
 
             const SizedBox(height: AppSpacing.md),
 
             // Danger zone
-            _SectionCard(
+            KeyedSubtree(
+              key: _dangerAnchor,
+              child: _SectionCard(
               title: '',
               icon: null,
               child: Column(
@@ -542,14 +636,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
             ),
+            ),
 
             const SizedBox(height: AppSpacing.xxl),
-          ],
-            ),
-          ),
-        ),
-      ),
-    );
+    ];
   }
 }
 
@@ -586,10 +676,26 @@ class _SectionCard extends StatelessWidget {
           ),
         ],
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title.isNotEmpty)
+          if (title.isNotEmpty) ...[
+            // Thin bordeaux gradient stripe — editorial accent that
+            // separates each section without a hard divider.
+            Container(
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withValues(alpha: 0.5),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.6, 1.0],
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
@@ -604,12 +710,13 @@ class _SectionCard extends StatelessWidget {
                     const SizedBox(width: AppSpacing.sm),
                   ],
                   Expanded(
-                    child: Text(title, style: AppTextStyles.h3),
+                    child: _EditorialTitle(title),
                   ),
                   if (trailing != null) trailing!,
                 ],
               ),
             ),
+          ],
           const Divider(height: 1, color: AppColors.divider),
           Padding(
             padding: EdgeInsets.fromLTRB(
@@ -854,6 +961,465 @@ class _ProfileEditToggle extends StatelessWidget {
         style: AppTextStyles.bodySmall.copyWith(
           color: AppColors.primary,
           fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mes pages — navigation hub for pro users (Mes rendez-vous, notifications
+// inbox, messages). Hidden for regular clients since bottom nav already
+// surfaces what they need.
+// ---------------------------------------------------------------------------
+
+class _MyPagesSection extends ConsumerWidget {
+  const _MyPagesSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasCompany = ref.watch(
+      authStateProvider.select((s) => s.isOwner || s.isEmployee),
+    );
+    if (!hasCompany) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: _SectionCard(
+        title: context.l10n.myPagesSection,
+        icon: Icons.apps_rounded,
+        child: Column(
+          children: [
+            _SettingsTile(
+              icon: Icons.calendar_month_rounded,
+              title: context.l10n.myAppointments,
+              onTap: () => context.goNamed(RouteNames.myAppointments),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
+              icon: Icons.notifications_none_rounded,
+              title: context.l10n.myNotifications,
+              subtitle: context.l10n.myNotificationsSubtitle,
+              trailing: _ComingSoonBadge(),
+              onTap: () => _showComingSoon(context),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
+              icon: Icons.chat_bubble_outline_rounded,
+              title: context.l10n.messages,
+              subtitle: context.l10n.messagesSubtitle,
+              trailing: _ComingSoonBadge(),
+              onTap: () => _showComingSoon(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Espace propriétaire — horaires + pauses pour les pros en mode individuel.
+// En mode capacité, tout est géré au niveau salon dans "Mon salon".
+// ---------------------------------------------------------------------------
+
+class _OwnerSpaceSection extends ConsumerWidget {
+  const _OwnerSpaceSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authStateProvider);
+    final isEmployee = auth.isEmployee;
+    // Only owners read the dashboard provider — employees always live in
+    // individual mode (capacity mode has no employees).
+    final bookingMode = auth.isOwner
+        ? ref.watch(
+            companyDashboardProvider
+                .select((s) => s.company?.bookingMode ?? 'employee_based'),
+          )
+        : 'employee_based';
+    final isIndividual = (auth.isOwner || isEmployee) &&
+        bookingMode == 'employee_based';
+
+    if (!isIndividual) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: _SectionCard(
+        title: context.l10n.ownerSpaceSection,
+        icon: Icons.schedule_rounded,
+        child: Column(
+          children: [
+            _SettingsTile(
+              icon: Icons.event_available_rounded,
+              title: context.l10n.myScheduleEntry,
+              subtitle: context.l10n.myScheduleEntrySubtitle,
+              onTap: () => context.goNamed(RouteNames.mySchedule),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
+              icon: Icons.coffee_outlined,
+              title: context.l10n.myBreaksEntry,
+              subtitle: context.l10n.myBreaksEntrySubtitle,
+              onTap: () => context.goNamed(RouteNames.myBreaks),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void _showComingSoon(BuildContext context) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(context.l10n.comingSoonMessage),
+      ),
+    );
+}
+
+class _ComingSoonBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        context.l10n.comingSoon.toUpperCase(),
+        style: AppTextStyles.caption.copyWith(
+          color: AppColors.secondaryDark,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.2,
+          fontSize: 9,
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Editorial section title — Fraunces with the last word in italic bordeaux
+// when the title has at least two words. Single-word titles stay upright.
+// ---------------------------------------------------------------------------
+
+class _EditorialTitle extends StatelessWidget {
+  final String text;
+  const _EditorialTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return const SizedBox.shrink();
+
+    // Split on the last whitespace to isolate prefix + accent suffix.
+    final lastSpace = trimmed.lastIndexOf(' ');
+    final base = GoogleFonts.fraunces(
+      fontSize: 19,
+      fontWeight: FontWeight.w500,
+      height: 1.15,
+      letterSpacing: -0.2,
+      color: AppColors.textPrimary,
+    );
+
+    if (lastSpace <= 0) {
+      return Text(trimmed, style: base);
+    }
+
+    final prefix = trimmed.substring(0, lastSpace + 1);
+    final accent = trimmed.substring(lastSpace + 1);
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          TextSpan(text: prefix),
+          TextSpan(
+            text: accent,
+            style: GoogleFonts.instrumentSerif(
+              fontSize: 20,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Desktop sidebar — sticky left column with profile mini card + nav anchors.
+// Each item scrolls the right-hand content to the matching section.
+// ---------------------------------------------------------------------------
+
+class _DesktopSidebar extends ConsumerWidget {
+  final VoidCallback onProfile;
+  final VoidCallback onPages;
+  final VoidCallback onOwnerSpace;
+  final VoidCallback onSettings;
+  final VoidCallback onExperience;
+  final VoidCallback onNotifications;
+  final VoidCallback onSupport;
+  final VoidCallback onDanger;
+  final VoidCallback onBack;
+
+  const _DesktopSidebar({
+    required this.onProfile,
+    required this.onPages,
+    required this.onOwnerSpace,
+    required this.onSettings,
+    required this.onExperience,
+    required this.onNotifications,
+    required this.onSupport,
+    required this.onDanger,
+    required this.onBack,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authStateProvider);
+    final user = auth.user;
+    final isPro = auth.isOwner || auth.isEmployee;
+    final isClient = auth.isClient || auth.isGuest;
+    final roleLabel = isPro
+        ? (auth.isOwner ? 'Owner' : 'Pro')
+        : context.l10n.myAppointments;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xl,
+        AppSpacing.md,
+        AppSpacing.xl,
+      ),
+      decoration: const BoxDecoration(
+        border: Border(
+          right: BorderSide(color: AppColors.divider, width: 1),
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            InkWell(
+              onTap: onBack,
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 6, vertical: 4),
+                child: Text(
+                  '←  ${context.l10n.back}',
+                  style: GoogleFonts.instrumentSerif(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _SidebarProfileCard(
+              initials: _initialsFor(user?.firstName, user?.lastName),
+              name: (user?.firstName.isNotEmpty ?? false)
+                  ? '${user!.firstName} ${user.lastName}'.trim()
+                  : context.l10n.myProfile,
+              role: roleLabel,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _SidebarNavItem(
+              icon: Icons.person_outline_rounded,
+              label: context.l10n.myProfile,
+              onTap: onProfile,
+            ),
+            if (isPro) ...[
+              _SidebarNavItem(
+                icon: Icons.apps_rounded,
+                label: context.l10n.myPagesSection,
+                onTap: onPages,
+              ),
+              _SidebarNavItem(
+                icon: Icons.schedule_rounded,
+                label: context.l10n.ownerSpaceSection,
+                onTap: onOwnerSpace,
+              ),
+            ],
+            _SidebarNavItem(
+              icon: Icons.tune_rounded,
+              label: context.l10n.settingsTitle,
+              onTap: onSettings,
+            ),
+            _SidebarNavItem(
+              icon: Icons.auto_awesome_rounded,
+              label: context.l10n.experienceSection,
+              onTap: onExperience,
+            ),
+            if (!isClient)
+              _SidebarNavItem(
+                icon: Icons.notifications_none_rounded,
+                label: context.l10n.notifications,
+                onTap: onNotifications,
+              ),
+            _SidebarNavItem(
+              icon: Icons.help_outline_rounded,
+              label: context.l10n.helpAndSupport,
+              onTap: onSupport,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            const Divider(height: 1, color: AppColors.divider),
+            const SizedBox(height: AppSpacing.sm),
+            _SidebarNavItem(
+              icon: Icons.logout_rounded,
+              label: context.l10n.logout,
+              color: AppColors.primary,
+              onTap: onDanger,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _initialsFor(String? first, String? last) {
+    final f = (first ?? '').trim();
+    final l = (last ?? '').trim();
+    final initials = [
+      if (f.isNotEmpty) f[0],
+      if (l.isNotEmpty) l[0],
+    ].take(2).join();
+    return initials.isEmpty ? '•' : initials.toUpperCase();
+  }
+}
+
+class _SidebarProfileCard extends StatelessWidget {
+  final String initials;
+  final String name;
+  final String role;
+
+  const _SidebarProfileCard({
+    required this.initials,
+    required this.name,
+    required this.role,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm + 4),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.15),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.4),
+              ),
+            ),
+            child: Text(
+              initials,
+              style: GoogleFonts.fraunces(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm + 2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.fraunces(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                    height: 1.2,
+                  ),
+                ),
+                Text(
+                  role.toUpperCase(),
+                  style: GoogleFonts.instrumentSans(
+                    fontSize: 9,
+                    letterSpacing: 1.8,
+                    color: AppColors.textHint,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SidebarNavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color? color;
+
+  const _SidebarNavItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final resolved = color ?? AppColors.textSecondary;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: resolved.withValues(alpha: 0.85)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.instrumentSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: resolved,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

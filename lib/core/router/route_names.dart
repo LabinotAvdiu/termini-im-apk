@@ -9,6 +9,8 @@ abstract class RouteNames {
   static const String shell = 'shell';
   static const String appointments = 'appointments';
   static const String myAppointments = 'my-appointments';
+  static const String mySchedule = 'my-schedule';
+  static const String myBreaks = 'my-breaks';
   static const String companyDetail = 'company-detail';
   static const String booking = 'booking';
   static const String bookingSuccess = 'booking-success';

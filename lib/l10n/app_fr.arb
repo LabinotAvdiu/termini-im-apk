@@ -423,8 +423,8 @@
   "errorUnknown": "Une erreur est survenue. Réessayez.",
   "homeBrandTagline": "Beauté & Style",
   "homeHeroOverline": "Annuaire · Beauté & Style",
-  "homeHeroTitlePrefix": "Prishtina\nse ",
-  "homeHeroTitleItalic": "coiffe.",
+  "homeHeroTitlePrefix": "Kosova\na du ",
+  "homeHeroTitleItalic": "style.",
   "homeHeroSubtitle": "Une sélection curatée de salons à travers le Kosovo.\nRéservation instantanée, confirmation en quelques minutes.",
   "homeResultsOverline": "Résultats",
   "homeResultsOverlineSearch": "Résultats",
@@ -793,5 +793,18 @@
   "fullName": "Nom complet",
   "gender": "Genre",
   "personalGenderMen": "Homme",
-  "personalGenderWomen": "Femme"
+  "personalGenderWomen": "Femme",
+
+  "myPagesSection": "Mes pages",
+  "ownerSpaceSection": "Espace propriétaire",
+  "myNotifications": "Mes notifications",
+  "myNotificationsSubtitle": "Refus, rappels, avis…",
+  "messages": "Messages",
+  "messagesSubtitle": "Échanges avec les salons",
+  "myScheduleEntry": "Mes horaires",
+  "myScheduleEntrySubtitle": "Journées de travail",
+  "myBreaksEntry": "Mes pauses",
+  "myBreaksEntrySubtitle": "Pauses récurrentes et congés",
+  "comingSoon": "Bientôt",
+  "comingSoonMessage": "Cette fonctionnalité arrive bientôt."
 }

@@ -35,8 +35,23 @@ List<WorkHour> _defaultHours() => List.generate(
 // Root screen
 // ---------------------------------------------------------------------------
 
+/// Which cards the schedule screen renders. The same underlying state +
+/// provider are used in every mode — only the visible sections differ.
+enum ScheduleView {
+  /// Horaires + pauses + jours off. Default, used by the shell tab.
+  all,
+
+  /// Weekly working hours only — reached from Settings > Mes horaires.
+  hoursOnly,
+
+  /// Pauses + jours off only — reached from Settings > Mes pauses.
+  breaksAndDaysOff,
+}
+
 class ScheduleSettingsScreen extends ConsumerStatefulWidget {
-  const ScheduleSettingsScreen({super.key});
+  final ScheduleView view;
+
+  const ScheduleSettingsScreen({super.key, this.view = ScheduleView.all});
 
   @override
   ConsumerState<ScheduleSettingsScreen> createState() =>
@@ -118,9 +133,16 @@ class _ScheduleSettingsScreenState
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          // Page header
+          // Page header — title adapts to the active view so the user sees
+          // "Mes horaires" vs "Mes pauses" even though it's one screen.
           SliverToBoxAdapter(
-            child: _PageHeader(title: context.l10n.scheduleSettings),
+            child: _PageHeader(
+              title: switch (widget.view) {
+                ScheduleView.hoursOnly => context.l10n.myScheduleEntry,
+                ScheduleView.breaksAndDaysOff => context.l10n.myBreaksEntry,
+                ScheduleView.all => context.l10n.scheduleSettings,
+              },
+            ),
           ),
 
           // Reload progress indicator
@@ -147,7 +169,8 @@ class _ScheduleSettingsScreenState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _WorkHoursCard(
+                      if (widget.view != ScheduleView.breaksAndDaysOff) ...[
+                        _WorkHoursCard(
                   editableHours: _editableHours,
                   companyHours: state.settings?.companyHours ?? [],
                   isSaving: state.isSavingHours,
@@ -182,7 +205,10 @@ class _ScheduleSettingsScreenState
                     }
                   },
                 ),
-                const SizedBox(height: AppSpacing.md),
+                      ],
+                      if (widget.view == ScheduleView.all)
+                        const SizedBox(height: AppSpacing.md),
+                      if (widget.view != ScheduleView.hoursOnly) ...[
                 _BreaksCard(
                   breaks: state.settings?.breaks ?? [],
                   isAdding: state.isAddingBreak,
@@ -234,6 +260,7 @@ class _ScheduleSettingsScreenState
                     }
                   },
                 ),
+                      ],
                     ],
                   ),
                 ),

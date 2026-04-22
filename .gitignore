@@ -46,3 +46,6 @@ app.*.map.json
 
 # Claude Code local settings
 .claude/
+
+# Firebase service account credentials — NEVER commit
+*firebase-adminsdk*.json

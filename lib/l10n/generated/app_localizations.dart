@@ -2173,13 +2173,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeHeroTitlePrefix.
   ///
   /// In fr, this message translates to:
-  /// **'Prishtina\nse '**
+  /// **'Kosova\na du '**
   String get homeHeroTitlePrefix;
 
   /// No description provided for @homeHeroTitleItalic.
   ///
   /// In fr, this message translates to:
-  /// **'coiffe.'**
+  /// **'style.'**
   String get homeHeroTitleItalic;
 
   /// No description provided for @homeHeroSubtitle.
@@ -3711,6 +3711,78 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Femme'**
   String get personalGenderWomen;
+
+  /// No description provided for @myPagesSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes pages'**
+  String get myPagesSection;
+
+  /// No description provided for @ownerSpaceSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace propriétaire'**
+  String get ownerSpaceSection;
+
+  /// No description provided for @myNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes notifications'**
+  String get myNotifications;
+
+  /// No description provided for @myNotificationsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refus, rappels, avis…'**
+  String get myNotificationsSubtitle;
+
+  /// No description provided for @messages.
+  ///
+  /// In fr, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// No description provided for @messagesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échanges avec les salons'**
+  String get messagesSubtitle;
+
+  /// No description provided for @myScheduleEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes horaires'**
+  String get myScheduleEntry;
+
+  /// No description provided for @myScheduleEntrySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journées de travail'**
+  String get myScheduleEntrySubtitle;
+
+  /// No description provided for @myBreaksEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes pauses'**
+  String get myBreaksEntry;
+
+  /// No description provided for @myBreaksEntrySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pauses récurrentes et congés'**
+  String get myBreaksEntrySubtitle;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bientôt'**
+  String get comingSoon;
+
+  /// No description provided for @comingSoonMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette fonctionnalité arrive bientôt.'**
+  String get comingSoonMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -423,8 +423,8 @@
   "errorUnknown": "Something went wrong. Please try again.",
   "homeBrandTagline": "Beauty & Style",
   "homeHeroOverline": "Directory · Beauty & Style",
-  "homeHeroTitlePrefix": "Prishtina\nstyled ",
-  "homeHeroTitleItalic": "just right.",
+  "homeHeroTitlePrefix": "Kosovo\nhas ",
+  "homeHeroTitleItalic": "style.",
   "homeHeroSubtitle": "A curated selection of salons across Kosovo.\nInstant booking, confirmation within minutes.",
   "homeResultsOverline": "Results",
   "homeResultsOverlineSearch": "Results",
@@ -793,5 +793,18 @@
   "fullName": "Full name",
   "gender": "Gender",
   "personalGenderMen": "Male",
-  "personalGenderWomen": "Female"
+  "personalGenderWomen": "Female",
+
+  "myPagesSection": "My pages",
+  "ownerSpaceSection": "Pro space",
+  "myNotifications": "My notifications",
+  "myNotificationsSubtitle": "Rejections, reminders, reviews…",
+  "messages": "Messages",
+  "messagesSubtitle": "Conversations with salons",
+  "myScheduleEntry": "My schedule",
+  "myScheduleEntrySubtitle": "Working days",
+  "myBreaksEntry": "My breaks",
+  "myBreaksEntrySubtitle": "Recurring breaks and days off",
+  "comingSoon": "Coming soon",
+  "comingSoonMessage": "This feature is coming soon."
 }

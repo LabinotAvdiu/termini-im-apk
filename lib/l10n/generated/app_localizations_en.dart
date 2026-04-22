@@ -1125,10 +1125,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeHeroOverline => 'Directory · Beauty & Style';
 
   @override
-  String get homeHeroTitlePrefix => 'Prishtina\nstyled ';
+  String get homeHeroTitlePrefix => 'Kosovo\nhas ';
 
   @override
-  String get homeHeroTitleItalic => 'just right.';
+  String get homeHeroTitleItalic => 'style.';
 
   @override
   String get homeHeroSubtitle =>
@@ -1981,4 +1981,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personalGenderWomen => 'Female';
+
+  @override
+  String get myPagesSection => 'My pages';
+
+  @override
+  String get ownerSpaceSection => 'Pro space';
+
+  @override
+  String get myNotifications => 'My notifications';
+
+  @override
+  String get myNotificationsSubtitle => 'Rejections, reminders, reviews…';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get messagesSubtitle => 'Conversations with salons';
+
+  @override
+  String get myScheduleEntry => 'My schedule';
+
+  @override
+  String get myScheduleEntrySubtitle => 'Working days';
+
+  @override
+  String get myBreaksEntry => 'My breaks';
+
+  @override
+  String get myBreaksEntrySubtitle => 'Recurring breaks and days off';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get comingSoonMessage => 'This feature is coming soon.';
 }
