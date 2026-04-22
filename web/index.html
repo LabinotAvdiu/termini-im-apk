@@ -54,6 +54,24 @@
     };
   </script>
 
+  <!-- Facebook JS SDK — required for flutter_facebook_auth on web.
+       The plugin detects window.FB and calls FB.login() via JS interop.
+       App ID must match android/app/src/main/res/values/strings.xml and
+       the iOS FacebookAppID so the same backend /api/auth/facebook
+       accepts tokens from every platform. -->
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId:   '1262066146100608',
+        cookie:  true,
+        xfbml:   false,
+        version: 'v19.0',
+      });
+    };
+  </script>
+  <script async defer crossorigin="anonymous"
+          src="https://connect.facebook.net/en_US/sdk.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link

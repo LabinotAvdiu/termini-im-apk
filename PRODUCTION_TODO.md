@@ -385,6 +385,37 @@ flutter run -d chrome --web-port=8080
 
 ---
 
+## 15. Pages légales statiques 🔴
+
+Requis par Meta (pour passer l'app en Live), Google (OAuth consent screen en prod), Apple App Store, Google Play Store et RGPD.
+
+### 🔴 Privacy Policy — `https://www.termini-im.com/privacy`
+Meta Developers exige un URL de Privacy Policy renseigné pour activer Facebook Login en Live mode. Même règle côté Google OAuth consent screen et côté stores (iOS/Android).
+
+Contenu minimum à couvrir :
+- Quelles données on collecte (email, nom, téléphone, genre, localisation salon, photos galerie, réservations)
+- Pourquoi on les collecte (authentification, prise de RDV, personnalisation home par genre)
+- Avec qui on les partage (Firebase pour notifications push, Google/Meta pour login social, OVH pour hébergement)
+- Droits utilisateur (accès, rectification, suppression — RGPD) + contact : `labinotavdiu.dev@gmail.com`
+- Cookies / stockage local (token Sanctum dans secure storage, préférences locale dans localStorage)
+
+Options d'implémentation :
+1. Page Flutter Web dédiée dans l'app (route `/privacy`) — cohérent mais nécessite SPA fallback nginx côté prod (cf. point 13)
+2. Page HTML statique uploadée sur `/var/www/termini-im/privacy.html` — indépendant du build Flutter, accessible directement, pas de config routeur
+3. Générateur en ligne (ex. https://www.termsfeed.com/privacy-policy-generator/) puis paste dans une page statique
+
+### 🟠 Terms of Service — `https://www.termini-im.com/terms`
+Optionnel pour les stores mais fortement recommandé avant d'accepter des réservations payantes. Couvre :
+- Responsabilités app vs salon (pas d'intermédiation financière pour l'instant)
+- Politique no-show / annulation (cohérent avec le flow backend)
+- Propriété intellectuelle des photos galerie (l'owner confirme qu'il a les droits)
+- Suspension de compte (owner qui triche sur les disponibilités, review fake, etc.)
+
+### 🟡 Cookie banner (si RGPD strict)
+Seulement si tu cibles explicitement des utilisateurs EU et que tu ajoutes de l'analytique (GA, Hotjar, etc.). Le simple localStorage de locale + token Sanctum ne déclenche pas l'obligation de banner. À revoir quand tu intègres Sentry ou GA.
+
+---
+
 ## Vérification rapide avant go-live
 
 ```bash
