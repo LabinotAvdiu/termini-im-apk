@@ -41,12 +41,21 @@ class _MainShellState extends ConsumerState<MainShell> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    final companyBookingMode = authState.isOwner
+    // Any company member (owner or employee) can drive the mode check.
+    // The provider is safe to watch for employees — if the endpoint
+    // returns 403 the state stays on its default ('employee_based') and
+    // the flags below behave conservatively.
+    final companyBookingMode = (authState.isOwner || authState.isEmployee)
         ? ref.watch(companyDashboardProvider.select(
             (s) => s.company?.bookingMode ?? 'employee_based'))
         : 'employee_based';
     final isCapacityOwner =
         authState.isOwner && companyBookingMode == 'capacity_based';
+    // Individual-mode employee: owns a weekly schedule + breaks. Only these
+    // employees should see the schedule tab — in capacity mode, hours are
+    // set at the salon level.
+    final isIndividualEmployee =
+        authState.isEmployee && companyBookingMode == 'employee_based';
     final pendingCount =
         isCapacityOwner ? ref.watch(pendingCountProvider) : 0;
 
@@ -60,7 +69,11 @@ class _MainShellState extends ConsumerState<MainShell> {
       // which only had a single-day view with no stats header.
       if (authState.isOwner || authState.isEmployee)
         const _LazyPage(child: CompanyPlanningScreen()),
-      if ((authState.isOwner && !isCapacityOwner) || authState.isEmployee)
+      // Owners now reach their own schedule via Settings > Espace
+      // propriétaire (split into Mes horaires + Mes pauses). Employees in
+      // individual mode keep the shell tab; capacity-mode employees (rare
+      // but possible) have no per-user schedule.
+      if (isIndividualEmployee)
         const _LazyPage(child: ScheduleSettingsScreen()),
       if (isCapacityOwner) const _LazyPage(child: PendingApprovalsScreen()),
       if (isClient) const AppointmentsScreen(),
@@ -85,6 +98,7 @@ class _MainShellState extends ConsumerState<MainShell> {
       isOwner: authState.isOwner,
       isEmployee: authState.isEmployee,
       isCapacityOwner: isCapacityOwner,
+      isIndividualEmployee: isIndividualEmployee,
       isClient: isClient,
       pendingCount: pendingCount,
       selectedIndex: safeIndex,
@@ -144,6 +158,7 @@ List<_TabSpec> _buildTabs({
   required bool isOwner,
   required bool isEmployee,
   required bool isCapacityOwner,
+  required bool isIndividualEmployee,
   required bool isClient,
   required int pendingCount,
   required int selectedIndex,
@@ -184,7 +199,10 @@ List<_TabSpec> _buildTabs({
         ));
   }
 
-  if ((isOwner && !isCapacityOwner) || isEmployee) {
+  // Individual-mode employees keep the schedule tab in the shell.
+  // Owners get it from Settings > Espace propriétaire; capacity-mode
+  // employees don't have a per-user schedule at all.
+  if (isIndividualEmployee) {
     add((i) => _TabSpec(
           icon: Icons.schedule_rounded,
           label: context.l10n.scheduleSettings,
