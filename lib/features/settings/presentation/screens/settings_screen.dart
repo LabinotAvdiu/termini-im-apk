@@ -954,7 +954,7 @@ class _OwnerSpaceSection extends ConsumerWidget {
               icon: Icons.coffee_outlined,
               title: context.l10n.myBreaksEntry,
               subtitle: context.l10n.myBreaksEntrySubtitle,
-              onTap: () => context.goNamed(RouteNames.mySchedule),
+              onTap: () => context.goNamed(RouteNames.myBreaks),
             ),
           ],
         ),

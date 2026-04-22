@@ -188,16 +188,26 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const _StandaloneAppointments(),
         ),
       ),
-      // "Mes horaires / Mes pauses" — individual-mode schedule editor,
-      // reachable from Settings for owners (non-capacity) and employees.
-      // Same screen as the shell tab; `?focus=breaks` is a hint the UI can
-      // consume later to scroll straight to the breaks section.
+      // "Mes horaires" — weekly working hours only. The shell tab shows
+      // everything in one page; here we split it so each Settings entry
+      // leads straight to the relevant section.
       GoRoute(
         path: '/my-schedule',
         name: RouteNames.mySchedule,
         pageBuilder: (context, state) => editorialSlidePage(
           key: state.pageKey,
-          child: const _StandaloneSchedule(),
+          child: const _StandaloneSchedule(view: ScheduleView.hoursOnly),
+        ),
+      ),
+      // "Mes pauses" — recurring breaks + days off, same screen with
+      // hours card hidden.
+      GoRoute(
+        path: '/my-breaks',
+        name: RouteNames.myBreaks,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child:
+              const _StandaloneSchedule(view: ScheduleView.breaksAndDaysOff),
         ),
       ),
       GoRoute(
@@ -323,13 +333,15 @@ class _StandaloneAppointments extends StatelessWidget {
 }
 
 /// Wraps [ScheduleSettingsScreen] in a Scaffold with a back button. Same
-/// screen as the shell tab, just reachable from Settings via /my-schedule.
+/// screen as the shell tab, but the `view` picks which cards are shown so
+/// "Mes horaires" and "Mes pauses" can be two distinct Settings entries.
 class _StandaloneSchedule extends StatelessWidget {
-  const _StandaloneSchedule();
+  final ScheduleView view;
+  const _StandaloneSchedule({required this.view});
 
   @override
   Widget build(BuildContext context) {
-    return _BackOverlay(child: const ScheduleSettingsScreen());
+    return _BackOverlay(child: ScheduleSettingsScreen(view: view));
   }
 }
 
