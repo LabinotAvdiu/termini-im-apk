@@ -117,11 +117,12 @@ class _NotificationCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // En-tête éditorial
+          // En-tête éditorial — titre Fraunces seul, pas de kicker
+          // (l'overline "NOTIFICATIONS" dupliquait le titre juste en dessous).
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,
-              AppSpacing.md,
+              AppSpacing.md + 2,
               AppSpacing.md,
               AppSpacing.xs,
             ),
@@ -129,33 +130,23 @@ class _NotificationCard extends ConsumerWidget {
               children: [
                 const Icon(
                   Icons.notifications_outlined,
-                  size: 14,
-                  color: AppColors.textHint,
+                  size: 18,
+                  color: AppColors.primary,
                 ),
-                const SizedBox(width: AppSpacing.xs),
-                Text(
-                  context.l10n.notifications.toUpperCase(),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.textHint,
-                        letterSpacing: 1.8,
-                        fontWeight: FontWeight.w600,
-                      ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    context.l10n.notifications,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary,
+                      height: 1.15,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs,
-            ),
-            child: Text(
-              context.l10n.notifications,
-              style: GoogleFonts.fraunces(
-                fontSize: 22,
-                fontWeight: FontWeight.w400,
-                color: AppColors.textPrimary,
-                height: 1.1,
-              ),
             ),
           ),
           Padding(
