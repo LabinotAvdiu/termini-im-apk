@@ -37,7 +37,7 @@ class PersonalGenderSelector extends StatelessWidget {
             Expanded(
               child: _Choice(
                 selected: value == 'men',
-                label: context.l10n.filterMen,
+                label: context.l10n.personalGenderMen,
                 icon: Icons.male_rounded,
                 onTap: () => onChanged(value == 'men' ? null : 'men'),
               ),
@@ -46,7 +46,7 @@ class PersonalGenderSelector extends StatelessWidget {
             Expanded(
               child: _Choice(
                 selected: value == 'women',
-                label: context.l10n.filterWomen,
+                label: context.l10n.personalGenderWomen,
                 icon: Icons.female_rounded,
                 onTap: () => onChanged(value == 'women' ? null : 'women'),
               ),

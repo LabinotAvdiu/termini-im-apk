@@ -417,8 +417,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   : Icons.male_rounded,
                               label: context.l10n.gender,
                               value: _gender == 'women'
-                                  ? context.l10n.filterWomen
-                                  : context.l10n.filterMen,
+                                  ? context.l10n.personalGenderWomen
+                                  : context.l10n.personalGenderMen,
                             ),
                           ],
                         ],

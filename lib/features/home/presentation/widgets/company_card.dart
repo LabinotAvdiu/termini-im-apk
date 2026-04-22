@@ -118,8 +118,17 @@ class CompanyCard extends ConsumerWidget {
                               ),
                             ],
                           ),
+                          // Reserve the rating row slot even for salons with
+                          // 0 reviews — keeps every card at the same height
+                          // so the grid stays uniform.
                           const SizedBox(height: AppSpacing.xs),
-                          _RatingRow(company: company),
+                          Visibility(
+                            visible: company.reviewCount > 0,
+                            maintainSize: true,
+                            maintainAnimation: true,
+                            maintainState: true,
+                            child: _RatingRow(company: company),
+                          ),
                           const SizedBox(height: AppSpacing.sm),
                           _SlotRow(
                             label: context.l10n.morning,
@@ -415,33 +424,39 @@ class _SlotRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 72,
-          child: Text(
-            label,
-            style: AppTextStyles.overline.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.textHint,
-              letterSpacing: 0.6,
+    // Fixed row height (matches the chip's rendered height) so salons with
+    // no upcoming slots don't make the card collapse shorter than salons
+    // with a packed row of chips.
+    return SizedBox(
+      height: 24,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 72,
+            child: Text(
+              label,
+              style: AppTextStyles.overline.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textHint,
+                letterSpacing: 0.6,
+              ),
             ),
           ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: slots
-                  .map((slot) => Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: _SlotChip(slot: slot),
-                      ))
-                  .toList(),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: slots
+                    .map((slot) => Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: _SlotChip(slot: slot),
+                        ))
+                    .toList(),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

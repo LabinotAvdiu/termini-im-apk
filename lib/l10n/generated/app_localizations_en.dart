@@ -427,7 +427,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchWhen => 'When';
 
   @override
-  String get searchWho => 'Who';
+  String get searchWho => 'For';
 
   @override
   String get cityHint => 'E.g.: Prishtina, Prizren...';
@@ -1119,10 +1119,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorUnknown => 'Something went wrong. Please try again.';
 
   @override
-  String get homeBrandTagline => 'Salons & Barbers · Prishtina';
+  String get homeBrandTagline => 'Beauty & Style';
 
   @override
-  String get homeHeroOverline => 'Directory · Salons & Barbers';
+  String get homeHeroOverline => 'Directory · Beauty & Style';
 
   @override
   String get homeHeroTitlePrefix => 'Prishtina\nstyled ';
@@ -1132,13 +1132,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeHeroSubtitle =>
-      'A curated selection of salons across Kosovo.\nInstant booking, confirmation in under 2 minutes.';
+      'A curated selection of salons across Kosovo.\nInstant booking, confirmation within minutes.';
 
   @override
-  String get homeResultsOverline => 'Results · Prishtina';
+  String get homeResultsOverline => 'Results';
 
   @override
-  String get homeResultsOverlineSearch => 'Results · Search';
+  String get homeResultsOverlineSearch => 'Results';
 
   @override
   String get homeSortLabel => 'Sort: Rating · Distance';
@@ -1975,4 +1975,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gender => 'Gender';
+
+  @override
+  String get personalGenderMen => 'Male';
+
+  @override
+  String get personalGenderWomen => 'Female';
 }
