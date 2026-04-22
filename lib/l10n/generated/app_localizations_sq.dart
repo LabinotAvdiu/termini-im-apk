@@ -1124,10 +1124,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get homeHeroOverline => 'Direktori · Bukuri & Stil';
 
   @override
-  String get homeHeroTitlePrefix => 'Kosova\nka ';
+  String get homeHeroTitlePrefix => 'Kosova\nka shumë ';
 
   @override
-  String get homeHeroTitleItalic => 'shumë stil.';
+  String get homeHeroTitleItalic => 'stil.';
 
   @override
   String get homeHeroSubtitle =>
