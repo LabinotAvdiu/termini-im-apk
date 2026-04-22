@@ -17,6 +17,7 @@ import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/company/presentation/screens/capacity_settings_screen.dart';
 import '../../features/company/presentation/screens/my_company_reviews_screen.dart';
 import '../../features/company/presentation/screens/pending_approvals_screen.dart';
+import '../../features/employee_schedule/presentation/screens/schedule_settings_screen.dart';
 import '../../features/reviews/presentation/screens/submit_review_screen.dart';
 import 'page_transitions.dart';
 import 'route_names.dart';
@@ -187,6 +188,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const _StandaloneAppointments(),
         ),
       ),
+      // "Mes horaires / Mes pauses" — individual-mode schedule editor,
+      // reachable from Settings for owners (non-capacity) and employees.
+      // Same screen as the shell tab; `?focus=breaks` is a hint the UI can
+      // consume later to scroll straight to the breaks section.
+      GoRoute(
+        path: '/my-schedule',
+        name: RouteNames.mySchedule,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const _StandaloneSchedule(),
+        ),
+      ),
       GoRoute(
         path: '/capacity-settings',
         name: RouteNames.capacitySettings,
@@ -305,11 +318,34 @@ class _StandaloneAppointments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _BackOverlay(child: const AppointmentsScreen());
+  }
+}
+
+/// Wraps [ScheduleSettingsScreen] in a Scaffold with a back button. Same
+/// screen as the shell tab, just reachable from Settings via /my-schedule.
+class _StandaloneSchedule extends StatelessWidget {
+  const _StandaloneSchedule();
+
+  @override
+  Widget build(BuildContext context) {
+    return _BackOverlay(child: const ScheduleSettingsScreen());
+  }
+}
+
+/// Shared wrapper — puts a floating ivory back button on top-left so any
+/// shell-aware screen can be reached from a plain GoRouter route.
+class _BackOverlay extends StatelessWidget {
+  final Widget child;
+  const _BackOverlay({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          const Positioned.fill(child: AppointmentsScreen()),
+          Positioned.fill(child: child),
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
             left: 8,

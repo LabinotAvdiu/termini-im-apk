@@ -793,5 +793,18 @@
   "fullName": "Emri i plotë",
   "gender": "Gjinia",
   "personalGenderMen": "Mashkull",
-  "personalGenderWomen": "Femër"
+  "personalGenderWomen": "Femër",
+
+  "myPagesSection": "Faqet e mia",
+  "ownerSpaceSection": "Hapësira profesionale",
+  "myNotifications": "Njoftimet e mia",
+  "myNotificationsSubtitle": "Refuzime, rikujtesa, vlerësime…",
+  "messages": "Mesazhet",
+  "messagesSubtitle": "Biseda me sallonet",
+  "myScheduleEntry": "Oraret e mia",
+  "myScheduleEntrySubtitle": "Ditët e punës",
+  "myBreaksEntry": "Pushimet e mia",
+  "myBreaksEntrySubtitle": "Pushime të përsëritura dhe pushime",
+  "comingSoon": "Së shpejti",
+  "comingSoonMessage": "Kjo veçori do vijë së shpejti."
 }

@@ -14,6 +14,7 @@ import '../../../../core/network/dio_provider.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/personal_gender_selector.dart';
+import '../../../company/presentation/providers/company_dashboard_provider.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../../support/data/models/support_models.dart';
@@ -429,6 +430,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               },
             ),
 
+            // ── Mes pages (navigation vers d'autres vues) ─────────────────
+            // Uniquement pour les pros qui ont des pages perso (RDV pris
+            // comme clients ailleurs, inbox notifications, messages).
+            const _MyPagesSection(),
+
+            // ── Espace propriétaire (horaires + pauses) ───────────────────
+            // Uniquement pour owner/employee en mode individuel — en mode
+            // capacité, les horaires sont gérés côté salon dans Mon salon.
+            const _OwnerSpaceSection(),
+
             const SizedBox(height: AppSpacing.md),
 
             // Settings options
@@ -462,20 +473,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.changePassword,
                     onTap: _showChangePasswordDialog,
                   ),
-
-                  // Mes rendez-vous — visible uniquement pour les pros
-                  // (owner/employee). Les clients ont déjà la vue dans le shell.
-                  if (ref.watch(authStateProvider.select(
-                    (s) => s.isOwner || s.isEmployee,
-                  ))) ...[
-                    const Divider(
-                        height: 1, color: AppColors.divider, indent: 48),
-                    _SettingsTile(
-                      icon: Icons.calendar_month_rounded,
-                      title: context.l10n.myAppointments,
-                      onTap: () => context.goNamed(RouteNames.myAppointments),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -854,6 +851,145 @@ class _ProfileEditToggle extends StatelessWidget {
         style: AppTextStyles.bodySmall.copyWith(
           color: AppColors.primary,
           fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mes pages — navigation hub for pro users (Mes rendez-vous, notifications
+// inbox, messages). Hidden for regular clients since bottom nav already
+// surfaces what they need.
+// ---------------------------------------------------------------------------
+
+class _MyPagesSection extends ConsumerWidget {
+  const _MyPagesSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasCompany = ref.watch(
+      authStateProvider.select((s) => s.isOwner || s.isEmployee),
+    );
+    if (!hasCompany) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: _SectionCard(
+        title: context.l10n.myPagesSection,
+        icon: Icons.apps_rounded,
+        child: Column(
+          children: [
+            _SettingsTile(
+              icon: Icons.calendar_month_rounded,
+              title: context.l10n.myAppointments,
+              onTap: () => context.goNamed(RouteNames.myAppointments),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
+              icon: Icons.notifications_none_rounded,
+              title: context.l10n.myNotifications,
+              subtitle: context.l10n.myNotificationsSubtitle,
+              trailing: _ComingSoonBadge(),
+              onTap: () => _showComingSoon(context),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
+              icon: Icons.chat_bubble_outline_rounded,
+              title: context.l10n.messages,
+              subtitle: context.l10n.messagesSubtitle,
+              trailing: _ComingSoonBadge(),
+              onTap: () => _showComingSoon(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Espace propriétaire — horaires + pauses pour les pros en mode individuel.
+// En mode capacité, tout est géré au niveau salon dans "Mon salon".
+// ---------------------------------------------------------------------------
+
+class _OwnerSpaceSection extends ConsumerWidget {
+  const _OwnerSpaceSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authStateProvider);
+    final isEmployee = auth.isEmployee;
+    // Only owners read the dashboard provider — employees always live in
+    // individual mode (capacity mode has no employees).
+    final bookingMode = auth.isOwner
+        ? ref.watch(
+            companyDashboardProvider
+                .select((s) => s.company?.bookingMode ?? 'employee_based'),
+          )
+        : 'employee_based';
+    final isIndividual = (auth.isOwner || isEmployee) &&
+        bookingMode == 'employee_based';
+
+    if (!isIndividual) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: _SectionCard(
+        title: context.l10n.ownerSpaceSection,
+        icon: Icons.schedule_rounded,
+        child: Column(
+          children: [
+            _SettingsTile(
+              icon: Icons.event_available_rounded,
+              title: context.l10n.myScheduleEntry,
+              subtitle: context.l10n.myScheduleEntrySubtitle,
+              onTap: () => context.goNamed(RouteNames.mySchedule),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
+              icon: Icons.coffee_outlined,
+              title: context.l10n.myBreaksEntry,
+              subtitle: context.l10n.myBreaksEntrySubtitle,
+              onTap: () => context.goNamed(RouteNames.mySchedule),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void _showComingSoon(BuildContext context) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(context.l10n.comingSoonMessage),
+      ),
+    );
+}
+
+class _ComingSoonBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        context.l10n.comingSoon.toUpperCase(),
+        style: AppTextStyles.caption.copyWith(
+          color: AppColors.secondaryDark,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.2,
+          fontSize: 9,
         ),
       ),
     );

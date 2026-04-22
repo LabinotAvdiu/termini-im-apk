@@ -1985,4 +1985,40 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get personalGenderWomen => 'Femër';
+
+  @override
+  String get myPagesSection => 'Faqet e mia';
+
+  @override
+  String get ownerSpaceSection => 'Hapësira profesionale';
+
+  @override
+  String get myNotifications => 'Njoftimet e mia';
+
+  @override
+  String get myNotificationsSubtitle => 'Refuzime, rikujtesa, vlerësime…';
+
+  @override
+  String get messages => 'Mesazhet';
+
+  @override
+  String get messagesSubtitle => 'Biseda me sallonet';
+
+  @override
+  String get myScheduleEntry => 'Oraret e mia';
+
+  @override
+  String get myScheduleEntrySubtitle => 'Ditët e punës';
+
+  @override
+  String get myBreaksEntry => 'Pushimet e mia';
+
+  @override
+  String get myBreaksEntrySubtitle => 'Pushime të përsëritura dhe pushime';
+
+  @override
+  String get comingSoon => 'Së shpejti';
+
+  @override
+  String get comingSoonMessage => 'Kjo veçori do vijë së shpejti.';
 }

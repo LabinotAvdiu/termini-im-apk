@@ -1990,4 +1990,40 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get personalGenderWomen => 'Femme';
+
+  @override
+  String get myPagesSection => 'Mes pages';
+
+  @override
+  String get ownerSpaceSection => 'Espace propriétaire';
+
+  @override
+  String get myNotifications => 'Mes notifications';
+
+  @override
+  String get myNotificationsSubtitle => 'Refus, rappels, avis…';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get messagesSubtitle => 'Échanges avec les salons';
+
+  @override
+  String get myScheduleEntry => 'Mes horaires';
+
+  @override
+  String get myScheduleEntrySubtitle => 'Journées de travail';
+
+  @override
+  String get myBreaksEntry => 'Mes pauses';
+
+  @override
+  String get myBreaksEntrySubtitle => 'Pauses récurrentes et congés';
+
+  @override
+  String get comingSoon => 'Bientôt';
+
+  @override
+  String get comingSoonMessage => 'Cette fonctionnalité arrive bientôt.';
 }
