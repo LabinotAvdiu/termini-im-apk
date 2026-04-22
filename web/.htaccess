@@ -7,6 +7,12 @@
 
 RewriteEngine On
 
+# Pretty URLs for static legal pages — /privacy resolves to /privacy.html,
+# /terms resolves to /terms.html. Needs to come BEFORE the SPA fallback so
+# Apache serves the real HTML file instead of index.html.
+RewriteRule ^privacy/?$ privacy.html [L]
+RewriteRule ^terms/?$ terms.html [L]
+
 # If the request matches an existing file or directory, serve it directly.
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
