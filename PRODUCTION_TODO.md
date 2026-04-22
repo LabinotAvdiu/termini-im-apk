@@ -208,7 +208,7 @@ Les endpoints backend + le bouton Flutter sont déjà codés. Il reste la config
 
 | Type | Usage | Config |
 |---|---|---|
-| Web application | Flutter Web + **validation backend `aud`** | Authorized JS origins : `http://localhost:8080` (dev), `https://app.termini-im.com` (prod) |
+| Web application | Flutter Web + **validation backend `aud`** | Authorized JS origins : `http://localhost:8080` (dev), `https://www.termini-im.com` (prod) |
 | Android (debug) | Tests locaux Android | Package `com.terminiim.app` + SHA-1 **debug keystore** |
 | Android (release) | Build prod Android | Même package + SHA-1 **release / Play App Signing** |
 | iOS | App iOS | Bundle ID iOS (voir `ios/Runner/Info.plist` → `CFBundleIdentifier`) |
@@ -237,7 +237,7 @@ keytool -list -v -keystore release.keystore -alias upload
 ### 🟠 Web — Authorized JS origins (à vérifier dans GCP)
 [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials → OAuth 2.0 Client IDs → **Web client** (type 3) → Authorized JavaScript origins doit contenir :
 - `http://localhost:PORT` — **récupère le port exact** que `flutter run -d chrome` ouvre (ex. `http://localhost:51234`). Astuce : fixer le port avec `flutter run -d chrome --web-port=8080` pour éviter le port random à chaque lancement.
-- `https://app.termini-im.com` (prod, quand déployé)
+- `https://www.termini-im.com` (prod, quand déployé)
 
 Pas de redirect URI nécessaire pour le flow `google_sign_in` côté web (il utilise le Google One Tap JS SDK, pas un redirect OAuth).
 
@@ -333,12 +333,12 @@ location / {
 }
 ```
 
-Sans ça, le navigateur qui ouvre directement `https://app.termini-im.com/company/5` reçoit un 404 nginx au lieu de l'app Flutter. Concerne **tous** les chemins de l'app (fiche salon, booking, settings, mes rdv, etc.).
+Sans ça, le navigateur qui ouvre directement `https://www.termini-im.com/company/5` reçoit un 404 nginx au lieu de l'app Flutter. Concerne **tous** les chemins de l'app (fiche salon, booking, settings, mes rdv, etc.).
 
 ### Vérification
 ```bash
 # Après déploiement :
-curl -I https://app.termini-im.com/company/5
+curl -I https://www.termini-im.com/company/5
 # → doit retourner 200 + le HTML de l'app (pas un 404)
 ```
 
@@ -356,8 +356,8 @@ Déjà fait dans `lib/main.dart` (init conditionnel `if (kIsWeb) FacebookAuth.i.
 
 | Champ | Valeur |
 |---|---|
-| URL du site | `http://localhost:8080/` (dev) · `https://app.termini-im.com/` (prod) |
-| Domaines de l'app | `localhost` (dev) · `app.termini-im.com` (prod) |
+| URL du site | `http://localhost:8080/` (dev) · `https://www.termini-im.com/` (prod) |
+| Domaines de l'app | `localhost` (dev) · `www.termini-im.com` (prod) |
 
 Puis **Cas d'utilisation → Authentification et demande de données → Paramètres** :
 | Option | Valeur |
