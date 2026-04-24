@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Termini im">
+  <title>Termini im</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;display=swap');
+      .fr { font-family: 'Fraunces', 'Times New Roman', Georgia, serif; font-weight: 600; }
+    </style>
+  </defs>
+  <rect width="32" height="32" fill="#7A2232" rx="6"/>
+  <text x="16" y="24" class="fr" font-size="24" fill="#F7F2EA" text-anchor="middle" letter-spacing="-0.5">T</text>
+  <circle cx="22.5" cy="9" r="2" fill="#C89B47"/>
+</svg>

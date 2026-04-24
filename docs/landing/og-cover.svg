@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Termini im · Open Graph cover (1200×630, ratio 1.91:1 — WhatsApp/FB/LinkedIn)
+       Convertir en PNG :
+         · Inkscape : inkscape og-cover.svg --export-png=og-cover.png -w 1200 -h 630
+         · Online   : cloudconvert.com / svgomg / etc.
+         · macOS    : qlmanage -t -s 1200 og-cover.svg && rename to og-cover.png
+       Cible : < 300 KB après conversion (sinon WhatsApp ne render pas) -->
+
+  <defs>
+    <!-- Subtle grain texture matching the landing page -->
+    <filter id="grain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 0.09  0 0 0 0 0.07  0 0 0 0 0.07  0 0 0 0.06 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+
+    <!-- Vertical gradient for depth -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FCF7EE"/>
+      <stop offset="100%" stop-color="#F2E9D6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="white" filter="url(#grain)" opacity="0.5"/>
+
+  <!-- Decorative top accent — gold rule -->
+  <line x1="0" y1="0" x2="1200" y2="0" stroke="#C89B47" stroke-width="6"/>
+
+  <!-- Bordeaux signature dot -->
+  <circle cx="600" cy="142" r="6" fill="#7A2232"/>
+
+  <!-- Wordmark : "Termini im" -->
+  <text x="600" y="240"
+        font-family="Fraunces, 'Times New Roman', Georgia, serif"
+        font-size="92"
+        font-weight="400"
+        fill="#171311"
+        text-anchor="middle"
+        letter-spacing="-3">Termini <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">im.</tspan></text>
+
+  <!-- Editorial divider -->
+  <line x1="540" y1="294" x2="660" y2="294" stroke="#D9CAB3" stroke-width="1"/>
+
+  <!-- Tagline (SQ) -->
+  <text x="600" y="370"
+        font-family="Fraunces, serif"
+        font-size="48"
+        font-weight="300"
+        fill="#171311"
+        text-anchor="middle"
+        letter-spacing="-1">Kosova ka shumë <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">stil.</tspan></text>
+
+  <!-- Subtitle line -->
+  <text x="600" y="430"
+        font-family="'Instrument Sans', Helvetica, Arial, sans-serif"
+        font-size="22"
+        font-weight="400"
+        fill="#332C29"
+        text-anchor="middle">Nga maji, e rezervon në 30 sekonda.</text>
+
+  <!-- Bottom band — gold tagline -->
+  <line x1="0" y1="540" x2="1200" y2="540" stroke="#D9CAB3" stroke-width="1"/>
+
+  <text x="600" y="582"
+        font-family="'Instrument Sans', Helvetica, Arial, sans-serif"
+        font-size="13"
+        font-weight="500"
+        fill="#7A2232"
+        text-anchor="middle"
+        letter-spacing="6">FERIZAJ &#183; MAJI 2026 &#183; TERMINI-IM.COM</text>
+
+  <!-- Bottom gold rule -->
+  <line x1="0" y1="624" x2="1200" y2="624" stroke="#C89B47" stroke-width="6"/>
+</svg>
