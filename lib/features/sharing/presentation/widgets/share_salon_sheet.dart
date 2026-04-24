@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/services/analytics_service.dart';
+import '../../../../core/services/remote_config_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -228,6 +230,13 @@ class _ShareSheetContentState extends ConsumerState<_ShareSheetContent> {
 
   Future<void> _copyLink() async {
     await Clipboard.setData(ClipboardData(text: _shareUrl));
+    // E25 — share_link_copied
+    final userId = ref.read(authStateProvider).user?.id;
+    final includeEmp = _showToggle && _includeMe && userId != null;
+    ref.read(analyticsProvider).logShareLinkCopied(
+          salonId: widget.companyId,
+          employeeId: includeEmp ? userId : null,
+        );
     if (!mounted) return;
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -340,6 +349,43 @@ class _ShareSheetContentState extends ConsumerState<_ShareSheetContent> {
             onTap: _copyLink,
           ),
 
+          // E27 — share incentive gate (flag Remote Config)
+          if (ref.watch(remoteConfigProvider).shareIncentiveEnabled) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.20),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.card_giftcard_rounded,
+                    color: AppColors.primary,
+                    size: 18,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      // TODO i18n sprint — ajouter shareIncentiveText à l'ARB
+                      'Invite un·e ami·e — il·elle obtient 20%',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: AppSpacing.md),
           _LinkPreview(url: _shareUrl),
         ],

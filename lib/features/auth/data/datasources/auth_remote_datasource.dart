@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/constants/api_constants.dart';
-import '../../../../core/network/api_exceptions.dart';
+import '../../../../core/network/api_exceptions.dart'
+    show ApiException, OwnerHasSalonException, mapDioException;
 import '../../../../core/network/dio_client.dart';
 import '../models/user_model.dart';
 
@@ -378,6 +379,28 @@ class AuthRemoteDatasource {
         },
       );
     } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Delete account — DELETE /auth/account
+  //
+  // Returns normally on 204. Throws [OwnerHasSalonException] when the server
+  // returns 422 with code=owner_has_active_salon; [ApiException] otherwise.
+  // ---------------------------------------------------------------------------
+  Future<void> deleteAccount() async {
+    try {
+      await _client.delete(ApiConstants.deleteAccount);
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      final data   = e.response?.data;
+      if (status == 422 && data is Map<String, dynamic>) {
+        final code = data['code'] as String?;
+        if (code == 'owner_has_active_salon') {
+          throw const OwnerHasSalonException();
+        }
+      }
       throw _mapDioException(e);
     }
   }

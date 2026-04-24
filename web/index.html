@@ -257,31 +257,25 @@
     })();
   </script>
 
-  <!--
-    TODO: Firebase Web — remplace les PLACEHOLDER par les vraies valeurs depuis la Firebase Console.
-    Paramètres du projet → Général → Tes applications web → firebaseConfig
-  -->
+  <!-- Firebase Web — projet termini-im-cd5ff.
+       Config synchronisée avec android/app/google-services.json + web/firebase-messaging-sw.js. -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 
     const firebaseConfig = {
-      apiKey:            'PLACEHOLDER_API_KEY',
-      authDomain:        'termini-im-placeholder.firebaseapp.com',
-      projectId:         'termini-im-placeholder',
-      storageBucket:     'termini-im-placeholder.appspot.com',
-      messagingSenderId: '000000000000',
-      appId:             'PLACEHOLDER_APP_ID',
+      apiKey:            'AIzaSyCofTfimS6Rw1JPUTOuQYwlGYoYMpzox4k',
+      authDomain:        'termini-im-cd5ff.firebaseapp.com',
+      projectId:         'termini-im-cd5ff',
+      storageBucket:     'termini-im-cd5ff.firebasestorage.app',
+      messagingSenderId: '759517993388',
+      appId:             '1:759517993388:web:f57c6cd9ce6f7c688d8209',
+      measurementId:     'G-BWV621VQYZ',
     };
 
-    // N'initialise Firebase que si la config est renseignée (pas de crash en dev)
-    if (firebaseConfig.apiKey !== 'PLACEHOLDER_API_KEY') {
-      try {
-        initializeApp(firebaseConfig);
-      } catch (e) {
-        console.warn('[Termini] Firebase web init skipped:', e.message);
-      }
-    } else {
-      console.warn('[Termini] Firebase non configuré — remplace les PLACEHOLDER dans web/index.html');
+    try {
+      initializeApp(firebaseConfig);
+    } catch (e) {
+      console.warn('[Termini] Firebase web init skipped:', e.message);
     }
 
     // Enregistre le service worker FCM

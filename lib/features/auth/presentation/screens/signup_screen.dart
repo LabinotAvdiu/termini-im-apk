@@ -10,6 +10,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/salon_location_fields.dart';
@@ -17,6 +18,7 @@ import '../../../../core/network/places_datasource.dart';
 import '../../../support/data/models/support_models.dart';
 import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/booking_mode_picker.dart';
 import '../widgets/company_clientele_selector.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
@@ -255,8 +257,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     // _loadingSocial directly.
     final submitLoading = isLoading && _loadingSocial == null;
 
+    // Logique back selon l'étape en cours pour le multi-step company.
+    final VoidCallback? onBack = _isCompany && _currentStep == 1
+        ? _goToStep1
+        : _isCompany && _currentStep == 2
+            ? _goBackToCompanyStep
+            : _isCompany && _currentStep == 3
+                ? _goToStep2FromStep3
+                : null;
+
     return Scaffold(
       backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
+      appBar: AppTopBar.minimal(onBack: onBack),
       body: Stack(
         children: [
           _TopGradientDecoration(isCompany: _isCompany),
@@ -271,19 +284,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.lg),
-
-                  // ---- Back button ----
-                  _BackButton(
-                    onTap: _isCompany && _currentStep == 1
-                        ? _goToStep1
-                        : _isCompany && _currentStep == 2
-                            ? _goBackToCompanyStep
-                            : _isCompany && _currentStep == 3
-                                ? _goToStep2FromStep3
-                                : null,
-                  ),
-
-                  const SizedBox(height: AppSpacing.md),
 
                   // ---- Role badge + title + optional step indicator ----
                   _SignupHeader(
@@ -455,49 +455,6 @@ class _TopGradientDecoration extends StatelessWidget {
               color.withValues(alpha: 0.12),
               color.withValues(alpha: 0.0),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Back button — optionally overrides default pop with a custom callback.
-// ---------------------------------------------------------------------------
-class _BackButton extends StatelessWidget {
-  /// When non-null, tapping calls this instead of the default pop/roleSelect.
-  final VoidCallback? onTap;
-
-  const _BackButton({this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onTap: onTap ??
-            () => context.canPop()
-                ? context.pop()
-                : context.goNamed(RouteNames.landing),
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.cardShadow,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 18,
-            color: AppColors.textPrimary,
           ),
         ),
       ),
@@ -1244,6 +1201,8 @@ class _CompanyStep2State extends State<_CompanyStep2> {
 
 // ---------------------------------------------------------------------------
 // Company Step 3 — Booking mode selection
+// Uses the shared BookingModePicker widget (same editorial cards as
+// CompanyModeScreen) so both signup paths render identically.
 // ---------------------------------------------------------------------------
 class _CompanyStep3BookingMode extends StatelessWidget {
   final String bookingMode;
@@ -1265,98 +1224,9 @@ class _CompanyStep3BookingMode extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _StepSectionLabel(
-            icon: Icons.calendar_today_outlined,
-            label: context.l10n.bookingModeTitle,
-            color: AppColors.secondary,
-          ),
-          const SizedBox(height: AppSpacing.md),
-
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isNarrow = constraints.maxWidth < 340;
-              final cards = [
-                _BookingModeCard(
-                  modeKey: 'capacity_based',
-                  icon: Icons.storefront_rounded,
-                  title: context.l10n.bookingModeCapacityBasedTitle,
-                  shortBody: context.l10n.bookingModeCapacityBasedShort,
-                  description: context.l10n.bookingModeCapacityBasedDescription,
-                  selected: bookingMode == 'capacity_based',
-                  onTap: () => onBookingModeChanged('capacity_based'),
-                ),
-                _BookingModeCard(
-                  modeKey: 'employee_based',
-                  icon: Icons.groups_rounded,
-                  title: context.l10n.bookingModeEmployeeBasedTitle,
-                  shortBody: context.l10n.bookingModeEmployeeBasedShort,
-                  description: context.l10n.bookingModeEmployeeBasedDescription,
-                  selected: bookingMode == 'employee_based',
-                  onTap: () => onBookingModeChanged('employee_based'),
-                ),
-              ];
-
-              if (isNarrow) {
-                return Column(
-                  children: [
-                    cards[0],
-                    const SizedBox(height: AppSpacing.sm),
-                    cards[1],
-                  ],
-                );
-              }
-              return Row(
-                children: [
-                  Expanded(child: cards[0]),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(child: cards[1]),
-                ],
-              );
-            },
-          ),
-
-          const SizedBox(height: AppSpacing.md),
-
-          // Detailed explanation block for the currently-selected mode
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.sm + 2),
-            decoration: BoxDecoration(
-              color: AppColors.secondary.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-              border: Border.all(
-                color: AppColors.secondary.withValues(alpha: 0.25),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: bookingMode == 'capacity_based'
-                  ? [
-                      _ExplainBullet(text: context.l10n.capacityBasedHint1),
-                      _ExplainBullet(text: context.l10n.capacityBasedHint2),
-                      _ExplainBullet(text: context.l10n.capacityBasedHint3),
-                    ]
-                  : [
-                      _ExplainBullet(text: context.l10n.employeeBasedHint1),
-                      _ExplainBullet(text: context.l10n.employeeBasedHint2),
-                      _ExplainBullet(text: context.l10n.employeeBasedHint3),
-                      _ExplainBullet(text: context.l10n.employeeBasedHint4),
-                    ],
-            ),
-          ),
-
-          const SizedBox(height: AppSpacing.sm),
-
-          Row(
-            children: [
-              const Icon(Icons.info_outline, size: 13, color: AppColors.textHint),
-              const SizedBox(width: AppSpacing.xs),
-              Expanded(
-                child: Text(
-                  context.l10n.settingsEditableLater,
-                  style: const TextStyle(fontSize: 11, color: AppColors.textHint),
-                ),
-              ),
-            ],
+          BookingModePicker(
+            value: bookingMode,
+            onChanged: onBookingModeChanged,
           ),
 
           const SizedBox(height: AppSpacing.lg),
@@ -1383,127 +1253,6 @@ class _CompanyStep3BookingMode extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ExplainBullet extends StatelessWidget {
-  final String text;
-  const _ExplainBullet({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.check_circle_rounded, size: 14, color: AppColors.secondary),
-          const SizedBox(width: AppSpacing.xs),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textPrimary,
-                height: 1.35,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BookingModeCard extends StatelessWidget {
-  final String modeKey;
-  final IconData icon;
-  final String title;
-  final String shortBody;
-  final String description;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _BookingModeCard({
-    required this.modeKey,
-    required this.icon,
-    required this.title,
-    required this.shortBody,
-    required this.description,
-    required this.selected,
-    required this.onTap,
-  });
-
-  void _showInfo(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(icon, size: 18, color: AppColors.secondary),
-            const SizedBox(width: AppSpacing.xs),
-            Expanded(child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
-          ],
-        ),
-        content: Text(description, style: const TextStyle(fontSize: 13, height: 1.5)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(context.l10n.ok),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = selected ? AppColors.secondary : AppColors.border;
-    final borderWidth = selected ? 2.0 : 1.0;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColors.secondary.withValues(alpha: 0.06)
-              : AppColors.background,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(color: borderColor, width: borderWidth),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 22, color: selected ? AppColors.secondary : AppColors.textSecondary),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => _showInfo(context),
-                  child: const Icon(Icons.info_outline, size: 16, color: AppColors.textHint),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: selected ? AppColors.secondary : AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              shortBody,
-              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.4),
-            ),
-          ],
-        ),
       ),
     );
   }

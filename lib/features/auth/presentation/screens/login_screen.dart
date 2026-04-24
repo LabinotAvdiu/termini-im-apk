@@ -11,6 +11,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/brand_logo.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../support/data/models/support_models.dart';
@@ -26,10 +27,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  // TODO: Remove default values before push
-  // final _emailController = TextEditingController(text: 'karim@barbier-parisien.fr');
-  final _emailController = TextEditingController(text: 'donjeta@termini.im');
-  final _passwordController = TextEditingController(text: 'Password1');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _passwordVisible = false;
 
   /// Which social provider is currently running — null / 'google' / 'facebook' /
@@ -111,6 +110,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
+      appBar: AppTopBar.minimal(
+        onBack: () => context.canPop()
+            ? context.pop()
+            : context.go('/landing'),
+      ),
       body: Stack(
         children: [
           // Top decorative gradient arc
@@ -126,14 +131,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.md),
-
-                  // ---- Back button → /landing ----
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: _LandingBackButton(),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
 
                   // ---- Logo + title ----
                   _LogoHeader(),
@@ -240,23 +237,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 }
 
 // ---------------------------------------------------------------------------
-// Back button that jumps to /landing (clean nav — no stack push).
+// Brand wordmark — "Termini" Fraunces + "im" Instrument Serif italic bourgogne
+// Remplace l'ancienne overline "TERMINI IM" all-caps non conforme à la charte.
 // ---------------------------------------------------------------------------
-class _LandingBackButton extends StatelessWidget {
+class _BrandWordmark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.goNamed(RouteNames.landing),
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(color: AppColors.border, width: 1),
-        ),
-        child: const Icon(Icons.arrow_back_rounded,
-            size: 20, color: AppColors.textPrimary),
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: 'Termini',
+            style: GoogleFonts.fraunces(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.2,
+              height: 1.2,
+            ),
+          ),
+          TextSpan(
+            text: 'im',
+            style: GoogleFonts.instrumentSerif(
+              fontSize: 15,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              height: 1.2,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -309,11 +319,8 @@ class _LogoHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        // Uppercase overline
-        Text(
-          'TERMINI IM',
-          style: AppTextStyles.overline.copyWith(letterSpacing: 2.4),
-        ),
+        // Wordmark "Termini im" — Fraunces + Instrument Serif italic bourgogne
+        _BrandWordmark(),
         const SizedBox(height: AppSpacing.xs),
         // Display serif headline
         Text.rich(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
+import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -11,7 +12,11 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/services/app_review_service.dart';
 import '../../../auth/presentation/widgets/auth_required_modal.dart';
+import '../../../auth/presentation/widgets/verify_email_required_modal.dart';
+import '../../../home/presentation/providers/home_providers.dart';
+import '../../../sharing/presentation/widgets/first_booking_share_prompt.dart';
 import '../providers/booking_provider.dart';
 import 'booking_screen_mobile.dart';
 import 'booking_screen_desktop.dart';
@@ -50,10 +55,19 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     _pageController = PageController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // E25 — booking_started
+      ref.read(analyticsProvider).logBookingStarted(salonId: widget.companyId);
+
+      // Carry the date the user picked on the home search ("pour le 23")
+      // into the booking flow so the date picker opens on that day instead
+      // of defaulting to "first available". Null when the user arrived via
+      // a direct link or hadn't narrowed by date.
+      final preselectedDate = ref.read(dateFilterProvider);
       ref.read(bookingProvider.notifier).initialize(
             companyId: widget.companyId,
             serviceId: widget.serviceId,
             preselectedEmployeeId: widget.preselectedEmployeeId,
+            preselectedDate: preselectedDate,
           );
     });
   }
@@ -105,6 +119,15 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       showAuthRequiredModal(context);
       return;
     }
+    // A confirmed booking gets sent by email, so the address has to be a
+    // real one. We block here rather than on confirm so the user doesn't
+    // get to the review screen just to be bounced back — and so they don't
+    // try to change which slot they "almost" booked.
+    final user = authState.user;
+    if (user != null && !user.emailVerified) {
+      showVerifyEmailRequiredModal(context, email: user.email);
+      return;
+    }
     // Changement de step — selectionClick
     ref.read(uxPrefsProvider.notifier).selectionClick();
     ref.read(bookingProvider.notifier).nextStep();
@@ -121,6 +144,21 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     // the second tap. The button opacity/onPressed already reflect this
     // but a rapid double-tap can sneak past the first rebuild.
     if (ref.read(bookingProvider).isLoading) return;
+
+    // Defence in depth — a user who sneaks past [_handleNext] (e.g. by
+    // hotspot-reloading straight onto the confirm step) still gets caught
+    // here before the appointment lands in the DB.
+    final authState = ref.read(authStateProvider);
+    final user = authState.user;
+    if (user == null) {
+      showAuthRequiredModal(context);
+      return;
+    }
+    if (!user.emailVerified) {
+      showVerifyEmailRequiredModal(context, email: user.email);
+      return;
+    }
+
     // Déclenchement de la confirmation — lightImpact avant la requête
     ref.read(uxPrefsProvider.notifier).lightImpact();
 
@@ -138,16 +176,32 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   }
 
   void _showSuccessDialog() {
-    final isCapacityBased =
-        ref.read(bookingProvider).bookingMode == 'capacity_based';
+    final state = ref.read(bookingProvider);
+    // isPending is true only when the salon uses capacity-based mode AND
+    // has NOT enabled auto-approve. With auto-approve on, the booking lands
+    // directly as confirmed, so the success message should say so.
+    final isPending = state.bookingMode == 'capacity_based' &&
+        !state.capacityAutoApprove;
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (_) => _BookingSuccessDialog(
-        isPending: isCapacityBased,
+        isPending: isPending,
         onDone: () {
           Navigator.of(context).pop();
-          context.go('/home');
+          // C17 — After the success dialog closes, maybe show share prompt.
+          // Only fires on first booking; idempotent on subsequent ones.
+          // C18 — After share prompt (or skip), maybe trigger rating dialog.
+          if (!isPending) {
+            showFirstBookingSharePrompt(context, ref).then((_) {
+              // C18 — rating prompt (3rd booking threshold, once/year).
+              maybeAskForAppStoreReview(ref).then((_) {
+                if (mounted) context.go('/home');
+              });
+            });
+          } else {
+            context.go('/home');
+          }
         },
       ),
     );

@@ -211,6 +211,18 @@ class MyCompanyRemoteDatasource {
     }
   }
 
+  /// Toggles the capacity auto-approve flag without changing booking_mode.
+  Future<void> updateCapacityAutoApprove({required bool enabled}) async {
+    try {
+      await _client.put(
+        ApiConstants.myCompanyBookingSettings,
+        data: {'capacity_auto_approve': enabled},
+      );
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
   // ── Company breaks ────────────────────────────────────────────────────────
 
   Future<List<CompanyBreakModel>> getBreaks() async {

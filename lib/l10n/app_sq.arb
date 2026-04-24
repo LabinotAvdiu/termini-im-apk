@@ -533,8 +533,36 @@
       "url": { "type": "String" }
     }
   },
-  "companySetupHeadline": "Mbaro konfigurimin e sallonit",
+  "companySetupHeadline": "Detajet e sallonit",
   "companySetupSubtitle": "Edhe disa detaje për të aktivizuar hapësirën e pronarit.",
+  "companyModeHeadline": "Modaliteti i rezervimit",
+  "companyModeSubtitle": "Si rezervojnë klientët në sallonin tënd.",
+  "companySetupStepIndicator": "Hapi {current} / {total}",
+  "@companySetupStepIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "companySetupNextButton": "Tjetër",
+  "companySetupSubmitButton": "Konfirmo dhe krijo sallonin tim",
+
+  "companySetupModeTitle": "Si funksionon salloni yt?",
+  "companySetupModeIndividualTitle": "Modaliteti individual",
+  "companySetupModeIndividualExample": "P.sh. Sallon me 2 koaferiste, secila me orar të vet",
+  "companySetupModeIndividualBullet1": "Çdo professional ka orarin e vet",
+  "companySetupModeIndividualBullet2": "Klientët zgjedhin profesionistin e preferuar",
+  "companySetupModeIndividualBullet3": "Fto ekipin tënd në çdo moment",
+  "companySetupModeIndividualBullet4": "Rekomandohet për profesionistët që menaxhojnë vetë të ardhurat e tyre",
+  "companySetupModeCapacityTitle": "Modaliteti i kapacitetit",
+  "companySetupModeCapacityExample": "P.sh. Sallon i madh, 5 vende paralele",
+  "companySetupModeCapacityBullet1": "Klientët zgjedhin një termin, jo një profesionist",
+  "companySetupModeCapacityBullet2": "Salloni menaxhon të ardhurat kolektivisht",
+  "companySetupModeCapacityBullet3": "Shto sa më shumë vende sipas nevojës",
+  "companySetupModeCapacityBullet4": "Rekomandohet për institutet me të ardhura të përbashkëta",
+  "companySetupModeBadgePopular": "E zakonshme",
+  "companySetupModeCaption": "Mund ta ndryshosh këtë cilësim më vonë nga Salloni im → Cilësimet.",
+
   "salonUnisex": "Sallon · Burra & Gra",
   "servicesOffered": "të ofruara",
   "approvalsTitle": "MIRATIMET",
@@ -792,8 +820,8 @@
 
   "fullName": "Emri i plotë",
   "gender": "Gjinia",
-  "personalGenderMen": "Mashkull",
-  "personalGenderWomen": "Femër",
+  "personalGenderMen": "Meshkuj",
+  "personalGenderWomen": "Femra",
 
   "myPagesSection": "Faqet e mia",
   "ownerSpaceSection": "Hapësira profesionale",
@@ -806,5 +834,126 @@
   "myBreaksEntry": "Pushimet e mia",
   "myBreaksEntrySubtitle": "Pushime të përsëritura dhe pushime",
   "comingSoon": "Së shpejti",
-  "comingSoonMessage": "Kjo veçori do vijë së shpejti."
+  "comingSoonMessage": "Kjo veçori do vijë së shpejti.",
+
+  "verifyEmailTitle": "Konfirmo email-in",
+  "verifyEmailSubtitle": "Një kod me 6 karaktere u dërgua tek {email}",
+  "@verifyEmailSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyEmailOverline": "VERIFIKIM",
+  "verifyEmailConfirm": "Konfirmo",
+  "verifyEmailResend": "Ridërgo kodin",
+  "verifyEmailResendCooldown": "Ridërgo pas {seconds}s",
+  "@verifyEmailResendCooldown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "verifyEmailSuccess": "Email-i u konfirmua",
+  "verifyEmailSuccessTitle": "Email-i u konfirmua",
+  "verifyEmailSuccessMessage": "Adresa jote tani është e verifikuar. Mund të rezervosh me qetësi.",
+  "verifyEmailSuccessCta": "Kthehu në kryefaqe",
+  "verifyEmailCodeRequired": "Kodi është i detyrueshëm",
+  "verifyEmailCodeLength": "Kodi duhet të ketë 6 karaktere",
+  "verifyEmailErrorInvalid": "Kod i pavlefshëm ose i skaduar",
+  "verifyEmailErrorNotFound": "Asnjë llogari e lidhur me këtë email",
+  "unverifiedBannerMessage": "Konfirmo email-in për të siguruar llogarinë",
+  "unverifiedBannerCta": "Konfirmo",
+  "verifyEmailToBookTitle": "Konfirmo email-in për të rezervuar",
+  "verifyEmailToBookMessage": "Takimi mund të konfirmohet vetëm kur email-i yt është i verifikuar. Merr 30 sekonda.",
+  "verifyEmailToBookCta": "Konfirmo email-in tim",
+  "verifyEmailToBookDismiss": "Më vonë",
+
+  "autoApprovalEnabled": "Miratimi automatik i aktivizuar",
+  "autoApprovalEmptyMessage": "Të gjitha takimet e reja konfirmohen drejtpërdrejt. Kjo listë mbetet bosh ndërsa miratimi automatik është aktiv.",
+  "autoApprovalEditCta": "Ndrysho këtë parametër",
+  "autoApprovalToggleLabel": "Miratim automatik",
+  "autoApprovalToggleHelper": "Takimet e reja do të konfirmohen drejtpërdrejt, pa asnjë hap validimi nga ana jote.",
+  "autoApprovalCapacityOnly": "Vetëm në modalitetin e kapacitetit",
+  "autoApprovalBadgeAuto": "auto",
+  "autoApprovalBadgeManual": "manual",
+  "autoApprovalBadgeTitle": "Konfirmim",
+  "autoApprovalConfirmEnableTitle": "Aktivizo miratimin automatik?",
+  "autoApprovalConfirmEnableMessage": "Të gjitha takimet e reja do të konfirmohen drejtpërdrejt, pa ndërhyrjen tënde.",
+  "autoApprovalConfirmDisableTitle": "Çaktivizo miratimin automatik?",
+  "autoApprovalConfirmDisableMessage": "Takimet e reja do të kalojnë përsëri në listën Për konfirmim.",
+  "autoApprovalConfirmAction": "Konfirmo",
+
+  "deleteAccountModalTitle": "Fshi llogarinë tënde?",
+  "deleteAccountModalDescription": "Kjo do të fshijë përfundimisht llogarinë tënde, historikun e takimeve dhe informacionet personale. Sallot e ruajtura do të hiqen. Kjo veprim nuk mund të zhbëhet.",
+  "deleteAccountModalCheckbox": "Kuptoj që fshirja është e përhershme",
+  "deleteAccountModalContinue": "Vazhdo",
+  "deleteAccountConfirmPrompt": "Shkruaj {keyword} për të konfirmuar",
+  "@deleteAccountConfirmPrompt": {
+    "placeholders": {
+      "keyword": { "type": "String" }
+    }
+  },
+  "deleteAccountConfirmAction": "Fshij llogarinë time përgjithmonë",
+  "deleteAccountTypeKeyword": "FSHIJ",
+  "deleteAccountSuccess": "Llogaria jote është fshirë.",
+  "deleteAccountErrorOwnerSalon": "Duhet të transferosh ose të fshish sallonin tënd para se të fshish llogarinë.",
+  "deleteAccountErrorGeneric": "Ndodhi një gabim. Provo përsëri më vonë.",
+
+  "planningEmptyDayTitle": "S'ke termine sot.",
+  "planningEmptyDaySubtitle": "Koha për një kafe turke?",
+
+  "tomorrowBookingBannerMessage": "Nesër në {time} tek {salon} →",
+  "@tomorrowBookingBannerMessage": {
+    "placeholders": {
+      "time":  { "type": "String" },
+      "salon": { "type": "String" }
+    }
+  },
+
+  "shareAppTitle": "Ndaje Termini im",
+  "shareAppMessage": "Të pëlqen? Një mik që e zbulonë, është edhe një sallon më shumë në Kosovë.",
+  "shareAppCta": "Ndaj",
+  "shareAppLater": "Më vonë",
+
+  "notifCategoryAppointments": "Takime",
+  "notifCategoryCommunity": "Komunitet",
+  "notifCategoryMarketing": "Marketing",
+
+  "notifTypeReminderEveningLabel": "Kujtesë mbrëmjes",
+  "notifTypeReminderEveningDesc": "Merr një kujtesë mbrëmjen para takimit tënd.",
+  "notifTypeReminder2hLabel": "Kujtesë 2 orë para",
+  "notifTypeReminder2hDesc": "Njoftim 2 orë para orës së takimit.",
+  "notifTypeReviewRequestLabel": "Kërkesë për vlerësim",
+  "notifTypeReviewRequestDesc": "Ditën pas vizitës, të pyesim për përvojën tënde.",
+
+  "notifTypeNewReviewLabel": "Vlerësim i ri",
+  "notifTypeNewReviewDesc": "Njoftohu kur një klient publikon një vlerësim për sallonin tënd.",
+  "notifTypeCapacityFullLabel": "Kapaciteti i plotë",
+  "notifTypeCapacityFullDesc": "Njoftim kur të gjitha oraret e një dite janë zënë.",
+  "notifTypeWeeklyDigestLabel": "Përmbledhje javore",
+  "notifTypeWeeklyDigestDesc": "Një përmbledhje e aktivitetit tënd çdo javë.",
+  "notifTypeMonthlyReportLabel": "Raporti mujor",
+  "notifTypeMonthlyReportDesc": "Statistika dhe tendenca të muajit të kaluar.",
+  "notifTypeFavoriteNewPhotosLabel": "Foto të reja (të preferuarat)",
+  "notifTypeFavoriteNewPhotosDesc": "Kur njëri nga sallonët e preferuar shton foto.",
+  "notifTypeFavoriteNewSlotsLabel": "Orare të reja (të preferuarat)",
+  "notifTypeFavoriteNewSlotsDesc": "Kur një sallon i preferuar hap orare të reja.",
+
+  "notifTypeMarketingLabel": "Oferta & lajme",
+  "notifTypeMarketingDesc": "Kampanja, promovime dhe risi të Termini im.",
+
+  "notificationsInboxTitle": "Të marrura",
+  "notificationsInboxUnreadCount": "{count} të palexuara",
+  "@notificationsInboxUnreadCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationsInboxMarkAllRead": "Shëno të gjitha si të lexuara",
+  "notificationsInboxEmptyTitle": "Kutia bosh",
+  "notificationsInboxEmptySubtitle": "Njoftimet e tua do të shfaqen këtu sapo të arrijnë.",
+  "notificationsInboxToday": "Sot",
+  "notificationsInboxYesterday": "Dje",
+  "notificationsChannelPush": "PUSH",
+  "notificationsChannelEmail": "EMAIL",
+  "notificationsChannelInApp": "IN-APP"
 }

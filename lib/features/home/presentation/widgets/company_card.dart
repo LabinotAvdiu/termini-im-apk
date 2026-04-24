@@ -12,6 +12,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
 import '../../data/models/company_card_model.dart';
+import '../providers/home_providers.dart';
 
 class CompanyCard extends ConsumerWidget {
   final CompanyCardModel company;
@@ -419,26 +420,55 @@ class _CombinedSlotsRow extends StatelessWidget {
   }
 }
 
-class _UnifiedSlotChip extends StatelessWidget {
+class _UnifiedSlotChip extends ConsumerWidget {
   final DaySlot slot;
   const _UnifiedSlotChip({required this.slot});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searched = ref.watch(dateFilterProvider);
+    final isTarget = searched != null &&
+        searched.year == slot.date.year &&
+        searched.month == slot.date.month &&
+        searched.day == slot.date.day;
+
+    // Target day = bordeaux hero. The rest keep the existing "ink fill when
+    // bookable / ivory when closed" treatment so the searched day reads
+    // clearly as the hero of the row without muddying the other chips.
+    final Color bg;
+    final Color borderColor;
+    final Color textColor;
+
+    if (isTarget && slot.available) {
+      bg = AppColors.primary;
+      borderColor = AppColors.primary;
+      textColor = AppColors.background;
+    } else if (isTarget) {
+      bg = AppColors.background;
+      borderColor = AppColors.primary;
+      textColor = AppColors.primary;
+    } else if (slot.available) {
+      bg = AppColors.textPrimary;
+      borderColor = AppColors.textPrimary;
+      textColor = AppColors.background;
+    } else {
+      bg = AppColors.background;
+      borderColor = AppColors.border;
+      textColor = AppColors.textHint;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: slot.available ? AppColors.textPrimary : AppColors.background,
-        border: Border.all(
-          color: slot.available ? AppColors.textPrimary : AppColors.border,
-        ),
+        color: bg,
+        border: Border.all(color: borderColor, width: isTarget ? 1.5 : 1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         '${slot.date.day.toString().padLeft(2, '0')}/'
         '${slot.date.month.toString().padLeft(2, '0')}',
         style: AppTextStyles.caption.copyWith(
-          color: slot.available ? AppColors.background : AppColors.textHint,
+          color: textColor,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),

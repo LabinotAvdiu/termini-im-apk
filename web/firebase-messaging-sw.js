@@ -1,20 +1,19 @@
 // firebase-messaging-sw.js — Service Worker pour les notifications push web (FCM)
 //
-// TODO: Remplace les valeurs PLACEHOLDER ci-dessous par celles de ta Firebase Console.
-//   1. Va sur https://console.firebase.google.com → Paramètres du projet → Général → Tes applications web
-//   2. Copie l'objet firebaseConfig de ton app web
-//   3. Remplace chaque PLACEHOLDER par la vraie valeur
+// Config synchronisée depuis la Firebase Console du projet termini-im-cd5ff.
+// La VAPID key correspondante vit côté app Flutter (notification_service.dart).
 
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey:            'PLACEHOLDER_API_KEY',
-  authDomain:        'termini-im-placeholder.firebaseapp.com',
-  projectId:         'termini-im-placeholder',
-  storageBucket:     'termini-im-placeholder.appspot.com',
-  messagingSenderId: '000000000000',
-  appId:             'PLACEHOLDER_APP_ID',
+  apiKey:            'AIzaSyCofTfimS6Rw1JPUTOuQYwlGYoYMpzox4k',
+  authDomain:        'termini-im-cd5ff.firebaseapp.com',
+  projectId:         'termini-im-cd5ff',
+  storageBucket:     'termini-im-cd5ff.firebasestorage.app',
+  messagingSenderId: '759517993388',
+  appId:             '1:759517993388:web:f57c6cd9ce6f7c688d8209',
+  measurementId:     'G-BWV621VQYZ',
 });
 
 const messaging = firebase.messaging();

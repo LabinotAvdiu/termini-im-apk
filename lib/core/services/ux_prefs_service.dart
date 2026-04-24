@@ -13,6 +13,11 @@ const _kHapticKey = 'haptic_enabled';
 const _kSoundsKey = 'ui_sounds_enabled';
 const _kAnimationsKey = 'animations_enabled';
 
+// C17 / C18 — booking flow engagement counters
+const _kCompletedBookingsKey = 'completed_bookings_count';
+const _kSharePromptShownKey = 'share_prompt_shown';
+const _kLastReviewPromptAtKey = 'last_review_prompt_at';
+
 class UxPrefsService {
   const UxPrefsService(this._storage);
 
@@ -45,4 +50,34 @@ class UxPrefsService {
 
   Future<void> setAnimationsEnabled(bool v) =>
       _storage.write(key: _kAnimationsKey, value: v.toString());
+
+  // ── C17 / C18 — Booking engagement counters ──────────────────────────────
+
+  Future<int> getCompletedBookingsCount() async {
+    final v = await _storage.read(key: _kCompletedBookingsKey);
+    return int.tryParse(v ?? '0') ?? 0;
+  }
+
+  Future<void> incrementCompletedBookings() async {
+    final current = await getCompletedBookingsCount();
+    await _storage.write(
+        key: _kCompletedBookingsKey, value: (current + 1).toString());
+  }
+
+  Future<bool> isSharePromptShown() async {
+    final v = await _storage.read(key: _kSharePromptShownKey);
+    return v == 'true';
+  }
+
+  Future<void> setSharePromptShown() =>
+      _storage.write(key: _kSharePromptShownKey, value: 'true');
+
+  Future<DateTime?> getLastReviewPromptAt() async {
+    final v = await _storage.read(key: _kLastReviewPromptAtKey);
+    if (v == null) return null;
+    return DateTime.tryParse(v);
+  }
+
+  Future<void> setLastReviewPromptAt(DateTime dt) =>
+      _storage.write(key: _kLastReviewPromptAtKey, value: dt.toIso8601String());
 }

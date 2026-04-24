@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../employee_schedule/data/models/schedule_settings_models.dart';
 import '../../data/datasources/my_company_remote_datasource.dart';
 import '../../data/models/my_company_model.dart';
@@ -189,15 +190,7 @@ class _CapacitySettingsScreenState
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        foregroundColor: AppColors.textPrimary,
-        title: Text(
-          context.l10n.capacitySettings,
-          style: AppTextStyles.h3,
-        ),
-      ),
+      appBar: AppTopBar.standard(title: context.l10n.capacitySettings),
       body: RefreshIndicator(
         color: AppColors.primary,
         onRefresh: () => ref.read(_companyScheduleProvider.notifier).load(),
@@ -348,60 +341,7 @@ class _CapacitySettingsScreenState
   }
 }
 
-// ---------------------------------------------------------------------------
-// Section card — mirror of the one used in ScheduleSettingsScreen so the two
-// screens read identical. Icon + Fraunces title + optional trailing button.
-// ---------------------------------------------------------------------------
-
-class _SectionCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<Widget> children;
-  final Widget? trailing;
-
-  const _SectionCard({
-    required this.title,
-    required this.icon,
-    required this.children,
-    this.trailing,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1),
-        boxShadow: const [
-          BoxShadow(
-              color: AppColors.cardShadow,
-              blurRadius: 6,
-              offset: Offset(0, 2)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md,
-                AppSpacing.md, AppSpacing.sm),
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: AppColors.primary),
-                const SizedBox(width: AppSpacing.xs + 2),
-                Expanded(child: Text(title, style: AppTextStyles.h3)),
-                if (trailing != null) trailing!,
-              ],
-            ),
-          ),
-          const Divider(height: 1, color: AppColors.divider),
-          ...children,
-        ],
-      ),
-    );
-  }
-}
+// _SectionCard supprimé — remplacé par AppCard.section / AppCard.list.
 
 // ---------------------------------------------------------------------------
 // Breaks list card
@@ -434,7 +374,46 @@ class _BreaksCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
+    final items = breaks.isEmpty
+        ? [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Text(
+                context.l10n.noBreaksYet,
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textHint),
+              ),
+            ),
+          ]
+        : breaks
+            .map(
+              (b) => ListTile(
+                dense: true,
+                leading: const Icon(Icons.coffee_outlined,
+                    size: 18, color: AppColors.textHint),
+                title: Text(
+                  (b.label?.isNotEmpty ?? false)
+                      ? b.label!
+                      : context.l10n.breakSlot,
+                  style: AppTextStyles.body
+                      .copyWith(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  '${_dayLabel(context, b.dayOfWeek)} · '
+                  '${b.startTime} – ${b.endTime}',
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.textHint),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline_rounded,
+                      color: AppColors.error),
+                  onPressed: () => onDelete(b.id),
+                ),
+              ),
+            )
+            .toList();
+
+    return AppCard.list(
       title: context.l10n.breaks,
       icon: Icons.coffee_rounded,
       trailing: IconButton(
@@ -442,43 +421,7 @@ class _BreaksCard extends StatelessWidget {
         onPressed: onAdd,
         tooltip: context.l10n.addBreak,
       ),
-      children: [
-        if (breaks.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Text(
-              context.l10n.noBreaksYet,
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.textHint),
-            ),
-          )
-        else
-          ...breaks.map(
-            (b) => ListTile(
-              dense: true,
-              leading: const Icon(Icons.coffee_outlined,
-                  size: 18, color: AppColors.textHint),
-              title: Text(
-                (b.label?.isNotEmpty ?? false)
-                    ? b.label!
-                    : context.l10n.breakSlot,
-                style: AppTextStyles.body
-                    .copyWith(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                '${_dayLabel(context, b.dayOfWeek)} · '
-                '${b.startTime} – ${b.endTime}',
-                style: AppTextStyles.caption
-                    .copyWith(color: AppColors.textHint),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline_rounded,
-                    color: AppColors.error),
-                onPressed: () => onDelete(b.id),
-              ),
-            ),
-          ),
-      ],
+      items: items,
     );
   }
 }
@@ -501,7 +444,46 @@ class _DaysOffCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sorted = [...daysOff]..sort((a, b) => a.date.compareTo(b.date));
-    return _SectionCard(
+
+    final items = sorted.isEmpty
+        ? [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Text(
+                context.l10n.noDaysOffYet,
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textHint),
+              ),
+            ),
+          ]
+        : sorted
+            .map(
+              (d) => ListTile(
+                dense: true,
+                leading: const Icon(Icons.event_busy_outlined,
+                    size: 18, color: AppColors.textHint),
+                title: Text(
+                  _formatDate(d.date),
+                  style: AppTextStyles.body
+                      .copyWith(fontWeight: FontWeight.w600),
+                ),
+                subtitle: d.reason != null && d.reason!.isNotEmpty
+                    ? Text(
+                        d.reason!,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textHint),
+                      )
+                    : null,
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline_rounded,
+                      color: AppColors.error),
+                  onPressed: () => onDelete(d.id),
+                ),
+              ),
+            )
+            .toList();
+
+    return AppCard.list(
       title: context.l10n.daysOff,
       icon: Icons.event_busy_rounded,
       trailing: IconButton(
@@ -509,42 +491,7 @@ class _DaysOffCard extends StatelessWidget {
         onPressed: onAdd,
         tooltip: context.l10n.addDayOff,
       ),
-      children: [
-        if (sorted.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Text(
-              context.l10n.noDaysOffYet,
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.textHint),
-            ),
-          )
-        else
-          ...sorted.map(
-            (d) => ListTile(
-              dense: true,
-              leading: const Icon(Icons.event_busy_outlined,
-                  size: 18, color: AppColors.textHint),
-              title: Text(
-                _formatDate(d.date),
-                style: AppTextStyles.body
-                    .copyWith(fontWeight: FontWeight.w600),
-              ),
-              subtitle: d.reason != null && d.reason!.isNotEmpty
-                  ? Text(
-                      d.reason!,
-                      style: AppTextStyles.caption
-                          .copyWith(color: AppColors.textHint),
-                    )
-                  : null,
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline_rounded,
-                    color: AppColors.error),
-                onPressed: () => onDelete(d.id),
-              ),
-            ),
-          ),
-      ],
+      items: items,
     );
   }
 
@@ -806,10 +753,4 @@ class _TimeTile extends StatelessWidget {
   }
 }
 
-// Suppress an unused-import analyzer hint on GoogleFonts when the tile above
-// doesn't reference it — the other widgets in this file do, so the import
-// stays. No-op symbol kept here to anchor the intent.
-// ignore: unused_element
-void _anchorGoogleFonts() {
-  GoogleFonts.fraunces();
-}
+

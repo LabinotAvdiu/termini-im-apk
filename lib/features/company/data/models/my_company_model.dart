@@ -278,6 +278,9 @@ class MyCompanyModel {
   final List<MyEmployeeModel> employees;
   final List<OpeningHourModel> openingHours;
   final String bookingMode;
+  // Auto-approve: when true, capacity_based bookings skip the pending queue
+  // and land directly as confirmed. Ignored in employee_based mode.
+  final bool capacityAutoApprove;
   // Feature 1 — Cancellation window set by the owner
   final int minCancelHours;
   // Geospatial fields — null when the salon hasn't been geocoded yet.
@@ -301,6 +304,7 @@ class MyCompanyModel {
     this.employees = const [],
     this.openingHours = const [],
     this.bookingMode = 'employee_based',
+    this.capacityAutoApprove = false,
     this.minCancelHours = 2,
     this.latitude,
     this.longitude,
@@ -324,6 +328,7 @@ class MyCompanyModel {
     List<MyEmployeeModel>? employees,
     List<OpeningHourModel>? openingHours,
     String? bookingMode,
+    bool? capacityAutoApprove,
     int? minCancelHours,
     double? latitude,
     double? longitude,
@@ -342,6 +347,7 @@ class MyCompanyModel {
       employees: employees ?? this.employees,
       openingHours: openingHours ?? this.openingHours,
       bookingMode: bookingMode ?? this.bookingMode,
+      capacityAutoApprove: capacityAutoApprove ?? this.capacityAutoApprove,
       minCancelHours: minCancelHours ?? this.minCancelHours,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -378,6 +384,9 @@ class MyCompanyModel {
       bookingMode: d['bookingMode'] as String? ??
           d['booking_mode'] as String? ??
           'employee_based',
+      capacityAutoApprove: d['capacityAutoApprove'] as bool? ??
+          d['capacity_auto_approve'] as bool? ??
+          false,
       minCancelHours: d['minCancelHours'] as int? ??
           d['min_cancel_hours'] as int? ??
           2,

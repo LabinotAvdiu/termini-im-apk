@@ -29,9 +29,16 @@ final authRemoteDatasourceProvider = Provider<AuthRemoteDatasource>((ref) {
   return AuthRemoteDatasource(client: client);
 });
 
-/// Provides the [AuthRepository] wired with datasource + storage.
+/// Provides the [AuthRepository] wired with datasource + storage + interceptor.
+/// The interceptor reference lets the repo push the in-memory refresh token
+/// into the interceptor so silent refresh works for rememberMe=false sessions.
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final datasource = ref.watch(authRemoteDatasourceProvider);
   final storage = ref.watch(_secureStorageProvider);
-  return AuthRepository(datasource: datasource, storage: storage);
+  final interceptor = ref.watch(apiInterceptorProvider);
+  return AuthRepository(
+    datasource: datasource,
+    storage: storage,
+    interceptor: interceptor,
+  );
 });

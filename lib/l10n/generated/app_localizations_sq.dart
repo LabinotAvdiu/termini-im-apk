@@ -1460,11 +1460,84 @@ class AppLocalizationsSq extends AppLocalizations {
   }
 
   @override
-  String get companySetupHeadline => 'Mbaro konfigurimin e sallonit';
+  String get companySetupHeadline => 'Detajet e sallonit';
 
   @override
   String get companySetupSubtitle =>
       'Edhe disa detaje për të aktivizuar hapësirën e pronarit.';
+
+  @override
+  String get companyModeHeadline => 'Modaliteti i rezervimit';
+
+  @override
+  String get companyModeSubtitle => 'Si rezervojnë klientët në sallonin tënd.';
+
+  @override
+  String companySetupStepIndicator(int current, int total) {
+    return 'Hapi $current / $total';
+  }
+
+  @override
+  String get companySetupNextButton => 'Tjetër';
+
+  @override
+  String get companySetupSubmitButton => 'Konfirmo dhe krijo sallonin tim';
+
+  @override
+  String get companySetupModeTitle => 'Si funksionon salloni yt?';
+
+  @override
+  String get companySetupModeIndividualTitle => 'Modaliteti individual';
+
+  @override
+  String get companySetupModeIndividualExample =>
+      'P.sh. Sallon me 2 koaferiste, secila me orar të vet';
+
+  @override
+  String get companySetupModeIndividualBullet1 =>
+      'Çdo professional ka orarin e vet';
+
+  @override
+  String get companySetupModeIndividualBullet2 =>
+      'Klientët zgjedhin profesionistin e preferuar';
+
+  @override
+  String get companySetupModeIndividualBullet3 =>
+      'Fto ekipin tënd në çdo moment';
+
+  @override
+  String get companySetupModeIndividualBullet4 =>
+      'Rekomandohet për profesionistët që menaxhojnë vetë të ardhurat e tyre';
+
+  @override
+  String get companySetupModeCapacityTitle => 'Modaliteti i kapacitetit';
+
+  @override
+  String get companySetupModeCapacityExample =>
+      'P.sh. Sallon i madh, 5 vende paralele';
+
+  @override
+  String get companySetupModeCapacityBullet1 =>
+      'Klientët zgjedhin një termin, jo një profesionist';
+
+  @override
+  String get companySetupModeCapacityBullet2 =>
+      'Salloni menaxhon të ardhurat kolektivisht';
+
+  @override
+  String get companySetupModeCapacityBullet3 =>
+      'Shto sa më shumë vende sipas nevojës';
+
+  @override
+  String get companySetupModeCapacityBullet4 =>
+      'Rekomandohet për institutet me të ardhura të përbashkëta';
+
+  @override
+  String get companySetupModeBadgePopular => 'E zakonshme';
+
+  @override
+  String get companySetupModeCaption =>
+      'Mund ta ndryshosh këtë cilësim më vonë nga Salloni im → Cilësimet.';
 
   @override
   String get salonUnisex => 'Sallon · Burra & Gra';
@@ -1981,10 +2054,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get gender => 'Gjinia';
 
   @override
-  String get personalGenderMen => 'Mashkull';
+  String get personalGenderMen => 'Meshkuj';
 
   @override
-  String get personalGenderWomen => 'Femër';
+  String get personalGenderWomen => 'Femra';
 
   @override
   String get myPagesSection => 'Faqet e mia';
@@ -2021,4 +2094,289 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get comingSoonMessage => 'Kjo veçori do vijë së shpejti.';
+
+  @override
+  String get verifyEmailTitle => 'Konfirmo email-in';
+
+  @override
+  String verifyEmailSubtitle(String email) {
+    return 'Një kod me 6 karaktere u dërgua tek $email';
+  }
+
+  @override
+  String get verifyEmailOverline => 'VERIFIKIM';
+
+  @override
+  String get verifyEmailConfirm => 'Konfirmo';
+
+  @override
+  String get verifyEmailResend => 'Ridërgo kodin';
+
+  @override
+  String verifyEmailResendCooldown(int seconds) {
+    return 'Ridërgo pas ${seconds}s';
+  }
+
+  @override
+  String get verifyEmailSuccess => 'Email-i u konfirmua';
+
+  @override
+  String get verifyEmailSuccessTitle => 'Email-i u konfirmua';
+
+  @override
+  String get verifyEmailSuccessMessage =>
+      'Adresa jote tani është e verifikuar. Mund të rezervosh me qetësi.';
+
+  @override
+  String get verifyEmailSuccessCta => 'Kthehu në kryefaqe';
+
+  @override
+  String get verifyEmailCodeRequired => 'Kodi është i detyrueshëm';
+
+  @override
+  String get verifyEmailCodeLength => 'Kodi duhet të ketë 6 karaktere';
+
+  @override
+  String get verifyEmailErrorInvalid => 'Kod i pavlefshëm ose i skaduar';
+
+  @override
+  String get verifyEmailErrorNotFound => 'Asnjë llogari e lidhur me këtë email';
+
+  @override
+  String get unverifiedBannerMessage =>
+      'Konfirmo email-in për të siguruar llogarinë';
+
+  @override
+  String get unverifiedBannerCta => 'Konfirmo';
+
+  @override
+  String get verifyEmailToBookTitle => 'Konfirmo email-in për të rezervuar';
+
+  @override
+  String get verifyEmailToBookMessage =>
+      'Takimi mund të konfirmohet vetëm kur email-i yt është i verifikuar. Merr 30 sekonda.';
+
+  @override
+  String get verifyEmailToBookCta => 'Konfirmo email-in tim';
+
+  @override
+  String get verifyEmailToBookDismiss => 'Më vonë';
+
+  @override
+  String get autoApprovalEnabled => 'Miratimi automatik i aktivizuar';
+
+  @override
+  String get autoApprovalEmptyMessage =>
+      'Të gjitha takimet e reja konfirmohen drejtpërdrejt. Kjo listë mbetet bosh ndërsa miratimi automatik është aktiv.';
+
+  @override
+  String get autoApprovalEditCta => 'Ndrysho këtë parametër';
+
+  @override
+  String get autoApprovalToggleLabel => 'Miratim automatik';
+
+  @override
+  String get autoApprovalToggleHelper =>
+      'Takimet e reja do të konfirmohen drejtpërdrejt, pa asnjë hap validimi nga ana jote.';
+
+  @override
+  String get autoApprovalCapacityOnly => 'Vetëm në modalitetin e kapacitetit';
+
+  @override
+  String get autoApprovalBadgeAuto => 'auto';
+
+  @override
+  String get autoApprovalBadgeManual => 'manual';
+
+  @override
+  String get autoApprovalBadgeTitle => 'Konfirmim';
+
+  @override
+  String get autoApprovalConfirmEnableTitle => 'Aktivizo miratimin automatik?';
+
+  @override
+  String get autoApprovalConfirmEnableMessage =>
+      'Të gjitha takimet e reja do të konfirmohen drejtpërdrejt, pa ndërhyrjen tënde.';
+
+  @override
+  String get autoApprovalConfirmDisableTitle =>
+      'Çaktivizo miratimin automatik?';
+
+  @override
+  String get autoApprovalConfirmDisableMessage =>
+      'Takimet e reja do të kalojnë përsëri në listën Për konfirmim.';
+
+  @override
+  String get autoApprovalConfirmAction => 'Konfirmo';
+
+  @override
+  String get deleteAccountModalTitle => 'Fshi llogarinë tënde?';
+
+  @override
+  String get deleteAccountModalDescription =>
+      'Kjo do të fshijë përfundimisht llogarinë tënde, historikun e takimeve dhe informacionet personale. Sallot e ruajtura do të hiqen. Kjo veprim nuk mund të zhbëhet.';
+
+  @override
+  String get deleteAccountModalCheckbox =>
+      'Kuptoj që fshirja është e përhershme';
+
+  @override
+  String get deleteAccountModalContinue => 'Vazhdo';
+
+  @override
+  String deleteAccountConfirmPrompt(String keyword) {
+    return 'Shkruaj $keyword për të konfirmuar';
+  }
+
+  @override
+  String get deleteAccountConfirmAction => 'Fshij llogarinë time përgjithmonë';
+
+  @override
+  String get deleteAccountTypeKeyword => 'FSHIJ';
+
+  @override
+  String get deleteAccountSuccess => 'Llogaria jote është fshirë.';
+
+  @override
+  String get deleteAccountErrorOwnerSalon =>
+      'Duhet të transferosh ose të fshish sallonin tënd para se të fshish llogarinë.';
+
+  @override
+  String get deleteAccountErrorGeneric =>
+      'Ndodhi një gabim. Provo përsëri më vonë.';
+
+  @override
+  String get planningEmptyDayTitle => 'S\'ke termine sot.';
+
+  @override
+  String get planningEmptyDaySubtitle => 'Koha për një kafe turke?';
+
+  @override
+  String tomorrowBookingBannerMessage(String time, String salon) {
+    return 'Nesër në $time tek $salon →';
+  }
+
+  @override
+  String get shareAppTitle => 'Ndaje Termini im';
+
+  @override
+  String get shareAppMessage =>
+      'Të pëlqen? Një mik që e zbulonë, është edhe një sallon më shumë në Kosovë.';
+
+  @override
+  String get shareAppCta => 'Ndaj';
+
+  @override
+  String get shareAppLater => 'Më vonë';
+
+  @override
+  String get notifCategoryAppointments => 'Takime';
+
+  @override
+  String get notifCategoryCommunity => 'Komunitet';
+
+  @override
+  String get notifCategoryMarketing => 'Marketing';
+
+  @override
+  String get notifTypeReminderEveningLabel => 'Kujtesë mbrëmjes';
+
+  @override
+  String get notifTypeReminderEveningDesc =>
+      'Merr një kujtesë mbrëmjen para takimit tënd.';
+
+  @override
+  String get notifTypeReminder2hLabel => 'Kujtesë 2 orë para';
+
+  @override
+  String get notifTypeReminder2hDesc => 'Njoftim 2 orë para orës së takimit.';
+
+  @override
+  String get notifTypeReviewRequestLabel => 'Kërkesë për vlerësim';
+
+  @override
+  String get notifTypeReviewRequestDesc =>
+      'Ditën pas vizitës, të pyesim për përvojën tënde.';
+
+  @override
+  String get notifTypeNewReviewLabel => 'Vlerësim i ri';
+
+  @override
+  String get notifTypeNewReviewDesc =>
+      'Njoftohu kur një klient publikon një vlerësim për sallonin tënd.';
+
+  @override
+  String get notifTypeCapacityFullLabel => 'Kapaciteti i plotë';
+
+  @override
+  String get notifTypeCapacityFullDesc =>
+      'Njoftim kur të gjitha oraret e një dite janë zënë.';
+
+  @override
+  String get notifTypeWeeklyDigestLabel => 'Përmbledhje javore';
+
+  @override
+  String get notifTypeWeeklyDigestDesc =>
+      'Një përmbledhje e aktivitetit tënd çdo javë.';
+
+  @override
+  String get notifTypeMonthlyReportLabel => 'Raporti mujor';
+
+  @override
+  String get notifTypeMonthlyReportDesc =>
+      'Statistika dhe tendenca të muajit të kaluar.';
+
+  @override
+  String get notifTypeFavoriteNewPhotosLabel => 'Foto të reja (të preferuarat)';
+
+  @override
+  String get notifTypeFavoriteNewPhotosDesc =>
+      'Kur njëri nga sallonët e preferuar shton foto.';
+
+  @override
+  String get notifTypeFavoriteNewSlotsLabel => 'Orare të reja (të preferuarat)';
+
+  @override
+  String get notifTypeFavoriteNewSlotsDesc =>
+      'Kur një sallon i preferuar hap orare të reja.';
+
+  @override
+  String get notifTypeMarketingLabel => 'Oferta & lajme';
+
+  @override
+  String get notifTypeMarketingDesc =>
+      'Kampanja, promovime dhe risi të Termini im.';
+
+  @override
+  String get notificationsInboxTitle => 'Të marrura';
+
+  @override
+  String notificationsInboxUnreadCount(int count) {
+    return '$count të palexuara';
+  }
+
+  @override
+  String get notificationsInboxMarkAllRead => 'Shëno të gjitha si të lexuara';
+
+  @override
+  String get notificationsInboxEmptyTitle => 'Kutia bosh';
+
+  @override
+  String get notificationsInboxEmptySubtitle =>
+      'Njoftimet e tua do të shfaqen këtu sapo të arrijnë.';
+
+  @override
+  String get notificationsInboxToday => 'Sot';
+
+  @override
+  String get notificationsInboxYesterday => 'Dje';
+
+  @override
+  String get notificationsChannelPush => 'PUSH';
+
+  @override
+  String get notificationsChannelEmail => 'EMAIL';
+
+  @override
+  String get notificationsChannelInApp => 'IN-APP';
 }

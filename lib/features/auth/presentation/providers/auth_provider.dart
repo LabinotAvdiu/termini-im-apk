@@ -8,6 +8,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../../../core/services/analytics_service.dart';
+import '../../../../core/services/crash_reporter.dart';
 import '../../../../core/auth/google_web_auth_stub.dart'
     if (dart.library.js_interop) '../../../../core/auth/google_web_auth_web.dart'
     as gwa;
@@ -23,6 +25,27 @@ import '../../../notifications/data/repositories/notification_repository.dart'
     show notificationRepositoryProvider;
 
 enum UserRole { user, company, employee }
+
+// ---------------------------------------------------------------------------
+// Delete account result — sealed class for type-safe UI handling
+// ---------------------------------------------------------------------------
+
+sealed class DeleteAccountResult {
+  const DeleteAccountResult();
+}
+
+final class DeleteAccountSuccess extends DeleteAccountResult {
+  const DeleteAccountSuccess();
+}
+
+final class DeleteAccountOwnerSalon extends DeleteAccountResult {
+  const DeleteAccountOwnerSalon();
+}
+
+final class DeleteAccountError extends DeleteAccountResult {
+  final Object error;
+  const DeleteAccountError(this.error);
+}
 
 // ---------------------------------------------------------------------------
 // State
@@ -204,16 +227,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
         rememberMe: state.rememberMe,
       );
+      final resolvedRoleLogin = _resolveRole(response.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: _resolveRole(response.role, response.user),
+        role: resolvedRoleLogin,
         error: null,
       );
+      // E25 — user properties au login
+      final roleStrLogin = resolvedRoleLogin == UserRole.company
+          ? 'owner'
+          : resolvedRoleLogin == UserRole.employee
+              ? 'employee'
+              : 'client';
+      unawaited(AnalyticsService.instance.setUserId(response.user.id));
+      unawaited(AnalyticsService.instance.setUserRole(roleStrLogin));
+      unawaited(AnalyticsService.instance.setUserLocale(
+        response.user.locale ?? 'sq',
+      ));
+      unawaited(CrashReporter.instance.setUserId(response.user.id));
       // Enregistre le token FCM après login réussi (fire-and-forget).
-      unawaited(_registerFcmToken());
+      // Owners en cours de setup (needsCompanySetup) ne déclenchent pas la
+      // popup système ici — elle sera déclenchée à la fin de completeCompanySignup().
+      if (!state.needsCompanySetup) {
+        unawaited(_registerFcmToken());
+      }
     } on ApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -250,6 +290,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? locale,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
+    // E25 — signup_started
+    unawaited(AnalyticsService.instance.logSignupStarted(method: 'email'));
     try {
       final data = <String, dynamic>{
         'email': email,
@@ -275,17 +317,38 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
+      final resolvedRole = _resolveRole(response.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: _resolveRole(response.role, response.user),
+        role: resolvedRole,
         error: null,
         justSignedUp: true,
       );
+      // E25 — signup_completed + user properties
+      final roleStr = resolvedRole == UserRole.company
+          ? 'owner'
+          : resolvedRole == UserRole.employee
+              ? 'employee'
+              : 'client';
+      unawaited(AnalyticsService.instance.logSignupCompleted(
+        method: 'email',
+        role: roleStr,
+      ));
+      unawaited(AnalyticsService.instance.setUserId(response.user.id));
+      unawaited(AnalyticsService.instance.setUserRole(roleStr));
+      unawaited(AnalyticsService.instance.setUserLocale(
+        response.user.locale ?? 'sq',
+      ));
+      unawaited(CrashReporter.instance.setUserId(response.user.id));
       // Enregistre le token FCM après signup réussi (fire-and-forget).
-      unawaited(_registerFcmToken());
+      // Owners en cours de setup (needsCompanySetup) ne déclenchent pas la
+      // popup système ici — elle sera déclenchée à la fin de completeCompanySignup().
+      if (!state.needsCompanySetup) {
+        unawaited(_registerFcmToken());
+      }
     } on ApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -350,16 +413,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
+      final resolvedRoleGoogle = _resolveRole(response.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: _resolveRole(response.role, response.user),
+        role: resolvedRoleGoogle,
         needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
-      unawaited(_registerFcmToken());
+      // E25 — user props
+      final roleStrGoogle = resolvedRoleGoogle == UserRole.company
+          ? 'owner'
+          : resolvedRoleGoogle == UserRole.employee
+              ? 'employee'
+              : 'client';
+      unawaited(AnalyticsService.instance.setUserId(response.user.id));
+      unawaited(AnalyticsService.instance.setUserRole(roleStrGoogle));
+      unawaited(AnalyticsService.instance.setUserLocale(
+        response.user.locale ?? 'sq',
+      ));
+      unawaited(CrashReporter.instance.setUserId(response.user.id));
+      // FCM popup uniquement si le user n'a pas de setup salon en cours.
+      if (!state.needsCompanySetup) {
+        unawaited(_registerFcmToken());
+      }
       return true;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
@@ -408,6 +487,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         justSignedUp: true,
         error: null,
       );
+      // needsCompanySetup vient de passer à false : c'est maintenant le bon
+      // moment pour demander la permission FCM. Le user arrive sur le dashboard
+      // salon — la popup est contextuelle, pas au milieu de l'onboarding.
+      unawaited(_registerFcmToken());
       return true;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
@@ -444,16 +527,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
+      final resolvedRoleFb = _resolveRole(response.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: _resolveRole(response.role, response.user),
+        role: resolvedRoleFb,
         needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
-      unawaited(_registerFcmToken());
+      // E25 — user props
+      final roleStrFb = resolvedRoleFb == UserRole.company
+          ? 'owner'
+          : resolvedRoleFb == UserRole.employee
+              ? 'employee'
+              : 'client';
+      unawaited(AnalyticsService.instance.setUserId(response.user.id));
+      unawaited(AnalyticsService.instance.setUserRole(roleStrFb));
+      unawaited(AnalyticsService.instance.setUserLocale(
+        response.user.locale ?? 'sq',
+      ));
+      unawaited(CrashReporter.instance.setUserId(response.user.id));
+      // FCM popup uniquement si le user n'a pas de setup salon en cours.
+      if (!state.needsCompanySetup) {
+        unawaited(_registerFcmToken());
+      }
       return true;
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e);
@@ -493,16 +592,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
+      final resolvedRoleApple = _resolveRole(response.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: _resolveRole(response.role, response.user),
+        role: resolvedRoleApple,
         needsCompanySetup: response.needsCompanySetup,
         error: null,
       );
-      unawaited(_registerFcmToken());
+      // E25 — user props
+      final roleStrApple = resolvedRoleApple == UserRole.company
+          ? 'owner'
+          : resolvedRoleApple == UserRole.employee
+              ? 'employee'
+              : 'client';
+      unawaited(AnalyticsService.instance.setUserId(response.user.id));
+      unawaited(AnalyticsService.instance.setUserRole(roleStrApple));
+      unawaited(AnalyticsService.instance.setUserLocale(
+        response.user.locale ?? 'sq',
+      ));
+      unawaited(CrashReporter.instance.setUserId(response.user.id));
+      // FCM popup uniquement si le user n'a pas de setup salon en cours.
+      if (!state.needsCompanySetup) {
+        unawaited(_registerFcmToken());
+      }
       return true;
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) {
@@ -517,6 +632,55 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e);
       return false;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Email verification
+  // ---------------------------------------------------------------------------
+
+  /// Submits the 6-char OTP. On success, marks the local user as verified and
+  /// returns true so the screen can pop and show a success toast.
+  Future<bool> verifyEmail({required String code}) async {
+    final email = state.user?.email;
+    if (email == null) return false;
+
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      await _repository.verifyEmail(email: email, token: code);
+      final updatedUser = state.user?.copyWith(emailVerified: true);
+      state = state.copyWith(
+        isLoading: false,
+        user: updatedUser,
+        error: null,
+      );
+      // E25 — email_verified
+      unawaited(AnalyticsService.instance.logEmailVerified());
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
+    }
+  }
+
+  /// Triggers a new verification email. The backend throttles this to 3 per
+  /// minute — a 429/422 response surfaces as a [ValidationException] with a
+  /// user-facing message already set by the server.
+  Future<void> resendVerification() async {
+    final email = state.user?.email;
+    if (email == null) return;
+
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      await _repository.resendVerification(email: email);
+      state = state.copyWith(isLoading: false, error: null);
+    } on ApiException catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
     }
   }
 
@@ -592,6 +756,36 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // the checkbox default stays coherent on the next login screen visit.
     // isGuest is cleared so the user lands back on /landing.
     state = AuthState(rememberMe: state.rememberMe);
+    // E25 — clear user identity
+    unawaited(AnalyticsService.instance.clearUserId());
+    unawaited(CrashReporter.instance.clearUserId());
+  }
+
+  // ---------------------------------------------------------------------------
+  // Delete account — required by App Store (2022+) and Google Play (2024+)
+  // ---------------------------------------------------------------------------
+
+  Future<DeleteAccountResult> deleteAccount() async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      // Unregister FCM before the server token is revoked.
+      await _unregisterFcmToken();
+
+      await _repository.deleteAccount();
+
+      // Clear local state exactly as logout does.
+      state = AuthState(rememberMe: state.rememberMe);
+      return const DeleteAccountSuccess();
+    } on OwnerHasSalonException {
+      state = state.copyWith(isLoading: false, error: null);
+      return const DeleteAccountOwnerSalon();
+    } on ApiException catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return DeleteAccountError(e);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return DeleteAccountError(e);
+    }
   }
 }
 

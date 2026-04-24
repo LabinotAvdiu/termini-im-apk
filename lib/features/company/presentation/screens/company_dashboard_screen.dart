@@ -6,6 +6,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/salon_location_fields.dart';
+import '../../../shell/presentation/providers/shell_nav_provider.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
 import '../providers/company_dashboard_provider.dart';
@@ -366,6 +367,27 @@ class _CompanyDashboardScreenState
 
   @override
   Widget build(BuildContext context) {
+    // A sibling tab (e.g. "À confirmer" empty state) can ask to land the
+    // owner here with the auto-approve card in view. [MainShell] has already
+    // switched tabs when this listener fires — we just need to scroll to
+    // the anchor once the layout settles.
+    ref.listen<ShellNavRequest?>(shellNavProvider, (previous, next) {
+      if (next == null || next.scrollTo != 'autoApprove') return;
+      final key = ref.read(autoApproveCardKeyProvider);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final anchor = key.currentContext;
+        if (anchor != null) {
+          Scrollable.ensureVisible(
+            anchor,
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+            alignment: 0.15,
+          );
+        }
+        ref.read(shellNavProvider.notifier).clear();
+      });
+    });
+
     return ResponsiveLayout(
       mobile: CompanyDashboardScreenMobile(
         onEditCompany: (company) => showEditCompanyDialog(context, company),
@@ -493,7 +515,11 @@ class _CompanyEditDialogState extends State<_CompanyEditDialog> {
     return AlertDialog(
       title: Text(l.companyInfo),
       contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      content: SingleChildScrollView(
+      content: SizedBox(
+        // Fixed width so GPS state transitions (coords appearing / hint row
+        // disappearing) don't reshape the dialog mid-edit.
+        width: 520,
+        child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -533,6 +559,7 @@ class _CompanyEditDialogState extends State<_CompanyEditDialog> {
                 maxLines: 3),
             _MinCancelHoursStepper(notifier: _minCancelHours),
           ],
+        ),
         ),
       ),
       actions: [

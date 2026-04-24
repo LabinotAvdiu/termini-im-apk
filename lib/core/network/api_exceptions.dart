@@ -56,6 +56,17 @@ class ValidationException extends ApiException {
       : super(kind: ApiErrorKind.validation);
 }
 
+/// Thrown when the server rejects account deletion because the user is an
+/// active owner of a salon. The UI should surface a specific blocking dialog.
+class OwnerHasSalonException extends ApiException {
+  const OwnerHasSalonException()
+      : super(
+          kind: ApiErrorKind.validation,
+          message: 'owner_has_active_salon',
+          statusCode: 422,
+        );
+}
+
 // ---------------------------------------------------------------------------
 // Dio → ApiException mapper
 // ---------------------------------------------------------------------------

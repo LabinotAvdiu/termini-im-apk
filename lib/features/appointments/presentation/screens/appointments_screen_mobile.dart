@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../../data/models/appointment_model.dart';
 import '../providers/appointments_provider.dart';
@@ -24,6 +25,7 @@ class AppointmentsScreenMobile extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppTopBar.shell(title: context.l10n.myAppointments),
       body: state.isLoading && state.appointments.isEmpty
           ? _AppointmentsSkeletonView()
           : state.error != null && state.appointments.isEmpty
@@ -49,13 +51,6 @@ class AppointmentsScreenMobile extends ConsumerWidget {
                       AppSpacing.xxl,
                     ),
                     children: [
-                      // Title
-                      Text(
-                        context.l10n.myAppointments,
-                        style: AppTextStyles.h2,
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-
                       // ── Upcoming section ──────────────────────────
                       _SectionHeader(
                         icon: Icons.event_available_rounded,

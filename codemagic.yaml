@@ -1,0 +1,114 @@
+# Codemagic CI/CD — build iOS depuis Windows (pas de Mac requis).
+#
+# Workflow principal : `ios-testflight`
+#   - Déclenché manuellement ou sur push vers `main`
+#   - Clone → pub get → build iOS release signé → upload TestFlight
+#   - Credentials signing et secrets gérés dans l'UI Codemagic (pas en clair ici)
+#
+# Setup initial (une seule fois) :
+#   1. Créer compte Codemagic → connecter le repo GitHub
+#   2. Environment variables (Teams → Environment variables → group "ios_credentials"):
+#      - APP_STORE_CONNECT_ISSUER_ID         (App Store Connect → Users and Access → Integrations)
+#      - APP_STORE_CONNECT_KEY_IDENTIFIER    (même page, ID de la API Key)
+#      - APP_STORE_CONNECT_PRIVATE_KEY       (contenu .p8 de l'API Key, pas APNs)
+#      - CERTIFICATE_PRIVATE_KEY             (Codemagic peut le générer automatiquement)
+#   3. Code signing → Automatic (Codemagic gère cert + provisioning profile via App Store Connect)
+#   4. Push vers `main` → build ~15 min → TestFlight internal dispo
+#
+# Free tier : 500 min/mois. Un build iOS complet ≈ 15-20 min → ~25 builds/mois gratuits.
+
+workflows:
+  ios-testflight:
+    name: iOS → TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      groups:
+        # Doit contenir les 3 variables Apple listées plus haut. Créer le
+        # groupe depuis Codemagic UI → Teams → Environment variables.
+        - ios_credentials
+      vars:
+        # Bundle ID doit matcher celui enregistré côté Apple Developer +
+        # celui du GoogleService-Info.plist iOS.
+        BUNDLE_ID: 'com.terminiim.app'
+        XCODE_WORKSPACE: 'Runner.xcworkspace'
+        XCODE_SCHEME: 'Runner'
+        APP_STORE_APP_ID: '' # À remplir quand l'app est créée dans App Store Connect
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+      cancel_previous_builds: true
+    scripts:
+      - name: Flutter dependencies
+        script: |
+          flutter packages pub get
+
+      - name: Flutter analyze (strict)
+        script: |
+          flutter analyze --no-fatal-warnings
+        # `--no-fatal-warnings` : les infos/warnings de la baseline ne bloquent
+        # pas le build. Les vrais errors, elles, font échouer la step.
+
+      - name: Set up code signing (App Store Connect)
+        script: |
+          # Codemagic récupère cert + provisioning profile via l'API Apple
+          # sans que tu aies à gérer de keychain local.
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --platform IOS
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
+
+      - name: Pod install
+        script: |
+          cd ios && pod install
+
+      - name: Increment build number
+        script: |
+          # Bumps CFBundleVersion automatiquement au dernier disponible +1
+          # côté App Store Connect. Évite les rejets "build number already used".
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo "0")
+          cd $FCI_BUILD_DIR
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+
+      - name: Flutter build IPA
+        script: |
+          flutter build ipa \
+            --release \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      # Artifacts téléchargeables depuis l'UI Codemagic après chaque build.
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+
+    publishing:
+      # Upload TestFlight automatique — les testeurs internes reçoivent un
+      # email dès que le build est traité par Apple (5-15 min).
+      app_store_connect:
+        auth: integration
+        # Submit pour review externe seulement sur demande explicite — on ne
+        # veut pas spammer la review équipe à chaque push main.
+        submit_to_testflight: true
+        beta_groups:
+          - Internal
+        submit_to_app_store: false
+
+    # Notifications : email après chaque build (succès ou échec).
+    # Remplace par ton email + active Slack plus tard si besoin.
+    # email:
+    #   recipients:
+    #     - labinotavdiu.dev@gmail.com
+    #   notify:
+    #     success: true
+    #     failure: true

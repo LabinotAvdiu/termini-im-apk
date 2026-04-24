@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/notifications/models/in_app_notification.dart';
+import '../../../../core/notifications/providers/in_app_notification_provider.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -10,16 +13,20 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/personal_gender_selector.dart';
 import '../../../company/presentation/providers/company_dashboard_provider.dart';
+import '../../../notifications/presentation/providers/notifications_log_provider.dart';
+import '../../../notifications/presentation/widgets/fcm_diagnostic_section.dart';
 import '../../../notifications/presentation/widgets/notification_preferences_section.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
 import '../../../support/data/models/support_models.dart';
 import '../../../support/presentation/widgets/contact_support_dialog.dart';
+import '../widgets/delete_account_modal.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   /// When true, the "Mon profil" section opens directly in edit mode.
@@ -291,15 +298,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final isDesktop = MediaQuery.sizeOf(context).width >= 1024;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: isDesktop
-          ? null
-          : AppBar(
-              title: Text(context.l10n.settingsTitle, style: AppTextStyles.h3),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-                onPressed: () => context.go('/home'),
-              ),
-            ),
+      appBar: AppTopBar.standard(
+        title: context.l10n.settingsTitle,
+        onBack: () => context.go('/home'),
+      ),
       body: isDesktop ? _buildDesktop(context) : _buildMobile(context),
     );
   }
@@ -337,7 +339,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 onNotifications: () => _scrollToAnchor(_notificationsAnchor),
                 onSupport: () => _scrollToAnchor(_supportAnchor),
                 onDanger: () => _scrollToAnchor(_dangerAnchor),
-                onBack: () => context.go('/home'),
               ),
             ),
             // Right content — scrollable
@@ -570,16 +571,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: _UxPrefsSection(),
             ),
 
-            // Section Notifications — uniquement pour owner et employee.
+            // Section Notifications — préférences uniquement pour owner et employee.
             // Les clients (UserRole.user) n'ont pas de préférences configurables :
             // leurs notifications sont toutes forcées côté serveur.
-            if (ref.watch(authStateProvider.select((s) => !s.isClient))) ...[
-              const SizedBox(height: AppSpacing.md),
-              KeyedSubtree(
-                key: _notificationsAnchor,
-                child: const NotificationPreferencesSection(),
+            // Le diagnostic FCM est montré à TOUS les rôles — c'est l'outil
+            // qui aide l'utilisateur à comprendre pourquoi il ne reçoit pas
+            // de push malgré la permission accordée.
+            const SizedBox(height: AppSpacing.md),
+            KeyedSubtree(
+              key: _notificationsAnchor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (ref.watch(authStateProvider.select((s) => !s.isClient)))
+                    const NotificationPreferencesSection(),
+                  if (ref.watch(authStateProvider.select((s) => !s.isClient)))
+                    const SizedBox(height: AppSpacing.sm),
+                  const FcmDiagnosticSection(),
+                ],
               ),
-            ],
+            ),
 
             const SizedBox(height: AppSpacing.md),
 
@@ -603,6 +614,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
 
             const SizedBox(height: AppSpacing.md),
+
+            // ── Section debug — uniquement en mode kDebugMode ──────────────
+            if (kDebugMode)
+              _InAppNotifDebugSection(),
+
+            if (kDebugMode)
+              const SizedBox(height: AppSpacing.md),
 
             // Danger zone
             KeyedSubtree(
@@ -629,9 +647,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.deleteAccount,
                     subtitle: context.l10n.deleteAccountWarning,
                     titleColor: AppColors.primary,
-                    onTap: () {
-                      // TODO: Implement delete account flow
-                    },
+                    onTap: () => showDeleteAccountModal(context),
                   ),
                 ],
               ),
@@ -662,16 +678,19 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Chrome aligné sur AppCard : divider (pas border), ombre cardShadow,
+    // radius 16. L'accent éditorial (gradient stripe + _EditorialTitle) est
+    // conservé comme signature propre à la page Réglages.
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1),
+        border: Border.all(color: AppColors.divider, width: 1),
         boxShadow: const [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 6,
+            blurRadius: 8,
             offset: Offset(0, 2),
           ),
         ],
@@ -681,8 +700,7 @@ class _SectionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title.isNotEmpty) ...[
-            // Thin bordeaux gradient stripe — editorial accent that
-            // separates each section without a hard divider.
+            // Mince liseré bourgogne — accent éditorial propre à Settings.
             Container(
               height: 2,
               decoration: BoxDecoration(
@@ -706,8 +724,17 @@ class _SectionCard extends StatelessWidget {
               child: Row(
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 18, color: AppColors.primary),
-                    const SizedBox(width: AppSpacing.sm),
+                    // Pastille ronde 40×40 ivoryAlt — alignée sur AppCard.
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: AppColors.ivoryAlt,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, size: 20, color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
                   ],
                   Expanded(
                     child: _EditorialTitle(title),
@@ -719,7 +746,7 @@ class _SectionCard extends StatelessWidget {
           ],
           const Divider(height: 1, color: AppColors.divider),
           Padding(
-            padding: EdgeInsets.fromLTRB(
+            padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,
               AppSpacing.xs,
               AppSpacing.md,
@@ -758,6 +785,12 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Pastille ronde 40×40 ivoryAlt (cas normal) ou colorée (cas danger/accent).
+    final resolvedIconColor = iconColor ?? AppColors.textPrimary;
+    final pillBg = iconColor != null
+        ? iconColor!.withValues(alpha: 0.10)
+        : AppColors.ivoryAlt;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
@@ -766,17 +799,16 @@ class _SettingsTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 36,
-              height: 36,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: (iconColor ?? AppColors.primary)
-                    .withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                color: pillBg,
+                shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                size: 18,
-                color: iconColor ?? AppColors.primary,
+                size: 20,
+                color: resolvedIconColor,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -997,13 +1029,7 @@ class _MyPagesSection extends ConsumerWidget {
             ),
             const Divider(
                 height: 1, color: AppColors.divider, indent: 48),
-            _SettingsTile(
-              icon: Icons.notifications_none_rounded,
-              title: context.l10n.myNotifications,
-              subtitle: context.l10n.myNotificationsSubtitle,
-              trailing: _ComingSoonBadge(),
-              onTap: () => _showComingSoon(context),
-            ),
+            _MyNotificationsTile(),
             const Divider(
                 height: 1, color: AppColors.divider, indent: 48),
             _SettingsTile(
@@ -1016,6 +1042,61 @@ class _MyPagesSection extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tile "Mes notifications" — affiche le compteur unread depuis le provider,
+// navigue vers l'écran dédié /notifications.
+// ---------------------------------------------------------------------------
+
+class _MyNotificationsTile extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<_MyNotificationsTile> createState() =>
+      _MyNotificationsTileState();
+}
+
+class _MyNotificationsTileState extends ConsumerState<_MyNotificationsTile> {
+  @override
+  void initState() {
+    super.initState();
+    // Charge l'historique en arrière-plan pour que le badge s'affiche même
+    // sans avoir ouvert l'inbox au préalable.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationsLogProvider.notifier).load();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final unread = ref.watch(
+      notificationsLogProvider.select((s) => s.unreadCount),
+    );
+
+    return _SettingsTile(
+      icon: Icons.notifications_none_rounded,
+      title: context.l10n.myNotifications,
+      trailing: unread > 0
+          ? Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 3,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                unread > 99 ? '99+' : unread.toString(),
+                style: AppTextStyles.buttonSmall.copyWith(
+                  color: AppColors.background,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            )
+          : null,
+      onTap: () => context.goNamed(RouteNames.notificationsInbox),
     );
   }
 }
@@ -1170,7 +1251,6 @@ class _DesktopSidebar extends ConsumerWidget {
   final VoidCallback onNotifications;
   final VoidCallback onSupport;
   final VoidCallback onDanger;
-  final VoidCallback onBack;
 
   const _DesktopSidebar({
     required this.onProfile,
@@ -1181,7 +1261,6 @@ class _DesktopSidebar extends ConsumerWidget {
     required this.onNotifications,
     required this.onSupport,
     required this.onDanger,
-    required this.onBack,
   });
 
   @override
@@ -1210,23 +1289,6 @@ class _DesktopSidebar extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            InkWell(
-              onTap: onBack,
-              borderRadius: BorderRadius.circular(6),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 6, vertical: 4),
-                child: Text(
-                  '←  ${context.l10n.back}',
-                  style: GoogleFonts.instrumentSerif(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
             _SidebarProfileCard(
               initials: _initialsFor(user?.firstName, user?.lastName),
               name: (user?.firstName.isNotEmpty ?? false)
@@ -1419,6 +1481,201 @@ class _SidebarNavItem extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// DEBUG — Section de test des notifications in-app (kDebugMode uniquement)
+// ---------------------------------------------------------------------------
+
+class _InAppNotifDebugSection extends ConsumerWidget {
+  const _InAppNotifDebugSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(inAppNotificationProvider.notifier);
+
+    void showVariant({
+      required String title,
+      required String body,
+      required InAppNotificationVariant variant,
+      required IconData icon,
+    }) {
+      notifier.show(
+        InAppNotification(
+          title: title,
+          body: body,
+          variant: variant,
+          icon: icon,
+          onTap: () => debugPrint('[DEBUG] Notif in-app tappée : $title'),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: AppColors.secondary.withValues(alpha: 0.35),
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        color: AppColors.secondary.withValues(alpha: 0.04),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Icon(
+                Icons.bug_report_rounded,
+                size: 16,
+                color: AppColors.secondary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'DEBUG — Notifications in-app',
+                style: GoogleFonts.instrumentSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.secondary,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Visible uniquement en mode debug. Teste les 3 variants + rafale.',
+            style: GoogleFonts.instrumentSans(
+              fontSize: 11,
+              color: AppColors.textHint,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Boutons
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              // Variant positive
+              _DebugNotifButton(
+                label: 'Positive',
+                color: AppColors.secondary,
+                onTap: () => showVariant(
+                  title: 'Rendez-vous confirmé',
+                  body: 'Votre RDV avec Salon Elite est confirmé pour demain à 14h30.',
+                  variant: InAppNotificationVariant.positive,
+                  icon: Icons.event_available_rounded,
+                ),
+              ),
+
+              // Variant info
+              _DebugNotifButton(
+                label: 'Info',
+                color: AppColors.primary,
+                onTap: () => showVariant(
+                  title: 'Nouvel avis 5 étoiles',
+                  body: 'Un client a laissé un avis excellent sur votre salon.',
+                  variant: InAppNotificationVariant.info,
+                  icon: Icons.star_rounded,
+                ),
+              ),
+
+              // Variant attention
+              _DebugNotifButton(
+                label: 'Attention',
+                color: AppColors.primaryDark,
+                onTap: () => showVariant(
+                  title: 'RDV annulé',
+                  body: 'Alexandre Martin a annulé son rendez-vous du 24 avril.',
+                  variant: InAppNotificationVariant.attention,
+                  icon: Icons.event_busy_rounded,
+                ),
+              ),
+
+              // Rafale (3 notifs d'un coup)
+              _DebugNotifButton(
+                label: 'Rafale ×4',
+                color: AppColors.textHint,
+                onTap: () {
+                  showVariant(
+                    title: 'Rafale 1/4 — RDV confirmé',
+                    body: 'Premier push de la rafale.',
+                    variant: InAppNotificationVariant.positive,
+                    icon: Icons.event_available_rounded,
+                  );
+                  Future.delayed(const Duration(milliseconds: 100), () {
+                    showVariant(
+                      title: 'Rafale 2/4 — Nouvel avis',
+                      body: 'Deuxième push de la rafale.',
+                      variant: InAppNotificationVariant.info,
+                      icon: Icons.star_rounded,
+                    );
+                  });
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    showVariant(
+                      title: 'Rafale 3/4 — Walk-in',
+                      body: 'Troisième push de la rafale.',
+                      variant: InAppNotificationVariant.attention,
+                      icon: Icons.person_add_rounded,
+                    );
+                  });
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    showVariant(
+                      title: 'Rafale 4/4 — En queue',
+                      body: 'Ce toast attend qu\'un slot se libère.',
+                      variant: InAppNotificationVariant.info,
+                      icon: Icons.notifications_active_rounded,
+                    );
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DebugNotifButton extends StatelessWidget {
+  const _DebugNotifButton({
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.instrumentSans(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: color,
           ),
         ),
       ),

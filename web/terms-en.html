@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Service · Termini im</title>
+<meta name="description" content="Terms of Service for Termini im — appointment booking platform for salons and barbershops.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ivory: #f7f2ea;
+    --surface: #fcf7ee;
+    --bone: #e8dcc8;
+    --ink: #171311;
+    --ink-soft: #332c29;
+    --muted: #716059;
+    --line: #d9cab3;
+    --burgundy: #7a2232;
+    --gold: #c89b47;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  header.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .brand-dot {
+    width: 8px; height: 8px;
+    background: var(--burgundy);
+    border-radius: 50%;
+  }
+  .brand-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+  .brand-name em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .lang-switcher a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .lang-switcher a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--muted);
+  }
+  .lang-switcher .active {
+    color: var(--burgundy);
+    font-weight: 600;
+  }
+  .lang-sep {
+    color: var(--line);
+  }
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .kicker .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px 0;
+  }
+  h1 em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .updated {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 40px;
+  }
+  h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 44px 0 12px 0;
+    color: var(--burgundy);
+  }
+  h3 {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 28px 0 8px 0;
+  }
+  p, li {
+    color: var(--ink-soft);
+  }
+  a {
+    color: var(--burgundy);
+    text-decoration: underline;
+    text-decoration-color: rgba(122, 34, 50, 0.35);
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    text-decoration-color: var(--burgundy);
+  }
+  ul {
+    padding-left: 22px;
+  }
+  li + li {
+    margin-top: 4px;
+  }
+  li::marker {
+    color: var(--gold);
+  }
+  .rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 40px 0;
+  }
+  .rule::before, .rule::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .rule span {
+    width: 4px; height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--burgundy);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 28px 0;
+    font-size: 14px;
+  }
+  .notice {
+    background: var(--surface);
+    border: 1px solid var(--bone);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-dot {
+    width: 6px; height: 6px;
+    background: var(--burgundy);
+    border-radius: 50%;
+  }
+  .footer-wordmark {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 14px;
+  }
+  .footer-wordmark em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .footer-tagline {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-left: 14px;
+  }
+  footer a {
+    color: var(--muted);
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+    text-decoration: none;
+  }
+  .back::before {
+    content: "\2190 ";
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="brand">
+    <span class="brand-dot"></span>
+    <span class="brand-name">Termini <em>im</em></span>
+  </header>
+
+  <nav class="lang-switcher">
+    <a href="/terms">FR</a>
+    <span class="lang-sep">·</span>
+    <span class="active">EN</span>
+    <span class="lang-sep">·</span>
+    <a href="/terms-sq">SQ</a>
+  </nav>
+
+  <a href="/" class="back">back to home</a>
+
+  <div class="kicker"><span class="dot"></span>Terms of Service · English version</div>
+  <h1>Terms of <em>Service</em></h1>
+  <p class="updated">Last updated · April 2026</p>
+
+  <p>
+    Welcome to Termini im. Before using the platform, please take a moment to read these Terms of Service.
+    They define the rules between you and us, whether you are a client, a professional, or an employee.
+    By creating an account or using our services, you agree to these terms in full.
+  </p>
+
+  <div class="callout">
+    In short: Termini im is free, with no commissions and no subscriptions. Our role is to connect clients with salons —
+    the service relationship remains between you and the professional you have chosen.
+  </div>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Termini im is an online appointment booking platform for hair salons, barbershops, and beauty studios,
+    available on the web at <a href="https://www.termini-im.com">www.termini-im.com</a> and via the iOS and Android
+    mobile applications.
+  </p>
+  <p>
+    The platform is published by Labinot Avdiu, based in Prishtinë, Kosovo. For any questions regarding these terms,
+    please write to <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    Using Termini im constitutes full acceptance of these Terms of Service. If you disagree with any provision,
+    please refrain from using the service.
+  </p>
+
+  <h2>2. Definitions</h2>
+  <ul>
+    <li><strong>User</strong> — any person who accesses the platform, with or without an account.</li>
+    <li><strong>Client</strong> — a registered user who books appointments through Termini im.</li>
+    <li><strong>Professional / Salon</strong> — a registered user who offers hair, barbering, or beauty services
+      and manages their establishment through the platform.</li>
+    <li><strong>Employee</strong> — a staff member linked to a Professional's account, who can manage their own
+      schedule and receive bookings.</li>
+    <li><strong>Appointment</strong> — a confirmed booking between a Client and a Professional (or one of their
+      Employees) for a specified service, at an agreed date and time.</li>
+    <li><strong>Platform</strong> — all services offered by Termini im: website, mobile applications, API and
+      management interfaces.</li>
+  </ul>
+
+  <h2>3. Access to the service</h2>
+  <p>
+    Termini im is entirely free for Clients. Professionals also benefit from free access: no commission is charged on
+    appointments, and no subscription is required to access the platform's core features.
+  </p>
+  <p>
+    To use Termini im, you must create a personal account. Registration is open to anyone aged <strong>16 or older</strong>.
+    Use of the service by anyone under this age is not permitted.
+  </p>
+  <p>
+    Termini im reserves the right to modify, suspend, or discontinue all or part of the service, temporarily or
+    permanently, in particular for maintenance or technical upgrades.
+  </p>
+
+  <h2>4. User account</h2>
+  <p>
+    Each person may hold only one active account. Creating multiple accounts for the same individual is prohibited,
+    unless we have expressly agreed otherwise (e.g. a professional managing several distinct establishments).
+  </p>
+  <p>
+    You are responsible for keeping your password confidential and for all activity that takes place under your account.
+    If you suspect unauthorized access, contact us immediately at
+    <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    You may delete your account at any time from <strong>Settings → Delete my account</strong>. Deletion is permanent and
+    results in the removal of your personal data in accordance with our
+    <a href="/privacy">Privacy Policy</a>.
+  </p>
+
+  <h2>5. Client obligations</h2>
+  <p>
+    By booking an appointment through Termini im, the Client agrees to:
+  </p>
+  <ul>
+    <li>Arrive on time or notify the salon as soon as possible if unable to attend.</li>
+    <li>Respect the cancellation window specified by the salon.</li>
+    <li>Treat the salon's staff with respect and courtesy.</li>
+    <li>Provide accurate information when booking (name, contact details, requested service).</li>
+    <li>Not use the platform for fraudulent purposes or to make fictitious bookings.</li>
+  </ul>
+  <p>
+    Repeated violations of these obligations may result in account suspension.
+  </p>
+
+  <h2>6. Professional obligations</h2>
+  <p>
+    A Professional who registers on Termini im agrees to:
+  </p>
+  <ul>
+    <li>Provide accurate and up-to-date information about their establishment: name, address, opening hours, services, and prices.</li>
+    <li>Honour confirmed appointments, or notify Clients as soon as possible in the event of an unavoidable cancellation.</li>
+    <li>Deliver a standard of service consistent with what is presented on the platform.</li>
+    <li>Keep availability up to date to avoid scheduling conflicts.</li>
+    <li>Moderate content published by their team in compliance with these Terms.</li>
+    <li>Not use Termini im for unsolicited commercial outreach.</li>
+  </ul>
+
+  <h2>7. Termini im's liability</h2>
+  <p>
+    Termini im acts solely as a technical intermediary between Clients and Professionals. The platform facilitates
+    introductions and appointment booking but plays no part in the delivery of the service itself.
+  </p>
+  <p>
+    As such, Termini im cannot be held liable for:
+  </p>
+  <ul>
+    <li>The quality, conformity, or outcome of any service provided by a Professional.</li>
+    <li>An appointment cancelled, rescheduled, or not honoured by either party.</li>
+    <li>Any dispute arising between a Client and a Professional.</li>
+    <li>A temporary service interruption due to maintenance, a technical incident, or an external event.</li>
+  </ul>
+  <p>
+    Termini im does not guarantee uninterrupted availability of the platform (100% uptime). We apply best efforts
+    to ensure service continuity.
+  </p>
+
+  <h2>8. User content</h2>
+  <p>
+    Users may publish content on the platform: gallery photos, salon reviews, and profile information. By submitting
+    this content, you grant Termini im a non-exclusive, worldwide, royalty-free licence to display, reproduce, and
+    adapt it within the scope of the service.
+  </p>
+  <p>
+    You retain all rights over the content you publish and may remove it at any time. Termini im reserves the right
+    to delete any content that violates these Terms, is unlawful, offensive, or misleading.
+  </p>
+  <p>
+    It is prohibited to publish content that infringes third-party rights, is defamatory, discriminatory, or contains
+    the personal information of others without their consent.
+  </p>
+
+  <h2>9. Personal data</h2>
+  <p>
+    The collection and processing of your personal data are governed by our
+    <a href="/privacy">Privacy Policy</a>, permanently accessible from the platform.
+    This document details the data collected, its purposes, retention periods, and your rights (access,
+    rectification, deletion, portability).
+  </p>
+
+  <h2>10. Account deletion and closure</h2>
+  <p>
+    You may request account deletion at any time from <strong>Settings → Delete my account</strong>.
+    This action is irreversible: your personal data and appointment history will be erased within the timeframes
+    set out in our Privacy Policy.
+  </p>
+  <p>
+    Termini im reserves the right to suspend or close an account in the event of a breach of these Terms,
+    fraudulent use, or harm caused to other Users or to the platform itself. Where possible, the User concerned
+    will be notified by email.
+  </p>
+
+  <h2>11. Intellectual property</h2>
+  <p>
+    The Termini im brand, its logo, design, interfaces, source code, editorial content, and all elements constituting
+    the platform are the exclusive property of the publisher or its partners.
+  </p>
+  <p>
+    Any reproduction, extraction, redistribution, or commercial exploitation of these elements without prior written
+    authorisation is strictly prohibited.
+  </p>
+
+  <h2>12. Changes to the Terms</h2>
+  <p>
+    These Terms of Service may be updated from time to time. In the event of a material change, we will notify you
+    by email or in-app notification <strong>30 days before</strong> the new terms take effect. The date of the last
+    update is always shown at the top of this document.
+  </p>
+  <p>
+    Continuing to use the service after the effective date constitutes acceptance of the updated terms.
+  </p>
+
+  <h2>13. Governing law</h2>
+  <p>
+    These Terms are governed by the law of the Republic of Kosovo. In the event of a dispute, the parties will
+    endeavour to reach an amicable resolution before resorting to legal proceedings.
+  </p>
+  <p>
+    Users residing in the European Union retain, in any case, the mandatory rights conferred upon them by the GDPR
+    (General Data Protection Regulation) and applicable EU consumer protection legislation.
+  </p>
+
+  <h2>14. Contact</h2>
+  <p>
+    For any questions about these Terms, to exercise your rights, or to report a violation:
+  </p>
+  <ul>
+    <li>Email: <a href="mailto:support@termini-im.com">support@termini-im.com</a></li>
+    <li>Website: <a href="https://www.termini-im.com">www.termini-im.com</a></li>
+  </ul>
+
+  <h2>15. Legal notice</h2>
+  <p>
+    <strong>Publisher:</strong> Labinot Avdiu, individual based in Prishtinë, Kosovo.
+    Contact: <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    <strong>Publication director:</strong> Labinot Avdiu.
+  </p>
+  <p>
+    <strong>Hosting:</strong> OVH SAS — 2 rue Kellermann, 59100 Roubaix, France —
+    <a href="https://www.ovhcloud.com" rel="noopener">ovhcloud.com</a>. Servers located in Roubaix (France).
+  </p>
+
+  <div class="rule"><span></span></div>
+
+  <div class="notice">
+    This document is provided for informational purposes only. A qualified lawyer will be consulted for the production version.
+  </div>
+
+  <footer>
+    <div class="footer-brand">
+      <span class="footer-dot"></span>
+      <span class="footer-wordmark">Termini <em>im</em></span>
+      <span class="footer-tagline">Prishtinë · 2026</span>
+    </div>
+    <div>
+      <a href="/privacy">Privacy Policy</a>
+      <span style="margin: 0 8px; color: var(--line);">·</span>
+      <a href="https://www.termini-im.com">www.termini-im.com</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

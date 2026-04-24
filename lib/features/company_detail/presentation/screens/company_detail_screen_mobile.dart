@@ -54,8 +54,16 @@ class CompanyDetailScreenMobile extends ConsumerWidget {
           SliverAppBar(
             expandedHeight: 280,
             pinned: true,
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.surface,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 1,
+            shadowColor: AppColors.cardShadow,
+            automaticallyImplyLeading: false,
             leading: _BackButton(),
+            // Titre du salon visible uniquement en mode collapsed (au scroll).
+            title: Text(company.name, style: AppTextStyles.h3, maxLines: 1),
+            titleSpacing: 0,
             actions: [
               // Guest-only: small language pill + login CTA. Shown inline so
               // a recipient of a shared link can switch language / auth
@@ -78,6 +86,8 @@ class CompanyDetailScreenMobile extends ConsumerWidget {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
+              // Masque le titre en mode expanded — il n'est visible qu'en collapsed.
+              titlePadding: EdgeInsets.zero,
               background: Stack(
                 fit: StackFit.expand,
                 children: [

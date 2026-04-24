@@ -4,6 +4,7 @@ abstract class RouteNames {
   static const String signup = 'signup';
   static const String roleSelect = 'role-select';
   static const String companySetup = 'company-setup';
+  static const String companyMode = 'company-mode';
   static const String forgotPassword = 'forgot-password';
   static const String home = 'home';
   static const String shell = 'shell';
@@ -19,4 +20,6 @@ abstract class RouteNames {
   static const String pendingApprovals = 'pending-approvals';
   static const String submitReview = 'submit-review';
   static const String myCompanyReviews = 'my-company-reviews';
+  static const String verifyEmail = 'verify-email';
+  static const String notificationsInbox = 'notifications-inbox';
 }

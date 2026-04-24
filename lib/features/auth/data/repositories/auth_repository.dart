@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/network/api_interceptor.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../models/user_model.dart';
 
@@ -27,6 +28,7 @@ class StoredSession {
 class AuthRepository {
   final AuthRemoteDatasource _datasource;
   final FlutterSecureStorage _storage;
+  final ApiInterceptor? _interceptor;
 
   // In-memory token cache — used when rememberMe is false so the token
   // survives navigation but is lost when the process exits.
@@ -36,8 +38,10 @@ class AuthRepository {
   AuthRepository({
     required AuthRemoteDatasource datasource,
     FlutterSecureStorage? storage,
+    ApiInterceptor? interceptor,
   })  : _datasource = datasource,
-        _storage = storage ?? const FlutterSecureStorage();
+        _storage = storage ?? const FlutterSecureStorage(),
+        _interceptor = interceptor;
 
   // ---------------------------------------------------------------------------
   // Session restoration (called on app start by the notifier)
@@ -286,6 +290,19 @@ class AuthRepository {
       );
 
   // ---------------------------------------------------------------------------
+  // Email verification
+  // ---------------------------------------------------------------------------
+
+  Future<void> verifyEmail({
+    required String email,
+    required String token,
+  }) =>
+      _datasource.verifyEmail(email: email, token: token);
+
+  Future<void> resendVerification({required String email}) =>
+      _datasource.resendVerification(email: email);
+
+  // ---------------------------------------------------------------------------
   // Change password
   // ---------------------------------------------------------------------------
 
@@ -299,6 +316,15 @@ class AuthRepository {
         password: password,
         passwordConfirmation: passwordConfirmation,
       );
+
+  // ---------------------------------------------------------------------------
+  // Delete account — clears local session after the server confirms deletion
+  // ---------------------------------------------------------------------------
+
+  Future<void> deleteAccount() async {
+    await _datasource.deleteAccount();
+    await _clearSession();
+  }
 
   // ---------------------------------------------------------------------------
   // Token read helper (used by other parts of the app if needed)
@@ -337,6 +363,9 @@ class AuthRepository {
       // Clear in-memory cache when persisting to storage.
       _memoryToken = null;
       _memoryRefreshToken = null;
+      // The interceptor prefers secure storage; clear its memory copy so
+      // stale tokens from a previous non-persistent session can't leak.
+      _interceptor?.setMemoryRefreshToken(null);
     } else {
       // Keep tokens in memory only — nothing written to storage.
       _memoryToken = token;
@@ -345,12 +374,16 @@ class AuthRepository {
       await _storage.delete(key: AppConstants.tokenKey);
       await _storage.delete(key: AppConstants.refreshTokenKey);
       await _storage.delete(key: AppConstants.rememberMeKey);
+      // Share the refresh token with the interceptor so it can silently
+      // refresh 401s without forcing a re-login inside the running app.
+      _interceptor?.setMemoryRefreshToken(refreshToken);
     }
   }
 
   Future<void> _clearSession() async {
     _memoryToken = null;
     _memoryRefreshToken = null;
+    _interceptor?.setMemoryRefreshToken(null);
     // deleteAll clears token, refreshToken, role, rememberMe, lastRefreshAt
     await _storage.deleteAll();
   }

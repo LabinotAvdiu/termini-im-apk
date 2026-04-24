@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../company/presentation/widgets/add_day_off_dialog.dart';
 import '../../data/models/schedule_settings_models.dart';
 import '../providers/schedule_settings_provider.dart';
@@ -48,10 +49,27 @@ enum ScheduleView {
   breaksAndDaysOff,
 }
 
+/// Contrôle l'affichage du header selon le contexte de navigation.
+///
+/// - [standalone] : barre `AppTopBar.standard` avec back (défaut).
+/// - [shell]      : le shell parent fournit déjà une barre — on n'en affiche pas.
+/// - [none]       : alias de [shell], pour les écrans sans barre.
+enum HeaderMode { standalone, shell, none }
+
 class ScheduleSettingsScreen extends ConsumerStatefulWidget {
   final ScheduleView view;
 
-  const ScheduleSettingsScreen({super.key, this.view = ScheduleView.all});
+  /// Contrôle si la barre de navigation est affichée.
+  ///
+  /// [HeaderMode.standalone] (défaut) : affiche `AppTopBar.standard` avec back.
+  /// [HeaderMode.shell] / [HeaderMode.none] : pas de barre (le shell en fournit une).
+  final HeaderMode headerMode;
+
+  const ScheduleSettingsScreen({
+    super.key,
+    this.view = ScheduleView.all,
+    this.headerMode = HeaderMode.standalone,
+  });
 
   @override
   ConsumerState<ScheduleSettingsScreen> createState() =>
@@ -105,11 +123,20 @@ class _ScheduleSettingsScreenState
       );
     }
 
+    // Le titre dépend de la vue active.
+    final title = switch (widget.view) {
+      ScheduleView.hoursOnly => context.l10n.myScheduleEntry,
+      ScheduleView.breaksAndDaysOff => context.l10n.myBreaksEntry,
+      ScheduleView.all => context.l10n.scheduleSettings,
+    };
+
+    final showAppBar =
+        widget.headerMode == HeaderMode.standalone;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: _buildBody(context, state),
-      ),
+      appBar: showAppBar ? AppTopBar.standard(title: title) : null,
+      body: _buildBody(context, state),
     );
   }
 
@@ -133,17 +160,6 @@ class _ScheduleSettingsScreenState
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          // Page header — title adapts to the active view so the user sees
-          // "Mes horaires" vs "Mes pauses" even though it's one screen.
-          SliverToBoxAdapter(
-            child: _PageHeader(
-              title: switch (widget.view) {
-                ScheduleView.hoursOnly => context.l10n.myScheduleEntry,
-                ScheduleView.breaksAndDaysOff => context.l10n.myBreaksEntry,
-                ScheduleView.all => context.l10n.scheduleSettings,
-              },
-            ),
-          ),
 
           // Reload progress indicator
           if (state.isLoading)
@@ -355,59 +371,16 @@ class _ScheduleSettingsScreenState
 void _unused(Object? _) {}
 
 // ---------------------------------------------------------------------------
-// Page header — editorial: overline + Fraunces serif title
-// ---------------------------------------------------------------------------
-
-class _PageHeader extends StatelessWidget {
-  final String title;
-
-  const _PageHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.surface,
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.md,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'HORAIRES',
-            style: AppTextStyles.overline.copyWith(letterSpacing: 2.2),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            title,
-            style: GoogleFonts.fraunces(
-              fontSize: 26,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textPrimary,
-              letterSpacing: -0.52,
-              height: 1.1,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Section card container — editorial: 1px border, overline + Fraunces heading
 // ---------------------------------------------------------------------------
 
+/// Wrapper fin autour de [AppCard.section] — préserve l'API historique
+/// (children liste + trailing) tout en déléguant le chrome à la charte
+/// unifiée Termini Im.
 class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
-  /// Optional widget aligned on the right side of the header (edit toggle,
-  /// add button…). Keeps the header compact instead of scattering actions
-  /// across the body.
   final Widget? trailing;
 
   const _SectionCard({
@@ -419,44 +392,13 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
+    return AppCard.section(
+      title: title,
+      icon: icon,
+      trailing: trailing,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Section header — icon + Fraunces title (single-line).
-          // Previously: overline ALL CAPS title + title h3 underneath. Removed
-          // the overline — redundant with the h3 and added visual noise.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.sm,
-            ),
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: AppColors.primary),
-                const SizedBox(width: AppSpacing.xs + 2),
-                Expanded(child: Text(title, style: AppTextStyles.h3)),
-                if (trailing != null) trailing!,
-              ],
-            ),
-          ),
-          const Divider(height: 1, color: AppColors.divider),
-          ...children,
-        ],
+        children: children,
       ),
     );
   }

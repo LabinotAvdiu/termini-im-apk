@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/services/analytics_service.dart';
 import '../../data/datasources/my_company_remote_datasource.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
@@ -333,6 +334,8 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
         company: state.company?.copyWith(employees: employees),
         error: null,
       );
+      // E25 — team_invite_sent
+      AnalyticsService.instance.logTeamInviteSent();
       return true;
     } catch (e) {
       state = state.copyWith(error: e.toString());
@@ -385,6 +388,25 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
       return true;
     } catch (e) {
       state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  // ── Booking settings ──────────────────────────────────────────────────────
+
+  Future<bool> toggleAutoApprove({required bool enabled}) async {
+    // Optimistic update — flip locally before the round-trip.
+    final previous = state.company;
+    state = state.copyWith(
+      company: state.company?.copyWith(capacityAutoApprove: enabled),
+      error: null,
+    );
+    try {
+      await _datasource.updateCapacityAutoApprove(enabled: enabled);
+      return true;
+    } catch (e) {
+      // Revert on failure.
+      state = state.copyWith(company: previous, error: e.toString());
       return false;
     }
   }
@@ -455,6 +477,8 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
         galleryUploadProgress: null,
         galleryError: null,
       );
+      // E25 — gallery_photo_uploaded
+      AnalyticsService.instance.logGalleryPhotoUploaded();
       return true;
     } catch (e) {
       state = state.copyWith(
