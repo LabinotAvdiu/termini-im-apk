@@ -317,6 +317,50 @@ Petit budget Meta Ads B2B-only, ciblé exclusivement salon owners hors Ferizaj :
 
 Si à J45 on doit activer le **test pivot Prishtinë**, on a déjà 30-50 leads tièdes à recontacter en priorité — bien plus efficace que de partir de zéro.
 
+## Awareness Ferizaj — la stack des 7 leviers
+
+**Problème** identifié : si la seule stratégie d'awareness à Ferizaj est « mes proches partagent sur WhatsApp », la math limite drastiquement la portée :
+
+- ~30 contacts proches × 5 re-partages × 20 % clic × 10 % inscription ≈ **15 leads waitlist** sur 109k habitants Ferizaj métropole
+- Insuffisant pour générer la demande client qui valide la liquidité salon
+
+**Solution** : 7 leviers superposés qui rendent Termini im visible partout où la cible traîne. La majorité organique, certains avec un budget léger.
+
+### Les 7 leviers awareness Ferizaj
+
+| # | Levier | Coût | Effort | Quand |
+|---|---|---|---|---|
+| 1 | **Vitrines pilotes** — sticker + carte QR + sticker chaque pilote signé. 5 pilotes = 5 supports physiques pubs gratuits en ville | ~30 € pour 50 stickers | Inclus dans onboarding pilote | Dès J0 |
+| 2 | **Cascade WhatsApp structurée** — message-type, ciblage explicite (femmes 25-50, hommes 20-50, parents), demande à 10 proches de partager à 10 contacts ciblés | 0 € | 2h initial, puis suivi 30 min/sem | M0 |
+| 3 | **Présence physique éditoriale** — cartes dans 3-5 cafés clés Ferizaj (hubs sociaux), affiches A4 discrètes si accepté | ~80 € (cartes) | 4h pour caser, suivi mensuel | M0 → continu |
+| 4 | **Groupes Facebook locaux Ferizaj** — *Të rinjtë e Ferizajt*, *Mamat e Ferizajt*, *Ferizaj Community*. Posts éditoriaux 1×/semaine, jamais spam | 0 € | 1h/semaine | M0 → continu |
+| 5 | **Influenceurs micro Ferizaj** — 3-5 comptes 5-20k followers (mode/beauté/lifestyle local). Tarifs ~50-150 €/post | 200-450 € | Outreach 1h, contractualisation 1h chacun | M0 (1 teaser), M1-M2 (2-4 partenariats) |
+| 6 | **Radio locale Ferizaj** — Radio Festival ou équivalent, spot 30 sec heure de pointe matinale, 10-20k auditeurs (démographie 35+) | ~50 €/spot, 4 spots = 200 € | Production 30 min, achat 1h | M1 → M2 |
+| 7 | **Pub Meta Ferizaj-only** — géo-ciblage strict ville Ferizaj, audiences clientes une fois 5+ salons actifs | Voir tableau seuils ci-dessous | Configuration 2h, monitoring 30 min/sem | À partir de M1 (5 salons) |
+
+### Affinement de la règle d'or — seuils pubs adaptés à la taille Ferizaj
+
+La règle initiale « zéro pub d'acquisition cliente avant 15 salons actifs » était calibrée pour une cible Prishtinë (30 pilotes sur 250k habitants). Pour Ferizaj (15-20 pilotes sur 109k métro), les seuils s'adaptent :
+
+| Salons actifs Ferizaj | Pub cliente Ferizaj-only autorisée |
+|---|---|
+| 0-4 | **Aucune** — organique seulement (leviers 1-6) |
+| 5-9 | **Petite** ~150 €/mois Meta géo Ferizaj |
+| 10-14 | **Moyenne** ~400 €/mois |
+| 15+ | **Plein régime** 600 €+/mois |
+
+Le seuil de 5 salons à Ferizaj équivaut à 1 salon par 22k habitants — densité suffisante pour qu'une cliente trouve un salon proche dans l'app. Le launch public J30 doit donc viser **5 salons signés minimum** pour pouvoir démarrer les pubs Ferizaj clientes en parallèle.
+
+### Plan awareness Ferizaj 30-60 jours
+
+| Phase | Leviers actifs | Coût total | Cible awareness |
+|---|---|---|---|
+| **M0 J-30 → J0** | 1, 2, 3, 4, 5 (1 teaser) | ~250 € | Notoriété Ferizaj éditoriale, 500 leads waitlist |
+| **M1 (5+ salons)** | + 6 (1 spot radio), + 7 (150 €/mois Meta) | ~400 €/mois | Couverture Ferizaj 35-65 % cible |
+| **M2 (10+ salons)** | + 6 (3 spots radio), + 7 (400 €/mois) | ~700 €/mois | Couverture Ferizaj 70-90 % cible |
+
+Le budget total awareness Ferizaj M0-M2 (~1 800 €) est **déjà couvert** par les lignes existantes du budget 6 mois (« Kits vitrine + cartes » 2 000 €, « Micro-influenceurs » 2 000 €, « Meta Ads » 6 000 €), sans surcoût. À ajouter : ~200 € de radio locale Ferizaj non chiffrée auparavant.
+
 ## Liste exécutable des fichiers à mettre à jour
 
 | # | Fichier | Nature du changement | Priorité |
