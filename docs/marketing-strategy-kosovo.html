@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Termini im — Stratégie marketing Kosovo 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bordeaux:      #7A2232;
+    --bordeaux-dark: #511522;
+    --bordeaux-soft: #9E3D4F;
+    --or:            #C89B47;
+    --or-soft:       #D9B46A;
+    --sand:          #F7F2EA;
+    --ivory:         #FCF7EE;
+    --ivory-alt:     #EFE6D5;
+    --bone:          #E8DCC8;
+    --border:        #D9CAB3;
+    --ink:           #171311;
+    --ink-2:         #332C29;
+    --muted:         #716059;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 20mm 18mm 22mm;
+    @bottom-left {
+      content: "Termini im · Stratégie Kosovo 2026";
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 8.5pt;
+      color: #716059;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 8.5pt;
+      color: #716059;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  @page cover {
+    margin: 0;
+    @bottom-left { content: ""; }
+    @bottom-right { content: ""; }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--sand);
+    color: var(--ink);
+    font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------------- Cover ---------------- */
+
+  .cover {
+    page: cover;
+    height: 297mm;
+    width: 210mm;
+    background: var(--sand);
+    position: relative;
+    padding: 30mm 22mm;
+    page-break-after: always;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(200,155,71,0.14), transparent 55%),
+      radial-gradient(ellipse at 110% 100%, rgba(122,34,50,0.12), transparent 55%);
+    pointer-events: none;
+  }
+  .cover-eyebrow {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 9.5pt;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 8mm;
+  }
+  .cover-wordmark {
+    font-family: "Fraunces", serif;
+    font-weight: 360;
+    font-size: 62pt;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    line-height: 0.95;
+    margin: 0 0 2mm;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-wordmark .im {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .cover-wordmark .dot {
+    display: inline-block;
+    width: 0.14em;
+    height: 0.14em;
+    background: var(--bordeaux);
+    border-radius: 50%;
+    margin: 0 0.04em 0.78em 0.02em;
+    vertical-align: top;
+  }
+  .cover-title {
+    font-family: "Fraunces", serif;
+    font-weight: 320;
+    font-size: 32pt;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 28mm 0 4mm;
+    max-width: 145mm;
+    color: var(--ink);
+  }
+  .cover-title em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+  }
+  .cover-sub {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 12.5pt;
+    color: var(--ink-2);
+    max-width: 130mm;
+    line-height: 1.5;
+    margin: 0 0 14mm;
+  }
+  .cover-meta {
+    position: absolute;
+    bottom: 28mm;
+    left: 22mm;
+    right: 22mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 9pt;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 6mm;
+  }
+  .cover-meta strong { color: var(--ink); font-weight: 600; letter-spacing: 0.28em; }
+
+  /* ---------------- Content ---------------- */
+
+  .doc {
+    padding: 0 2mm;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Fraunces", serif;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+
+  h1.section {
+    font-size: 24pt;
+    line-height: 1.1;
+    margin: 0 0 4mm;
+    font-weight: 320;
+  }
+  h1.section .num {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 10pt;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--bordeaux);
+    display: block;
+    margin-bottom: 2.5mm;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 15pt;
+    margin: 8mm 0 2.5mm;
+    font-weight: 400;
+  }
+  h3 {
+    font-size: 12pt;
+    margin: 6mm 0 1.5mm;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  h4 {
+    font-size: 10.5pt;
+    font-family: "Instrument Sans", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--bordeaux);
+    margin: 5mm 0 1.5mm;
+  }
+  p { margin: 0 0 3mm; }
+  em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  section {
+    page-break-before: always;
+    padding-top: 2mm;
+  }
+  section.no-break { page-break-before: auto; }
+
+  .intro {
+    page-break-before: always;
+    padding-top: 6mm;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6mm 0;
+    border: none;
+  }
+
+  .rule-gold {
+    width: 18mm;
+    height: 2px;
+    background: var(--or);
+    margin: 1.5mm 0 5mm;
+    border: none;
+  }
+
+  /* Lead paragraph */
+  .lead {
+    font-family: "Fraunces", serif;
+    font-weight: 330;
+    font-size: 13pt;
+    line-height: 1.5;
+    color: var(--ink-2);
+    border-left: 2px solid var(--or);
+    padding: 0 0 0 5mm;
+    margin: 0 0 6mm;
+  }
+  .lead em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+
+  /* Callout boxes */
+  .callout {
+    background: var(--ivory);
+    border: 1px solid var(--bone);
+    border-left: 3px solid var(--bordeaux);
+    padding: 4mm 5mm;
+    margin: 4mm 0 5mm;
+    border-radius: 1mm;
+    page-break-inside: avoid;
+  }
+  .callout h4 { margin-top: 0; }
+  .callout.gold { border-left-color: var(--or); }
+  .callout.dark { background: var(--ink); color: var(--sand); border-color: var(--ink); border-left-color: var(--or); }
+  .callout.dark h4 { color: var(--or); }
+  .callout.dark strong { color: var(--ivory); }
+
+  /* Two columns */
+  .cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6mm;
+    margin: 3mm 0 5mm;
+  }
+  .cols-2 > div {
+    background: var(--ivory);
+    border: 1px solid var(--bone);
+    padding: 4mm 5mm;
+    border-radius: 1mm;
+    page-break-inside: avoid;
+  }
+  .cols-2 > div h4 { margin-top: 0; }
+
+  /* Phase card */
+  .phase {
+    border: 1px solid var(--border);
+    border-radius: 1mm;
+    padding: 5mm 6mm 4mm;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    background: var(--ivory);
+  }
+  .phase .phase-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4mm;
+    border-bottom: 1px solid var(--bone);
+    padding-bottom: 2.5mm;
+    margin-bottom: 3mm;
+  }
+  .phase .phase-name {
+    font-family: "Fraunces", serif;
+    font-size: 14pt;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0;
+  }
+  .phase .phase-meta {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bordeaux);
+    white-space: nowrap;
+  }
+  .phase .phase-goal {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-size: 11.5pt;
+    margin: 0 0 3mm;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3mm 0 5mm;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  thead th {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bordeaux);
+    font-weight: 600;
+    border-bottom: 1.5px solid var(--bordeaux);
+    padding: 2mm 3mm 2mm 0;
+    text-align: left;
+    vertical-align: bottom;
+  }
+  tbody td {
+    padding: 2.5mm 3mm 2.5mm 0;
+    border-bottom: 1px solid var(--bone);
+    vertical-align: top;
+    color: var(--ink-2);
+  }
+  tbody tr:last-child td { border-bottom: 1px solid var(--border); }
+  td strong { color: var(--ink); }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--bordeaux); font-weight: 600; }
+  table.tight td, table.tight th { padding: 1.5mm 2.5mm 1.5mm 0; font-size: 9pt; }
+
+  /* Lists */
+  ul, ol { padding-left: 5mm; margin: 0 0 3mm; }
+  ul li, ol li { margin-bottom: 1.2mm; }
+  ul.tight li, ol.tight li { margin-bottom: 0.4mm; }
+  ul.clean { list-style: none; padding-left: 0; }
+  ul.clean li {
+    padding-left: 6mm;
+    position: relative;
+  }
+  ul.clean li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2.2mm;
+    width: 3mm;
+    height: 1.2px;
+    background: var(--or);
+  }
+
+  /* Pull quote */
+  .pull {
+    font-family: "Fraunces", serif;
+    font-weight: 330;
+    font-size: 15pt;
+    line-height: 1.35;
+    color: var(--ink);
+    text-align: left;
+    margin: 5mm 0;
+    padding: 3mm 0 3mm 8mm;
+    border-left: 3px solid var(--bordeaux);
+  }
+  .pull em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3mm;
+    margin: 3mm 0 5mm;
+  }
+  .kpi-grid .kpi {
+    background: var(--ivory);
+    border: 1px solid var(--bone);
+    border-top: 2px solid var(--or);
+    padding: 3mm 4mm;
+    page-break-inside: avoid;
+  }
+  .kpi .kpi-value {
+    font-family: "Fraunces", serif;
+    font-size: 18pt;
+    line-height: 1;
+    color: var(--bordeaux);
+    font-weight: 400;
+    margin: 0 0 1mm;
+  }
+  .kpi .kpi-label {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* TOC */
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 4mm 0 0;
+    counter-reset: toc;
+  }
+  .toc ol li {
+    display: flex;
+    align-items: baseline;
+    gap: 3mm;
+    padding: 1.8mm 0;
+    border-bottom: 1px dotted var(--border);
+    counter-increment: toc;
+  }
+  .toc ol li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 0.18em;
+    color: var(--bordeaux);
+    font-weight: 600;
+    min-width: 10mm;
+  }
+  .toc ol li .t {
+    font-family: "Fraunces", serif;
+    font-size: 12pt;
+    color: var(--ink);
+    flex: 1;
+  }
+  .toc ol li .p {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 9pt;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* Checklist */
+  ul.check { list-style: none; padding-left: 0; }
+  ul.check li {
+    padding-left: 7mm;
+    position: relative;
+    margin-bottom: 1.8mm;
+  }
+  ul.check li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.5mm;
+    width: 3.5mm;
+    height: 3.5mm;
+    border: 1.5px solid var(--bordeaux);
+    border-radius: 0.6mm;
+    background: var(--ivory);
+  }
+
+  /* Budget */
+  table.budget td.cost { text-align: right; font-variant-numeric: tabular-nums; color: var(--bordeaux); font-weight: 600; }
+  table.budget tfoot td {
+    padding-top: 3mm;
+    border-top: 1.5px solid var(--bordeaux);
+    border-bottom: none;
+    font-family: "Fraunces", serif;
+    font-size: 12pt;
+    color: var(--ink);
+  }
+  table.budget tfoot td.cost { color: var(--bordeaux); }
+
+  /* Print nudge */
+  @media screen {
+    body { padding: 20px 0; }
+    .doc, .cover { box-shadow: 0 20px 60px rgba(23,19,17,0.12); margin: 0 auto 20px; background: var(--sand); width: 210mm; min-height: 297mm; padding: 20mm 18mm 22mm; }
+    .cover { padding: 30mm 22mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================================= COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">Prishtinë · 2026 · Plan 6 mois</div>
+
+  <div class="cover-wordmark"><span class="dot"></span>Termini <span class="im">im</span></div>
+
+  <h1 class="cover-title">
+    Stratégie marketing <em>Kosovo</em> — comment lancer une application de réservation sur un marché qui ne nous connaît pas encore.
+  </h1>
+
+  <p class="cover-sub">
+    Plan de go-to-market, contenu éditorial, acquisition payante et résolution du
+    problème d'amorçage marketplace (salons ↔ clients) pour une exécution en 6 mois
+    à Prishtinë, Prizren et Pejë.
+  </p>
+
+  <div class="cover-meta">
+    <span>Document stratégique · <strong>confidentiel</strong></span>
+    <span>Avril 2026</span>
+  </div>
+</div>
+
+<!-- ========================================================= INTRO -->
+<div class="doc">
+
+<section class="intro">
+  <h1 class="section"><span class="num">Préambule</span>Pourquoi ce document existe</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Termini im est en développement avancé, proche du lancement. Le produit n'est plus
+    le problème. Le vrai défi est commercial : comment atterrir sur un marché — le Kosovo —
+    où la prise de rendez-vous beauté se fait encore majoritairement par <em>téléphone</em>
+    et <em>WhatsApp</em>, et où personne ne nous connaît ?
+  </p>
+
+  <p>
+    Ce document est un plan exécutable, conçu pour une équipe restreinte (1 à 3 personnes),
+    sur <strong>6 mois</strong>, avec un budget raisonnable. Il résout trois questions que
+    le fondateur pose naturellement :
+  </p>
+
+  <ul class="clean">
+    <li><strong>Comment « vendre » un produit gratuit ?</strong> — Si Termini im ne prend
+    ni commission ni abonnement, qu'est-ce que le salon <em>achète</em> réellement ?</li>
+    <li><strong>Comment éviter l'effondrement marketplace ?</strong> — Si on lance avec
+    des clients mais sans salons, ou des salons mais sans clients, tout s'effondre en
+    4 semaines.</li>
+    <li><strong>Comment attirer des clients via les réseaux sociaux ?</strong> — Quels
+    canaux, quel budget, quelles créations publicitaires fonctionnent spécifiquement au Kosovo.</li>
+  </ul>
+
+  <div class="callout gold">
+    <h4>La thèse centrale</h4>
+    <p style="margin:0;">
+      Gagner le Kosovo ne se fait pas en une campagne nationale. Ça se fait <strong>quartier par
+      quartier, salon par salon</strong>. La bonne séquence : concentrer toute l'énergie sur
+      <strong>Prishtinë centre</strong>, atteindre la liquidité locale (30 salons actifs, 3 RDV
+      par semaine chacun), <em>puis</em> seulement ouvrir les vannes publicitaires.
+    </p>
+  </div>
+</section>
+
+<!-- ========================================================= TOC -->
+<section class="toc">
+  <h1 class="section"><span class="num">Sommaire</span>Table des matières</h1>
+  <hr class="rule-gold" />
+  <ol>
+    <li><span class="t">Le vrai problème : la marketplace vide</span><span class="p">§ 1</span></li>
+    <li><span class="t">Le marché kosovar, ce qu'il faut avoir en tête</span><span class="p">§ 2</span></li>
+    <li><span class="t">La stratégie en 4 phases sur 6 mois</span><span class="p">§ 3</span></li>
+    <li><span class="t">Les 6 piliers éditoriaux</span><span class="p">§ 4</span></li>
+    <li><span class="t">Canaux, fréquences et calendrier</span><span class="p">§ 5</span></li>
+    <li><span class="t">Stratégie publicitaire payante</span><span class="p">§ 6</span></li>
+    <li><span class="t">Comment vendre un produit gratuit</span><span class="p">§ 7</span></li>
+    <li><span class="t">Comment on monétisera (un jour)</span><span class="p">§ 8</span></li>
+    <li><span class="t">KPIs et mesure</span><span class="p">§ 9</span></li>
+    <li><span class="t">Plan de contenu — 30 premiers jours</span><span class="p">§ 10</span></li>
+    <li><span class="t">Budget global 6 mois</span><span class="p">§ 11</span></li>
+    <li><span class="t">Risques et plans B</span><span class="p">§ 12</span></li>
+    <li><span class="t">Checklist de lancement</span><span class="p">§ 13</span></li>
+  </ol>
+</section>
+
+<!-- ========================================================= 1 -->
+<section>
+  <h1 class="section"><span class="num">Section 1</span>Le vrai problème à résoudre : la marketplace vide</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Termini im est une <strong>marketplace à deux côtés</strong> : les salons (offre) et les
+    clients (demande). Tant qu'un des deux côtés est vide, l'autre ne reste pas. C'est la
+    menace <em>numéro un</em>, avant même les concurrents, avant même le budget.
+  </p>
+
+  <h3>Les trois scénarios fatals</h3>
+  <div class="cols-2">
+    <div>
+      <h4>Scénario A — Trop de clients, pas de salons</h4>
+      <p>Le/la client·e ouvre l'app, voit 3 adresses, dont 1 seule pertinente. Iel repart,
+      oublie l'app, ne revient pas. Les stores la notent médiocrement. Effondrement en
+      4 à 6 semaines.</p>
+    </div>
+    <div>
+      <h4>Scénario B — Trop de salons, pas de clients</h4>
+      <p>L'owner reçoit 0 RDV par semaine via l'app. Iel arrête de l'ouvrir. Son planning
+      devient obsolète. Les rares clients qui tombent sur le salon ont une expérience
+      pénible. Effondrement en 2 à 3 mois.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <h4>Scénario C — Les deux simultanément</h4>
+    <p style="margin:0;">C'est ce qui arrive par défaut si on lance « en même temps »
+    sans séquencer. Le pire scénario : personne ne croit à l'app, Instagram est vide,
+    aucune preuve sociale. Plus jamais rattrapable sans repartir à zéro sur une autre marque.</p>
+  </div>
+
+  <h3>La solution (playbook marketplace éprouvé)</h3>
+  <p>
+    Les marketplaces qui réussissent — Uber, Airbnb, DoorDash, Fresha à ses débuts — ont
+    toutes suivi la même recette. Quatre règles :
+  </p>
+  <ol>
+    <li><strong>Résoudre le côté difficile d'abord.</strong> Pour nous, c'est l'offre
+    (salons). La demande est naturellement là : les cheveux poussent, les mariages
+    arrivent, le Bajram revient chaque année.</li>
+    <li><strong>Restreindre la géographie à l'absurde.</strong> Pas « Kosovo », pas même
+    « Prishtinë », mais <em>Prishtinë centre</em> — 2 km² autour du boulevard Nënë Tereza.</li>
+    <li><strong>Viser la liquidité locale avant tout.</strong> 30 salons actifs, chacun
+    recevant ≥ 3 RDV par semaine via l'app. C'est notre seuil <em>go / no-go</em> avant
+    le lancement public.</li>
+    <li><strong>Vente en mode concierge.</strong> Le fondateur va personnellement voir
+    les 50 premiers salons. On ne scale pas avant d'avoir prouvé la formule en direct.</li>
+  </ol>
+
+  <div class="callout dark">
+    <h4>La règle d'or</h4>
+    <p style="margin:0;">
+      <strong>Aucune dépense publicitaire avant d'avoir 30 salons actifs.</strong>
+      Attirer des clients sur une app semi-vide est le moyen le plus rapide de
+      cramer sa marque. On paye pour du trafic <em>uniquement</em> quand chaque
+      cliente qui arrive trouve au moins 5 salons pertinents à côté de chez elle.
+    </p>
+  </div>
+</section>
+
+<!-- ========================================================= 2 -->
+<section>
+  <h1 class="section"><span class="num">Section 2</span>Le marché kosovar — ce qu'il faut avoir en tête</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Le Kosovo n'est pas « un petit marché européen ». C'est un marché jeune, hyper-connecté,
+    culturellement dense, avec une <em>diaspora</em> démesurée par rapport à sa population.
+    Les règles marketing européennes ne s'y appliquent pas toujours.
+  </p>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-value">1,8 M</div><div class="kpi-label">Habitants Kosovo</div></div>
+    <div class="kpi"><div class="kpi-value">~250 k</div><div class="kpi-label">Prishtinë intra-muros</div></div>
+    <div class="kpi"><div class="kpi-value">30 ans</div><div class="kpi-label">Âge médian — le plus jeune d'Europe</div></div>
+    <div class="kpi"><div class="kpi-value">~90 %</div><div class="kpi-label">Pénétration smartphone</div></div>
+    <div class="kpi"><div class="kpi-value">~93 %</div><div class="kpi-label">Pénétration internet</div></div>
+    <div class="kpi"><div class="kpi-value">~800 k</div><div class="kpi-label">Diaspora (FR, CH, DE, BE, US)</div></div>
+  </div>
+
+  <h3>Habitudes digitales — par ordre d'importance</h3>
+  <ul class="clean">
+    <li><strong>Instagram</strong> — le réseau dominant pour la beauté, la mode, le lifestyle. C'est notre canal <em>numéro un</em>.</li>
+    <li><strong>WhatsApp</strong> — canal universel de communication. Pas du contenu public, mais le véhicule par lequel les salons partageront leur lien Termini im avec leur base.</li>
+    <li><strong>TikTok</strong> — en très forte croissance, surtout moins de 25 ans. Excellent rapport coût / reach pour les transformations et le behind-the-scenes.</li>
+    <li><strong>Facebook</strong> — encore solide chez les 35+, utile pour les groupes locaux (« Mamat e Prishtinës », « Gra në Kosovë »).</li>
+    <li><strong>Google Search</strong> — sous-utilisé pour la beauté au Kosovo. Les requêtes « coiffeur Prishtina » sont rares. On y investira plus tard.</li>
+  </ul>
+
+  <h3>Les pics saisonniers qu'on exploitera sans en rater un seul</h3>
+  <table class="tight">
+    <thead><tr><th>Moment</th><th>Quand</th><th>Pourquoi c'est critique</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bajram i Fitrit</strong></td><td>Variable (printemps)</td><td>Fin du Ramadan — pic massif coiffure/manucure famille</td></tr>
+      <tr><td><strong>Bajram i Kurbanit</strong></td><td>+ ~2 mois après Fitrit</td><td>Second pic familial, aussi puissant</td></tr>
+      <tr><td><strong>Saison mariages</strong></td><td>Mai → octobre (pic juin-juillet-août)</td><td>Coiffure mariée + mère + témoins + invitées. ~40 % du CA annuel d'un salon de Prishtinë tient sur ces 4 mois.</td></tr>
+      <tr><td><strong>Retour diaspora</strong></td><td>Juin → septembre</td><td>~800 k visiteurs sur 3 mois. Ils consomment beauté dès J+1 après l'arrivée.</td></tr>
+      <tr><td><strong>Rentrée</strong></td><td>Fin août – septembre</td><td>Coiffures neuves, jeunes 15-25 ans</td></tr>
+      <tr><td><strong>17 février</strong></td><td>Fête de l'indépendance</td><td>Moment identitaire — contenu éditorial fort</td></tr>
+      <tr><td><strong>Nouvel An</strong></td><td>Décembre</td><td>Pic réveillons, soirées, familles</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Concurrence locale — l'état réel du marché</h3>
+  <ul class="clean">
+    <li><strong>Aucune app dominante</strong> spécifiquement conçue pour le Kosovo.</li>
+    <li><strong>Les salons utilisent</strong> : téléphone, DM Instagram, WhatsApp Business, carnet papier.</li>
+    <li><strong>Fresha / Booksy / Planity</strong> : présents à la marge, interface EN/FR, non localisée. Non adaptés aux habitudes et à la langue.</li>
+    <li><strong>Risque latent</strong> : un clone local gratuit peut apparaître dans les 12 mois si Termini im prouve le modèle. D'où l'importance de la vitesse d'exécution et de l'ancrage culturel profond.</li>
+  </ul>
+</section>
+
+<!-- ========================================================= 3 -->
+<section>
+  <h1 class="section"><span class="num">Section 3</span>La stratégie en 4 phases sur 6 mois</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Quatre phases, séquencées strictement. <em>On ne passe pas à la suivante tant que
+    les KPIs de la précédente ne sont pas atteints</em>. C'est la discipline qui protège
+    la marque contre l'effondrement marketplace.
+  </p>
+
+  <div class="phase">
+    <div class="phase-head">
+      <h3 class="phase-name">Phase 0 — Pré-lancement</h3>
+      <div class="phase-meta">J-30 → J0 · Organique pur</div>
+    </div>
+    <p class="phase-goal">Créer la curiosité, constituer une waitlist.</p>
+
+    <h4>Actions</h4>
+    <ul>
+      <li>Créer les comptes <strong>@termini.im</strong> sur Instagram et TikTok (cohérence nom stricte).</li>
+      <li>Publier <strong>15 contenus teasers</strong> sur 30 jours — pure esthétique éditoriale (bordeaux / or / ivoire), photos de Prishtinë, jamais le produit montré.</li>
+      <li>Landing page « Coming soon » avec <strong>double CTA</strong> : <em>Je suis cliente</em> (email) / <em>Je suis salon</em> (téléphone + ville).</li>
+      <li>Compte à rebours visible — 30 jours.</li>
+      <li>Contacter 3-5 <strong>micro-influenceurs</strong> beauté Kosovo (5k-50k followers) pour un teaser payé modestement (~80 €/post).</li>
+      <li>Post signature : « Qui est derrière Termini im » — photo fondateur, histoire courte, 3 phrases, pas plus.</li>
+    </ul>
+
+    <h4>KPIs de sortie de phase</h4>
+    <ul class="tight">
+      <li>500 emails clients sur la waitlist</li>
+      <li>100 salons qui ont laissé leurs coordonnées</li>
+      <li>2 000 followers Instagram</li>
+      <li>500 followers TikTok</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <h3 class="phase-name">Phase 1 — Salon-first (concierge)</h3>
+      <div class="phase-meta">J0 → J90 · Terrain</div>
+    </div>
+    <p class="phase-goal">30 salons actifs à Prishtinë centre, ≥ 3 RDV / semaine chacun.</p>
+
+    <h4>Le geste central : la vente de terrain par le fondateur</h4>
+    <p>Pas de téléprospection, pas de forms, pas d'emails froids. Le fondateur — ou 1-2
+    personnes de confiance — <strong>visite en personne 100 salons</strong> à Prishtinë
+    centre sur 12 semaines. Environ 8 à 10 visites par jour utile. C'est inconfortable,
+    c'est long, c'est ce qui fait la différence.</p>
+
+    <h4>Le « white-glove » pilote — ce qu'on offre aux 30 premiers</h4>
+    <ul class="clean">
+      <li><strong>Shooting photo pro</strong> (1h gratuit) par un photographe partenaire — on repart avec 15-20 photos propres pour leur fiche salon</li>
+      <li><strong>Onboarding complet fait pour eux</strong> — services saisis, horaires configurés, employés invités par l'équipe Termini im</li>
+      <li><strong>Statut « Pilote Termini im »</strong> — badge en vitrine (sticker imprimé), mention « Pilote fondateur » dans la bio Instagram</li>
+      <li><strong>Starter kit physique</strong> : carte vitrine avec QR code vers leur salon dans l'app, 100 cartes de visite avec leur lien perso</li>
+      <li><strong>Ligne directe fondateur</strong> pendant 6 mois — WhatsApp, réponse &lt; 2h en journée</li>
+    </ul>
+
+    <h4>Ce qu'on demande en retour</h4>
+    <ul class="tight">
+      <li>Utiliser l'app pendant au moins 90 jours</li>
+      <li>Partager leur lien avec leur base WhatsApp existante</li>
+      <li>Poster une story Instagram d'annonce + une highlight permanente</li>
+      <li>Laisser l'équipe les interviewer pour un mini-case study écrit / vidéo</li>
+    </ul>
+
+    <h4>KPIs de sortie de phase</h4>
+    <ul class="tight">
+      <li>30 salons actifs (critère strict : ≥ 3 RDV/semaine confirmés via l'app)</li>
+      <li>Photographie propre livrée pour chaque salon</li>
+      <li>100 % des salons pilotes ont partagé leur lien avec leur base WhatsApp</li>
+      <li>500+ RDV cumulés confirmés via l'app</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <h3 class="phase-name">Phase 2 — Activation clientèle via les salons</h3>
+      <div class="phase-meta">J30 → J120 · Le push naturel</div>
+    </div>
+    <p class="phase-goal">3 000 RDV confirmés cumulés, rétention J+30 ≥ 40 %.</p>
+
+    <p>
+      Les salons pilotes ont chacun une base WhatsApp de 200 à 500 clients fidèles. C'est
+      notre premier vivier. La mission de la phase 2 : transformer ces bases privées en
+      utilisatrices actives de Termini im, <em>sans forcer</em>.
+    </p>
+
+    <h4>Actions</h4>
+    <ul>
+      <li>Chaque salon pilote envoie <strong>un message WhatsApp type</strong> à sa base : « Je suis sur Termini im maintenant. Réserve en 30 secondes ici : [lien]. Je suis joignable pareil par WhatsApp si tu préfères. »</li>
+      <li>Story Instagram hebdomadaire : <strong>un salon partenaire mis en vedette</strong> × 12 semaines.</li>
+      <li>Campagne <strong>IG sponsorisée géo-ciblée Prishtinë</strong> : les salons pilotes visibles, pas l'app. « Ton salon favori t'attend ici. » Budget : 600 €/mois.</li>
+      <li>Partenariat avec <strong>3 à 5 micro-influenceurs beauté</strong> Kosovo : elles prennent RDV en live via l'app chez un salon pilote et documentent l'expérience.</li>
+      <li>Notification push <strong>J+7 post-premier-RDV</strong> : « Prête pour ton prochain rendez-vous ? » — lien direct vers le même salon.</li>
+    </ul>
+
+    <h4>KPIs de sortie de phase</h4>
+    <ul class="tight">
+      <li>3 000 RDV confirmés cumulés</li>
+      <li>Taux de rétention cliente J+30 ≥ 40 %</li>
+      <li>20 000 followers Instagram, 5 000 followers TikTok</li>
+      <li>Apparition naturelle dans la conversation locale (on commence à entendre « Termini im » sans qu'on soit forcé de le dire)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <h3 class="phase-name">Phase 3 — Lancement public</h3>
+      <div class="phase-meta">J90 → J180 · Scale</div>
+    </div>
+    <p class="phase-goal">100 salons actifs. Présence à Prizren et Pejë.</p>
+
+    <h4>Actions</h4>
+    <ul>
+      <li><strong>Campagne de lancement PR locale</strong> : Telegrafi, Koha, Kosovarja, Kosovo 2.0. Angle : « Une app kosovare pour remplacer le téléphone ».</li>
+      <li>Premier partenariat <strong>macro-influenceur</strong> (Adelina Tahiri, Era Istrefi ou équivalent) — 1 à 2 posts sponsorisés, ~1 500 € à 2 500 €.</li>
+      <li>Budget <strong>Meta Ads : 2 000 €/mois</strong>, <strong>TikTok Ads : 300 €/mois</strong>, <strong>Google Search : 200 €/mois</strong>.</li>
+      <li>Réplication du playbook Phase 1 à <strong>Prizren</strong> (3 semaines concierge, 15 salons pilotes).</li>
+      <li>Puis à <strong>Pejë</strong> (3 semaines, 10 salons).</li>
+      <li>Premier <strong>événement physique « Termini Night »</strong> : un bar de Prishtinë, 30 salons pilotes + 5 influenceurs + presse. Shooting live, story coverage massive.</li>
+    </ul>
+
+    <h4>KPIs de sortie de phase</h4>
+    <ul class="tight">
+      <li>100 salons actifs (Prishtinë + Prizren + Pejë)</li>
+      <li>15 000 clients actifs mensuels (tous genres)</li>
+      <li>30 000 RDV / mois</li>
+      <li>NPS salon ≥ 45, NPS client ≥ 60</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <h3 class="phase-name">Phase 4 — Rétention, diaspora, préparation monétisation</h3>
+      <div class="phase-meta">J180 + · Récolte</div>
+    </div>
+    <p class="phase-goal">Devenir le standard de facto. Activer la diaspora.</p>
+
+    <ul class="clean">
+      <li><strong>Campagne diaspora été</strong> : « Prépare ton retour au pays — réserve depuis Lyon / Bruxelles / Zurich. » Ciblage Meta Ads sur la diaspora albanophone en FR, CH, BE, DE.</li>
+      <li><strong>Ambassadors program</strong> : transformer les 50 meilleur·es client·es en promoteur·rices — code promo symbolique, access beta aux nouvelles features.</li>
+      <li><strong>Case studies vidéo</strong> : 5 propriétaires de salons pilotes, 90 secondes chacun, posés sur YouTube et recyclés sur IG/TikTok.</li>
+      <li><strong>SEO programmatique</strong> : pages optimisées « Coiffeur à Prishtinë », « Manucure à Prizren », etc. — 50 à 100 pages générées à partir de la base salons.</li>
+      <li><strong>Features premium opt-in</strong> — début de la monétisation, encadré dans la narrative « la réservation restera toujours gratuite ».</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ========================================================= 4 -->
+<section>
+  <h1 class="section"><span class="num">Section 4</span>Les 6 piliers éditoriaux</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Tout contenu qu'on publie doit appartenir à l'un de ces 6 piliers. Pas d'exception.
+    C'est ce qui garantit la <em>cohérence</em> de la marque quand l'équipe grandit
+    et que plusieurs personnes postent.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:6%;">#</th>
+        <th style="width:22%;">Pilier</th>
+        <th style="width:10%;">Ratio</th>
+        <th>Quoi / Exemples</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><strong>Éditorial Kosovo</strong></td>
+        <td class="num">40 %</td>
+        <td>La beauté et le style vus d'ici. Photos de salons, de coiffures, de moments, avec la patte visuelle « Prishtina Editorial » (Fraunces + bordeaux/or/ivoire). <em>Exemple</em> : shooting éditorial chez Astrit, barbier dans la vieille ville.</td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td><strong>Behind-the-scenes pros</strong></td>
+        <td class="num">20 %</td>
+        <td>Portraits owners et employés. Humain, texte court, première personne. <em>Exemple</em> : « Donjeta, 10 ans de métier, raconte pourquoi elle a arrêté de répondre à son téléphone pendant les coupes. »</td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td><strong>Avant / pendant / après</strong></td>
+        <td class="num">15 %</td>
+        <td>Transformations visuelles. Reels et carousels. Le format le plus viral dans la beauté Instagram / TikTok au Kosovo. Toujours avec accord écrit de la cliente.</td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td><strong>Culture &amp; moments</strong></td>
+        <td class="num">10 %</td>
+        <td>Bajram, mariage, rentrée, diaspora, 17 février. <em>Exemple</em> : « 5 coiffures pour l'Aïd — inspiration Prishtinë 2026. »</td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td><strong>Éducation &amp; tips</strong></td>
+        <td class="num">10 %</td>
+        <td>Conseils beauté, tendances saisonnières, FAQ. <em>Exemple</em> : « Quelle couleur pour l'automne à Prishtinë ? — avis de 3 coloristes. »</td>
+      </tr>
+      <tr>
+        <td class="num">6</td>
+        <td><strong>Produit / app</strong></td>
+        <td class="num">5 %</td>
+        <td>Captures d'écran, features, tutoriels. Pilier minoritaire — on ne vend pas l'app, on vend la <em>vie autour</em>. <em>Exemple</em> : « Réserver en 30 secondes — démo en story. »</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <h4>Règle éditoriale non négociable</h4>
+    <p style="margin:0;">
+      Une publication <strong>ne doit jamais ressembler à une publicité SaaS</strong>.
+      Si un post peut passer sur le feed d'un magazine éditorial (type <em>Kinfolk</em>,
+      <em>Gentlewoman</em>, <em>Kosovo 2.0</em>) sans détoner, il est bon. Sinon on reprend.
+    </p>
+  </div>
+</section>
+
+<!-- ========================================================= 5 -->
+<section>
+  <h1 class="section"><span class="num">Section 5</span>Canaux, fréquences et calendrier</h1>
+  <hr class="rule-gold" />
+
+  <table>
+    <thead>
+      <tr><th>Canal</th><th>Priorité</th><th>Fréquence cible</th><th>Rôle</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Instagram</strong></td>
+        <td class="num">#1</td>
+        <td>4 posts feed / semaine · 1 reel / jour · 5-10 stories / jour · 1 live / semaine</td>
+        <td>Marque, découverte, autorité culturelle</td>
+      </tr>
+      <tr>
+        <td><strong>TikTok</strong></td>
+        <td class="num">#2</td>
+        <td>3 vidéos / semaine</td>
+        <td>Reach jeune, transformations, duos avec influenceurs</td>
+      </tr>
+      <tr>
+        <td><strong>Facebook</strong></td>
+        <td class="num">#3</td>
+        <td>2 posts / semaine (recyclage IG) + présence dans les groupes locaux</td>
+        <td>35+ et diaspora un peu plus âgée</td>
+      </tr>
+      <tr>
+        <td><strong>WhatsApp</strong></td>
+        <td class="num">#4</td>
+        <td>Pas de contenu public — canal de partage des liens salons</td>
+        <td>Amplification organique via les bases existantes des salons</td>
+      </tr>
+      <tr>
+        <td><strong>Newsletter</strong></td>
+        <td class="num">#5</td>
+        <td>1 envoi / mois côté client · 2 envois / mois côté salon</td>
+        <td>Rétention, annonces produit, moments culturels</td>
+      </tr>
+      <tr>
+        <td><strong>Presse locale</strong></td>
+        <td class="num">phase 3</td>
+        <td>Ciblée — 3 à 5 publications par campagne majeure</td>
+        <td>Crédibilité, PR, SEO backlinks</td>
+      </tr>
+      <tr>
+        <td><strong>OOH &amp; radio</strong></td>
+        <td class="num">phase 4</td>
+        <td>Optionnel, si budget reste</td>
+        <td>Couverture des 35+ non-digital</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Influenceurs Kosovo — la bonne séquence</h3>
+  <p>
+    Au Kosovo, les <strong>micro-influenceurs</strong> (5k à 50k followers) ont un meilleur
+    engagement et coûtent 5 à 10× moins cher qu'un macro. On les utilise en phase 2 comme
+    force principale, et on garde un seul gros nom pour le moment de bascule en phase 3.
+  </p>
+
+  <div class="cols-2">
+    <div>
+      <h4>Phase 2 — Micro-influenceurs (×3 à ×5)</h4>
+      <p>Profil cible : beauté, mode, lifestyle Prishtinë, 5k-50k followers, engagement &gt; 4 %.
+      Tarif : 80 € à 250 € par post. Deal : elles réservent en live via Termini im chez
+      un salon pilote et documentent.</p>
+    </div>
+    <div>
+      <h4>Phase 3 — Un macro-influenceur</h4>
+      <p>Profil cible : figure reconnue de la scène mode/beauté/musique kosovare,
+      100k+ followers, voix authentique. Tarif : 1 500 € à 2 500 €. Deal : 1 à 2 posts +
+      stories sur 1 semaine. Pas de longue rétention — on paye pour le moment de bascule.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================= 6 -->
+<section>
+  <h1 class="section"><span class="num">Section 6</span>Stratégie publicitaire payante</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Les pubs sont un <em>amplificateur</em>, pas un moteur. On n'y touche pas tant que la
+    phase 1 (30 salons actifs) n'est pas bouclée. Ensuite on monte progressivement, avec
+    une discipline stricte : mesurer par côté (client vs salon), A/B tester, ne jamais
+    dépendre d'une seule création.
+  </p>
+
+  <h3>Budget par phase</h3>
+  <table>
+    <thead>
+      <tr><th>Phase</th><th>Durée</th><th>Meta Ads</th><th>TikTok Ads</th><th>Google</th><th>Total / mois</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Phase 0-1</td><td class="num">J-30 → J90</td><td class="num">0 €</td><td class="num">0 €</td><td class="num">0 €</td><td class="num">0 €</td></tr>
+      <tr><td>Phase 2</td><td class="num">J30 → J120</td><td class="num">600 €</td><td class="num">0 €</td><td class="num">200 €</td><td class="num">800 €</td></tr>
+      <tr><td>Phase 3</td><td class="num">J90 → J180</td><td class="num">2 000 €</td><td class="num">300 €</td><td class="num">200 €</td><td class="num">2 500 €</td></tr>
+      <tr><td>Phase 4</td><td class="num">J180+</td><td class="num">2 500 €</td><td class="num">500 €</td><td class="num">300 €</td><td class="num">3 300 €</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Meta Ads — le cheval principal</h3>
+
+  <div class="callout">
+    <h4>Principe de ciblage : par service, pas par genre</h4>
+    <p style="margin:0;">Termini im couvre <strong>coiffure femmes, barberie hommes, manucure, esthétique</strong>. On cible donc <em>tous les genres</em>, en séparant les audiences par <strong>type de service consommé</strong> pour adapter la créa. Cibler « femmes 18-45 » seulement, c'est rater ~40 % du marché beauté kosovar (le segment barberie / coiffure homme, en forte croissance).</p>
+  </div>
+
+  <h4>Audiences à construire dès le début</h4>
+  <ul class="clean">
+    <li><strong>Client local · segment coiffure / beauté</strong> : tous genres 18-45, Kosovo, intérêts coiffure, mode, mariage, manucure. Créa : éditoriale, bordeaux / or, photos de salons de coiffure ou d'esthétique.</li>
+    <li><strong>Client local · segment barberie / grooming</strong> : tous genres 18-45 (majorité homme en ciblage naturel), Kosovo, intérêts barbier, grooming, mode masculine, sport, football. Créa : dédiée — barber chair, rasoir, dégradé, ambiance chaude.</li>
+    <li><strong>Client diaspora</strong> : tous genres 18-45, FR / CH / BE / DE, origine albanaise (proxy : albanais en langue de l'appareil, intérêts <em>shqip / Kosovë / shqiptar</em>, groupes albanais). Angle : « prépare ton retour au pays ».</li>
+    <li><strong>Owner / salon</strong> : tous genres 25-55, statut employeur / indépendant, intérêts : gestion petite entreprise, <em>sallon</em>, <em>frizer</em>, <em>barber shop</em>, Kosovo. Deux sous-audiences : owners salons coiffure / beauté (souvent femmes) et owners barberies (souvent hommes) — pour split de créa.</li>
+    <li><strong>Lookalike 1 %</strong> basé sur les meilleur·es client·es (≥ 2 RDV) dès qu'on a 500 utilisateur·rices réel·les.</li>
+  </ul>
+
+  <div class="callout gold">
+    <h4>Ratio de budget recommandé</h4>
+    <p style="margin:0;">Phase 2 : <strong>50 % coiffure/beauté · 30 % barberie · 20 % diaspora</strong>. Phase 3 : <strong>40 % / 30 % / 20 % · 10 % owners</strong>. Ajuster selon les retours de la semaine 2 — si le CAC sur un segment est 2× plus élevé que l'autre, rebascule le budget sans attendre.</p>
+  </div>
+
+  <h4>Formats créa à tester</h4>
+  <ul class="clean">
+    <li><strong>Carousel « 5 salons à Prishtinë sur Termini im »</strong> — visuel éditorial, CTA « Découvrir ».</li>
+    <li><strong>Reel « Ouvre Termini im en 30 secondes »</strong> — screen record stylisé, voix-off en albanais.</li>
+    <li><strong>UGC partenaire</strong> — vidéo brute d'une cliente qui réserve en live, pas d'effet, pas de sous-titre clinquant.</li>
+    <li><strong>Story avant / après</strong> — transformation + overlay « Réservée via Termini im ».</li>
+    <li><strong>Ad salon</strong> (pour l'acquisition B2B) — portrait d'un owner + quote + CTA « Inscris ton salon ».</li>
+  </ul>
+
+  <h3>TikTok Ads — secondaire, à basculer en phase 3</h3>
+  <p>
+    TikTok est moins cher par impression mais demande un format natif — pas de publicité
+    « léchée », du contenu qui ressemble à du contenu. Formats à privilégier :
+    transformations, « réserver en 30 secondes », duet avec un coiffeur.
+  </p>
+
+  <h3>Google Search — petit mais essentiel</h3>
+  <p>
+    Le volume est faible au Kosovo sur « termin online » ou « coiffeur Prishtina », mais
+    ces requêtes sont à <strong>haute intention</strong>. Même 200 € / mois capturent
+    100 % de la demande entrante. À ne surtout pas négliger.
+  </p>
+
+  <h4>Mots-clés à acheter</h4>
+  <ul class="tight">
+    <li>termin online kosovo, termin online prishtina, termin online prizren</li>
+    <li>aplikacion për termine, aplikacion sallon</li>
+    <li>rezervo termin frizer, rezervo termin friziere</li>
+    <li>salon coiffure prishtina, réserver salon kosovo (diaspora)</li>
+    <li>+ variantes mal orthographiées courantes (coifeur, rezervo)</li>
+  </ul>
+
+  <div class="callout">
+    <h4>Les 5 règles budgétaires</h4>
+    <ol style="margin:0;">
+      <li>Jamais plus de <strong>30 %</strong> du budget sur une seule création.</li>
+      <li>Toujours <strong>au moins 3 créations</strong> actives par audience.</li>
+      <li>Kill une création si <strong>CTR &lt; 0,8 %</strong> après 48h et 5 000 impressions.</li>
+      <li>Mesurer le <strong>CAC par côté</strong> (client vs salon), jamais en moyenne.</li>
+      <li>Pixel Meta <strong>et</strong> GA4 installés avant le premier euro dépensé.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ========================================================= 7 -->
+<section>
+  <h1 class="section"><span class="num">Section 7</span>Comment vendre un produit gratuit</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Quand c'est gratuit, le prospect se demande <em>où est le piège</em>. Notre travail
+    n'est pas de convaincre du prix — il est de vendre la <strong>confiance</strong>. Ce
+    qui veut dire rendre visible ce que le salon achète <em>réellement</em> et, au moins
+    aussi important, être transparent sur ce qu'on gagnera un jour nous-mêmes.
+  </p>
+
+  <h3>Ce que le salon achète (même s'il ne paye rien)</h3>
+  <div class="cols-2">
+    <div>
+      <h4>Du temps</h4>
+      <p>Ne plus décrocher pendant une coupe. ~15 h/mois récupérées pour un salon
+      moyen — soit 3 à 4 jours de travail par an.</p>
+    </div>
+    <div>
+      <h4>De l'argent</h4>
+      <p>Les rappels auto baissent le taux de no-show de ~12 % à ~6 %. Sur un salon à
+      8 000 €/mois de CA, ça représente ~500 €/mois récupérés.</p>
+    </div>
+    <div>
+      <h4>De la visibilité</h4>
+      <p>Être dans l'app = être trouvé par les 15 000 clients actifs (tous genres) d'ici
+      fin phase 3. Pas de pub à acheter pour ça.</p>
+    </div>
+    <div>
+      <h4>Du prestige</h4>
+      <p>Le statut « Pilote Termini im » est une preuve sociale. Le salon est perçu
+      comme moderne, digital, pro.</p>
+    </div>
+  </div>
+
+  <h3>Ce que la cliente achète</h3>
+  <ul class="clean">
+    <li><strong>La certitude</strong> — confirmation instantanée, fini le DM non lu depuis 6h.</li>
+    <li><strong>Le contrôle</strong> — voir les créneaux dispos sans avoir à appeler.</li>
+    <li><strong>La sérénité</strong> — rappels auto, historique, favoris, partage.</li>
+  </ul>
+
+  <h3>Le script de vente terrain (phase 1, concierge)</h3>
+  <div class="pull">
+    « Termini im c'est une app kosovare, <em>gratuite</em>, qui te permet de ne plus
+    décrocher pendant une coupe. Tes clients te réservent en 30 secondes, tu reçois
+    une notification, et elles reçoivent un rappel la veille et 1h avant. On fait la
+    photo du salon gratuitement, on configure tout pour toi, et tu gardes 100 % de
+    tes marges. Pas de commission, jamais. On cherche 30 salons pilotes à Prishtinë
+    centre — tu es intéressée ? »
+  </div>
+
+  <h3>Les 5 objections et leurs réponses</h3>
+  <table>
+    <thead><tr><th style="width:45%;">Objection</th><th>Réponse</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>« Mes client·es préfèrent m'appeler, ils/elles sont fidèles. »</td>
+        <td>C'est vrai pour les fidèles. Mais les <em>nouveaux</em> clients, eux, abandonnent
+        si tu ne réponds pas en 2h. Termini im capte les 30-40 % que tu perds aujourd'hui sans le savoir.</td>
+      </tr>
+      <tr>
+        <td>« C'est trop technique pour moi / mon équipe. »</td>
+        <td>L'app se prend en main en 10 minutes. L'équipe est invitée par SMS, le walk-in
+        se fait en 3 taps. Si tu sais utiliser Instagram, tu sais utiliser Termini im.</td>
+      </tr>
+      <tr>
+        <td>« Si c'est gratuit, c'est qu'il y a un piège. »</td>
+        <td>Non. Pas de pub tierce, jamais. La monétisation future se fera via <em>features
+        premium optionnelles</em> — statistiques avancées, multi-site, marketing automation.
+        Jamais de commission, jamais de revente de tes données.</td>
+      </tr>
+      <tr>
+        <td>« J'ai essayé Fresha / Booksy, c'était compliqué. »</td>
+        <td>Termini im ne fait pas les 200 features d'un outil enterprise. On fait 5 choses
+        très bien : planning, réservation, rappels, walk-in, partage. C'est ce qu'un salon
+        indépendant utilise vraiment.</td>
+      </tr>
+      <tr>
+        <td>« Pas sûr·e que mes client·es s'en servent. »</td>
+        <td>Le partage WhatsApp est intégré. Tu envoies ton lien perso à ta base, elles
+        réservent via web sans rien installer. Au 2ᵉ RDV, ~80 % réservent ensuite via l'app.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================================================= 8 -->
+<section>
+  <h1 class="section"><span class="num">Section 8</span>Comment on monétisera (un jour)</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    La monétisation viendra, mais pas avant 12 à 18 mois. Ce qui suit est la roadmap
+    — publique à communiquer aux salons pilotes dès la phase 1, parce que
+    <em>savoir</em> comment on gagnera de l'argent un jour est rassurant et
+    <strong>augmente</strong> la confiance.
+  </p>
+
+  <h3>Le principe qu'on ne brisera jamais</h3>
+  <div class="callout gold">
+    <p style="margin:0; font-family: 'Fraunces', serif; font-size: 13pt; line-height: 1.4;">
+      <strong>La réservation restera toujours 100 % gratuite, des deux côtés.</strong>
+      <br />Aucune commission sur les RDV. Aucun abonnement pour réserver ou être réservé.
+      Si on veut plus, on paiera pour plus. Point.
+    </p>
+  </div>
+
+  <h3>Les 4 leviers de monétisation — par ordre de priorité</h3>
+
+  <h4>1. Features premium opt-in (M12 → M18)</h4>
+  <ul class="tight">
+    <li><strong>Statistiques avancées</strong> : segmentation clients, LTV, cohortes, heatmap planning — ~10 €/mois/salon</li>
+    <li><strong>Multi-site</strong> : pour chaînes 2+ salons — ~25 €/mois par site supplémentaire</li>
+    <li><strong>Marketing automation</strong> : campagnes push / SMS ciblées (« Tes clients VIP n'ont pas réservé depuis 6 semaines ») — ~15 €/mois</li>
+    <li><strong>Custom branding</strong> : sous-domaine personnalisé salon.termini-im.com, couleurs propres — ~10 €/mois</li>
+  </ul>
+
+  <h4>2. Sponsored listings opt-in (M18+)</h4>
+  <p>
+    Un salon peut payer pour apparaître en tête des résultats de sa ville pendant une
+    période donnée. Toujours <em>clairement marqué</em> comme sponsorisé. Budget maîtrisé
+    par le salon, CPC transparent. Jamais plus de 1 slot sponsorisé sur 10 résultats.
+  </p>
+
+  <h4>3. Partenariats marques beauté (M12+)</h4>
+  <p>
+    Placements éditoriaux payés de marques de produits beauté présentes au Kosovo
+    (Schwarzkopf, Kérastase, L'Oréal Professionnel, marques locales). Contenu intégré
+    sur le fil éditorial et la newsletter, jamais en interruption de l'app.
+  </p>
+
+  <h4>4. Data insights anonymisés (M18+)</h4>
+  <p>
+    Rapports sectoriels (« L'état de la beauté au Kosovo 2027 ») vendus à la presse, aux
+    agences et aux marques. Zéro donnée personnelle. Bénéfice secondaire : chaque rapport
+    est une opération de relations presse <em>gratuite</em>.
+  </p>
+
+  <h3>La narrative publique — à dire, écrire, répéter</h3>
+  <div class="pull">
+    « Chez Termini im, réserver un RDV sera <em>toujours</em> gratuit, des deux côtés.
+    Un jour on proposera des options avancées pour les salons qui veulent aller plus
+    loin. Tu ne paieras que si tu veux. Tu garderas tes clients, tes données, tes
+    marges. »
+  </div>
+</section>
+
+<!-- ========================================================= 9 -->
+<section>
+  <h1 class="section"><span class="num">Section 9</span>KPIs et mesure</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    On instrumente dès J0. Pas de « on verra plus tard » — sans mesure, la discipline de
+    phase s'effondre et on prend des décisions émotionnelles.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>KPI</th>
+        <th style="text-align:right;">Phase 1</th>
+        <th style="text-align:right;">Phase 3</th>
+        <th>Outil</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Salons actifs</strong> (≥ 3 RDV/sem)</td><td style="text-align:right;" class="num">30</td><td style="text-align:right;" class="num">100</td><td>DB interne</td></tr>
+      <tr><td><strong>Clients actifs mensuels</strong></td><td style="text-align:right;" class="num">500</td><td style="text-align:right;" class="num">15 000</td><td>DB interne</td></tr>
+      <tr><td><strong>RDV confirmés / mois</strong></td><td style="text-align:right;" class="num">500</td><td style="text-align:right;" class="num">30 000</td><td>DB interne</td></tr>
+      <tr><td><strong>Rétention cliente J+30</strong></td><td style="text-align:right;" class="num">40 %</td><td style="text-align:right;" class="num">55 %</td><td>DB interne</td></tr>
+      <tr><td><strong>Taux de no-show</strong> (avec rappel)</td><td style="text-align:right;" class="num">&lt; 8 %</td><td style="text-align:right;" class="num">&lt; 6 %</td><td>DB interne</td></tr>
+      <tr><td><strong>CAC cliente</strong> (via ads)</td><td style="text-align:right;" class="num">—</td><td style="text-align:right;" class="num">&lt; 1,50 €</td><td>Meta + GA4</td></tr>
+      <tr><td><strong>CAC salon</strong> (concierge → ads)</td><td style="text-align:right;" class="num">gratuit</td><td style="text-align:right;" class="num">&lt; 50 €</td><td>Tracking manuel</td></tr>
+      <tr><td><strong>Instagram followers</strong></td><td style="text-align:right;" class="num">2 000</td><td style="text-align:right;" class="num">20 000</td><td>IG insights</td></tr>
+      <tr><td><strong>TikTok followers</strong></td><td style="text-align:right;" class="num">500</td><td style="text-align:right;" class="num">5 000</td><td>TikTok analytics</td></tr>
+      <tr><td><strong>NPS salon</strong></td><td style="text-align:right;" class="num">≥ 40</td><td style="text-align:right;" class="num">≥ 45</td><td>Typeform trimestriel</td></tr>
+      <tr><td><strong>NPS cliente</strong></td><td style="text-align:right;" class="num">≥ 50</td><td style="text-align:right;" class="num">≥ 60</td><td>Prompt in-app post-RDV</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Le dashboard unique — à consulter chaque lundi</h3>
+  <p>
+    Ne pas multiplier les dashboards. Un seul, sur Notion ou Google Sheets, avec 6 chiffres :
+    salons actifs, clients actifs, RDV/mois, rétention J+30, CAC client, followers IG.
+    Tout le reste est du détail.
+  </p>
+</section>
+
+<!-- ========================================================= 10 -->
+<section>
+  <h1 class="section"><span class="num">Section 10</span>Plan de contenu — 30 premiers jours</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Un calendrier exécutable, pas une théorie. <em>30 contenus en 30 jours</em>, phase 0
+    exclusivement. L'objectif est la waitlist, pas la conversion.
+  </p>
+
+  <h3>Semaine 1 — Teasing visuel</h3>
+  <table class="tight">
+    <thead><tr><th>Jour</th><th>Canal</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td>J1</td><td>IG feed</td><td>Hero éditorial « Kosova ka shumë <em>stil.</em> » — palette bordeaux / or, aucune mention produit</td></tr>
+      <tr><td>J2</td><td>IG story</td><td>Polaroid d'un café de Prishtinë, légende en albanais court</td></tr>
+      <tr><td>J3</td><td>TikTok</td><td>Reel 15 s sans voix — défilement de la palette, wordmark en fin</td></tr>
+      <tr><td>J4</td><td>IG feed</td><td>Carousel « Quelque chose se prépare à Prishtinë »</td></tr>
+      <tr><td>J5</td><td>IG story</td><td>Teaser landing page — CTA « je veux savoir »</td></tr>
+      <tr><td>J6</td><td>TikTok</td><td>Défilement de portraits anonymes, gros plans nuque / mains / ciseaux</td></tr>
+      <tr><td>J7</td><td>IG feed</td><td>« Pronoja im, stili im, <em>termini im.</em> » — révélation partielle du nom</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Semaine 2 — Révélation partielle</h3>
+  <table class="tight">
+    <thead><tr><th>Jour</th><th>Canal</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td>J8</td><td>IG feed</td><td>Logo Termini im révélé en grand, animation wordmark</td></tr>
+      <tr><td>J9</td><td>IG story</td><td>Interview fondateur 60 s — pourquoi cette app, pourquoi maintenant</td></tr>
+      <tr><td>J10</td><td>Reel / TikTok</td><td>« La beauté au Kosovo mérite mieux qu'un DM non lu »</td></tr>
+      <tr><td>J11</td><td>IG feed</td><td>Carousel « Pourquoi le téléphone ne suffit plus »</td></tr>
+      <tr><td>J12</td><td>IG story</td><td>Sondage « Ton dernier RDV, tu l'as pris comment ? »</td></tr>
+      <tr><td>J13</td><td>Reel</td><td>Montage silencieux : téléphone qui sonne, main qui hésite, client qui part</td></tr>
+      <tr><td>J14</td><td>IG feed</td><td>Waitlist officiellement ouverte — 3 CTA : cliente / salon / diaspora</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Semaine 3 — Ouverture waitlist &amp; preuve sociale early</h3>
+  <table class="tight">
+    <thead><tr><th>Jour</th><th>Canal</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td>J15-J17</td><td>Multi</td><td>Partenariat 1-2 micro-influenceurs teaser (story annonce + feed post)</td></tr>
+      <tr><td>J18</td><td>IG feed</td><td>Behind-the-scenes — fondateur dans un salon pilote en discussion</td></tr>
+      <tr><td>J19</td><td>IG story</td><td>Screenshot waitlist « 250 inscrites »</td></tr>
+      <tr><td>J20</td><td>Reel</td><td>« Ce que tu pourras faire dans 10 jours » — démo UX à distance</td></tr>
+      <tr><td>J21</td><td>IG feed</td><td>Éditorial « Prishtinë, capitale du <em>stil</em> » — 5 photos de rue</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Semaine 4 — Compte à rebours &amp; derniers teasers</h3>
+  <table class="tight">
+    <thead><tr><th>Jour</th><th>Canal</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td>J22</td><td>IG story + feed</td><td>J-7 : compte à rebours visible, sticker countdown</td></tr>
+      <tr><td>J23</td><td>Reel</td><td>Portrait d'un owner pilote qui parle en albanais face caméra</td></tr>
+      <tr><td>J24</td><td>IG story</td><td>« Nos 5 premiers salons Prishtinë révélés bientôt »</td></tr>
+      <tr><td>J25</td><td>IG feed</td><td>Éditorial « 5 coiffures à prendre pour Bajram / mariage / rentrée »</td></tr>
+      <tr><td>J26</td><td>TikTok</td><td>Behind-the-scenes shooting d'un salon pilote</td></tr>
+      <tr><td>J27</td><td>IG feed</td><td>Dévoilement : les 5 premiers salons publics</td></tr>
+      <tr><td>J28-J29</td><td>Multi</td><td>Compte à rebours J-2, J-1. Stories en continu, call-to-action waitlist.</td></tr>
+      <tr><td>J30</td><td>LAUNCH</td><td>Post feed lancement + reel + story + email waitlist + partage salons</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================================================= 11 -->
+<section>
+  <h1 class="section"><span class="num">Section 11</span>Budget global 6 mois</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Deux versions : <em>confortable</em> pour maximiser la vitesse d'exécution, et
+    <em>minimum viable</em> pour lancer même avec un cash limité. Les deux marchent —
+    la version MVP prend simplement 2 à 3 mois de plus pour atteindre les mêmes KPIs.
+  </p>
+
+  <h3>Version confortable — 23 700 €</h3>
+  <table class="budget">
+    <thead><tr><th>Poste</th><th style="text-align:right;">Détail</th><th style="text-align:right;">Coût</th></tr></thead>
+    <tbody>
+      <tr><td>Shooting photo salons pilotes</td><td style="text-align:right;">30 salons × 150 €</td><td class="cost">4 500 €</td></tr>
+      <tr><td>Vidéo fondatrice + case studies</td><td style="text-align:right;">3 vidéos brand + 5 case studies</td><td class="cost">2 500 €</td></tr>
+      <tr><td>Meta Ads (phases 2-4)</td><td style="text-align:right;">5 mois × moy. 1 200 €</td><td class="cost">6 000 €</td></tr>
+      <tr><td>Google Ads</td><td style="text-align:right;">6 mois × 200 €</td><td class="cost">1 200 €</td></tr>
+      <tr><td>TikTok Ads</td><td style="text-align:right;">3 mois × 500 €</td><td class="cost">1 500 €</td></tr>
+      <tr><td>Micro-influenceurs</td><td style="text-align:right;">8 partenariats × 250 €</td><td class="cost">2 000 €</td></tr>
+      <tr><td>Macro-influenceur</td><td style="text-align:right;">1 partenariat phase 3</td><td class="cost">2 000 €</td></tr>
+      <tr><td>Événement « Termini Night »</td><td style="text-align:right;">location + F&amp;B + shooting</td><td class="cost">1 500 €</td></tr>
+      <tr><td>Kits vitrine &amp; cartes</td><td style="text-align:right;">500 kits × 4 €</td><td class="cost">2 000 €</td></tr>
+      <tr><td>Outils (Meta Business Suite, Typeform, Notion, etc.)</td><td style="text-align:right;">6 mois</td><td class="cost">500 €</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="2"><strong>Total confortable</strong></td><td class="cost">23 700 €</td></tr></tfoot>
+  </table>
+
+  <h3>Version MVP — 8 000 €</h3>
+  <table class="budget">
+    <thead><tr><th>Poste</th><th style="text-align:right;">Détail</th><th style="text-align:right;">Coût</th></tr></thead>
+    <tbody>
+      <tr><td>Shooting photo (basique)</td><td style="text-align:right;">15 salons × 130 €</td><td class="cost">2 000 €</td></tr>
+      <tr><td>Meta + Google Ads</td><td style="text-align:right;">moyenne 600 €/mois × 5 mois</td><td class="cost">3 000 €</td></tr>
+      <tr><td>Micro-influenceurs</td><td style="text-align:right;">6 partenariats × 250 €</td><td class="cost">1 500 €</td></tr>
+      <tr><td>Kits vitrine &amp; cartes</td><td style="text-align:right;">250 kits × 4 €</td><td class="cost">1 000 €</td></tr>
+      <tr><td>Outils</td><td style="text-align:right;">6 mois</td><td class="cost">500 €</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="2"><strong>Total MVP</strong></td><td class="cost">8 000 €</td></tr></tfoot>
+  </table>
+
+  <div class="callout">
+    <h4>Le plus gros levier budgétaire : le temps du fondateur</h4>
+    <p style="margin:0;">
+      La phase 1 est gratuite en cash mais <em>coûteuse en temps</em> — ~40h/semaine pendant
+      12 semaines pour la concierge. Ce n'est pas un budget à sous-traiter. C'est ce qui crée
+      la relation humaine avec les 30 premiers salons, et c'est elle qui se diffuse ensuite.
+    </p>
+  </div>
+</section>
+
+<!-- ========================================================= 12 -->
+<section>
+  <h1 class="section"><span class="num">Section 12</span>Risques et plans B</h1>
+  <hr class="rule-gold" />
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:32%;">Risque</th>
+        <th style="width:10%;">Prob.</th>
+        <th style="width:10%;">Impact</th>
+        <th>Mitigation / plan B</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>30 salons pilotes non atteints en 90 jours</strong></td>
+        <td>Moyenne</td>
+        <td>Élevé</td>
+        <td>Étendre concierge à 120 jours, augmenter l'incentive (voucher Meta Ads de 100 € offert au salon signé), baisser le seuil « actif » à 2 RDV/sem transitoirement.</td>
+      </tr>
+      <tr>
+        <td><strong>Clients qui ne reviennent pas après 1er RDV</strong></td>
+        <td>Élevée</td>
+        <td>Élevé</td>
+        <td>Push J+7 « Prête pour la suite ? », mise en avant feature Favoris, test A/B d'un bon de réduction salon en partenariat.</td>
+      </tr>
+      <tr>
+        <td><strong>Un gros concurrent lance un clone local</strong></td>
+        <td>Faible</td>
+        <td>Élevé</td>
+        <td>Capitaliser sur la vitesse et l'ancrage culturel (langue, logo, narrative). Accélérer la phase 3. Verrouiller les contrats de partenariat exclusifs avec les 10 meilleurs salons.</td>
+      </tr>
+      <tr>
+        <td><strong>Bad PR — un salon mécontent fait du bruit</strong></td>
+        <td>Faible</td>
+        <td>Moyen</td>
+        <td>SLA support &lt; 24h, ligne directe fondateur pour les top 30, process post-mortem public si incident, jamais de dispute ouverte sur les réseaux.</td>
+      </tr>
+      <tr>
+        <td><strong>Pic été (juin-août) non tenu côté infra</strong></td>
+        <td>Moyenne</td>
+        <td>Élevé</td>
+        <td>Pré-scaler infra en mai (load test x3), doubler le support pendant 12 semaines, plan d'escalade clair.</td>
+      </tr>
+      <tr>
+        <td><strong>Diaspora engagement faible</strong></td>
+        <td>Élevée</td>
+        <td>Moyen</td>
+        <td>Pas de dépendance immédiate — diaspora = phase 4. Campagne dédiée uniquement si phases 1-3 sont bouclées.</td>
+      </tr>
+      <tr>
+        <td><strong>Ads Meta non performantes (CAC &gt; 5 €)</strong></td>
+        <td>Moyenne</td>
+        <td>Moyen</td>
+        <td>Pivoter 80 % du budget vers TikTok, renforcer micro-influenceurs, revenir en organique massif 30 jours avant de retenter.</td>
+      </tr>
+      <tr>
+        <td><strong>Accident de communication (ton, traduction)</strong></td>
+        <td>Faible</td>
+        <td>Moyen</td>
+        <td>Toutes les pubs validées par un relecteur native speaker SQ. Aucune publication en SQ générée par IA sans relecture humaine.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================================================= 13 -->
+<section>
+  <h1 class="section"><span class="num">Section 13</span>Checklist de lancement</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Tout ce qu'il faut cocher <em>avant</em> le début de la phase 0. C'est la version
+    exécutable de ce document : si cette liste est finie, on peut lancer.
+  </p>
+
+  <h3>Identité &amp; présence</h3>
+  <ul class="check">
+    <li>Compte Instagram <strong>@termini.im</strong> créé, bio finalisée, lien waitlist</li>
+    <li>Compte TikTok <strong>@termini.im</strong> créé</li>
+    <li>Compte Facebook <strong>@terminiim</strong> (ou page business)</li>
+    <li>Landing page « Coming soon » bilingue SQ/FR en ligne sur <strong>www.termini-im.com</strong></li>
+    <li>Waitlist fonctionnelle (Mailchimp ou ConvertKit), double opt-in</li>
+    <li>Formulaire salon fonctionnel (Typeform ou Tally) vers une base Airtable</li>
+  </ul>
+
+  <h3>Produit &amp; tracking</h3>
+  <ul class="check">
+    <li>App en production sur iOS + Android + Web, testée</li>
+    <li>Pixel Meta installé sur le site et l'app (événements configurés)</li>
+    <li>GA4 installé, conversion goals définis</li>
+    <li>Lien de partage salon avec pré-sélection employé (<code>?employee=ID</code>) testé</li>
+    <li>Flow walk-in testé sur terrain (3 taps)</li>
+  </ul>
+
+  <h3>Contenu &amp; créa</h3>
+  <ul class="check">
+    <li>30 contenus phase 0 produits et validés (feed + reels + stories)</li>
+    <li>Pitch deck salon (5 slides max, en albanais + français)</li>
+    <li>Script concierge fondateur imprimé, testé sur 3 salons blancs</li>
+    <li>Kit vitrine designé : QR code + sticker + cartes de visite</li>
+    <li>3 créations publicitaires phase 2 prêtes à l'emploi (carousels, reels)</li>
+  </ul>
+
+  <h3>Terrain &amp; partenariats</h3>
+  <ul class="check">
+    <li>Liste de 100 salons cibles à Prishtinë centre (feuille Airtable)</li>
+    <li>Photographe partenaire briefé, contrat signé, tarifs négociés</li>
+    <li>Liste de 10 micro-influenceurs Kosovo avec audiences vérifiées</li>
+    <li>1 relecteur native SQ disponible pour toute publication</li>
+    <li>Base légale : CGU bilingues SQ/FR, mention RGPD, politique de confidentialité publiée</li>
+  </ul>
+
+  <h3>Finances &amp; outils</h3>
+  <ul class="check">
+    <li>Budget 6 mois validé, réparti par phase</li>
+    <li>Notion ou Sheets dashboard unique en place (6 KPIs)</li>
+    <li>Revue hebdomadaire (chaque lundi) programmée dans le calendrier</li>
+    <li>Go / no-go de fin de phase 1 formellement écrit — seuil : 30 salons actifs</li>
+  </ul>
+
+  <hr class="divider" />
+
+  <p class="lead">
+    Quand cette liste est cochée, on lance. Jusque-là, rien d'autre ne compte.
+  </p>
+</section>
+
+<!-- ========================================================= OUTRO -->
+<section class="no-break" style="margin-top: 16mm;">
+  <hr class="rule-gold" />
+  <p style="font-family: 'Fraunces', serif; font-size: 14pt; line-height: 1.4; color: var(--ink); max-width: 150mm;">
+    <em>Kosova ka shumë</em> <span style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--bordeaux);">stil.</span>
+    Notre travail est de le rendre visible — un salon, un rendez-vous, une cliente à la fois.
+  </p>
+  <p style="font-family: 'Instrument Sans', sans-serif; font-size: 9pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-top: 8mm;">
+    Termini im · Prishtinë · 2026
+  </p>
+</section>
+
+</div>
+
+</body>
+</html>

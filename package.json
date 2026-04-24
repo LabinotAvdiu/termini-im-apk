@@ -1,0 +1,51 @@
+{
+  "name": "termini-im",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Termini im — Flutter app scripts for Windows/Mac/Linux. Run `npm run chrome` etc.",
+  "scripts": {
+    "//— RUN LOCAL DEV ————————————————————————————————————————————————": "",
+    "chrome": "flutter run -d chrome --dart-define=USE_LOCAL_API=true",
+    "android": "flutter run -d android --dart-define=USE_LOCAL_API=true",
+    "ios": "flutter run -d ios --dart-define=USE_LOCAL_API=true",
+    "emulator": "flutter run --dart-define=USE_LOCAL_API=true",
+
+    "//— RUN AGAINST PROD API ————————————————————————————————————————": "",
+    "chrome:prod": "flutter run -d chrome",
+    "android:prod": "flutter run -d android",
+
+    "//— BUILD (Play Store / TestFlight) —————————————————————————————": "",
+    "build:aab": "flutter build appbundle --release",
+    "build:apk": "flutter build apk --release",
+    "build:web": "flutter build web --release",
+    "build:ios": "flutter build ipa --release",
+
+    "//— BUILD (local dev install on physical device) ————————————————": "",
+    "build:apk:debug": "flutter build apk --debug --dart-define=USE_LOCAL_API=true",
+
+    "//— QUALITY CHECKS ——————————————————————————————————————————————": "",
+    "analyze": "flutter analyze",
+    "test": "flutter test",
+    "format": "dart format lib/ test/",
+    "format:check": "dart format --set-exit-if-changed lib/ test/",
+
+    "//— DEPENDENCIES ———————————————————————————————————————————————": "",
+    "pub": "flutter pub get",
+    "clean": "flutter clean && flutter pub get",
+    "upgrade": "flutter pub upgrade",
+
+    "//— L10N ——————————————————————————————————————————————————————": "",
+    "l10n": "flutter gen-l10n",
+
+    "//— BACKEND HELPERS (local Docker) ———————————————————————————————": "",
+    "backend:migrate": "docker exec lagedi-php-1 php artisan migrate",
+    "backend:seed": "docker exec lagedi-php-1 php artisan db:seed",
+    "backend:fresh": "docker exec lagedi-php-1 php artisan migrate:fresh --seed",
+    "backend:test": "docker exec lagedi-php-1 php artisan test",
+    "backend:tinker": "docker exec -it lagedi-php-1 php artisan tinker",
+    "backend:logs": "docker exec lagedi-php-1 tail -f /var/www/html/storage/logs/laravel.log",
+
+    "//— UTILS ———————————————————————————————————————————————————————": "",
+    "mailpit": "explorer \"http://localhost:8025\""
+  }
+}

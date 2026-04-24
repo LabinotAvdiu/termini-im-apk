@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Notifications in-app · Design Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ivory:      #f7f2ea;
+      --bone:       #e8dcc8;
+      --ink:        #171311;
+      --muted:      #716059;
+      --burgundy:   #7a2232;
+      --burgundy-2: #5d1a27;
+      --gold:       #c89b47;
+      --line:       #d9cab3;
+      --surface:    #fcf7ee;
+      --error:      #b83d3d;
+      --success:    #6f7e55;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--ivory); color: var(--ink); }
+    body {
+      font-family: "Instrument Sans", -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      padding: 64px 32px 96px;
+      position: relative;
+    }
+
+    /* Grain noise overlay */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; opacity: 0.28; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 1;
+    }
+
+    /* Gold radial gradient */
+    body::after {
+      content: "";
+      position: fixed; top: -30%; right: -15%;
+      width: 70vw; height: 70vw; border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,155,71,0.09), transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: end; gap: 40px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px; margin-bottom: 56px;
+    }
+    .mast-kicker { font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .mast-title {
+      font-family: "Fraunces", serif; font-size: clamp(40px, 5.2vw, 76px);
+      font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 100;
+      line-height: 0.92; letter-spacing: -0.025em; color: var(--ink); margin-top: 10px;
+    }
+    .mast-title em { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; color: var(--burgundy); }
+    .mast-meta { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-align: right; line-height: 1.8; }
+    .mast-meta b { color: var(--burgundy); font-weight: 600; }
+
+    /* ── INTRO BLOCK ── */
+    .intro-block {
+      margin-bottom: 72px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+    }
+    .intro-text p { font-size: 14px; color: var(--muted); line-height: 1.75; max-width: 480px; }
+    .decisions-list { list-style: none; }
+    .decisions-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+      font-size: 13px; color: var(--ink); line-height: 1.5;
+    }
+    .decisions-list li:last-child { border-bottom: none; }
+    .d-num {
+      font-family: "Fraunces", serif; font-size: 22px; font-weight: 300;
+      color: var(--burgundy); line-height: 1; flex-shrink: 0; width: 24px;
+      font-variation-settings: "SOFT" 100;
+    }
+    .d-label { font-weight: 600; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
+
+    /* ── SECTION HEADER ── */
+    .section-header { margin-bottom: 36px; padding-top: 64px; border-top: 1px solid var(--line); }
+    .section-num {
+      font-family: "Fraunces", serif; font-size: 11px; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--muted); font-weight: 400; margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: "Fraunces", serif; font-size: clamp(28px, 3vw, 42px);
+      font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 72;
+      line-height: 1.05; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .section-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .section-sub { margin-top: 8px; font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 580px; }
+
+    /* ── FRAMES LAYOUT ── */
+    .frames-row {
+      display: flex; gap: 64px; align-items: flex-start;
+      overflow-x: auto; padding-bottom: 12px;
+    }
+    .frame-col { display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+    .frame-label {
+      font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+    .frame-label span { color: var(--burgundy); }
+
+    /* ── PHONE FRAME ── */
+    .phone-frame {
+      width: 390px; border-radius: 44px; background: #1a1a1a;
+      padding: 10px;
+      box-shadow: 0 2px 0 rgba(255,255,255,0.05) inset,
+                  0 40px 80px -30px rgba(23,19,17,0.35),
+                  0 12px 24px -12px rgba(23,19,17,0.20);
+      position: relative; flex-shrink: 0;
+    }
+    .phone-frame::after {
+      content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 30px; border-radius: 20px; background: #1a1a1a; z-index: 30;
+    }
+    .phone-screen {
+      width: 100%; border-radius: 36px; overflow: hidden;
+      position: relative; background: var(--ivory);
+    }
+
+    .status-bar {
+      height: 50px; display: flex; align-items: flex-end;
+      justify-content: space-between; padding: 0 28px 8px;
+      font-size: 13px; font-weight: 600; font-family: "Instrument Sans"; color: var(--ink);
+      position: relative; z-index: 20;
+    }
+    .status-icons { display: flex; align-items: center; gap: 4px; }
+
+    /* Phone app bar */
+    .phone-appbar {
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; border-bottom: 1px solid var(--line);
+      background: var(--ivory); position: relative; z-index: 10;
+    }
+    .phone-wordmark {
+      font-family: "Fraunces", serif; font-size: 20px; font-weight: 400;
+      color: var(--ink); font-variation-settings: "SOFT" 60;
+    }
+    .phone-wordmark em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .appbar-icons { display: flex; gap: 6px; align-items: center; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--line); display: grid; place-items: center;
+      color: var(--muted); cursor: pointer;
+    }
+
+    /* Phone body content */
+    .phone-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .phone-card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .pc-label { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+    .pc-val { font-family: "Fraunces", serif; font-size: 14px; color: var(--ink); font-variation-settings: "opsz" 72; }
+    .pc-row { display: flex; gap: 6px; }
+    .pc-mini { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .pc-mini .pcm-l { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .pc-mini .pcm-v { font-family: "Fraunces", serif; font-size: 13px; color: var(--ink); margin-top: 2px; }
+
+    /* Phone bottom nav */
+    .phone-bottomnav {
+      display: flex; border-top: 1px solid var(--line);
+      background: var(--ivory); padding: 8px 0 20px;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: 3px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600; padding: 4px 0; cursor: pointer;
+    }
+    .nav-item.active { color: var(--burgundy); }
+    .nav-icon {
+      width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+    .nav-item.active .nav-icon svg { stroke: var(--burgundy); }
+
+    /* ── NOTIFICATION CARD ── */
+    .notif-card {
+      border-radius: 12px; background: var(--surface);
+      box-shadow: 0 4px 16px -4px rgba(23,19,17,0.12), 0 1px 4px -2px rgba(23,19,17,0.08);
+      overflow: hidden; position: relative; cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .notif-card:hover { transform: translateY(-1px); box-shadow: 0 8px 24px -6px rgba(23,19,17,0.16); }
+    .notif-card.variant-positive { border-left: 3px solid var(--gold); }
+    .notif-card.variant-info { border-left: 3px solid var(--burgundy); }
+    .notif-card.variant-attention { border-left: 4px solid var(--burgundy); background: var(--ivory); }
+
+    .notif-inner { padding: 12px 14px 14px 12px; display: flex; gap: 10px; align-items: flex-start; position: relative; }
+
+    .notif-icon-wrap {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .notif-icon-wrap.gold-bg { background: rgba(200,155,71,0.14); }
+    .notif-icon-wrap.burgundy-light-bg { background: rgba(122,34,50,0.09); }
+    .notif-icon-wrap.burgundy-bg { background: rgba(122,34,50,0.15); }
+    .notif-icon-wrap svg { width: 18px; height: 18px; }
+
+    .notif-content { flex: 1; min-width: 0; }
+    .notif-title {
+      font-family: "Fraunces", serif; font-size: 14px; font-weight: 500;
+      color: var(--ink); line-height: 1.2; letter-spacing: -0.01em;
+      font-variation-settings: "opsz" 36; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .notif-body {
+      font-size: 12px; color: var(--muted); line-height: 1.45;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .notif-cta {
+      display: inline-block; margin-top: 6px;
+      font-size: 11px; font-weight: 600; color: var(--burgundy);
+      text-decoration: underline; text-underline-offset: 2px; letter-spacing: 0.01em;
+    }
+
+    .notif-close {
+      position: absolute; top: 8px; right: 8px;
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; cursor: pointer; color: var(--muted);
+      font-size: 12px; line-height: 1; opacity: 0.6;
+      transition: opacity 120ms, background 120ms;
+    }
+    .notif-close:hover { opacity: 1; background: rgba(113,96,89,0.1); }
+
+    /* Progress bar */
+    .notif-progress { height: 2px; background: rgba(113,96,89,0.10); position: relative; overflow: hidden; }
+    .notif-progress-fill {
+      height: 100%; position: absolute; left: 0; top: 0;
+      transition: width 100ms linear;
+    }
+    .variant-positive .notif-progress-fill { background: var(--gold); width: 60%; }
+    .variant-info .notif-progress-fill { background: var(--burgundy); width: 35%; }
+    .variant-attention .notif-progress-fill { background: var(--burgundy); width: 10%; }
+
+    /* ── MOBILE NOTIFICATION STACK ── */
+    .mobile-notif-container {
+      position: absolute; top: 106px; left: 16px; right: 16px;
+      z-index: 50; display: flex; flex-direction: column; gap: 6px;
+    }
+    .mobile-notif-2 { opacity: 0.85; transform: scale(0.97); transform-origin: top center; }
+    .mobile-notif-3 { opacity: 0.65; transform: scale(0.94); transform-origin: top center; }
+
+    /* Swipe hint */
+    .swipe-hint {
+      position: absolute; right: -28px; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; gap: 4px;
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      white-space: nowrap; opacity: 0.7;
+    }
+    .swipe-hint svg { width: 14px; height: 14px; stroke: var(--muted); fill: none; }
+
+    /* ── DESKTOP FRAME ── */
+    .desktop-frame {
+      width: 900px; border-radius: 16px; background: #1e1b18;
+      padding: 8px;
+      box-shadow: 0 40px 80px -20px rgba(23,19,17,0.40), 0 12px 24px -8px rgba(23,19,17,0.22);
+      flex-shrink: 0; position: relative;
+    }
+
+    /* Mac-style traffic lights */
+    .desktop-titlebar {
+      height: 36px; display: flex; align-items: center; padding: 0 16px; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .tl { width: 12px; height: 12px; border-radius: 50%; }
+    .tl.red { background: #ff5f57; }
+    .tl.yellow { background: #febc2e; }
+    .tl.green { background: #28c840; }
+    .dtitle { flex: 1; text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); font-family: "Instrument Sans"; letter-spacing: 0.06em; }
+
+    .desktop-screen {
+      border-radius: 10px; overflow: hidden; background: var(--ivory);
+      display: flex; flex-direction: column;
+    }
+
+    /* Desktop app bar */
+    .desktop-appbar {
+      height: 64px; display: flex; align-items: center;
+      padding: 0 32px; border-bottom: 1px solid var(--line);
+      background: var(--surface); gap: 32px;
+    }
+    .desktop-wordmark {
+      font-family: "Fraunces", serif; font-size: 22px; font-weight: 400;
+      color: var(--ink); font-variation-settings: "SOFT" 60; flex-shrink: 0;
+    }
+    .desktop-wordmark em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .desktop-nav { display: flex; gap: 2px; flex: 1; }
+    .dnav-item {
+      padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      color: var(--muted); cursor: pointer; white-space: nowrap;
+    }
+    .dnav-item.active { background: rgba(122,34,50,0.08); color: var(--burgundy); }
+    .desktop-appbar-right { display: flex; gap: 8px; align-items: center; }
+    .dicon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--line); display: grid; place-items: center;
+      color: var(--muted); cursor: pointer; flex-shrink: 0;
+    }
+    .dicon-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; }
+    .davatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--burgundy); display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: #fff; flex-shrink: 0;
+    }
+
+    /* Desktop body */
+    .desktop-body { display: flex; flex: 1; min-height: 380px; position: relative; }
+
+    /* Desktop sidebar */
+    .desktop-sidebar {
+      width: 200px; border-right: 1px solid var(--line);
+      background: var(--surface); padding: 20px 12px; flex-shrink: 0;
+    }
+    .ds-section { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 0 8px; margin-bottom: 6px; margin-top: 16px; }
+    .ds-section:first-child { margin-top: 0; }
+    .ds-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 8px; font-size: 13px; color: var(--muted);
+      cursor: pointer; margin-bottom: 2px;
+    }
+    .ds-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; flex-shrink: 0; }
+    .ds-item.active { background: rgba(122,34,50,0.08); color: var(--burgundy); font-weight: 600; }
+
+    /* Desktop content area */
+    .desktop-content {
+      flex: 1; padding: 24px 28px; display: flex; flex-direction: column; gap: 12px;
+      background: var(--ivory); position: relative; overflow: hidden;
+    }
+    .dc-header { font-family: "Fraunces", serif; font-size: 22px; font-weight: 400; color: var(--ink); font-variation-settings: "opsz" 72; }
+    .dc-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .dc-card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .dc-card-lbl { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .dc-card-val { font-family: "Fraunces", serif; font-size: 20px; color: var(--ink); font-variation-settings: "opsz" 72; }
+    .dc-table { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .dc-table-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid rgba(217,202,179,0.5); font-size: 12px; color: var(--muted); }
+    .dc-table-row:last-child { border-bottom: none; }
+    .dc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+    .dc-dot.b { background: var(--burgundy); }
+
+    /* Desktop notification stack — top right */
+    .desktop-notif-container {
+      position: absolute; top: 16px; right: 16px;
+      width: 340px; z-index: 50; display: flex; flex-direction: column; gap: 6px;
+    }
+    .desktop-notif-2 { opacity: 0.85; transform: scale(0.97); transform-origin: top right; }
+    .desktop-notif-3 { opacity: 0.65; transform: scale(0.94); transform-origin: top right; }
+
+    /* Hover pause indicator */
+    .hover-indicator {
+      display: flex; align-items: center; gap: 6px; margin-top: 2px;
+      font-size: 10px; color: var(--muted); letter-spacing: 0.06em;
+    }
+    .hover-pill {
+      background: rgba(122,34,50,0.1); border: 1px solid rgba(122,34,50,0.2);
+      border-radius: 4px; padding: 2px 6px;
+      font-size: 9px; font-weight: 600; color: var(--burgundy);
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── ANIMATION SPEC SECTION ── */
+    .anim-section { margin-top: 72px; }
+
+    .timeline-grid {
+      display: grid; grid-template-columns: 140px 1fr; gap: 0;
+      border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+      background: var(--surface);
+    }
+    .tl-row { display: contents; }
+    .tl-label-cell {
+      padding: 14px 16px; border-bottom: 1px solid var(--line);
+      font-size: 12px; color: var(--muted); font-weight: 500;
+      display: flex; align-items: center; background: var(--ivory);
+      border-right: 1px solid var(--line);
+    }
+    .tl-label-cell:last-of-type { border-bottom: none; }
+    .tl-bar-cell {
+      padding: 10px 16px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; gap: 0; position: relative;
+    }
+    .tl-bar-cell:last-of-type { border-bottom: none; }
+
+    /* Time ruler */
+    .time-ruler {
+      position: absolute; top: 0; left: 16px; right: 16px; bottom: 0;
+      display: flex; pointer-events: none;
+    }
+    .time-tick {
+      flex: 1; border-left: 1px dashed rgba(217,202,179,0.4);
+      position: relative;
+    }
+    .time-tick-label {
+      position: absolute; top: 2px; left: 3px;
+      font-size: 8px; color: rgba(113,96,89,0.5); letter-spacing: 0.08em;
+    }
+
+    .anim-bar {
+      height: 20px; border-radius: 4px; position: relative; z-index: 2;
+      display: flex; align-items: center; padding: 0 8px;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      white-space: nowrap; overflow: hidden;
+    }
+    .anim-bar.entry { background: rgba(200,155,71,0.25); border: 1px solid rgba(200,155,71,0.5); color: #7a5c20; min-width: 32px; }
+    .anim-bar.duration-positive { background: rgba(200,155,71,0.15); border: 1px solid rgba(200,155,71,0.35); color: #7a5c20; }
+    .anim-bar.duration-info { background: rgba(122,34,50,0.10); border: 1px solid rgba(122,34,50,0.25); color: var(--burgundy); }
+    .anim-bar.duration-attention { background: rgba(122,34,50,0.15); border: 1px solid rgba(122,34,50,0.35); color: var(--burgundy); }
+    .anim-bar.exit { background: rgba(113,96,89,0.15); border: 1px solid rgba(113,96,89,0.3); color: var(--muted); min-width: 24px; }
+    .anim-bar.hover-pause { background: rgba(122,34,50,0.08); border: 1px dashed rgba(122,34,50,0.35); color: var(--burgundy); }
+
+    .tl-sequence { display: flex; align-items: center; gap: 3px; width: 100%; position: relative; z-index: 2; }
+
+    .anim-arrow {
+      font-size: 10px; color: var(--muted); opacity: 0.6;
+    }
+
+    /* ── DESIGN DECISIONS ── */
+    .decisions-section {
+      margin-top: 64px; padding-top: 64px; border-top: 1px solid var(--line);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    }
+    .decision-block { }
+    .decision-block-title {
+      font-family: "Fraunces", serif; font-size: 18px; font-weight: 400;
+      color: var(--ink); margin-bottom: 16px; font-variation-settings: "opsz" 36;
+    }
+    .decision-block-title em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+    .decision-items { display: flex; flex-direction: column; gap: 0; }
+    .decision-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+    }
+    .decision-item:last-child { border-bottom: none; }
+    .di-bullet {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--burgundy); margin-top: 6px; flex-shrink: 0;
+    }
+    .di-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .di-text strong { color: var(--ink); font-weight: 600; }
+
+    /* Variant labels */
+    .variant-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--ivory); border: 1px solid var(--line);
+      border-radius: 6px; padding: 3px 8px 3px 6px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .variant-badge .vb-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .variant-badge.positive .vb-dot { background: var(--gold); }
+    .variant-badge.info .vb-dot { background: var(--burgundy); }
+    .variant-badge.attention .vb-dot { background: var(--burgundy); }
+
+    /* Queue visual */
+    .queue-diagram {
+      display: flex; flex-direction: column; gap: 4px; margin-top: 12px;
+    }
+    .queue-slot {
+      height: 32px; border-radius: 6px; display: flex; align-items: center;
+      padding: 0 12px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; color: var(--muted);
+    }
+    .queue-slot.visible { background: rgba(122,34,50,0.08); border: 1px solid rgba(122,34,50,0.2); color: var(--burgundy); }
+    .queue-slot.queued { background: rgba(217,202,179,0.3); border: 1px dashed var(--line); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .frames-row { flex-direction: column; }
+      .intro-block { grid-template-columns: 1fr; }
+      .decisions-section { grid-template-columns: 1fr; }
+      .masthead { grid-template-columns: 1fr; gap: 12px; }
+      .mast-meta { text-align: left; }
+      .desktop-frame { width: 100%; min-width: 600px; }
+    }
+
+    /* Animations for live demo */
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideInTop {
+      from { transform: translateY(-20px) scale(0.97); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes progressPositive {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+    @keyframes progressAttention {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    .mobile-notif-container .notif-card:first-child {
+      animation: slideInTop 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .desktop-notif-container .notif-card:first-child {
+      animation: slideInRight 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.3s;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── MASTHEAD ── -->
+  <header class="masthead">
+    <div>
+      <div class="mast-kicker">SYSTÈME · COMPOSANT · 04</div>
+      <h1 class="mast-title">Notifications<br><em>in-app</em></h1>
+    </div>
+    <div></div>
+    <div class="mast-meta">
+      <div>Termini <b>im</b></div>
+      <div>Prishtinë · 2026</div>
+      <div style="margin-top:6px; font-size:10px; opacity:0.6;">FOREGROUND OVERLAY SYSTEM</div>
+      <div style="margin-top:4px;">Mobile + Desktop</div>
+    </div>
+  </header>
+
+  <!-- ── INTRO ── -->
+  <div class="intro-block">
+    <div class="intro-text">
+      <p>
+        Quand un push FCM arrive pendant que l'utilisateur est actif, le système
+        OS affiche une notification banale et opaque. Ce composant remplace cette
+        mécanique par un overlay in-app éditorial — ancré dans la palette Termini im,
+        animé avec intention, et intelligent quant à sa position sur l'écran.
+      </p>
+      <p style="margin-top:12px;">
+        Trois variants couvrent tous les types sémantiques : transactionnel positif,
+        informationnel, et attention requise. Chacun a sa propre durée de vie
+        et son accent chromatique, tout en restant dans le registre bordeaux-or.
+      </p>
+    </div>
+    <ul class="decisions-list">
+      <li>
+        <span class="d-num">1</span>
+        <div>
+          <span class="d-label">Position mobile</span>
+          Top-center, sous la barre de statut et l'AppBar, au-dessus du contenu — ne couvre ni la bottom nav ni les CTAs critiques.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">2</span>
+        <div>
+          <span class="d-label">Position desktop</span>
+          Top-right, à 16px du bord — zone de périphérie visuelle, pas dans le flux de lecture central. Max 3 visibles.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">3</span>
+        <div>
+          <span class="d-label">Queue interne</span>
+          Si 4+ notifs arrivent en rafale, les suivantes attendent. À chaque dismiss, la prochaine entre avec son animation.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">4</span>
+        <div>
+          <span class="d-label">Progress bar</span>
+          2px au bas de chaque card — même couleur que l'accent, très subtile. Indique visuellement le countdown sans chiffres.
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── FRAMES ── -->
+  <div class="section-header">
+    <div class="section-num">01 — Rendu écran</div>
+    <h2 class="section-title">Positions &amp; <em>variantes</em></h2>
+    <p class="section-sub">Mobile en top-center, desktop en top-right. Les trois variants sont visibles simultanément avec la progression de pile (opacité + scale).</p>
+  </div>
+
+  <div class="frames-row">
+
+    <!-- MOBILE -->
+    <div class="frame-col">
+      <div class="frame-label">Mobile — <span>390px</span></div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <!-- Status bar -->
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">
+              <!-- Signal bars SVG -->
+              <svg width="17" height="12" viewBox="0 0 17 12" fill="var(--ink)">
+                <rect x="0" y="8" width="3" height="4" rx="0.5"/>
+                <rect x="4.5" y="5" width="3" height="7" rx="0.5"/>
+                <rect x="9" y="2" width="3" height="10" rx="0.5"/>
+                <rect x="13.5" y="0" width="3" height="12" rx="0.5" opacity="0.3"/>
+              </svg>
+              <!-- WiFi -->
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="var(--ink)" stroke-width="1.5">
+                <path d="M1 4.5c1.9-2 4.5-3.2 7-3.2s5.1 1.2 7 3.2" opacity="0.3"/>
+                <path d="M3.5 7c1.2-1.3 2.8-2 4.5-2s3.3.7 4.5 2"/>
+                <path d="M6 9.5c.6-.6 1.3-1 2-1s1.4.4 2 1"/>
+                <circle cx="8" cy="11.5" r="0.8" fill="var(--ink)"/>
+              </svg>
+              <!-- Battery -->
+              <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+                <rect x="0.5" y="1.5" width="18" height="9" rx="2.5" stroke="var(--ink)" stroke-width="1"/>
+                <rect x="2" y="3" width="13" height="6" rx="1.5" fill="var(--ink)"/>
+                <path d="M19.5 4.5v3" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- AppBar -->
+          <div class="phone-appbar">
+            <div class="phone-wordmark">Termini <em>im</em></div>
+            <div class="appbar-icons">
+              <div class="icon-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.8">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+              </div>
+              <div class="icon-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.8">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notification stack — top center, below AppBar -->
+          <div class="mobile-notif-container" style="position: relative; top: auto; left: auto; right: auto; margin: 0; padding: 10px 0 0; display: flex; flex-direction: column; gap: 6px;">
+
+            <!-- Variant 1: Positive (top = newest, most prominent) -->
+            <div class="notif-card variant-positive" style="animation: slideInTop 380ms cubic-bezier(0.16,1,0.3,1) both;">
+              <div class="notif-inner">
+                <div class="notif-icon-wrap gold-bg">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                    <path d="M9 16l2 2 4-4"/>
+                  </svg>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-title">Rendez-vous confirmé</div>
+                  <div class="notif-body">Votre RDV avec Salon Elite est confirmé pour demain à 14h30.</div>
+                  <span class="notif-cta">Voir le rendez-vous →</span>
+                </div>
+                <div class="notif-close">✕</div>
+              </div>
+              <div class="notif-progress"><div class="notif-progress-fill" style="width:60%"></div></div>
+            </div>
+
+            <!-- Variant 2: Info (middle, slightly behind) -->
+            <div class="notif-card variant-info mobile-notif-2">
+              <div class="notif-inner">
+                <div class="notif-icon-wrap burgundy-light-bg">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--burgundy)" stroke-width="1.8">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-title">Nouvel avis 5 étoiles</div>
+                  <div class="notif-body">Un client a laissé un avis sur votre salon.</div>
+                </div>
+                <div class="notif-close">✕</div>
+              </div>
+              <div class="notif-progress"><div class="notif-progress-fill" style="width:35%; background:var(--burgundy)"></div></div>
+            </div>
+
+            <!-- Variant 3: Attention (bottom, most behind) -->
+            <div class="notif-card variant-attention mobile-notif-3">
+              <div class="notif-inner">
+                <div class="notif-icon-wrap burgundy-bg">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--burgundy)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-title">RDV annulé</div>
+                  <div class="notif-body">Alexandre Martin a annulé son rendez-vous du 24 avril.</div>
+                </div>
+                <div class="notif-close">✕</div>
+              </div>
+              <div class="notif-progress"><div class="notif-progress-fill" style="width:10%; background:var(--burgundy)"></div></div>
+            </div>
+          </div>
+
+          <!-- App content (blurred behind) -->
+          <div class="phone-body" style="opacity:0.5; filter: blur(0.5px); margin-top: 8px;">
+            <div class="phone-card">
+              <div class="pc-label">Aujourd'hui</div>
+              <div class="pc-val">3 rendez-vous</div>
+            </div>
+            <div class="pc-row">
+              <div class="pc-mini"><div class="pcm-l">En attente</div><div class="pcm-v">2</div></div>
+              <div class="pc-mini"><div class="pcm-l">Confirmés</div><div class="pcm-v">12</div></div>
+            </div>
+          </div>
+
+          <!-- Bottom Nav -->
+          <div class="phone-bottomnav">
+            <div class="nav-item active">
+              <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+              <span>Accueil</span>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <span>RDV</span>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg></div>
+              <span>Profil</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swipe annotation -->
+      <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Swipe → pour dismiss (mobile)
+      </div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div class="frame-col">
+      <div class="frame-label">Desktop — <span>1200px</span> (réduit à 900px pour l'affichage)</div>
+      <div class="desktop-frame">
+        <!-- Title bar -->
+        <div class="desktop-titlebar">
+          <div class="tl red"></div>
+          <div class="tl yellow"></div>
+          <div class="tl green"></div>
+          <div class="dtitle">termini.im — Tableau de bord</div>
+        </div>
+        <div class="desktop-screen">
+          <!-- App bar -->
+          <div class="desktop-appbar">
+            <div class="desktop-wordmark">Termini <em>im</em></div>
+            <nav class="desktop-nav">
+              <div class="dnav-item active">Tableau de bord</div>
+              <div class="dnav-item">Rendez-vous</div>
+              <div class="dnav-item">Planning</div>
+              <div class="dnav-item">Équipe</div>
+              <div class="dnav-item">Avis</div>
+            </nav>
+            <div class="desktop-appbar-right">
+              <div class="dicon-btn">
+                <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div class="davatar">L</div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="desktop-body">
+            <!-- Sidebar -->
+            <div class="desktop-sidebar">
+              <div class="ds-section">Menu</div>
+              <div class="ds-item active">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                Dashboard
+              </div>
+              <div class="ds-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Rendez-vous
+              </div>
+              <div class="ds-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Planning
+              </div>
+              <div class="ds-section" style="margin-top:16px;">Équipe</div>
+              <div class="ds-item">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Employés
+              </div>
+            </div>
+
+            <!-- Main content -->
+            <div class="desktop-content" style="position: relative;">
+              <div class="dc-header">Bonjour, Labinot ✦</div>
+              <div class="dc-row">
+                <div class="dc-card">
+                  <div class="dc-card-lbl">Aujourd'hui</div>
+                  <div class="dc-card-val">8 RDV</div>
+                </div>
+                <div class="dc-card">
+                  <div class="dc-card-lbl">En attente</div>
+                  <div class="dc-card-val">3</div>
+                </div>
+                <div class="dc-card">
+                  <div class="dc-card-lbl">Avis récents</div>
+                  <div class="dc-card-val">★ 4.9</div>
+                </div>
+              </div>
+              <div class="dc-table">
+                <div class="dc-table-row"><div class="dc-dot"></div><span>14h00 — Coupe homme · Mohammed</span></div>
+                <div class="dc-table-row"><div class="dc-dot b"></div><span>15h30 — Balayage · Émilie D.</span></div>
+                <div class="dc-table-row"><div class="dc-dot"></div><span>16h00 — Barbe · Arta K.</span></div>
+              </div>
+
+              <!-- Desktop notification stack — top right of content area -->
+              <div class="desktop-notif-container">
+
+                <!-- Hover indicator above stack -->
+                <div class="hover-indicator">
+                  <div class="hover-pill">Hover</div>
+                  <span>Pause le countdown</span>
+                </div>
+
+                <!-- Variant 1: Positive -->
+                <div class="notif-card variant-positive" style="animation: slideInRight 380ms cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.2s;">
+                  <div class="notif-inner">
+                    <div class="notif-icon-wrap gold-bg">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/>
+                      </svg>
+                    </div>
+                    <div class="notif-content">
+                      <div class="notif-title">Rendez-vous confirmé</div>
+                      <div class="notif-body">Votre RDV avec Salon Elite est confirmé pour demain à 14h30.</div>
+                      <span class="notif-cta">Voir le rendez-vous →</span>
+                    </div>
+                    <div class="notif-close">✕</div>
+                  </div>
+                  <div class="notif-progress"><div class="notif-progress-fill" style="width:60%"></div></div>
+                </div>
+
+                <!-- Variant 2: Info -->
+                <div class="notif-card variant-info desktop-notif-2">
+                  <div class="notif-inner">
+                    <div class="notif-icon-wrap burgundy-light-bg">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="var(--burgundy)" stroke-width="1.8">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
+                    </div>
+                    <div class="notif-content">
+                      <div class="notif-title">Nouvel avis 5 étoiles</div>
+                      <div class="notif-body">Un client a laissé un avis sur votre salon.</div>
+                    </div>
+                    <div class="notif-close">✕</div>
+                  </div>
+                  <div class="notif-progress"><div class="notif-progress-fill" style="width:35%; background:var(--burgundy)"></div></div>
+                </div>
+
+                <!-- Variant 3: Attention -->
+                <div class="notif-card variant-attention desktop-notif-3">
+                  <div class="notif-inner">
+                    <div class="notif-icon-wrap burgundy-bg">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="var(--burgundy)" stroke-width="1.8" stroke-linecap="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                      </svg>
+                    </div>
+                    <div class="notif-content">
+                      <div class="notif-title">RDV annulé</div>
+                      <div class="notif-body">Alexandre Martin a annulé son rendez-vous du 24 avril.</div>
+                    </div>
+                    <div class="notif-close">✕</div>
+                  </div>
+                  <div class="notif-progress"><div class="notif-progress-fill" style="width:10%; background:var(--burgundy)"></div></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /frames-row -->
+
+  <!-- ── ANIMATION SPEC ── -->
+  <div class="anim-section">
+    <div class="section-header">
+      <div class="section-num">02 — Spécification mouvement</div>
+      <h2 class="section-title"><em>Timeline</em> d'animation</h2>
+      <p class="section-sub">Chaque notification suit un cycle entrée → durée → sortie. Le hover desktop suspend le countdown. Le swipe mobile dismiss immédiatement.</p>
+    </div>
+
+    <div class="timeline-grid">
+      <!-- Header row -->
+      <div style="padding: 10px 16px; background: var(--bone); border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);">Phase</div>
+      <div style="padding: 10px 16px; background: var(--bone); border-bottom: 1px solid var(--line); font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); position: relative;">
+        Durée relative (0ms → 9000ms max)
+        <!-- Time ruler marks -->
+        <div style="position:absolute; bottom:0; left:16px; right:16px; display:flex; pointer-events:none;">
+          <div style="flex:1;"></div>
+          <div style="width:1px; height:6px; background:rgba(113,96,89,0.3);"></div>
+          <div style="flex:1;"></div>
+          <div style="width:1px; height:6px; background:rgba(113,96,89,0.3);"></div>
+          <div style="flex:1;"></div>
+          <div style="width:1px; height:6px; background:rgba(113,96,89,0.3);"></div>
+          <div style="flex:1;"></div>
+          <div style="width:1px; height:6px; background:rgba(113,96,89,0.3);"></div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Row: Entry -->
+      <div class="tl-label-cell">
+        Entrée
+        <span style="display:block; font-size:10px; margin-top:2px; opacity:0.7;">slide + fade</span>
+      </div>
+      <div class="tl-bar-cell">
+        <div class="tl-sequence">
+          <div class="anim-bar entry" style="width: 52px;">320ms</div>
+          <span class="anim-arrow"> easeOutCubic</span>
+        </div>
+      </div>
+
+      <!-- Row: Positive -->
+      <div class="tl-label-cell">
+        <div>
+          <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:8px; height:8px; background:var(--gold); border-radius:2px;"></div>
+            Transactionnel
+          </div>
+          <div style="font-size:10px; margin-top:2px; opacity:0.7;">appointment.confirmed…</div>
+        </div>
+      </div>
+      <div class="tl-bar-cell">
+        <div class="tl-sequence">
+          <div class="anim-bar entry" style="width:52px; opacity:0.35;">320ms</div>
+          <div class="anim-bar duration-positive" style="width: 180px;">5 000ms auto-dismiss</div>
+          <div class="anim-bar hover-pause" style="width:80px;">hover pause</div>
+          <div class="anim-bar exit" style="width:40px;">240ms</div>
+        </div>
+      </div>
+
+      <!-- Row: Info -->
+      <div class="tl-label-cell">
+        <div>
+          <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:8px; height:8px; background:var(--burgundy); border-radius:2px;"></div>
+            Informationnel
+          </div>
+          <div style="font-size:10px; margin-top:2px; opacity:0.7;">new_review, walk_in…</div>
+        </div>
+      </div>
+      <div class="tl-bar-cell">
+        <div class="tl-sequence">
+          <div class="anim-bar entry" style="width:52px; opacity:0.35;">320ms</div>
+          <div class="anim-bar duration-info" style="width: 140px;">4 000ms</div>
+          <div class="anim-bar exit" style="width:40px;">240ms</div>
+        </div>
+      </div>
+
+      <!-- Row: Attention -->
+      <div class="tl-label-cell">
+        <div>
+          <div style="display:flex; align-items:center; gap:5px;">
+            <div style="width:8px; height:8px; background:var(--burgundy-2); border-radius:2px;"></div>
+            Attention requise
+          </div>
+          <div style="font-size:10px; margin-top:2px; opacity:0.7;">capacity_full, annulé…</div>
+        </div>
+      </div>
+      <div class="tl-bar-cell">
+        <div class="tl-sequence">
+          <div class="anim-bar entry" style="width:52px; opacity:0.35;">320ms</div>
+          <div class="anim-bar duration-attention" style="width: 280px;">8 000ms (reste plus longtemps)</div>
+          <div class="anim-bar exit" style="width:40px;">240ms</div>
+        </div>
+      </div>
+
+      <!-- Row: Sortie -->
+      <div class="tl-label-cell" style="border-bottom:none;">
+        Sortie
+        <span style="display:block; font-size:10px; margin-top:2px; opacity:0.7;">slide-out + fade</span>
+      </div>
+      <div class="tl-bar-cell" style="border-bottom:none;">
+        <div class="tl-sequence">
+          <div class="anim-bar exit" style="width:40px;">240ms</div>
+          <span class="anim-arrow" style="margin-left:8px;"> easeInCubic — vers la droite (desktop) / vers le haut (mobile)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DESIGN DECISIONS ── -->
+  <div class="decisions-section">
+    <div>
+      <div class="section-header" style="padding-top:0; border-top:none; margin-bottom:24px;">
+        <div class="section-num">03 — Décisions design</div>
+        <h2 class="section-title">Choix &amp; <em>raisons</em></h2>
+      </div>
+      <div class="decision-items">
+        <div class="decision-item">
+          <div class="di-bullet"></div>
+          <div class="di-text"><strong>Top-center mobile</strong> — Le bas de l'écran est occupé par la bottom nav (zone de navigation critique). Le haut est libre juste sous l'AppBar. La notif n'intercepte aucun CTA permanent et reste dans la zone naturelle de lecture pour le pouce droit.</div>
+        </div>
+        <div class="decision-item">
+          <div class="di-bullet"></div>
+          <div class="di-text"><strong>Top-right desktop</strong> — Zone de "périphérie haute droite" : l'œil y est attiré naturellement après lecture du contenu central, sans couper le flux. Le contenu principal reste entièrement visible et interactif.</div>
+        </div>
+        <div class="decision-item">
+          <div class="di-bullet"></div>
+          <div class="di-text"><strong>Pas de rouge alarme</strong> — Le variant "attention" utilise le bordeaux foncé <code>#5d1a27</code>, pas un rouge générique. Reste dans le registre éditorial Termini im. La sévérité est signalée par la durée (8s) et la bordure plus épaisse (4px vs 3px).</div>
+        </div>
+        <div class="decision-item">
+          <div class="di-bullet"></div>
+          <div class="di-text"><strong>Progress bar 2px</strong> — Volontairement discrète : même couleur que l'accent, fond neutre à 10% d'opacité. L'utilisateur qui ne la voit pas n'est pas perturbé ; celui qui la cherche la trouve immédiatement.</div>
+        </div>
+        <div class="decision-item">
+          <div class="di-bullet"></div>
+          <div class="di-text"><strong>Fraunces pour le titre</strong> — Chaque toast a un titre en Fraunces 14px / 500 — le serif donne du poids éditorial sans alourdir la card. Le corps en Instrument Sans 12px assure la lisibilité à petite taille.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-header" style="padding-top:0; border-top:none; margin-bottom:24px;">
+        <div class="section-num">04 — Queue &amp; états</div>
+        <h2 class="section-title"><em>Comportement</em> rafale</h2>
+      </div>
+
+      <p style="font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.7;">
+        Si plusieurs pushes FCM arrivent simultanément (ex : batch back-end),
+        le provider Riverpod maintient une queue interne. Max 3 toasts visibles.
+        Quand l'un est dismissed, le suivant entre avec son animation.
+      </p>
+
+      <div class="queue-diagram">
+        <div class="queue-slot visible">Position 1 — Visible (newest, opacity 1.0, scale 1.0)</div>
+        <div class="queue-slot visible" style="opacity:0.85;">Position 2 — Visible (opacity 0.85, scale 0.97)</div>
+        <div class="queue-slot visible" style="opacity:0.65;">Position 3 — Visible (opacity 0.65, scale 0.94)</div>
+        <div class="queue-slot queued">Position 4+ — En queue interne, entre quand #1 est dismissed</div>
+        <div class="queue-slot queued" style="opacity:0.6;">Position 5+ — Attend...</div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:12px;">Variants disponibles</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:8px; border-left:3px solid var(--gold);">
+            <div style="font-size:12px; font-weight:600; color:var(--ink);">Positive</div>
+            <div style="font-size:11px; color:var(--muted); flex:1;">appointment.confirmed, appointment.rescheduled…</div>
+            <div style="font-size:10px; color:var(--gold); font-weight:600;">5s</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:8px; border-left:3px solid var(--burgundy);">
+            <div style="font-size:12px; font-weight:600; color:var(--ink);">Info</div>
+            <div style="font-size:11px; color:var(--muted); flex:1;">new_review, walk_in_created, support.reply, test…</div>
+            <div style="font-size:10px; color:var(--burgundy); font-weight:600;">4s</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--ivory); border:1px solid var(--line); border-radius:8px; border-left:4px solid var(--burgundy-2);">
+            <div style="font-size:12px; font-weight:600; color:var(--ink);">Attention</div>
+            <div style="font-size:11px; color:var(--muted); flex:1;">cancelled_by_*, capacity_full, appointment.created…</div>
+            <div style="font-size:10px; color:var(--burgundy); font-weight:600;">8s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);">Termini <span style="color:var(--burgundy); font-weight:600;">im</span> · Système composant 04</div>
+    <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">PRISHTINË · 2026</div>
+  </div>
+
+</div>
+</body>
+</html>

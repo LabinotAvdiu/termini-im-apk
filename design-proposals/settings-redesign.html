@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Termini im — Settings Redesign · Design Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ivory:    #f7f2ea;
+  --bone:     #e8dcc8;
+  --ink:      #171311;
+  --muted:    #716059;
+  --burgundy: #7a2232;
+  --burg2:    #5d1a27;
+  --gold:     #c89b47;
+  --line:     #d9cab3;
+  --surface:  #fcf7ee;
+  --error:    #b83d3d;
+  --errorbg:  #fdf3f3;
+  --success:  #6f7e55;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--ivory);color:var(--ink);}
+body{
+  font-family:"Instrument Sans",-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  padding:64px 32px 96px;
+  position:relative;
+}
+/* Grain overlay */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  z-index:1;
+}
+body::after{
+  content:"";position:fixed;top:-30%;right:-15%;width:70vw;height:70vw;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,155,71,.09),transparent 65%);
+  pointer-events:none;z-index:0;
+}
+.page{max-width:1480px;margin:0 auto;position:relative;z-index:2;}
+
+/* Masthead */
+.masthead{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:end;gap:40px;
+  border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:64px;
+}
+.mast-kicker{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.mast-title{
+  font-family:"Fraunces",serif;font-size:clamp(40px,5.2vw,76px);
+  font-weight:400;font-variation-settings:"SOFT" 60,"opsz" 100;
+  line-height:.92;letter-spacing:-.025em;color:var(--ink);margin-top:10px;
+}
+.mast-title em{font-family:"Instrument Serif",serif;font-style:italic;font-weight:400;color:var(--burgundy);}
+.mast-meta{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-align:right;line-height:1.8;}
+.mast-meta b{color:var(--burgundy);font-weight:600;}
+
+/* Section headers */
+.section-header{margin-bottom:36px;padding-top:64px;border-top:1px solid var(--line);}
+.section-header:first-of-type{border-top:none;padding-top:0;}
+.section-num{font-family:"Fraunces",serif;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.section-title{
+  font-family:"Fraunces",serif;font-size:clamp(28px,3vw,42px);
+  font-weight:400;font-variation-settings:"SOFT" 60,"opsz" 72;
+  line-height:1.05;letter-spacing:-.02em;color:var(--ink);
+}
+.section-title em{font-family:"Instrument Serif",serif;font-style:italic;color:var(--burgundy);}
+.section-sub{margin-top:8px;font-size:13px;color:var(--muted);line-height:1.6;max-width:580px;}
+
+/* Role badge */
+.role-badge{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+  margin-bottom:14px;
+}
+.badge-client{background:rgba(122,34,50,.1);color:var(--burgundy);}
+.badge-employee{background:rgba(200,155,71,.15);color:#8a6b20;}
+.badge-owner{background:rgba(23,19,17,.08);color:var(--ink);}
+
+/* ─── PHONE FRAME ─── */
+.phone-frame{
+  width:390px;border-radius:48px;background:#18161599;
+  padding:10px;flex-shrink:0;
+  box-shadow:0 2px 0 rgba(255,255,255,.05) inset,0 40px 80px -30px rgba(23,19,17,.38),0 12px 24px -12px rgba(23,19,17,.22);
+  position:relative;
+}
+.phone-notch{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:110px;height:30px;border-radius:20px;background:#181615;z-index:30;
+}
+.phone-screen{
+  width:100%;border-radius:38px;overflow:hidden;background:var(--ivory);
+  position:relative;height:780px;
+}
+.phone-scroll{
+  height:100%;overflow-y:auto;padding:56px 0 32px;
+  scrollbar-width:none;
+}
+.phone-scroll::-webkit-scrollbar{display:none;}
+
+/* Status bar */
+.status-bar{
+  position:absolute;top:0;left:0;right:0;height:50px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;z-index:20;background:var(--ivory);
+  border-bottom:1px solid rgba(217,202,179,.4);
+}
+.status-time{font-size:13px;font-weight:700;color:var(--ink);}
+.status-icons{display:flex;align-items:center;gap:6px;}
+.status-icons svg{width:16px;height:16px;fill:var(--ink);}
+
+/* App bar */
+.app-bar{
+  position:sticky;top:0;z-index:10;background:var(--ivory);
+  display:flex;align-items:center;gap:12px;padding:10px 20px;
+  border-bottom:1px solid rgba(217,202,179,.5);
+}
+.app-bar-back{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(122,34,50,.08);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.app-bar-title{
+  font-family:"Fraunces",serif;font-size:20px;font-weight:500;
+  font-variation-settings:"SOFT" 60;color:var(--ink);
+  letter-spacing:-.01em;
+}
+.app-bar-title em{font-family:"Instrument Serif",serif;font-style:italic;color:var(--burgundy);}
+
+/* Settings card */
+.s-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:0 2px 8px rgba(23,19,17,.06);overflow:hidden;
+  margin:0 16px 12px;
+}
+.s-card-important{border-top:3px solid var(--burgundy);}
+.s-card-header{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px 10px;border-bottom:1px solid rgba(217,202,179,.5);
+}
+.s-card-icon{font-size:14px;color:var(--burgundy);}
+.s-card-title{
+  font-family:"Fraunces",serif;font-size:14px;font-weight:500;
+  font-variation-settings:"SOFT" 50;color:var(--ink);flex:1;
+  letter-spacing:-.01em;
+}
+.s-card-title em{font-family:"Instrument Serif",serif;font-style:italic;color:var(--burgundy);}
+.s-card-action{
+  font-size:11px;font-weight:600;color:var(--burgundy);
+  letter-spacing:.04em;text-transform:uppercase;
+  background:none;border:none;cursor:pointer;padding:4px 8px;
+  border-radius:6px;
+  display:flex;align-items:center;gap:4px;
+}
+.s-card-body{padding:4px 16px 12px;}
+
+/* Settings tile */
+.s-tile{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;cursor:pointer;
+  border-radius:var(--r-sm);transition:background .12s;
+}
+.s-tile:hover .s-tile-icon-wrap{background:rgba(122,34,50,.15);}
+.s-tile-divider{height:1px;background:rgba(217,202,179,.6);margin-left:48px;}
+.s-tile-icon-wrap{
+  width:36px;height:36px;border-radius:var(--r-sm);flex-shrink:0;
+  background:rgba(122,34,50,.1);
+  display:flex;align-items:center;justify-content:center;
+}
+.s-tile-icon-wrap.gold-bg{background:rgba(200,155,71,.12);}
+.s-tile-icon-wrap.success-bg{background:rgba(111,126,85,.12);}
+.s-tile-icon-wrap.error-bg{background:rgba(184,61,61,.1);}
+.s-tile-icon{font-size:16px;color:var(--burgundy);}
+.s-tile-icon.gold{color:var(--gold);}
+.s-tile-icon.success{color:var(--success);}
+.s-tile-icon.error-col{color:var(--error);}
+.s-tile-text{flex:1;min-width:0;}
+.s-tile-label{font-size:14px;font-weight:500;color:var(--ink);line-height:1.3;}
+.s-tile-label.error-col{color:var(--error);}
+.s-tile-sub{font-size:11.5px;color:var(--muted);margin-top:1px;line-height:1.35;}
+.s-tile-trailing{font-size:12px;font-weight:600;color:var(--burgundy);}
+.s-tile-chevron{font-size:16px;color:var(--line);}
+.s-tile-toggle{
+  width:40px;height:22px;border-radius:11px;
+  background:rgba(122,34,50,.15);position:relative;cursor:pointer;
+  border:none;transition:background .2s;flex-shrink:0;
+}
+.s-tile-toggle.on{background:var(--burgundy);}
+.s-tile-toggle::after{
+  content:"";position:absolute;top:3px;left:3px;
+  width:16px;height:16px;border-radius:50%;background:#fff;
+  transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.s-tile-toggle.on::after{transform:translateX(18px);}
+
+/* Profile avatar zone */
+.profile-center{display:flex;flex-direction:column;align-items:center;padding:12px 0 16px;}
+.avatar-ring{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(122,34,50,.15),rgba(200,155,71,.1));
+  border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Fraunces",serif;font-size:28px;font-weight:400;
+  color:var(--burgundy);position:relative;margin-bottom:10px;
+  font-variation-settings:"SOFT" 80;
+}
+.avatar-cam{
+  position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;
+  background:var(--burgundy);display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:#fff;border:2px solid var(--surface);
+}
+.profile-name{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.profile-email{font-size:12px;color:var(--muted);}
+
+/* Profile read row */
+.p-read-row{display:flex;align-items:center;gap:10px;padding:8px 0;}
+.p-read-row-divider{height:1px;background:rgba(217,202,179,.5);margin-left:28px;}
+.p-read-icon{font-size:15px;color:var(--muted);width:20px;flex-shrink:0;}
+.p-read-content{flex:1;}
+.p-read-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.p-read-value{font-size:14px;font-weight:500;color:var(--ink);margin-top:1px;}
+
+/* Profile edit mode */
+.profile-edit-mode{
+  border:2px solid rgba(122,34,50,.4) !important;
+  box-shadow:0 0 0 4px rgba(122,34,50,.08),0 2px 8px rgba(23,19,17,.06) !important;
+}
+.edit-field-group{display:flex;gap:8px;margin-bottom:10px;}
+.edit-field{flex:1;}
+.edit-field label{
+  font-size:10.5px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:4px;
+}
+.edit-input{
+  width:100%;padding:9px 12px;border-radius:var(--r-md);
+  border:1.5px solid var(--line);background:#fff;
+  font-family:"Instrument Sans",sans-serif;font-size:14px;color:var(--ink);
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.edit-input:focus{
+  border-color:var(--burgundy);
+  box-shadow:0 0 0 3px rgba(122,34,50,.12);
+}
+.gender-selector{display:flex;gap:8px;margin-bottom:10px;}
+.gender-btn{
+  flex:1;padding:9px 8px;border-radius:var(--r-md);
+  border:1.5px solid var(--line);background:var(--surface);
+  font-family:"Instrument Sans",sans-serif;font-size:13px;font-weight:500;
+  color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;
+}
+.gender-btn.active{
+  border-color:var(--burgundy);background:rgba(122,34,50,.06);color:var(--burgundy);
+}
+.save-btn{
+  width:100%;padding:11px;border-radius:var(--r-md);
+  background:var(--burgundy);color:#fff;border:none;cursor:pointer;
+  font-family:"Instrument Sans",sans-serif;font-size:14px;font-weight:600;
+  letter-spacing:.02em;margin-top:6px;transition:background .15s;
+}
+.save-btn:hover{background:var(--burg2);}
+
+/* Pro zone badge */
+.pro-zone-label{
+  font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:700;color:var(--gold);
+  display:flex;align-items:center;gap:6px;padding:8px 16px 2px;
+}
+.pro-zone-label::before,.pro-zone-label::after{
+  content:"";flex:1;height:1px;background:rgba(200,155,71,.3);
+}
+
+/* Notification count badge */
+.notif-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--burgundy);flex-shrink:0;
+}
+
+/* ─── THREE PHONES ROW ─── */
+.phones-row{
+  display:flex;gap:32px;align-items:flex-start;
+  overflow-x:auto;padding-bottom:24px;
+}
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.phone-col-label{
+  font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;text-align:center;
+}
+
+/* ─── DESKTOP LAYOUT ─── */
+.desktop-section{margin-top:72px;}
+.desktop-frame{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);overflow:hidden;
+  box-shadow:0 8px 40px -16px rgba(23,19,17,.16),0 2px 8px rgba(23,19,17,.06);
+  margin-bottom:32px;
+}
+.desktop-titlebar{
+  background:var(--bone);border-bottom:1px solid var(--line);
+  padding:12px 20px;display:flex;align-items:center;gap:10px;
+}
+.dt-dot{width:12px;height:12px;border-radius:50%;}
+.dt-dot-r{background:#ff5f57;}
+.dt-dot-y{background:#febc2e;}
+.dt-dot-g{background:#28c840;}
+.dt-url{
+  flex:1;background:rgba(255,255,255,.5);border:1px solid var(--line);
+  border-radius:8px;padding:5px 12px;font-size:11px;color:var(--muted);
+  text-align:center;
+}
+.desktop-chrome{
+  display:grid;grid-template-columns:220px 1fr;min-height:640px;
+}
+.desktop-sidebar{
+  background:var(--bone);border-right:1px solid var(--line);
+  padding:28px 0;
+}
+.sidebar-profile{
+  padding:0 20px 20px;border-bottom:1px solid var(--line);margin-bottom:12px;
+  display:flex;align-items:center;gap:12px;
+}
+.sidebar-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(122,34,50,.15),rgba(200,155,71,.1));
+  border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Fraunces",serif;font-size:16px;color:var(--burgundy);flex-shrink:0;
+}
+.sidebar-name{font-size:13px;font-weight:600;color:var(--ink);}
+.sidebar-role{font-size:11px;color:var(--muted);}
+.sidebar-nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;cursor:pointer;transition:background .12s;
+  border-left:3px solid transparent;
+}
+.sidebar-nav-item:hover{background:rgba(122,34,50,.06);}
+.sidebar-nav-item.active{
+  background:rgba(122,34,50,.08);border-left-color:var(--burgundy);
+}
+.sidebar-nav-icon{font-size:15px;color:var(--muted);width:20px;text-align:center;}
+.sidebar-nav-item.active .sidebar-nav-icon{color:var(--burgundy);}
+.sidebar-nav-label{font-size:13px;font-weight:500;color:var(--muted);}
+.sidebar-nav-item.active .sidebar-nav-label{color:var(--ink);font-weight:600;}
+.sidebar-nav-group{
+  font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;padding:12px 20px 4px;
+}
+.desktop-content{
+  padding:32px 40px;overflow-y:auto;
+  background:var(--ivory);
+}
+.desktop-section-title{
+  font-family:"Fraunces",serif;font-size:22px;font-weight:500;
+  font-variation-settings:"SOFT" 60;color:var(--ink);
+  letter-spacing:-.015em;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.desktop-section-title em{font-family:"Instrument Serif",serif;font-style:italic;color:var(--burgundy);}
+.desktop-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px;
+  box-shadow:0 2px 8px rgba(23,19,17,.05);
+}
+.desktop-card-important{border-top:3px solid var(--burgundy);}
+.desktop-card-header{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 20px 12px;border-bottom:1px solid rgba(217,202,179,.5);
+}
+.dc-icon{font-size:15px;color:var(--burgundy);}
+.dc-title{
+  font-family:"Fraunces",serif;font-size:15px;font-weight:500;
+  color:var(--ink);flex:1;
+}
+.dc-title em{font-family:"Instrument Serif",serif;font-style:italic;color:var(--burgundy);}
+.dc-action{
+  font-size:11px;font-weight:600;color:var(--burgundy);
+  letter-spacing:.04em;text-transform:uppercase;
+  background:none;border:none;cursor:pointer;padding:4px 10px;
+  border-radius:6px;background:rgba(122,34,50,.07);
+}
+.desktop-card-body{padding:4px 20px 16px;}
+.dt-tile{
+  display:flex;align-items:center;gap:14px;padding:12px 0;cursor:pointer;
+}
+.dt-tile-divider{height:1px;background:rgba(217,202,179,.5);margin-left:54px;}
+.dt-icon-wrap{
+  width:38px;height:38px;border-radius:var(--r-sm);flex-shrink:0;
+  background:rgba(122,34,50,.1);
+  display:flex;align-items:center;justify-content:center;
+}
+.dt-icon-wrap.gold-bg{background:rgba(200,155,71,.12);}
+.dt-icon-wrap.success-bg{background:rgba(111,126,85,.12);}
+.dt-icon-wrap.error-bg{background:rgba(184,61,61,.1);}
+.dt-icon{font-size:17px;color:var(--burgundy);}
+.dt-icon.gold{color:var(--gold);}
+.dt-icon.success{color:var(--success);}
+.dt-icon.err{color:var(--error);}
+.dt-text{flex:1;}
+.dt-label{font-size:14px;font-weight:500;color:var(--ink);}
+.dt-label.err{color:var(--error);}
+.dt-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.dt-trailing{font-size:12px;font-weight:600;color:var(--burgundy);}
+.dt-chevron{font-size:18px;color:var(--line);}
+.dt-toggle{
+  width:44px;height:24px;border-radius:12px;
+  background:rgba(122,34,50,.15);position:relative;
+  border:none;cursor:pointer;transition:background .2s;flex-shrink:0;
+}
+.dt-toggle.on{background:var(--burgundy);}
+.dt-toggle::after{
+  content:"";position:absolute;top:4px;left:4px;
+  width:16px;height:16px;border-radius:50%;background:#fff;
+  transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.dt-toggle.on::after{transform:translateX(20px);}
+
+/* Desktop profile view */
+.dp-profile-header{
+  display:flex;align-items:center;gap:20px;padding:16px 20px;
+  border-bottom:1px solid rgba(217,202,179,.4);
+}
+.dp-avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(122,34,50,.15),rgba(200,155,71,.1));
+  border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Fraunces",serif;font-size:24px;color:var(--burgundy);flex-shrink:0;
+}
+.dp-name{font-size:18px;font-weight:600;color:var(--ink);}
+.dp-email{font-size:13px;color:var(--muted);margin-top:2px;}
+.dp-read-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  padding:0 20px;
+}
+.dp-read-row{padding:10px 0;display:flex;align-items:center;gap:10px;}
+.dp-read-row:not(:last-child){border-bottom:1px solid rgba(217,202,179,.4);}
+.dp-read-icon{font-size:15px;color:var(--muted);width:20px;}
+.dp-read-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.dp-read-value{font-size:14px;font-weight:500;color:var(--ink);margin-top:2px;}
+
+/* Desktop role tabs */
+.desktop-role-tabs{
+  display:flex;gap:0;background:var(--bone);border-radius:var(--r-lg);
+  padding:4px;margin-bottom:24px;max-width:440px;
+}
+.role-tab{
+  flex:1;padding:8px 14px;border-radius:var(--r-md);
+  font-size:12px;font-weight:600;color:var(--muted);
+  border:none;background:none;cursor:pointer;transition:all .15s;
+  letter-spacing:.03em;
+}
+.role-tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(23,19,17,.1);}
+
+/* Table section */
+.proposal-table{
+  width:100%;border-collapse:collapse;margin-top:24px;
+  font-size:13px;
+}
+.proposal-table th{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);padding:10px 14px;
+  border-bottom:2px solid var(--line);text-align:left;
+}
+.proposal-table td{
+  padding:12px 14px;border-bottom:1px solid rgba(217,202,179,.4);
+  vertical-align:top;line-height:1.5;color:var(--ink);
+}
+.proposal-table tr:hover td{background:rgba(122,34,50,.025);}
+.priority-must{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;color:var(--error);
+}
+.priority-nice{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;color:var(--gold);
+}
+.priority-future{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;color:var(--success);
+}
+.priority-dot{width:8px;height:8px;border-radius:50%;}
+.dot-r{background:var(--error);}
+.dot-o{background:var(--gold);}
+.dot-g{background:var(--success);}
+.role-pill{
+  display:inline-block;font-size:10px;font-weight:600;
+  padding:2px 7px;border-radius:10px;margin:1px;
+  letter-spacing:.04em;
+}
+.rp-all{background:rgba(122,34,50,.1);color:var(--burgundy);}
+.rp-pro{background:rgba(200,155,71,.15);color:#8a6b20;}
+.rp-owner{background:rgba(23,19,17,.07);color:var(--ink);}
+.icon-name{
+  font-family:"Instrument Sans",monospace;font-size:11.5px;
+  color:var(--burgundy);background:rgba(122,34,50,.07);
+  padding:2px 7px;border-radius:4px;letter-spacing:.02em;
+}
+
+/* Guidelines editorial block */
+.guidelines-block{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);padding:40px 48px;margin-top:24px;
+  position:relative;overflow:hidden;
+}
+.guidelines-block::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--burgundy),var(--gold));
+}
+.guidelines-pull{
+  font-family:"Fraunces",serif;font-size:28px;font-weight:300;
+  font-variation-settings:"SOFT" 80,"opsz" 40;
+  color:var(--burgundy);line-height:1.2;margin-bottom:24px;
+  letter-spacing:-.02em;font-style:italic;
+  border-left:3px solid rgba(122,34,50,.25);padding-left:24px;
+}
+.guidelines-body{font-size:14px;color:var(--muted);line-height:1.8;max-width:820px;}
+.guidelines-body p{margin-bottom:16px;}
+.guidelines-body p:last-child{margin-bottom:0;}
+.guidelines-body strong{color:var(--ink);font-weight:600;}
+
+/* Utility */
+.mt-sm{margin-top:8px;}
+.mt-md{margin-top:16px;}
+.mt-lg{margin-top:24px;}
+.mb-sm{margin-bottom:8px;}
+.hidden{display:none;}
+.phones-scroll-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.08em;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════════════════ MASTHEAD ═══════════════════ -->
+<div class="masthead">
+  <div>
+    <div class="mast-kicker">Termini im · Design Review</div>
+    <div class="mast-title">Settings<br/><em>Redesign</em></div>
+  </div>
+  <div></div>
+  <div class="mast-meta">
+    Version <b>2.0</b><br/>
+    21 avril 2026<br/>
+    Mobile + Desktop<br/>
+    <b>3 rôles</b>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 1 — MOBILE ═══════════════════ -->
+<div class="section-header">
+  <div class="section-num">Section 01</div>
+  <div class="section-title">Vue <em>Mobile</em></div>
+  <div class="section-sub">Les trois rôles côte à côte — frames 390 px. L'état édition profil est illustré dans la vue Employé.</div>
+</div>
+
+<div class="phones-row">
+
+  <!-- ── CLIENT ── -->
+  <div class="phone-col">
+    <div class="role-badge badge-client">Client</div>
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="phone-scroll">
+          <div class="app-bar">
+            <button class="app-bar-back">&#8592;</button>
+            <div class="app-bar-title">Para<em>métres</em></div>
+          </div>
+
+          <!-- Profil -->
+          <div class="s-card s-card-important" style="margin-top:12px;">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#9679;</span>
+              <span class="s-card-title">Mon <em>profil</em></span>
+              <button class="s-card-action">&#9998; Modifier</button>
+            </div>
+            <div class="s-card-body">
+              <div class="profile-center">
+                <div class="avatar-ring">LA</div>
+                <div class="profile-name">Labinot Avdiu</div>
+                <div class="profile-email">labinot@gmail.com</div>
+              </div>
+              <div class="p-read-row"><span class="p-read-icon">&#128100;</span><div class="p-read-content"><div class="p-read-label">Nom complet</div><div class="p-read-value">Labinot Avdiu</div></div></div>
+              <div class="p-read-row-divider"></div>
+              <div class="p-read-row"><span class="p-read-icon">&#128222;</span><div class="p-read-content"><div class="p-read-label">Téléphone</div><div class="p-read-value">+383 44 123 456</div></div></div>
+              <div class="p-read-row-divider"></div>
+              <div class="p-read-row"><span class="p-read-icon">&#9679;</span><div class="p-read-content"><div class="p-read-label">Genre</div><div class="p-read-value">Homme</div></div></div>
+            </div>
+          </div>
+
+          <!-- Préférences -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#9881;</span>
+              <span class="s-card-title">Préfé<em>rences</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#127760;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Langue</div></div>
+                <span class="s-tile-trailing">Shqip</span>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128274;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Changer le mot de passe</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9728;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Apparence</div><div class="s-tile-sub">Clair / sombre / auto</div></div>
+                <span class="s-tile-trailing">Auto</span>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications CLIENT -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#128276;</span>
+              <span class="s-card-title">Notifi<em>cations</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128197;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Rappels de rendez-vous</div><div class="s-tile-sub">24h et 1h avant</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#127381;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Offres et promos</div><div class="s-tile-sub">Réductions exclusives</div></div>
+                <button class="s-tile-toggle"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#10003;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Confirmations de RDV</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expérience -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#10024;</span>
+              <span class="s-card-title">Expé<em>rience</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128261;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Vibrations</div><div class="s-tile-sub">Retour haptique</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#9835;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Sons</div></div>
+                <button class="s-tile-toggle"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9654;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Animations</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confidentialité -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#128274;</span>
+              <span class="s-card-title">Confiden<em>tialité</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128196;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Politique de confidentialité</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128221;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Conditions d'utilisation</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#128190;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Mes données</div><div class="s-tile-sub">Export RGPD · Suppression</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Parrainage -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#127381;</span>
+              <span class="s-card-title">Par<em>rainage</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#127381;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Inviter des amis</div><div class="s-tile-sub">Code LABI2026 · 5 € offerts</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aide + À propos -->
+          <div class="s-card">
+            <div class="s-card-body" style="padding-top:12px;">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#8505;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Aide &amp; support</div><div class="s-tile-sub">Nous contacter</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9432;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">À propos</div><div class="s-tile-sub">v2.4.1 · Changelog</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="s-card" style="border-top:2px solid rgba(184,61,61,.25);">
+            <div class="s-card-body" style="padding-top:12px;">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap error-bg"><span class="s-tile-icon error-col">&#10548;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label error-col">Se déconnecter</div></div>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap error-bg"><span class="s-tile-icon error-col">&#128465;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label error-col">Supprimer le compte</div><div class="s-tile-sub">Action irréversible</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /phone-scroll -->
+      </div><!-- /phone-screen -->
+    </div><!-- /phone-frame -->
+  </div><!-- /phone-col CLIENT -->
+
+  <!-- ── EMPLOYÉ (mode édition profil) ── -->
+  <div class="phone-col">
+    <div class="role-badge badge-employee">Employé · Édition profil</div>
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="phone-scroll">
+          <div class="app-bar">
+            <button class="app-bar-back">&#8592;</button>
+            <div class="app-bar-title">Para<em>métres</em></div>
+          </div>
+
+          <!-- Profil — MODE ÉDITION -->
+          <div class="s-card s-card-important profile-edit-mode" style="margin-top:12px;">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#9679;</span>
+              <span class="s-card-title">Mon <em>profil</em></span>
+              <button class="s-card-action">&#10006; Annuler</button>
+            </div>
+            <div class="s-card-body">
+              <div class="profile-center">
+                <div class="avatar-ring">EA<div class="avatar-cam">&#128247;</div></div>
+                <div class="profile-name">Ermal Asllani</div>
+                <div class="profile-email">ermal@saloni.com</div>
+              </div>
+              <div class="edit-field-group">
+                <div class="edit-field">
+                  <label>Prénom</label>
+                  <input class="edit-input" value="Ermal" style="border-color:var(--burgundy);box-shadow:0 0 0 3px rgba(122,34,50,.1);"/>
+                </div>
+                <div class="edit-field">
+                  <label>Nom</label>
+                  <input class="edit-input" value="Asllani"/>
+                </div>
+              </div>
+              <div class="edit-field" style="margin-bottom:10px;">
+                <label>Téléphone</label>
+                <input class="edit-input" value="+383 45 678 901"/>
+              </div>
+              <div style="margin-bottom:8px;"><label style="font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">Genre</label>
+                <div class="gender-selector">
+                  <button class="gender-btn active">Homme</button>
+                  <button class="gender-btn">Femme</button>
+                  <button class="gender-btn">Autre</button>
+                </div>
+              </div>
+              <button class="save-btn">Enregistrer les modifications</button>
+            </div>
+          </div>
+
+          <!-- Préférences employé -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#9881;</span>
+              <span class="s-card-title">Préfé<em>rences</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#127760;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Langue</div></div>
+                <span class="s-tile-trailing">Shqip</span>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128197;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Mes rendez-vous</div><div class="s-tile-sub">Agenda personnel</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9728;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Apparence</div></div>
+                <span class="s-tile-trailing">Auto</span>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Horaires (mode individuel) -->
+          <div class="pro-zone-label">Espace professionnel</div>
+          <div class="s-card" style="border-top:3px solid rgba(200,155,71,.5);">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#128337;</span>
+              <span class="s-card-title">Mes <em>horaires</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#128337;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Horaires de travail</div><div class="s-tile-sub">Lun–Sam, 9h–18h</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9749;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Pauses personnelles</div><div class="s-tile-sub">Déjeuner 13h–14h</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#127774;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Jours de congé</div><div class="s-tile-sub">2 jours programmés</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications PRO employé -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#128276;</span>
+              <span class="s-card-title">Notifi<em>cations</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128197;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Nouveau rendez-vous</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#10060;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Annulation client</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9201;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Rappel 30 min avant</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aide + Danger -->
+          <div class="s-card">
+            <div class="s-card-body" style="padding-top:12px;">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#8505;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Aide &amp; support</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+          <div class="s-card" style="border-top:2px solid rgba(184,61,61,.25);">
+            <div class="s-card-body" style="padding-top:12px;">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap error-bg"><span class="s-tile-icon error-col">&#10548;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label error-col">Se déconnecter</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div><!-- /phone-col EMPLOYEE -->
+
+  <!-- ── OWNER ── -->
+  <div class="phone-col">
+    <div class="role-badge badge-owner">Owner</div>
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="phone-scroll">
+          <div class="app-bar">
+            <button class="app-bar-back">&#8592;</button>
+            <div class="app-bar-title">Para<em>métres</em></div>
+          </div>
+
+          <!-- Profil owner -->
+          <div class="s-card s-card-important" style="margin-top:12px;">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#9679;</span>
+              <span class="s-card-title">Mon <em>profil</em></span>
+              <button class="s-card-action">&#9998; Modifier</button>
+            </div>
+            <div class="s-card-body">
+              <div class="profile-center">
+                <div class="avatar-ring" style="background:linear-gradient(135deg,rgba(122,34,50,.2),rgba(200,155,71,.15));">BH<div class="avatar-cam">&#128247;</div></div>
+                <div class="profile-name">Bujar Hoxha</div>
+                <div class="profile-email">bujar@salonibarber.com</div>
+              </div>
+              <div class="p-read-row"><span class="p-read-icon">&#128100;</span><div class="p-read-content"><div class="p-read-label">Nom complet</div><div class="p-read-value">Bujar Hoxha</div></div></div>
+              <div class="p-read-row-divider"></div>
+              <div class="p-read-row"><span class="p-read-icon">&#128222;</span><div class="p-read-content"><div class="p-read-label">Téléphone</div><div class="p-read-value">+383 44 987 654</div></div></div>
+            </div>
+          </div>
+
+          <!-- Préférences + rendez-vous -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#9881;</span>
+              <span class="s-card-title">Préfé<em>rences</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#127760;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Langue</div></div>
+                <span class="s-tile-trailing">Shqip</span>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128197;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Mes rendez-vous</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128274;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Mot de passe</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Espace pro owner -->
+          <div class="pro-zone-label">Espace propriétaire</div>
+          <div class="s-card" style="border-top:3px solid rgba(200,155,71,.5);">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#128337;</span>
+              <span class="s-card-title">Mes <em>horaires</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#128337;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Horaires personnels</div><div class="s-tile-sub">Mer–Dim, 10h–19h</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accès salon -->
+          <div class="s-card" style="border-top:3px solid rgba(200,155,71,.5);">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#127968;</span>
+              <span class="s-card-title">Mon <em>salon</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9881;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Paramètres du salon</div><div class="s-tile-sub">Services, équipe, galerie</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#128202;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Statistiques</div><div class="s-tile-sub">CA · Taux remplissage</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128197;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Calendrier connecté</div><div class="s-tile-sub">Google Calendar · Apple</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications PRO owner -->
+          <div class="s-card">
+            <div class="s-card-header">
+              <span class="s-card-icon">&#128276;</span>
+              <span class="s-card-title">Notifi<em>cations</em></span>
+            </div>
+            <div class="s-card-body">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#128197;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Nouveaux RDV</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#10060;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Annulations</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#11088;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Nouveaux avis</div></div>
+                <button class="s-tile-toggle on"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aide + Danger -->
+          <div class="s-card">
+            <div class="s-card-body" style="padding-top:12px;">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap"><span class="s-tile-icon">&#8505;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">Aide &amp; support</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap gold-bg"><span class="s-tile-icon gold">&#9432;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label">À propos</div><div class="s-tile-sub">v2.4.1</div></div>
+                <span class="s-tile-chevron">›</span>
+              </div>
+            </div>
+          </div>
+          <div class="s-card" style="border-top:2px solid rgba(184,61,61,.25);">
+            <div class="s-card-body" style="padding-top:12px;">
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap error-bg"><span class="s-tile-icon error-col">&#10548;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label error-col">Se déconnecter</div></div>
+              </div>
+              <div class="s-tile-divider"></div>
+              <div class="s-tile">
+                <div class="s-tile-icon-wrap error-bg"><span class="s-tile-icon error-col">&#128465;</span></div>
+                <div class="s-tile-text"><div class="s-tile-label error-col">Supprimer le compte</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div><!-- /phone-col OWNER -->
+
+</div><!-- /phones-row -->
+<div class="phones-scroll-hint">Faites défiler horizontalement pour voir les trois rôles</div>
+
+<!-- ═══════════════════ SECTION 2 — DESKTOP ═══════════════════ -->
+<div class="section-header" style="margin-top:80px;">
+  <div class="section-num">Section 02</div>
+  <div class="section-title">Vue <em>Desktop</em></div>
+  <div class="section-sub">Layout 2 colonnes — sidebar navigation à gauche, contenu à droite. Trois rôles commutables via tabs.</div>
+</div>
+
+<!-- Role tabs -->
+<div class="desktop-role-tabs" id="deskTabs">
+  <button class="role-tab active" onclick="switchRole('client')">Client</button>
+  <button class="role-tab" onclick="switchRole('employee')">Employé</button>
+  <button class="role-tab" onclick="switchRole('owner')">Owner</button>
+</div>
+
+<!-- Desktop frame CLIENT -->
+<div class="desktop-frame" id="desk-client">
+  <div class="desktop-titlebar">
+    <div class="dt-dot dt-dot-r"></div>
+    <div class="dt-dot dt-dot-y"></div>
+    <div class="dt-dot dt-dot-g"></div>
+    <div class="dt-url">app.terminiim.com/settings</div>
+  </div>
+  <div class="desktop-chrome">
+    <div class="desktop-sidebar">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">LA</div>
+        <div>
+          <div class="sidebar-name">Labinot Avdiu</div>
+          <div class="sidebar-role">Client</div>
+        </div>
+      </div>
+      <div class="sidebar-nav-item active"><span class="sidebar-nav-icon">&#128100;</span><span class="sidebar-nav-label">Mon profil</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#9881;</span><span class="sidebar-nav-label">Préférences</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128276;</span><span class="sidebar-nav-label">Notifications</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#10024;</span><span class="sidebar-nav-label">Expérience</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128274;</span><span class="sidebar-nav-label">Confidentialité</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#127381;</span><span class="sidebar-nav-label">Parrainage</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#8505;</span><span class="sidebar-nav-label">Aide &amp; support</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#9432;</span><span class="sidebar-nav-label">À propos</span></div>
+      <div style="height:16px;border-top:1px solid var(--line);margin:12px 0;"></div>
+      <div class="sidebar-nav-item" style="color:var(--error);"><span class="sidebar-nav-icon" style="color:var(--error);">&#10548;</span><span class="sidebar-nav-label" style="color:var(--error);">Déconnexion</span></div>
+    </div>
+    <div class="desktop-content">
+      <div class="desktop-section-title">&#128100; Mon <em>profil</em></div>
+      <div class="desktop-card desktop-card-important">
+        <div class="dp-profile-header">
+          <div class="dp-avatar">LA</div>
+          <div>
+            <div class="dp-name">Labinot Avdiu</div>
+            <div class="dp-email">labinot@gmail.com</div>
+          </div>
+          <div style="margin-left:auto;"><button class="dc-action">&#9998; Modifier le profil</button></div>
+        </div>
+        <div class="dp-read-grid">
+          <div class="dp-read-row"><span class="dp-read-icon">&#128100;</span><div><div class="dp-read-label">Nom complet</div><div class="dp-read-value">Labinot Avdiu</div></div></div>
+          <div class="dp-read-row"><span class="dp-read-icon">&#128222;</span><div><div class="dp-read-label">Téléphone</div><div class="dp-read-value">+383 44 123 456</div></div></div>
+          <div class="dp-read-row"><span class="dp-read-icon">&#9679;</span><div><div class="dp-read-label">Genre</div><div class="dp-read-value">Homme</div></div></div>
+          <div class="dp-read-row"><span class="dp-read-icon">&#128274;</span><div><div class="dp-read-label">Mot de passe</div><div class="dp-read-value">••••••••</div></div></div>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;">&#9881; Préfé<em>rences</em></div>
+      <div class="desktop-card">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile">
+            <div class="dt-icon-wrap"><span class="dt-icon">&#127760;</span></div>
+            <div class="dt-text"><div class="dt-label">Langue</div><div class="dt-sub">Interface et communications</div></div>
+            <span class="dt-trailing">Shqip</span><span class="dt-chevron">›</span>
+          </div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile">
+            <div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#9728;</span></div>
+            <div class="dt-text"><div class="dt-label">Apparence</div><div class="dt-sub">Thème clair, sombre ou automatique</div></div>
+            <span class="dt-trailing">Auto</span><span class="dt-chevron">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;">&#128276; Notifi<em>cations</em></div>
+      <div class="desktop-card">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile">
+            <div class="dt-icon-wrap"><span class="dt-icon">&#128197;</span></div>
+            <div class="dt-text"><div class="dt-label">Rappels de rendez-vous</div><div class="dt-sub">24h et 1h avant votre RDV</div></div>
+            <button class="dt-toggle on"></button>
+          </div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile">
+            <div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#127381;</span></div>
+            <div class="dt-text"><div class="dt-label">Offres et promotions</div><div class="dt-sub">Réductions exclusives des salons favoris</div></div>
+            <button class="dt-toggle"></button>
+          </div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile">
+            <div class="dt-icon-wrap"><span class="dt-icon">&#10003;</span></div>
+            <div class="dt-text"><div class="dt-label">Confirmations de RDV</div><div class="dt-sub">Confirmation immédiate après réservation</div></div>
+            <button class="dt-toggle on"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Desktop frame EMPLOYEE -->
+<div class="desktop-frame" id="desk-employee" style="display:none;">
+  <div class="desktop-titlebar">
+    <div class="dt-dot dt-dot-r"></div><div class="dt-dot dt-dot-y"></div><div class="dt-dot dt-dot-g"></div>
+    <div class="dt-url">app.terminiim.com/settings</div>
+  </div>
+  <div class="desktop-chrome">
+    <div class="desktop-sidebar">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar" style="background:linear-gradient(135deg,rgba(200,155,71,.2),rgba(122,34,50,.1));">EA</div>
+        <div>
+          <div class="sidebar-name">Ermal Asllani</div>
+          <div class="sidebar-role" style="color:var(--gold);">Employé</div>
+        </div>
+      </div>
+      <div class="sidebar-nav-item active"><span class="sidebar-nav-icon">&#128100;</span><span class="sidebar-nav-label">Mon profil</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#9881;</span><span class="sidebar-nav-label">Préférences</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128197;</span><span class="sidebar-nav-label">Mes rendez-vous</span></div>
+      <div class="sidebar-nav-group">Pro</div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128337;</span><span class="sidebar-nav-label">Mes horaires</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128276;</span><span class="sidebar-nav-label">Notifications</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#10024;</span><span class="sidebar-nav-label">Expérience</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128274;</span><span class="sidebar-nav-label">Confidentialité</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#8505;</span><span class="sidebar-nav-label">Aide &amp; support</span></div>
+      <div style="height:16px;border-top:1px solid var(--line);margin:12px 0;"></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon" style="color:var(--error);">&#10548;</span><span class="sidebar-nav-label" style="color:var(--error);">Déconnexion</span></div>
+    </div>
+    <div class="desktop-content">
+      <div class="desktop-section-title">&#128100; Mon <em>profil</em></div>
+      <div class="desktop-card desktop-card-important" style="border:2px solid rgba(122,34,50,.35);box-shadow:0 0 0 4px rgba(122,34,50,.07),0 2px 8px rgba(23,19,17,.05);">
+        <div class="desktop-card-header">
+          <span class="dc-icon">&#128100;</span>
+          <span class="dc-title">Mon <em>profil</em> — mode édition</span>
+          <button class="dc-action">&#10006; Annuler</button>
+        </div>
+        <div class="desktop-card-body">
+          <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;padding:12px 0;border-bottom:1px solid rgba(217,202,179,.4);">
+            <div class="dp-avatar" style="width:72px;height:72px;font-size:26px;position:relative;">EA<div class="avatar-cam" style="width:26px;height:26px;font-size:12px;">&#128247;</div></div>
+            <div><div class="dp-name">Ermal Asllani</div><div class="dp-email">ermal@saloni.com</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div><label style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">Prénom</label><input class="edit-input" value="Ermal" style="width:100%;border-color:var(--burgundy);box-shadow:0 0 0 3px rgba(122,34,50,.1);"/></div>
+            <div><label style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">Nom</label><input class="edit-input" value="Asllani" style="width:100%;"/></div>
+            <div><label style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">Téléphone</label><input class="edit-input" value="+383 45 678 901" style="width:100%;"/></div>
+            <div><label style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">Genre</label>
+              <div style="display:flex;gap:8px;">
+                <button class="gender-btn active" style="flex:1;">Homme</button>
+                <button class="gender-btn" style="flex:1;">Femme</button>
+              </div>
+            </div>
+          </div>
+          <button class="save-btn" style="max-width:280px;">Enregistrer les modifications</button>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;color:var(--gold);">&#128337; Mes <em>horaires</em> <span style="font-size:12px;font-family:'Instrument Sans';color:var(--muted);font-weight:400;font-style:normal;">— mode individuel</span></div>
+      <div class="desktop-card" style="border-top:3px solid rgba(200,155,71,.5);">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile">
+            <div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#128337;</span></div>
+            <div class="dt-text"><div class="dt-label">Horaires de travail</div><div class="dt-sub">Lundi au Samedi · 9h00 – 18h00</div></div>
+            <span class="dt-chevron">›</span>
+          </div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile">
+            <div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#9749;</span></div>
+            <div class="dt-text"><div class="dt-label">Pauses personnelles</div><div class="dt-sub">Déjeuner 13h00 – 14h00</div></div>
+            <span class="dt-chevron">›</span>
+          </div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile">
+            <div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#127774;</span></div>
+            <div class="dt-text"><div class="dt-label">Jours de congé personnels</div><div class="dt-sub">2 jours programmés en mai</div></div>
+            <span class="dt-chevron">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;">&#128276; Notifi<em>cations pro</em></div>
+      <div class="desktop-card">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile"><div class="dt-icon-wrap"><span class="dt-icon">&#128197;</span></div><div class="dt-text"><div class="dt-label">Nouveau rendez-vous</div></div><button class="dt-toggle on"></button></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap"><span class="dt-icon">&#10060;</span></div><div class="dt-text"><div class="dt-label">Annulation client</div></div><button class="dt-toggle on"></button></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#9201;</span></div><div class="dt-text"><div class="dt-label">Rappel 30 min avant</div></div><button class="dt-toggle on"></button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Desktop frame OWNER -->
+<div class="desktop-frame" id="desk-owner" style="display:none;">
+  <div class="desktop-titlebar">
+    <div class="dt-dot dt-dot-r"></div><div class="dt-dot dt-dot-y"></div><div class="dt-dot dt-dot-g"></div>
+    <div class="dt-url">app.terminiim.com/settings</div>
+  </div>
+  <div class="desktop-chrome">
+    <div class="desktop-sidebar">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar" style="background:linear-gradient(135deg,rgba(122,34,50,.25),rgba(200,155,71,.2));">BH</div>
+        <div>
+          <div class="sidebar-name">Bujar Hoxha</div>
+          <div class="sidebar-role" style="color:var(--burgundy);">Propriétaire</div>
+        </div>
+      </div>
+      <div class="sidebar-nav-item active"><span class="sidebar-nav-icon">&#128100;</span><span class="sidebar-nav-label">Mon profil</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#9881;</span><span class="sidebar-nav-label">Préférences</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128197;</span><span class="sidebar-nav-label">Mes rendez-vous</span></div>
+      <div class="sidebar-nav-group">Salon</div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128337;</span><span class="sidebar-nav-label">Mes horaires</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#127968;</span><span class="sidebar-nav-label">Paramètres salon</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128202;</span><span class="sidebar-nav-label">Statistiques</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128197;</span><span class="sidebar-nav-label">Calendrier connecté</span></div>
+      <div class="sidebar-nav-group">Général</div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128276;</span><span class="sidebar-nav-label">Notifications</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#128274;</span><span class="sidebar-nav-label">Confidentialité</span></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon">&#8505;</span><span class="sidebar-nav-label">Aide &amp; support</span></div>
+      <div style="height:16px;border-top:1px solid var(--line);margin:12px 0;"></div>
+      <div class="sidebar-nav-item"><span class="sidebar-nav-icon" style="color:var(--error);">&#10548;</span><span class="sidebar-nav-label" style="color:var(--error);">Déconnexion</span></div>
+    </div>
+    <div class="desktop-content">
+      <div class="desktop-section-title">&#128100; Mon <em>profil</em></div>
+      <div class="desktop-card desktop-card-important">
+        <div class="dp-profile-header">
+          <div class="dp-avatar" style="width:72px;height:72px;font-size:26px;position:relative;">BH<div class="avatar-cam" style="width:26px;height:26px;font-size:12px;">&#128247;</div></div>
+          <div><div class="dp-name">Bujar Hoxha</div><div class="dp-email">bujar@salonibarber.com</div></div>
+          <div style="margin-left:auto;"><button class="dc-action">&#9998; Modifier</button></div>
+        </div>
+        <div class="dp-read-grid">
+          <div class="dp-read-row"><span class="dp-read-icon">&#128100;</span><div><div class="dp-read-label">Nom complet</div><div class="dp-read-value">Bujar Hoxha</div></div></div>
+          <div class="dp-read-row"><span class="dp-read-icon">&#128222;</span><div><div class="dp-read-label">Téléphone</div><div class="dp-read-value">+383 44 987 654</div></div></div>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;color:var(--gold);">&#127968; Mon <em>salon</em></div>
+      <div class="desktop-card" style="border-top:3px solid rgba(200,155,71,.5);">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile"><div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#9881;</span></div><div class="dt-text"><div class="dt-label">Paramètres du salon</div><div class="dt-sub">Infos, services, équipe, galerie, horaires</div></div><span class="dt-chevron">›</span></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#128202;</span></div><div class="dt-text"><div class="dt-label">Statistiques</div><div class="dt-sub">CA mensuel · Taux de remplissage · Top services</div></div><span class="dt-chevron">›</span></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap"><span class="dt-icon">&#128197;</span></div><div class="dt-text"><div class="dt-label">Calendrier connecté</div><div class="dt-sub">Sync Google Calendar et Apple Calendar</div></div><span class="dt-trailing">Inactif</span><span class="dt-chevron">›</span></div>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;">&#128337; Mes <em>horaires</em></div>
+      <div class="desktop-card" style="border-top:3px solid rgba(200,155,71,.5);">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile"><div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#128337;</span></div><div class="dt-text"><div class="dt-label">Horaires personnels</div><div class="dt-sub">Mercredi – Dimanche · 10h00 – 19h00</div></div><span class="dt-chevron">›</span></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#127774;</span></div><div class="dt-text"><div class="dt-label">Congés personnels</div><div class="dt-sub">1 congé programmé</div></div><span class="dt-chevron">›</span></div>
+        </div>
+      </div>
+
+      <div class="desktop-section-title" style="margin-top:28px;">&#128276; Notifi<em>cations</em></div>
+      <div class="desktop-card">
+        <div class="desktop-card-body" style="padding-top:8px;">
+          <div class="dt-tile"><div class="dt-icon-wrap"><span class="dt-icon">&#128197;</span></div><div class="dt-text"><div class="dt-label">Nouveaux rendez-vous</div></div><button class="dt-toggle on"></button></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap"><span class="dt-icon">&#10060;</span></div><div class="dt-text"><div class="dt-label">Annulations</div></div><button class="dt-toggle on"></button></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap gold-bg"><span class="dt-icon gold">&#11088;</span></div><div class="dt-text"><div class="dt-label">Nouveaux avis clients</div></div><button class="dt-toggle on"></button></div>
+          <div class="dt-tile-divider"></div>
+          <div class="dt-tile"><div class="dt-icon-wrap"><span class="dt-icon">&#128202;</span></div><div class="dt-text"><div class="dt-label">Rapport hebdomadaire</div><div class="dt-sub">CA et activité chaque lundi matin</div></div><button class="dt-toggle on"></button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 3 — TABLE DES ITEMS ═══════════════════ -->
+<div class="section-header" style="margin-top:80px;">
+  <div class="section-num">Section 03</div>
+  <div class="section-title">Items <em>additionnels</em></div>
+  <div class="section-sub">Récapitulatif de toutes les sections proposées — rôles, priorité, justification.</div>
+</div>
+
+<div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 4px 24px -8px rgba(23,19,17,.1);">
+  <table class="proposal-table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Icône (Material)</th>
+        <th>Rôles</th>
+        <th>Priorité</th>
+        <th>Justification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Mon profil</strong></td><td><span class="icon-name">person_outline_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Fondation de l'identité — avatar pro obligatoire pour owner/employee.</td></tr>
+      <tr><td><strong>Préférences</strong> (langue, mdp, thème)</td><td><span class="icon-name">tune_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Langue et sécurité = besoins universels. Thème dark/auto = standard 2025.</td></tr>
+      <tr><td><strong>Mes rendez-vous</strong> (raccourci)</td><td><span class="icon-name">calendar_month_rounded</span></td><td><span class="role-pill rp-pro">Pro</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Accès rapide agenda depuis Settings — attendu par les pros actifs.</td></tr>
+      <tr><td><strong>Mes horaires</strong></td><td><span class="icon-name">schedule_rounded</span></td><td><span class="role-pill rp-pro">Pro</span> <em style="font-size:11px;color:var(--muted);">(mode individuel)</em></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Demande explicite — configuration horaires perso pour mode employee_based.</td></tr>
+      <tr><td><strong>Notifications</strong> (client)</td><td><span class="icon-name">notifications_outlined</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Rappels RDV et promos — nouvelle demande. Réduit les no-shows et fidélise.</td></tr>
+      <tr><td><strong>Notifications</strong> (pro)</td><td><span class="icon-name">notifications_active</span></td><td><span class="role-pill rp-pro">Pro</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Gestion des alertes métier — nouveau RDV, annulation, avis, rapport hebdo.</td></tr>
+      <tr><td><strong>Expérience</strong> (haptic, sons, animations)</td><td><span class="icon-name">auto_awesome_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Déjà présent — conservé, bien positionné après Préférences.</td></tr>
+      <tr><td><strong>Paramètres salon</strong> (raccourci owner)</td><td><span class="icon-name">storefront_rounded</span></td><td><span class="role-pill rp-owner">Owner</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Raccourci vers /company-dashboard — cohérence de navigation pour owner.</td></tr>
+      <tr><td><strong>Apparence</strong> (dark mode)</td><td><span class="icon-name">brightness_6_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-nice"><span class="priority-dot dot-o"></span>Nice to have</span></td><td>Standard marché iOS/Android. Thème sombre déjà en maquette — activation facile.</td></tr>
+      <tr><td><strong>Confidentialité</strong> (RGPD)</td><td><span class="icon-name">lock_outline_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-nice"><span class="priority-dot dot-o"></span>Nice to have</span></td><td>RGPD obligatoire pour app EU. Export données + suppression = conformité légale.</td></tr>
+      <tr><td><strong>Parrainage</strong></td><td><span class="icon-name">card_giftcard_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-nice"><span class="priority-dot dot-o"></span>Nice to have</span></td><td>Acquisition organique — coût d'acquisition réduit, fidélisation par code promo.</td></tr>
+      <tr><td><strong>Aide &amp; support</strong></td><td><span class="icon-name">help_outline_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-must"><span class="priority-dot dot-r"></span>Must have</span></td><td>Déjà présent — ContactSupportDialog. Conservé en pied de page.</td></tr>
+      <tr><td><strong>À propos</strong></td><td><span class="icon-name">info_outlined</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-nice"><span class="priority-dot dot-o"></span>Nice to have</span></td><td>Version app, changelog, crédits — réduit les tickets "quelle version ?" au support.</td></tr>
+      <tr><td><strong>Statistiques</strong></td><td><span class="icon-name">bar_chart_rounded</span></td><td><span class="role-pill rp-owner">Owner</span></td><td><span class="priority-nice"><span class="priority-dot dot-o"></span>Nice to have</span></td><td>CA mensuel et taux de remplissage — aide le owner à piloter son activité.</td></tr>
+      <tr><td><strong>Calendrier connecté</strong></td><td><span class="icon-name">calendar_today_rounded</span></td><td><span class="role-pill rp-pro">Pro</span></td><td><span class="priority-future"><span class="priority-dot dot-g"></span>Futur</span></td><td>Google/Apple sync — demande fréquente. Requiert OAuth scope calendrier.</td></tr>
+      <tr><td><strong>Carte de fidélité</strong></td><td><span class="icon-name">loyalty_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-future"><span class="priority-dot dot-g"></span>Futur</span></td><td>Loyalty program — dépend d'une feature points à construire en amont.</td></tr>
+      <tr><td><strong>Paiements &amp; factures</strong></td><td><span class="icon-name">receipt_long_rounded</span></td><td><span class="role-pill rp-all">Tous</span></td><td><span class="priority-future"><span class="priority-dot dot-g"></span>Futur</span></td><td>Pré-paiement et historique factures — roadmap payment à venir.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════ SECTION 4 — GUIDELINES ═══════════════════ -->
+<div class="section-header" style="margin-top:80px;">
+  <div class="section-num">Section 04</div>
+  <div class="section-title">Guidelines <em>d'interaction</em></div>
+  <div class="section-sub">Pourquoi cet ordre, comment les rôles filtrent, comment les transitions restent calmes.</div>
+</div>
+
+<div class="guidelines-block">
+  <div class="guidelines-pull">"Le profil d'abord, la zone de danger en dernier — tout le reste suit une logique du plus personnel au plus périphérique."</div>
+  <div class="guidelines-body">
+    <p><strong>Ordre des sections.</strong> La page s'ouvre sur "Mon profil" parce que c'est la section la plus personnelle et la plus souvent consultée — l'utilisateur veut voir son avatar avant tout. Ensuite viennent les "Préférences" (langue, apparence, sécurité) qui touchent à l'expérience quotidienne. L'espace pro (horaires, salon, statistiques) suit dans une zone clairement délimitée par un séparateur doré "Espace professionnel" — il s'agit d'outils métier, pas de préférences personnelles. Les Notifications et l'Expérience (haptic, animations) viennent ensuite car elles sont moins fréquemment modifiées. La Confidentialité et le Support clôturent le parcours "neutre". La zone de danger (déconnexion, suppression) est toujours en dernier : elle doit être visible mais jamais devancée par des actions accidentelles.</p>
+    <p><strong>Filtrage par rôle.</strong> La section "Mes horaires" n'apparaît que pour les pros en mode <em>employee_based</em> (individuel) — l'afficher à tous créerait de la confusion pour les clients et les salons en mode équipe. Les statistiques et paramètres salon sont réservés au owner car ils impliquent des données sensibles et des actions aux conséquences durables. Les Notifications pro (annulations, nouveau RDV) sont séparées des Notifications client (rappels, promos) pour que chaque groupe ne voie que ce qui le concerne — une même section avec 12 toggles serait paralysante.</p>
+    <p><strong>Transitions mode lecture/édition.</strong> Plutôt qu'un bascule brutal, le passage en mode édition renforce la carte profil d'une bordure bordeaux de 2px et un focus-ring léger (box-shadow 4px à 8% opacité). Le fond de la carte ne change pas — seule la lisière épaissit pour signaler "quelque chose est en cours". Le bouton "Enregistrer" n'apparaît que si un champ a réellement changé, évitant les soumissions vides. L'annulation silencieuse (bouton "Annuler" qui remet les valeurs d'origine sans snackbar) respecte le principe de réversibilité sans interrompre l'utilisateur avec un feedback inutile.</p>
+    <p><strong>Animations recommandées.</strong> Aucune animation brutale — la carte profil passe de lecture à édition avec un AnimatedSwitcher de 200ms et une courbe easeInOut. Les toggles utilisent la Switch.adaptive native (iOS/Android) avec activeColor = burgundy. Les chevrons ne s'animent pas — ils restent statiques pour ne pas distraire. Sur desktop, la sidebar highlight (fond bordeaux 8% + bordure gauche 3px) s'anime en 120ms pour donner un retour positif immédiat au clic.</p>
+  </div>
+</div>
+
+<div style="text-align:center;padding:48px 0 0;color:var(--muted);font-size:11px;letter-spacing:.16em;text-transform:uppercase;">
+  Termini im · Settings Redesign · Design System "Prishtina Editorial" · v2.0 · 2026
+</div>
+
+</div><!-- /page -->
+
+<script>
+function switchRole(role) {
+  ['client','employee','owner'].forEach(r => {
+    document.getElementById('desk-' + r).style.display = r === role ? 'block' : 'none';
+  });
+  document.querySelectorAll('#deskTabs .role-tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['client','employee','owner'][i] === role);
+  });
+}
+</script>
+</body>
+</html>

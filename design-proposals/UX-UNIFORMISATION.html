@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Uniformisation UX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --burgundy:      #7A2232;
+      --burgundy-deep: #511522;
+      --burgundy-lt:   #9E3D4F;
+      --gold:          #C89B47;
+      --sand:          #F7F2EA;
+      --ivory:         #FCF7EE;
+      --ivory-alt:     #EFE6D5;
+      --ink:           #171311;
+      --ink-2:         #332C29;
+      --muted:         #716059;
+      --divider:       #E8DCC8;
+      --border:        #D9CAB3;
+      --error:         #B83D3D;
+      --success:       #6F7E55;
+
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 24px;
+
+      --shadow-s: 0 2px 10px rgba(23,19,17,.06);
+      --shadow-m: 0 4px 12px rgba(23,19,17,.08);
+
+      --font-d: "Fraunces","Instrument Serif",Georgia,serif;
+      --font-b: "Instrument Sans",-apple-system,sans-serif;
+
+      --max: 1280px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--sand);
+      color: var(--ink);
+      font-family: var(--font-b);
+      font-size: 14px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 3000;
+      opacity: .28; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* ── Utilitaires ── */
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 32px; }
+
+    h1, h2, h3 { font-family: var(--font-d); font-weight: 400; }
+    h1 { font-size: 42px; line-height: 1.1; }
+    h2 { font-size: 26px; }
+    h3 { font-size: 19px; }
+
+    .overline {
+      font-family: var(--font-b);
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .em { font-family: "Instrument Serif"; font-style: italic; }
+    small { font-size: 12px; color: var(--muted); }
+
+    /* ── Header ── */
+    header {
+      background: var(--burgundy-deep);
+      color: var(--ivory);
+      padding: 72px 32px 56px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(200,155,71,.18) 0%, transparent 65%);
+    }
+    .header-inner {
+      max-width: var(--max); margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+    .brand {
+      font-family: var(--font-b);
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: rgba(252,247,238,.5);
+      margin-bottom: 20px;
+    }
+    header h1 { color: var(--ivory); margin-bottom: 12px; }
+    header p {
+      color: rgba(252,247,238,.7);
+      font-size: 15px; max-width: 540px; line-height: 1.65;
+    }
+    .header-meta {
+      margin-top: 24px;
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .header-meta span {
+      font-size: 11px; font-weight: 500;
+      color: rgba(200,155,71,.85);
+      letter-spacing: .6px;
+    }
+
+    /* ── Nav ancres ── */
+    .toc {
+      background: var(--ivory);
+      border-bottom: 1px solid var(--divider);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .toc-inner {
+      max-width: var(--max); margin: 0 auto;
+      padding: 0 32px;
+      display: flex; gap: 4px; overflow-x: auto;
+    }
+    .toc a {
+      display: block; padding: 12px 14px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .8px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    .toc a:hover { color: var(--burgundy); border-color: var(--burgundy); }
+
+    /* ── Section ── */
+    section { padding: 80px 0; }
+    section + section { border-top: 1px solid var(--divider); }
+    .section-label {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 32px;
+    }
+    .section-label span {
+      font-family: var(--font-d);
+      font-size: 13px; color: var(--muted);
+    }
+    .section-label::after {
+      content: ""; flex: 1;
+      height: 1px; background: var(--divider);
+    }
+
+    /* ── Design System ── */
+    .ds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+    }
+
+    .ds-block { }
+    .ds-block-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 12px;
+    }
+
+    /* palette */
+    .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sw {
+      width: 48px; height: 48px;
+      border-radius: var(--r-md);
+      border: 1px solid rgba(0,0,0,.06);
+      position: relative;
+    }
+    .sw-label {
+      font-size: 10px; color: var(--muted);
+      margin-top: 4px; text-align: center; width: 48px;
+    }
+    .sw-wrap { display: flex; flex-direction: column; align-items: center; }
+
+    /* typo */
+    .typo-samples { display: flex; flex-direction: column; gap: 16px; }
+    .typo-item { padding: 16px; background: var(--ivory); border-radius: var(--r-lg); border: 1px solid var(--divider); }
+    .typo-item-meta { font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: .5px; }
+
+    /* spacing */
+    .spacing-bars { display: flex; flex-direction: column; gap: 8px; }
+    .sp-row { display: flex; align-items: center; gap: 12px; }
+    .sp-bar { background: var(--burgundy); border-radius: 2px; height: 6px; }
+    .sp-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    /* ── Comparaison ── */
+    .compare-block { margin-bottom: 72px; }
+    .compare-block:last-child { margin-bottom: 0; }
+    .compare-title {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 8px;
+    }
+    .compare-title h3 { }
+    .compare-file {
+      font-size: 11px; color: var(--muted);
+      font-family: "Courier New", monospace;
+    }
+    .compare-desc { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+    .compare-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .compare-cols { grid-template-columns: 1fr; }
+    }
+
+    .col-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .col-label.avant {
+      background: rgba(122,34,50,.1);
+      color: var(--burgundy);
+    }
+    .col-label.apres {
+      background: rgba(111,126,85,.12);
+      color: var(--success);
+    }
+
+    /* frame mobile */
+    .frame-mobile {
+      width: 100%; max-width: 320px;
+      background: var(--ivory);
+      border-radius: 28px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-m);
+      font-size: 11px;
+    }
+    .frame-statusbar {
+      background: var(--sand);
+      padding: 10px 16px 6px;
+      display: flex; justify-content: space-between;
+      font-size: 9px; color: var(--muted); font-weight: 600;
+    }
+    .frame-content { padding: 0; }
+
+    /* frame desktop */
+    .frame-desktop {
+      width: 100%;
+      background: var(--ivory);
+      border-radius: var(--r-lg);
+      border: 2px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-m);
+      font-size: 11px;
+      display: flex;
+    }
+    .frame-sidebar {
+      width: 180px; min-width: 180px;
+      background: var(--ink);
+      padding: 16px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .frame-sidebar .sb-logo {
+      font-size: 13px; font-weight: 600; color: var(--ivory);
+      padding: 4px 8px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 8px;
+    }
+    .frame-sidebar .sb-logo em { font-family: "Instrument Serif"; font-style: italic; color: var(--gold); }
+    .sb-item {
+      padding: 7px 10px; border-radius: 8px;
+      font-size: 10px; font-weight: 500; color: rgba(252,247,238,.6);
+    }
+    .sb-item.active { background: rgba(122,34,50,.6); color: var(--ivory); }
+    .frame-main {
+      flex: 1; padding: 16px; overflow: hidden;
+      background: var(--sand);
+    }
+
+    /* annotation avant */
+    .ann {
+      position: relative;
+      display: inline-block;
+    }
+    .ann-tag {
+      display: inline-flex; align-items: center;
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .5px; text-transform: uppercase;
+      color: var(--error);
+      background: rgba(184,61,61,.08);
+      border: 1px solid rgba(184,61,61,.25);
+      border-radius: 3px;
+      padding: 2px 5px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+    .ann-ok {
+      display: inline-flex; align-items: center;
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .5px;
+      color: var(--success);
+      background: rgba(111,126,85,.1);
+      border: 1px solid rgba(111,126,85,.25);
+      border-radius: 3px;
+      padding: 2px 5px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* mockup primitives */
+    .mk-hero {
+      background: linear-gradient(160deg, var(--burgundy-deep), var(--burgundy));
+      color: var(--ivory);
+      padding: 20px 16px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mk-hero::after {
+      content: "";
+      position: absolute; right: -20px; top: -20px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,155,71,.3), transparent 70%);
+    }
+    .mk-hero h4 { font-family: var(--font-d); font-size: 20px; font-weight: 400; color: var(--ivory); margin-bottom: 4px; }
+    .mk-hero small { color: rgba(252,247,238,.65); font-size: 10px; }
+
+    .mk-form-card {
+      margin: -14px 12px 0;
+      background: var(--ivory);
+      border-radius: var(--r-xl);
+      border: 1px solid var(--divider);
+      padding: 16px;
+      box-shadow: var(--shadow-m);
+      position: relative; z-index: 1;
+    }
+    .mk-overline {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.4px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .mk-input {
+      width: 100%; padding: 10px 12px;
+      background: var(--sand);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 11px; color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .mk-input.err { border-color: var(--error); }
+    .mk-label { font-size: 10px; color: var(--ink-2); font-weight: 500; margin-bottom: 3px; }
+    .mk-btn {
+      width: 100%; padding: 11px;
+      background: var(--ink);
+      color: var(--ivory);
+      border-radius: var(--r-md);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      text-align: center; margin-top: 4px;
+    }
+    .mk-btn.secondary {
+      background: transparent;
+      color: var(--ink); border: 1px solid var(--border);
+    }
+    .mk-btn.accent { background: var(--burgundy); }
+    .mk-divider { height: 1px; background: var(--divider); margin: 12px 0; }
+    .mk-error-banner {
+      background: rgba(184,61,61,.08);
+      border: 1px solid rgba(184,61,61,.28);
+      border-radius: 8px; padding: 8px 10px;
+      font-size: 10px; color: var(--error);
+      margin-bottom: 8px;
+    }
+    .mk-section-h {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.4px;
+      text-transform: uppercase; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+      padding: 12px 16px 6px;
+    }
+    .mk-section-h::after {
+      content: ""; flex: 1; height: 1px; background: var(--divider);
+    }
+    .mk-card {
+      margin: 0 12px 8px;
+      background: var(--ivory);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--divider);
+      padding: 12px;
+      box-shadow: var(--shadow-s);
+    }
+    .mk-card-title { font-family: var(--font-d); font-size: 13px; margin-bottom: 3px; }
+    .mk-card-sub { font-size: 10px; color: var(--muted); }
+    .mk-chip {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 9px; font-weight: 600;
+      border: 1px solid var(--border);
+      color: var(--muted); background: var(--ivory-alt);
+    }
+    .mk-chip.active {
+      background: var(--burgundy); color: var(--ivory); border-color: var(--burgundy);
+    }
+    .mk-stars { color: var(--gold); font-size: 13px; }
+    .mk-step {
+      display: flex; gap: 8px; align-items: center;
+      padding: 0 16px 12px;
+    }
+    .mk-step-dot {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--ivory-alt);
+      border: 1.5px solid var(--border);
+      font-size: 9px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); flex-shrink: 0;
+    }
+    .mk-step-dot.active {
+      background: var(--burgundy); border-color: var(--burgundy); color: var(--ivory);
+    }
+    .mk-step-line { height: 1.5px; background: var(--divider); flex: 1; }
+    .mk-step-line.done { background: var(--burgundy); }
+    .mk-bottom-nav {
+      display: flex;
+      border-top: 1px solid var(--divider);
+      background: var(--ivory);
+    }
+    .mk-nav-item {
+      flex: 1; padding: 10px 4px 8px;
+      text-align: center; font-size: 9px;
+      color: var(--muted); font-weight: 500;
+    }
+    .mk-nav-item .nav-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+    .mk-nav-item.active { color: var(--burgundy); }
+
+    .mk-empty {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 16px; color: var(--muted);
+    }
+    .mk-empty-icon { font-size: 32px; opacity: .35; margin-bottom: 8px; }
+    .mk-empty-title { font-family: var(--font-d); font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+    .mk-empty-sub { font-size: 11px; color: var(--muted); text-align: center; }
+
+    .mk-skeleton {
+      background: linear-gradient(90deg, var(--divider) 25%, var(--border) 50%, var(--divider) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px; height: 12px; margin-bottom: 6px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* diffs list */
+    .diffs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+      margin-top: 20px;
+    }
+    @media (max-width: 720px) { .diffs { grid-template-columns: 1fr; } }
+
+    .diff-col-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .diff-col-label.b { color: var(--error); }
+    .diff-col-label.a { color: var(--success); }
+
+    .diff-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .diff-list li {
+      display: flex; gap: 8px; align-items: flex-start;
+      font-size: 12px; line-height: 1.45;
+    }
+    .diff-list li::before {
+      content: "—"; flex-shrink: 0;
+      font-weight: 700; margin-top: 1px;
+    }
+    .diff-list.b li { color: var(--ink-2); }
+    .diff-list.b li::before { color: var(--error); }
+    .diff-list.a li { color: var(--ink-2); }
+    .diff-list.a li::before { color: var(--success); }
+
+    /* action grid */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+    }
+    .action-item {
+      background: var(--ivory);
+      border: 1px solid var(--divider);
+      border-radius: var(--r-md);
+      padding: 12px 14px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .badge {
+      flex-shrink: 0;
+      font-size: 9px; font-weight: 800;
+      letter-spacing: .5px;
+      padding: 3px 7px; border-radius: 4px;
+      margin-top: 1px;
+    }
+    .badge.p0 { background: rgba(184,61,61,.12); color: var(--error); }
+    .badge.p1 { background: rgba(122,34,50,.1); color: var(--burgundy); }
+    .badge.p2 { background: rgba(200,155,71,.12); color: #8a6820; }
+    .action-body { flex: 1; }
+    .action-body strong { display: block; font-size: 12px; margin-bottom: 2px; }
+    .action-body small { color: var(--muted); font-size: 11px; font-family: "Courier New", monospace; }
+
+    /* misc */
+    .badge-new {
+      display: inline-flex;
+      padding: 3px 8px; border-radius: 20px;
+      font-size: 9px; font-weight: 700;
+      background: rgba(122,34,50,.08); color: var(--burgundy);
+      border: 1px solid rgba(122,34,50,.2);
+    }
+    .frame-center { display: flex; justify-content: center; }
+
+    /* wordmark */
+    .wordmark {
+      font-family: var(--font-b); font-size: 16px; font-weight: 600; color: var(--ink);
+    }
+    .wordmark em { font-family: "Instrument Serif"; font-style: italic; color: var(--burgundy); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ HEADER ══════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <p class="brand">Termini im &nbsp;·&nbsp; Document de travail</p>
+    <h1>Uniformisation<br><em class="em">UX &amp; Design</em></h1>
+    <p>Comparaisons avant/après pour les 5 surfaces prioritaires. Chaque écran reçoit des annotations sur les écarts identifiés et la correction à apporter.</p>
+    <div class="header-meta">
+      <span>Branche : feat/owner-employee-ui</span>
+      <span>2026-04-23</span>
+      <span>5 comparaisons &middot; 12 actions</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════ NAV ══════════════════════════════ -->
+<nav class="toc">
+  <div class="toc-inner">
+    <a href="#design-system">Design system</a>
+    <a href="#login">Login</a>
+    <a href="#home">Home mobile</a>
+    <a href="#dashboard">Dashboard desktop</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#booking">Booking stepper</a>
+    <a href="#actions">Plan d'action</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════ DESIGN SYSTEM ══════════════════════════════ -->
+<section id="design-system">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">01 &nbsp; Design system</span>
+    </div>
+
+    <div class="ds-grid">
+
+      <!-- palette -->
+      <div class="ds-block" style="grid-column: 1 / -1;">
+        <p class="ds-block-label">Palette normative</p>
+        <div class="swatches">
+          <div class="sw-wrap">
+            <div class="sw" style="background: #7A2232;"></div>
+            <div class="sw-label">Bourgogne</div>
+          </div>
+          <div class="sw-wrap">
+            <div class="sw" style="background: #C89B47;"></div>
+            <div class="sw-label">Or</div>
+          </div>
+          <div class="sw-wrap">
+            <div class="sw" style="background: #F7F2EA; border-color: var(--border);"></div>
+            <div class="sw-label">Sable</div>
+          </div>
+          <div class="sw-wrap">
+            <div class="sw" style="background: #FCF7EE; border-color: var(--border);"></div>
+            <div class="sw-label">Ivoire</div>
+          </div>
+          <div class="sw-wrap">
+            <div class="sw" style="background: #171311;"></div>
+            <div class="sw-label">Encre</div>
+          </div>
+          <div class="sw-wrap">
+            <div class="sw" style="background: #E8DCC8;"></div>
+            <div class="sw-label">Diviseur</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- typo -->
+      <div class="ds-block">
+        <p class="ds-block-label">Typographie</p>
+        <div class="typo-samples">
+          <div class="typo-item">
+            <div style="font-family: var(--font-d); font-size: 26px; line-height: 1.15;">Titre d'écran</div>
+            <div class="typo-item-meta">Fraunces 26 · h2 · AppTextStyles.h2</div>
+          </div>
+          <div class="typo-item">
+            <div style="font-family: var(--font-b); font-size: 14px; color: var(--ink-2);">Contenu courant, labels, corps de carte.</div>
+            <div class="typo-item-meta">Instrument Sans 14 · body · AppTextStyles.body</div>
+          </div>
+          <div class="typo-item">
+            <div>
+              <span style="font-family: var(--font-b); font-size: 16px; font-weight: 600;">Termini</span>&thinsp;<em style="font-family: 'Instrument Serif'; font-style: italic; font-size: 16px; color: var(--burgundy);">im</em>
+            </div>
+            <div class="typo-item-meta">Instrument Sans + Instrument Serif italic · wordmark</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- spacing -->
+      <div class="ds-block">
+        <p class="ds-block-label">Rythme vertical (AppSpacing)</p>
+        <div class="spacing-bars">
+          <div class="sp-row"><div class="sp-bar" style="width: 4px;"></div><span class="sp-label">xs · 4dp</span></div>
+          <div class="sp-row"><div class="sp-bar" style="width: 8px;"></div><span class="sp-label">sm · 8dp</span></div>
+          <div class="sp-row"><div class="sp-bar" style="width: 12px;"></div><span class="sp-label">·  · 12dp</span></div>
+          <div class="sp-row"><div class="sp-bar" style="width: 16px;"></div><span class="sp-label">md · 16dp &nbsp;padding standard</span></div>
+          <div class="sp-row"><div class="sp-bar" style="width: 24px;"></div><span class="sp-label">lg · 24dp &nbsp;inter-section</span></div>
+          <div class="sp-row"><div class="sp-bar" style="width: 32px;"></div><span class="sp-label">xl · 32dp &nbsp;blocs majeurs</span></div>
+          <div class="sp-row"><div class="sp-bar" style="width: 48px;"></div><span class="sp-label">xxl · 48dp &nbsp;bottom safe area</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ 1 — LOGIN ══════════════════════════════ -->
+<section id="login">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">02 &nbsp; Comparaison 1/5</span>
+    </div>
+
+    <div class="compare-block">
+      <div class="compare-title">
+        <h3>LoginScreen</h3>
+        <span class="compare-file">login_screen.dart</span>
+      </div>
+      <p class="compare-desc">Credentials de test exposés, overline marque non conforme, champs non centrés sur grand écran.</p>
+
+      <div class="compare-cols">
+        <!-- AVANT -->
+        <div>
+          <div class="col-label avant">Avant</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <!-- hero -->
+            <div class="mk-hero" style="padding-bottom: 36px;">
+              <div style="font-size: 9px; font-weight: 800; letter-spacing: 2.4px; color: rgba(252,247,238,.55); margin-bottom: 8px;">
+                TERMINI IM <span class="ann-tag">! all-caps</span>
+              </div>
+              <h4>Bon retour.</h4>
+              <small>Connectez-vous pour continuer.</small>
+            </div>
+            <!-- form card -->
+            <div class="mk-form-card">
+              <div class="mk-label">Email</div>
+              <div class="mk-input" style="color: var(--muted);">
+                donjeta@termini.im <span class="ann-tag">! cred. test</span>
+              </div>
+              <div class="mk-label">Mot de passe</div>
+              <div class="mk-input" style="color: var(--muted);">••••••••••</div>
+              <div class="mk-btn" style="margin-top: 8px;">SE CONNECTER</div>
+              <div class="mk-divider"></div>
+              <div style="text-align: center; font-size: 10px; color: var(--muted); margin-bottom: 8px;">OU</div>
+              <div class="mk-btn secondary" style="margin-bottom: 6px; font-size: 9px;">G &nbsp; Continuer avec Google</div>
+            </div>
+            <div style="padding: 12px 16px 8px; text-align: center; font-size: 10px; color: var(--muted);">
+              Pas de compte ? <span style="color: var(--burgundy);">S'inscrire</span>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- APRES -->
+        <div>
+          <div class="col-label apres">Apres</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <div class="mk-hero" style="padding-bottom: 36px;">
+              <!-- wordmark conforme -->
+              <div style="margin-bottom: 10px;">
+                <span style="font-family: var(--font-b); font-size: 13px; font-weight: 600; color: rgba(252,247,238,.9);">Termini</span><em style="font-family: 'Instrument Serif'; font-style: italic; font-size: 13px; color: var(--gold);">im</em>
+                <span class="ann-ok">ok</span>
+              </div>
+              <h4>Bon retour.</h4>
+              <small>Connectez-vous pour continuer.</small>
+            </div>
+            <div class="mk-form-card">
+              <div class="mk-label">Email</div>
+              <div class="mk-input" style="color: var(--muted);">
+                — <span class="ann-ok">vide</span>
+              </div>
+              <div class="mk-label">Mot de passe</div>
+              <div class="mk-input" style="color: var(--muted);">——</div>
+              <div class="mk-btn" style="margin-top: 8px;">SE CONNECTER</div>
+              <div class="mk-divider"></div>
+              <div style="text-align: center; font-size: 10px; color: var(--muted); margin-bottom: 8px;">OU</div>
+              <div class="mk-btn secondary" style="margin-bottom: 6px; font-size: 9px;">G &nbsp; Continuer avec Google</div>
+            </div>
+            <div style="padding: 12px 16px 8px; text-align: center; font-size: 10px; color: var(--muted);">
+              Pas de compte ? <em style="font-family: 'Instrument Serif'; font-style: italic; color: var(--burgundy);">S'inscrire</em>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- diffs -->
+      <div class="diffs">
+        <div>
+          <p class="diff-col-label b">Problemes</p>
+          <ul class="diff-list b">
+            <li>Overline <code>TERMINI IM</code> en all-caps letterSpacing 2.4 — viole la règle marque du CLAUDE.md</li>
+            <li>Champ email pré-rempli <code>donjeta@termini.im</code> (l. 31) — credential de test en prod</li>
+            <li>Pas de variante desktop — formulaire centré flotte sur écran large</li>
+          </ul>
+        </div>
+        <div>
+          <p class="diff-col-label a">Corrections</p>
+          <ul class="diff-list a">
+            <li>Remplacer l'overline par le <code>BrandLogo</code> widget ou wordmark Fraunces + Instrument Serif <em>im</em></li>
+            <li>Supprimer la valeur initiale du <code>TextEditingController</code></li>
+            <li>Créer <code>login_screen_desktop.dart</code> split-screen 40/60 (bourgogne / ivoire)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ 2 — HOME MOBILE ══════════════════════════════ -->
+<section id="home">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">03 &nbsp; Comparaison 2/5</span>
+    </div>
+
+    <div class="compare-block">
+      <div class="compare-title">
+        <h3>HomeScreen mobile</h3>
+        <span class="compare-file">home_screen_mobile.dart</span>
+      </div>
+      <p class="compare-desc">Salon cards inconsistantes, banners empilés sans espacement, empty state absent.</p>
+
+      <div class="compare-cols">
+        <!-- AVANT -->
+        <div>
+          <div class="col-label avant">Avant</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <!-- banners collés -->
+            <div style="background: rgba(122,34,50,.08); border-left: 3px solid var(--burgundy); padding: 8px 12px; font-size: 10px; color: var(--burgundy);">
+              Profil incomplet — complétez vos infos <span class="ann-tag">! no gap</span>
+            </div>
+            <div style="background: rgba(200,155,71,.1); border-left: 3px solid var(--gold); padding: 8px 12px; font-size: 10px; color: #8a6820; margin-top: 0;">
+              RDV demain à 14h chez Aura Studio <span class="ann-tag">! collé</span>
+            </div>
+            <!-- filtre sans overline -->
+            <div style="padding: 10px 12px 4px; display: flex; gap: 6px;">
+              <div class="mk-chip active">Tous</div>
+              <div class="mk-chip">Hommes</div>
+              <div class="mk-chip">Femmes</div>
+            </div>
+            <!-- carte sans eyebrow -->
+            <div style="margin: 4px 12px 8px; background: var(--ivory); border-radius: 12px; border: 1px solid var(--divider); overflow: hidden;">
+              <div style="background: var(--ivory-alt); height: 72px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:10px;">photo</div>
+              <div style="padding: 10px;">
+                <div style="font-weight: 600; font-size: 12px;">Aura Studio</div>
+                <div style="font-size: 10px; color: var(--muted);">Coiffure &middot; 4.8 ★</div>
+                <div style="margin-top: 6px; font-size: 10px; color: var(--muted);">
+                  09:30 &nbsp; 10:00 &nbsp; 11:30 <span class="ann-tag">! layout diff</span>
+                </div>
+              </div>
+            </div>
+            <!-- empty state brutal -->
+            <div style="padding: 24px; text-align: center; font-size: 11px; color: var(--muted);">
+              Aucun salon trouvé. <span class="ann-tag">! no pattern</span>
+            </div>
+            <div class="mk-bottom-nav">
+              <div class="mk-nav-item active"><span class="nav-icon">&#8962;</span>Accueil</div>
+              <div class="mk-nav-item"><span class="nav-icon">&#128197;</span>RDV</div>
+              <div class="mk-nav-item"><span class="nav-icon">&#9825;</span>Favoris</div>
+              <div class="mk-nav-item"><span class="nav-icon">&#9881;</span>Profil</div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- APRES -->
+        <div>
+          <div class="col-label apres">Apres</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <!-- banners avec gap xs -->
+            <div style="padding: 8px 12px 0; display: flex; flex-direction: column; gap: 4px;">
+              <div style="background: rgba(122,34,50,.08); border-left: 3px solid var(--burgundy); padding: 8px 10px; border-radius: 6px; font-size: 10px; color: var(--burgundy);">
+                Profil incomplet — complétez vos infos <span class="ann-ok">gap xs</span>
+              </div>
+              <div style="background: rgba(200,155,71,.1); border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 6px; font-size: 10px; color: #8a6820;">
+                RDV demain à 14h chez Aura Studio
+              </div>
+            </div>
+            <!-- section overline + chips -->
+            <div class="mk-section-h">Recherche</div>
+            <div style="padding: 0 12px 8px; display: flex; gap: 6px;">
+              <div class="mk-chip active">Tous</div>
+              <div class="mk-chip">Hommes</div>
+              <div class="mk-chip">Femmes</div>
+            </div>
+            <!-- carte unifiée avec eyebrow -->
+            <div style="margin: 0 12px 8px; background: var(--ivory); border-radius: 12px; border: 1px solid var(--divider); overflow: hidden; box-shadow: var(--shadow-s);">
+              <div style="background: linear-gradient(135deg, var(--ivory-alt), var(--divider)); height: 72px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:10px;">photo</div>
+              <div style="padding: 10px;">
+                <div style="font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px;">Coiffure <span class="ann-ok">eyebrow</span></div>
+                <div style="font-weight: 600; font-size: 12px; font-family: var(--font-d);">Aura Studio</div>
+                <div style="font-size: 10px; color: var(--gold); margin: 2px 0;">&#9733; 4.8</div>
+                <div style="margin-top: 6px; display: flex; gap: 4px;">
+                  <span style="background: var(--ivory-alt); border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; font-size: 9px; color: var(--ink-2);">09:30</span>
+                  <span style="background: var(--ivory-alt); border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; font-size: 9px; color: var(--ink-2);">10:00</span>
+                  <span style="background: var(--ivory-alt); border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; font-size: 9px; color: var(--ink-2);">11:30</span>
+                </div>
+              </div>
+            </div>
+            <!-- empty state conforme -->
+            <div class="mk-empty" style="padding: 20px 16px;">
+              <div class="mk-empty-icon">&#128247;</div>
+              <div class="mk-empty-title">Aucun salon trouvé</div>
+              <div class="mk-empty-sub">Essayez une autre date<br>ou ville.</div>
+            </div>
+            <div class="mk-bottom-nav">
+              <div class="mk-nav-item active"><span class="nav-icon">&#8962;</span>Accueil</div>
+              <div class="mk-nav-item"><span class="nav-icon">&#128197;</span>RDV</div>
+              <div class="mk-nav-item"><span class="nav-icon">&#9825;</span>Favoris</div>
+              <div class="mk-nav-item"><span class="nav-icon">&#9881;</span>Profil</div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diffs">
+        <div>
+          <p class="diff-col-label b">Problemes</p>
+          <ul class="diff-list b">
+            <li>Banners collés (margin-top: 0) — risque de collision visuelle sur plusieurs banners simultanés</li>
+            <li>Salon card sans eyebrow catégorie, titre non Fraunces, slots non uniformisés vs desktop</li>
+            <li>Empty state = Text centré sans icône, sans structure</li>
+          </ul>
+        </div>
+        <div>
+          <p class="diff-col-label a">Corrections</p>
+          <ul class="diff-list a">
+            <li>Ajouter <code>SizedBox(height: AppSpacing.xs)</code> entre chaque banner</li>
+            <li>Unifier la card avec section overline en <code>AppTextStyles.overline</code>, titre en <code>AppTextStyles.h3</code>, slots en chips <code>ivory-alt</code></li>
+            <li>Appliquer le pattern empty state §2.6 : icône 48 + h3 Fraunces + bodySmall</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ 3 — DASHBOARD DESKTOP ══════════════════════════════ -->
+<section id="dashboard">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">04 &nbsp; Comparaison 3/5</span>
+    </div>
+
+    <div class="compare-block">
+      <div class="compare-title">
+        <h3>Company Dashboard — Desktop</h3>
+        <span class="compare-file">company_dashboard_screen_desktop.dart</span>
+      </div>
+      <p class="compare-desc">Sidebar dupliquée dans deux fichiers, section headers inconsistants, shadow elevation mélangée.</p>
+
+      <div class="compare-cols">
+        <!-- AVANT -->
+        <div>
+          <div class="col-label avant">Avant</div>
+          <div class="frame-desktop">
+            <div class="frame-sidebar">
+              <div class="sb-logo">Termini<em>im</em></div>
+              <div class="sb-item active">&#9632; Tableau de bord</div>
+              <div class="sb-item">&#9632; Planning</div>
+              <div class="sb-item">&#9632; Équipe</div>
+              <div class="sb-item">&#9632; Paramètres</div>
+              <div style="font-size: 9px; color: rgba(252,247,238,.25); padding: 8px 10px; margin-top: auto;">sidebar dupliquée dans planning_desktop.dart <span class="ann-tag" style="display:block; margin-top: 4px; color: var(--error);">! dup</span></div>
+            </div>
+            <div class="frame-main">
+              <!-- section header inconsistant -->
+              <div style="font-family: var(--font-d); font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid var(--divider); padding-bottom: 8px;">
+                Mon Salon <span class="ann-tag">! h3 raw, pas overline</span>
+              </div>
+              <!-- carte avec elevation material -->
+              <div style="background: var(--ivory); border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.12);">
+                <div style="font-size: 11px; font-weight: 600;">Aura Studio</div>
+                <div style="font-size: 10px; color: var(--muted);">Prishtinë · Coiffure</div>
+                <div style="font-size: 9px; color: var(--error); margin-top: 4px;">elevation material — écart <span class="ann-tag">! elevation</span></div>
+              </div>
+              <div style="background: var(--ivory); border-radius: 12px; padding: 10px; margin-bottom: 8px; border: 1px solid var(--divider);">
+                <div style="font-size: 10px; font-weight: 600; margin-bottom: 6px;">Services (3)</div>
+                <div class="mk-skeleton" style="width: 80%;"></div>
+                <div class="mk-skeleton" style="width: 60%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- APRES -->
+        <div>
+          <div class="col-label apres">Apres</div>
+          <div class="frame-desktop">
+            <div class="frame-sidebar">
+              <div class="sb-logo">Termini<em>im</em></div>
+              <div class="sb-item active">&#9632; Tableau de bord</div>
+              <div class="sb-item">&#9632; Planning</div>
+              <div class="sb-item">&#9632; Équipe</div>
+              <div class="sb-item">&#9632; Paramètres</div>
+              <div style="font-size: 9px; color: rgba(252,247,238,.3); padding: 8px 10px; margin-top: auto;">
+                <span class="ann-ok" style="display:block; margin-bottom:4px;">AppSidebar</span>widget partagé
+              </div>
+            </div>
+            <div class="frame-main">
+              <!-- section header normé -->
+              <div class="mk-section-h" style="padding: 0 0 8px;">Mon Salon <span class="ann-ok">overline</span></div>
+              <!-- carte normée BoxDecoration -->
+              <div style="background: var(--ivory); border-radius: var(--r-lg); padding: 12px; margin-bottom: 8px; border: 1px solid var(--divider); box-shadow: 0 4px 12px rgba(23,19,17,.06);">
+                <div style="font-family: var(--font-d); font-size: 13px;">Aura Studio</div>
+                <div style="font-size: 10px; color: var(--muted);">Prishtinë · Coiffure</div>
+                <div style="margin-top: 6px; display: flex; gap: 6px;">
+                  <span class="mk-chip" style="font-size: 8px;">Modifier</span>
+                  <span class="mk-chip" style="font-size: 8px;">Photos</span>
+                </div>
+              </div>
+              <div style="background: var(--ivory); border-radius: var(--r-lg); padding: 10px; margin-bottom: 8px; border: 1px solid var(--divider); box-shadow: 0 4px 12px rgba(23,19,17,.06);">
+                <div class="mk-overline" style="margin-bottom: 6px;">Services</div>
+                <div class="mk-skeleton" style="width: 80%;"></div>
+                <div class="mk-skeleton" style="width: 60%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diffs">
+        <div>
+          <p class="diff-col-label b">Problemes</p>
+          <ul class="diff-list b">
+            <li>Sidebar définie séparément dans <code>company_dashboard_screen_desktop.dart</code> ET <code>company_planning_screen_desktop.dart</code></li>
+            <li>Section headers mixent Fraunces raw, <code>h3</code> direct et <code>Text</code> sans style — inconsistant</li>
+            <li>Certaines cartes utilisent <code>elevation: 2</code> Material au lieu de <code>BoxDecoration + BoxShadow</code></li>
+          </ul>
+        </div>
+        <div>
+          <p class="diff-col-label a">Corrections</p>
+          <ul class="diff-list a">
+            <li>Extraire <code>AppSidebar</code> widget partagé (fond <code>textPrimary</code>, items, logo)</li>
+            <li>Uniformiser les section headers : overline <code>AppTextStyles.overline</code> + séparateur</li>
+            <li>Toutes les cartes passent à <code>BoxDecoration(boxShadow: [BoxShadow(color: cardShadow, blurRadius: 12)])</code>, <code>elevation: 0</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ 4 — REVIEWS ══════════════════════════════ -->
+<section id="reviews">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">05 &nbsp; Comparaison 4/5</span>
+    </div>
+
+    <div class="compare-block">
+      <div class="compare-title">
+        <h3>My Company Reviews</h3>
+        <span class="compare-file">my_company_reviews_screen.dart</span>
+      </div>
+      <p class="compare-desc">Trois états manquants ou non conformes : loading, empty, error.</p>
+
+      <div class="compare-cols">
+        <!-- AVANT -->
+        <div>
+          <div class="col-label avant">Avant</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <div style="padding: 12px 16px; border-bottom: 1px solid var(--divider); display:flex; align-items:center; gap: 8px;">
+              <span style="font-size: 16px;">&#8592;</span>
+              <span style="font-family: var(--font-d); font-size: 16px;">Avis</span>
+            </div>
+
+            <!-- loading : spinner plein ecran -->
+            <div style="padding: 40px 16px; text-align: center;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid var(--burgundy); border-top-color: transparent; margin: 0 auto 8px; animation: spin 1s linear infinite;"></div>
+              <div style="font-size: 10px; color: var(--muted);">Chargement... <span class="ann-tag">! spinner full</span></div>
+            </div>
+
+            <!-- empty state minimal -->
+            <div style="padding: 24px 16px; text-align: center; font-size: 11px; color: var(--muted);">
+              Aucun avis pour l'instant. <span class="ann-tag">! no icon, no h3</span>
+            </div>
+
+            <!-- error : absent -->
+            <div style="padding: 12px 16px; font-size: 10px; color: var(--muted); font-style: italic;">
+              [état erreur absent] <span class="ann-tag">! missing</span>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- APRES -->
+        <div>
+          <div class="col-label apres">Apres</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <div style="padding: 12px 16px; border-bottom: 1px solid var(--divider); display:flex; align-items:center; gap: 8px;">
+              <span style="font-size: 16px;">&#8592;</span>
+              <span style="font-family: var(--font-d); font-size: 16px;">Avis</span>
+            </div>
+
+            <!-- skeleton loader -->
+            <div style="padding: 12px 16px;">
+              <div style="background: var(--ivory); border-radius: var(--r-lg); border: 1px solid var(--divider); padding: 12px; margin-bottom: 8px;">
+                <div class="mk-skeleton" style="width: 50%; height: 10px;"></div>
+                <div class="mk-skeleton" style="width: 90%; height: 8px;"></div>
+                <div class="mk-skeleton" style="width: 70%; height: 8px;"></div>
+              </div>
+              <div style="background: var(--ivory); border-radius: var(--r-lg); border: 1px solid var(--divider); padding: 12px;">
+                <div class="mk-skeleton" style="width: 40%; height: 10px;"></div>
+                <div class="mk-skeleton" style="width: 85%; height: 8px;"></div>
+              </div>
+              <div style="font-size: 9px; color: var(--success); margin-top: 6px;">skeleton loader <span class="ann-ok">ok</span></div>
+            </div>
+
+            <!-- empty state conforme -->
+            <div class="mk-empty" style="padding: 20px 16px;">
+              <div class="mk-empty-icon">&#9733;</div>
+              <div class="mk-empty-title">Aucun avis reçu</div>
+              <div class="mk-empty-sub">Les avis apparaissent<br>après chaque RDV.</div>
+              <span class="ann-ok" style="margin-top: 8px;">pattern §2.6</span>
+            </div>
+
+            <!-- error banner conforme -->
+            <div style="margin: 0 16px;">
+              <div class="mk-error-banner">
+                &#9888; &nbsp; Impossible de charger les avis. Réessayer.
+              </div>
+              <span class="ann-ok">pattern §2.8</span>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diffs">
+        <div>
+          <p class="diff-col-label b">Problemes</p>
+          <ul class="diff-list b">
+            <li>Loading = <code>CircularProgressIndicator</code> centré plein écran — flash de layout, incohérent avec les autres écrans</li>
+            <li>Empty state = <code>Center(child: Text(...))</code> — aucune icône, aucun titre Fraunces, aucun CTA</li>
+            <li>État erreur absent — si l'API échoue, rien n'est affiché à l'utilisateur</li>
+          </ul>
+        </div>
+        <div>
+          <p class="diff-col-label a">Corrections</p>
+          <ul class="diff-list a">
+            <li>Remplacer le spinner par <code>SkeletonList</code> (rectangles aux bonnes dimensions)</li>
+            <li>Appliquer le pattern §2.6 : icône <code>star_outline</code> opacity 0.4 + h3 Fraunces + bodySmall</li>
+            <li>Ajouter la bannière d'erreur §2.8 avec bouton retry</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ 5 — BOOKING STEPPER ══════════════════════════════ -->
+<section id="booking">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">06 &nbsp; Comparaison 5/5</span>
+    </div>
+
+    <div class="compare-block">
+      <div class="compare-title">
+        <h3>Booking Stepper</h3>
+        <span class="compare-file">booking_screen_mobile.dart</span>
+      </div>
+      <p class="compare-desc">Titre tronqué, loading sans skeleton, hiérarchie CTA à clarifier dans la bottom bar.</p>
+
+      <div class="compare-cols">
+        <!-- AVANT -->
+        <div>
+          <div class="col-label avant">Avant</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <!-- appbar titre tronqué -->
+            <div style="padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--divider); background: var(--ivory);">
+              <span style="font-size: 14px;">&#8592;</span>
+              <span style="font-family: var(--font-d); font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 180px;">
+                Coupe + Barbe Complète Premium <span class="ann-tag">! trunc</span>
+              </span>
+            </div>
+            <!-- step indicator sans distinction -->
+            <div class="mk-step" style="padding: 12px 16px 8px;">
+              <div class="mk-step-dot active">1</div>
+              <div class="mk-step-line"></div>
+              <div class="mk-step-dot">2</div>
+            </div>
+            <!-- loading spinner -->
+            <div style="padding: 32px 16px; text-align: center;">
+              <div style="width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid var(--burgundy); border-top-color: transparent; margin: 0 auto 8px; animation: spin 1s linear infinite;"></div>
+              <div style="font-size: 10px; color: var(--muted);">Chargement employés... <span class="ann-tag">! spinner</span></div>
+            </div>
+            <!-- bottom bar ambiguë -->
+            <div style="border-top: 1px solid var(--divider); padding: 10px 16px; display: flex; gap: 8px; background: var(--ivory); margin-top: auto;">
+              <div style="flex: 1; padding: 9px; text-align: center; border: 1px solid var(--border); border-radius: 10px; font-size: 10px; color: var(--muted);">Précédent</div>
+              <div style="flex: 1; padding: 9px; text-align: center; background: var(--ink); border-radius: 10px; font-size: 10px; color: var(--ivory); font-weight: 600;">Suivant <span class="ann-tag" style="border-color: rgba(252,247,238,.3); color: rgba(252,247,238,.7);">h?</span></div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- APRES -->
+        <div>
+          <div class="col-label apres">Apres</div>
+          <div class="frame-center">
+          <div class="frame-mobile">
+            <div class="frame-statusbar"><span>9:41</span><span>&#9679; &#9679; &#9679;</span></div>
+            <!-- appbar avec ellipsis -->
+            <div style="padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--divider); background: var(--ivory);">
+              <span style="font-size: 14px;">&#8592;</span>
+              <span style="font-family: var(--font-d); font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 180px;">
+                Coupe + Barbe Complète... <span class="ann-ok">ellipsis</span>
+              </span>
+            </div>
+            <!-- step indicator avec ligne active -->
+            <div class="mk-step" style="padding: 12px 16px 8px;">
+              <div class="mk-step-dot active">1</div>
+              <div class="mk-step-line done"></div>
+              <div class="mk-step-dot" style="border-color: var(--burgundy);">2</div>
+            </div>
+            <div style="padding: 2px 16px 8px; font-size: 9px; color: var(--muted);">
+              Étape 1 sur 2 — Choix de l'employé <span class="ann-ok">label</span>
+            </div>
+            <!-- skeleton employees -->
+            <div style="padding: 0 16px;">
+              <div style="background: var(--ivory); border-radius: var(--r-lg); border: 1px solid var(--divider); padding: 10px; margin-bottom: 6px; display: flex; gap: 8px; align-items: center;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--divider);"></div>
+                <div style="flex: 1;">
+                  <div class="mk-skeleton" style="width: 60%; height: 9px;"></div>
+                  <div class="mk-skeleton" style="width: 40%; height: 7px;"></div>
+                </div>
+              </div>
+              <div style="background: var(--ivory); border-radius: var(--r-lg); border: 1px solid var(--divider); padding: 10px; margin-bottom: 6px; display: flex; gap: 8px; align-items: center;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--divider);"></div>
+                <div style="flex: 1;">
+                  <div class="mk-skeleton" style="width: 55%; height: 9px;"></div>
+                  <div class="mk-skeleton" style="width: 35%; height: 7px;"></div>
+                </div>
+              </div>
+              <span class="ann-ok">skeleton employees</span>
+            </div>
+            <!-- bottom bar hiérarchie claire -->
+            <div style="border-top: 1px solid var(--divider); padding: 10px 16px; display: flex; gap: 8px; background: var(--ivory); margin-top: 12px;">
+              <div style="padding: 9px 14px; text-align: center; border: 1px solid var(--border); border-radius: 10px; font-size: 10px; color: var(--muted); white-space: nowrap;">&#8592; Retour</div>
+              <div style="flex: 1; padding: 9px; text-align: center; background: var(--ink); border-radius: 10px; font-size: 10px; color: var(--ivory); font-weight: 700; letter-spacing: .8px;">SUIVANT</div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diffs">
+        <div>
+          <p class="diff-col-label b">Problemes</p>
+          <ul class="diff-list b">
+            <li>Titre service tronqué sans <code>overflow: TextOverflow.ellipsis</code> — risque d'overflow sur noms longs</li>
+            <li>Loading employés = spinner au lieu d'un skeleton contextuel (avatar + lignes)</li>
+            <li>Bottom bar : deux boutons de même hauteur apparente sans hiérarchie claire primaire/secondaire</li>
+          </ul>
+        </div>
+        <div>
+          <p class="diff-col-label a">Corrections</p>
+          <ul class="diff-list a">
+            <li>Ajouter <code>overflow: TextOverflow.ellipsis</code> sur le titre dans <code>_MobileAppBar</code></li>
+            <li>Remplacer le spinner par skeleton d'employé : avatar circle + 2 lignes</li>
+            <li>Secondaire : <code>OutlinedButton</code> width auto ; Primaire : <code>ElevatedButton</code> <code>flex: 1</code>, h=50, fond encre, text <code>button.toUpperCase()</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ PLAN D'ACTION ══════════════════════════════ -->
+<section id="actions">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="overline">07 &nbsp; Plan d'action</span>
+    </div>
+
+    <p style="color: var(--muted); font-size: 13px; margin-bottom: 28px;">P0 = bloquant release · P1 = sprint suivant · P2 = backlog</p>
+
+    <div class="action-grid">
+
+      <div class="action-item">
+        <span class="badge p0">P0</span>
+        <div class="action-body">
+          <strong>Supprimer les credentials de test</strong>
+          <small>login_screen.dart:31 — TextEditingController(text: 'donjeta@termini.im')</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p0">P0</span>
+        <div class="action-body">
+          <strong>Corriger le wordmark — supprimer TERMINI IM all-caps</strong>
+          <small>login_screen.dart:315 — remplacer par BrandLogo ou wordmark Fraunces+"im"</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p0">P0</span>
+        <div class="action-body">
+          <strong>Corriger la detection plateforme iOS dans ForceUpdateScreen</strong>
+          <small>force_update_screen.dart — remplacer String.fromEnvironment par Platform.isIOS</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p1">P1</span>
+        <div class="action-body">
+          <strong>Ajouter skeleton + empty state + error à MyCompanyReviewsScreen</strong>
+          <small>my_company_reviews_screen.dart — trois états manquants</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p1">P1</span>
+        <div class="action-body">
+          <strong>Unifier la salon card mobile avec la version desktop</strong>
+          <small>home_screen_mobile.dart — eyebrow overline, titre Fraunces, slots chips ivory-alt</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p1">P1</span>
+        <div class="action-body">
+          <strong>Ajouter gap xs entre les banners empilés</strong>
+          <small>home_screen_mobile.dart — SizedBox(height: AppSpacing.xs) entre chaque banner</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p1">P1</span>
+        <div class="action-body">
+          <strong>Corriger le titre booking avec TextOverflow.ellipsis</strong>
+          <small>booking_screen_mobile.dart — _MobileAppBar serviceName</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p1">P1</span>
+        <div class="action-body">
+          <strong>Remplacer spinner booking par skeleton employees</strong>
+          <small>booking_screen_mobile.dart — _LoadingView avec avatar + lignes</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p1">P1</span>
+        <div class="action-body">
+          <strong>Extraire AppSidebar widget partagé</strong>
+          <small>company_dashboard_screen_desktop.dart + company_planning_screen_desktop.dart</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p2">P2</span>
+        <div class="action-body">
+          <strong>Créer login_screen_desktop.dart split-screen 40/60</strong>
+          <small>Bourgogne branding gauche + formulaire ivoire droite</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p2">P2</span>
+        <div class="action-body">
+          <strong>Corriger le format date DD/MM avec zero-padding</strong>
+          <small>landing_screen.dart — DateFormat('dd/MM/yyyy', locale) via intl</small>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <span class="badge p2">P2</span>
+        <div class="action-body">
+          <strong>Ajouter BrandLogo aux ecrans bloquants</strong>
+          <small>maintenance_screen.dart + force_update_screen.dart — coherence marque</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FOOTER ══════════════════════════════ -->
+<footer style="padding: 48px 32px; border-top: 1px solid var(--divider); text-align: center;">
+  <div style="max-width: var(--max); margin: 0 auto;">
+    <div class="wordmark" style="margin-bottom: 8px;">Termini<em>im</em></div>
+    <p style="font-size: 11px; color: var(--muted); letter-spacing: .5px;">PRISHTINË &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; Document interne — uniformisation UX</p>
+  </div>
+</footer>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+</body>
+</html>

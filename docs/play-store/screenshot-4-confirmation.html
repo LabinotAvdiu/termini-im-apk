@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8" />
+<title>Termini im — Screenshot 4 — Konfirmim (1080×1920)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:ital,wght@0,300..700;1,300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ivory:    #f7f2ea;
+    --surface:  #fcf7ee;
+    --bone:     #e8dcc8;
+    --ink:      #171311;
+    --muted:    #716059;
+    --line:     #d9cab3;
+    --burgundy: #7a2232;
+    --gold:     #c89b47;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: "Instrument Sans", sans-serif;
+  }
+
+  .export-hint {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  @media print { .export-hint { display: none; } }
+
+  .canvas {
+    width: 1080px;
+    height: 1920px;
+    background: var(--ivory);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .canvas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.11;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    z-index: 10;
+  }
+  /* Celebration glow — center */
+  .canvas::after {
+    content: "";
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 50%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,34,50,0.09), transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    background: var(--ivory);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .status-bar .icons { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+
+  /* Editorial overlay */
+  .overlay-top {
+    padding: 40px 64px 34px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+    border-bottom: 1px solid var(--bone);
+  }
+  .kicker-line { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .kicker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+  .kicker-text { font-size: 11px; letter-spacing: 0.30em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .headline-editorial {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 68px;
+    line-height: 1.03;
+    color: var(--ink);
+    font-weight: 400;
+    letter-spacing: -1.8px;
+    margin-bottom: 14px;
+    font-variation-settings: "SOFT" 55;
+  }
+  .headline-editorial em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+    letter-spacing: -1px;
+  }
+  .subline { font-size: 22px; color: var(--muted); font-weight: 400; }
+
+  /* App content */
+  .app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 64px;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Celebration circle */
+  .celebration-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 52px;
+    padding-bottom: 36px;
+    width: 100%;
+  }
+  .check-circle {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    background: var(--burgundy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    position: relative;
+    box-shadow: 0 12px 40px rgba(122,34,50,0.28);
+  }
+  /* Celebration rings */
+  .check-circle::before {
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(122,34,50,0.2);
+  }
+  .check-circle::after {
+    content: "";
+    position: absolute;
+    inset: -28px;
+    border-radius: 50%;
+    border: 1px solid rgba(122,34,50,0.1);
+  }
+  .check-icon { color: var(--ivory); }
+
+  /* Confetti dots */
+  .confetti {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .confirmation-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--ink);
+    text-align: center;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    font-variation-settings: "SOFT" 40;
+  }
+  .confirmation-subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  /* Recap card */
+  .recap-card {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--bone);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .recap-header {
+    padding: 18px 24px;
+    background: rgba(122,34,50,0.06);
+    border-bottom: 1px solid var(--bone);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .recap-header-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--burgundy); }
+  .recap-header-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--burgundy);
+    font-variation-settings: "SOFT" 30;
+  }
+  .recap-rows { padding: 8px 0; }
+  .recap-row {
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--bone);
+  }
+  .recap-row:last-child { border-bottom: none; }
+  .recap-icon { color: var(--muted); flex-shrink: 0; }
+  .recap-row-label { font-size: 13px; color: var(--muted); margin-bottom: 2px; font-weight: 500; }
+  .recap-row-value { font-size: 16px; color: var(--ink); font-weight: 500; letter-spacing: -0.2px; }
+
+  /* Action buttons */
+  .action-btns {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .btn-outlined {
+    width: 100%;
+    height: 58px;
+    border-radius: 14px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 17px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.2px;
+  }
+  .btn-outlined-burgundy {
+    width: 100%;
+    height: 58px;
+    border-radius: 14px;
+    border: 1.5px solid var(--burgundy);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 17px;
+    color: var(--burgundy);
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+
+  /* Reminder note */
+  .reminder-note {
+    width: 100%;
+    padding: 18px 22px;
+    background: rgba(200,155,71,0.08);
+    border: 1px solid rgba(200,155,71,0.25);
+    border-radius: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .reminder-icon { color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+  .reminder-text { font-size: 14px; color: var(--muted); line-height: 1.55; }
+  .reminder-text strong { color: var(--ink); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="export-hint" style="display:flex;gap:10px;align-items:center;background:rgba(0,0,0,.78);color:#fff;padding:9px 14px;border-radius:10px;font-family:system-ui,sans-serif;font-size:13px;">
+  <span>Screenshot 4 — Confirmation · 1080×1920 →</span>
+  <button onclick="downloadPng('screenshot-4-confirmation')" style="background:#7a2232;color:#fff;border:0;padding:8px 14px;border-radius:6px;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px;">Télécharger PNG</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+<script>
+  function downloadPng(filename) {
+    const node = document.querySelector('.canvas');
+    htmlToImage.toPng(node, { width: 1080, height: 1920, pixelRatio: 1, cacheBust: true })
+      .then(d => { const a = document.createElement('a'); a.download = filename + '.png'; a.href = d; a.click(); })
+      .catch(e => alert('Erreur export : ' + e));
+  }
+</script>
+
+<div class="canvas">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+        <rect x="0" y="8" width="3" height="4" rx="0.7" fill="currentColor"/>
+        <rect x="4.5" y="5.5" width="3" height="6.5" rx="0.7" fill="currentColor"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.7" fill="currentColor"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.7" fill="currentColor" opacity="0.35"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+        <path d="M8 9.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+        <path d="M8 6.5C9.9 6.5 11.6 7.3 12.8 8.6l1.4-1.4A8.5 8.5 0 008 5a8.5 8.5 0 00-6.2 2.2L3.2 8.6C4.4 7.3 6.1 6.5 8 6.5z"/>
+        <path d="M8 3.5c2.8 0 5.4 1.1 7.3 3l1.4-1.4A11.9 11.9 0 008 2 11.9 11.9 0 00-.7 5.1L.7 6.5C2.6 4.6 5.2 3.5 8 3.5z" opacity="0.45"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" stroke-opacity="0.35"/>
+        <rect x="2" y="2" width="16" height="8" rx="1.5" fill="currentColor"/>
+        <path d="M22.5 4v4a2 2 0 000-4z" fill="currentColor" fill-opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Editorial overlay -->
+  <div class="overlay-top">
+    <div class="kicker-line">
+      <div class="kicker-dot"></div>
+      <span class="kicker-text">Kujtesë automatike</span>
+    </div>
+    <h1 class="headline-editorial">
+      Kujtesat<br><em>vijnë vetë.</em>
+    </h1>
+    <p class="subline">Një ditë para. Një orë para.</p>
+  </div>
+
+  <!-- App content -->
+  <div class="app-content">
+
+    <!-- Celebration -->
+    <div class="celebration-area" style="position:relative;">
+      <!-- Decorative dots -->
+      <div style="position:absolute;top:24px;left:80px;width:10px;height:10px;border-radius:50%;background:var(--gold);opacity:0.6;"></div>
+      <div style="position:absolute;top:60px;right:60px;width:7px;height:7px;border-radius:50%;background:var(--burgundy);opacity:0.4;"></div>
+      <div style="position:absolute;top:100px;left:160px;width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.5;"></div>
+      <div style="position:absolute;top:30px;right:160px;width:12px;height:12px;border-radius:50%;background:var(--bone);"></div>
+
+      <div class="check-circle">
+        <svg class="check-icon" width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+
+      <div class="confirmation-title">Termini yt është konfirmuar</div>
+      <div class="confirmation-subtitle">Te Salloni Donjeta · Ardit</div>
+    </div>
+
+    <!-- Recap card -->
+    <div class="recap-card">
+      <div class="recap-header">
+        <div class="recap-header-dot"></div>
+        <div class="recap-header-title">Detajet e terminit</div>
+      </div>
+      <div class="recap-rows">
+        <div class="recap-row">
+          <div class="recap-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <div class="recap-row-label">Data &amp; ora</div>
+            <div class="recap-row-value">15 Prill 2026, ora 10:00</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="recap-row-label">Frizeri</div>
+            <div class="recap-row-value">Ardit · Barber</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="recap-row-label">Shërbimi</div>
+            <div class="recap-row-value">Prerje burrash · 30 min · €12</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="recap-row-label">Vendi</div>
+            <div class="recap-row-value">Rr. Fehmi Agani, Prishtinë</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-btns">
+      <div class="btn-outlined">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Shto në kalendar
+      </div>
+      <div class="btn-outlined-burgundy">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Ndaj termin
+      </div>
+    </div>
+
+    <!-- Reminder note -->
+    <div class="reminder-note">
+      <div class="reminder-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+      </div>
+      <div class="reminder-text">
+        Do të marrësh kujtesë <strong>një ditë para</strong> dhe <strong>një orë para</strong> terminit tënd.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
