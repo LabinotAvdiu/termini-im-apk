@@ -204,22 +204,118 @@ Trois principes pour que le pivot ne soit pas perçu comme un « lancement de re
 2. **Faire de la petite échelle un luxe éditorial.** « 15 salons. Choisis un par un. Photographiés un par un. » — l'exact opposé de « we're onboarding everyone who signs up ».
 3. **Poser la suite comme déjà décidée.** « Ferizaj en mai, Prishtinë en juillet, tout le Kosovo avant la fin de l'été. » Jamais de flou sur l'expansion.
 
-## Signaux de succès & échec
+## Signaux de succès & échec — gates avancées J30 / J45 / J60
 
-**Go phase 2 (Prishtinë)** — si, à J60 :
-- ≥ 12 salons actifs Ferizaj (critère strict : ≥ 3 RDV/sem)
-- Rétention cliente J+30 ≥ 35 %
-- NPS salon ≥ 40
-- ≥ 500 RDV confirmés cumulés
+Plutôt qu'un seul check à J60, on évalue à **trois moments** pour pouvoir corriger tôt sans cramer 60 jours sur une thèse qui ne marche pas.
 
-**Hold phase 2** — si 8-11 salons actifs ou rétention 30-35 % : prolonger la concierge Ferizaj de 3-4 semaines avant de basculer Prishtinë.
+### Gate J30 (fin pré-launch / début concierge)
 
-**Red flag — réévaluation stratégique complète** — si à J60 :
-- &lt; 8 salons actifs (la thèse des intros chaudes n'a pas tenu)
-- Rétention &lt; 25 %
-- Ou retour terrain qualitatif qui suggère un problème produit bloquant
+| Signal | Action |
+|---|---|
+| **0-1 salon signé** (incluant pilotes fondateurs) | **Pause concierge** 1 semaine. Diagnostic structuré (5 questions ci-dessous). Retarder lancement public de 2-3 semaines. |
+| **2-4 salons signés** | Continuer **prudemment** — réviser pitch, lister top 3 objections, tester variantes |
+| **5+ salons signés** | Plein régime, on tient le cap, on lance le public à J30 comme prévu |
 
-Dans ce scénario, arrêt des embauches ads, diagnostic produit approfondi, possible re-scoping.
+### Gate J45
+
+| Signal | Action |
+|---|---|
+| **&lt; 5 salons actifs** (≥ 3 RDV/sem) | Activer le **test pivot Prishtinë** (cf. ci-dessous) |
+| **5-9 salons actifs** | Tenir Ferizaj jusqu'à J60, ré-évaluer |
+| **10+ salons actifs** | Plein régime, J60 sera bon |
+
+### Gate J60 (fin de phase 1)
+
+| Signal | Action |
+|---|---|
+| **≥ 12 salons actifs Ferizaj** + rétention J+30 ≥ 35 % + NPS salon ≥ 40 + ≥ 500 RDV cumulés | **Go phase 2** — ouvrir Prishtinë avec preuve sociale Ferizaj |
+| **8-11 salons actifs** ou rétention 30-35 % | **Hold** — prolonger concierge Ferizaj 3-4 semaines |
+| **&lt; 8 salons** ou rétention &lt; 25 % | **Red flag** — diagnostic complet, ads suspendues, ré-scoping possible |
+
+### Procédure de diagnostic (à activer aux gates J30 ou J45 si signal rouge)
+
+Cinq questions à répondre honnêtement en 1 semaine :
+
+1. **Combien de visites physiques j'ai vraiment faites ?** (pas planifiées — vraiment faites)
+   - &lt; 20 → effort insuffisant, pas un problème de marché
+   - 20-40 → quantité OK, regarder la conversion
+   - 40+ → quantité très bien, problème ailleurs
+2. **Sur ces visites, combien étaient warm vs cold ?**
+3. **Quelle objection a tué chaque conversation qui n'a pas conclu ?** (chercher les patterns)
+4. **Qu'est-ce qui a fait basculer les 1-2 qui ont dit oui ?** (recopier la phrase — c'est le vrai pitch)
+5. **Y a-t-il un segment qui marche mieux ?** (barberie vs coiffure femme — focus si oui)
+
+### Trois diagnostics → trois actions correctives
+
+| Diagnostic | Action |
+|---|---|
+| **A. Effort insuffisant** (&lt; 30 visites réelles) | Reste à Ferizaj. Étend concierge 4-6 semaines. Pas de lancement public, pas de pubs grand public. Pousser plus fort sur le terrain. |
+| **B. Effort OK mais pitch / produit faible** (≥ 30 visites, conversion &lt; 5 %) | Reste à Ferizaj. Travailler le pitch (raccourcir, intégrer la phrase des oui). Si objection produit → simplifier le flow owner. **Switcher à Prishtinë avec le même pitch raté = même résultat.** |
+| **C. Marché entier réfractaire** (objections type « ça marche comme ça » majoritaires) | Problème de timing ou d'offre, pas de ville. Bascule en mode « concierge total » 3 mois — on prend le téléphone du salon en plus de l'app, pour prouver la valeur sans qu'ils aient à apprendre. Différent métier mais ce qui crée la demande au Kosovo. |
+
+### Test pivot Prishtinë (J45-J75) — uniquement si Ferizaj a vraiment échoué
+
+Si gate J45 rouge ET diagnostic conclut « pas un problème d'effort mais de marché » :
+
+- **4 semaines de concierge à Prishtinë centre**
+- **30-40 visites cold** sur salons cibles
+- **Mesurer le taux de conversion** Prishtinë cold vs Ferizaj warm
+- **Décision basée sur signal :**
+  - Prishtinë cold convertit **équivalent ou mieux** que Ferizaj warm → pivot officiel à Prishtinë, le pitch / produit fonctionne mais Ferizaj n'était pas le bon marché
+  - Prishtinë cold convertit **pire** → c'était bien Ferizaj le bon, problème pitch / produit / timing → revenir corriger
+
+**Ce n'est PAS un lancement parallèle.** Test contrôlé, 4 semaines, signaux mesurés. Pas de pubs Prishtinë grand public, pas de salons pilotes officiels, pas de comm publique Prishtinë. Le test reste invisible jusqu'à décision.
+
+### Vrais pivots possibles (par ordre de risque croissant)
+
+Avant de pivoter géographiquement, considérer dans cet ordre :
+
+1. **Pivot d'offre** — passer de « on te donne un outil » à « on gère tes RDV pour toi le premier mois »
+2. **Pivot de segment** — focus uniquement barberies (plus pragmatiques) si elles convertissent mieux
+3. **Pivot de timing** — suspendre, attendre Bajram / mariage / rentrée (pic demande)
+4. **Pivot de pricing perçu** — passer du gratuit total au « 1 € symbolique 6 mois puis gratuit garanti par contrat signé » (paradoxalement payer 1 € rassure plus que la gratuité totale au Kosovo)
+5. **Pivot géographique** — Prizren ou Pejë (jamais Prishtinë comme premier réflexe, profil similaire à Ferizaj donc plus prédictible)
+
+## Visibilité de la waitlist multi-villes — sans casser la règle « zéro pub »
+
+**Problème** identifié : si on ne fait aucune pub durant M0-M2 et que tout le contenu social dit « fillojmë nga Ferizaj », la waitlist Prishtinë / Prizren / Pejë se remplit à zéro et le filet de sécurité « si Ferizaj rate, j'ai déjà 50-100 leads chauds Prishtinë » ne fonctionne pas.
+
+**Distinction clé qui débloque** : la règle « zéro pub avant liquidité Ferizaj » concerne les **pubs d'acquisition cliente** (« télécharge l'app, réserve maintenant ») — le piège étant qu'une cliente qui ouvre une app vide ne revient pas. Une **pub waitlist B2B owner** est fondamentalement différente : l'owner laisse juste son numéro, pas d'expérience produit attendue, coût d'expérience ratée nul. C'est du **lead gen futur**, pas de l'acquisition immédiate.
+
+### Trois leviers de remplissage waitlist sans casser la règle d'or
+
+**Levier 1 — Contenu social Kosovo-wide (organique, gratuit)**
+
+Le contenu phase 0 reste éditorial Kosovo, pas Ferizaj-only. Quelques posts spécifiques signalent les autres villes : *« Sallone në Prishtinë, Prizren, Pejë — ne ju shohim. Lansojmë pas Ferizaj. Regjistrohu te lista e pritjes. »* Cette story tournée 2-3 fois sur les 30 jours suffit à signaler que les owners hors Ferizaj sont vus.
+
+**Levier 2 — Outreach manuel ciblé (1h / semaine, gratuit)**
+
+Identifier 50-100 comptes Instagram de salons actifs à Prishtinë (`#sallon`, `#frizer`, géo-tag Prishtinë). Les suivre, engager organiquement (like, commentaire éditorial), puis 2-3 semaines plus tard DM personnalisé : *« Pershendetje. Po lansojmë Termini im — fillojmë nga Ferizaj në maj, Prishtinë në korrik. Po të them tash që të ruaj vendin. Linku: …»*
+
+Coût : ~1h / semaine. Conversion attendue 5-10 % en lead waitlist = 5-10 leads Prishtinë / mois sans pub.
+
+**Levier 3 — Pub B2B waitlist Prishtinë (~100 €/mois, dès M1)**
+
+Petit budget Meta Ads B2B-only, ciblé exclusivement salon owners hors Ferizaj :
+
+- Audience : 25-55, Kosovo hors Ferizaj, intérêts gestion petite entreprise + sallon / frizer / barber
+- Budget : 100 €/mois, scalable à 200 € si conversion forte
+- Créa : portrait owner Ferizaj pilote + texte *« Po lansojmë në Prishtinë në korrik. Ju jeni në listë? »* + CTA Typeform
+- Mesure : coût par lead waitlist owner (cible &lt; 5 € / lead)
+
+**Cette dépense ne casse pas la règle d'or** parce qu'elle ne promet aucune expérience produit immédiate — elle vend la *garantie d'être contacté en premier* dans la ville de l'owner, ce qui est tenu (la wave 2 contacte 100 % de la waitlist).
+
+### Cible de remplissage waitlist multi-villes à J60
+
+| Ville | Cible salons sur waitlist | Source principale |
+|---|---|---|
+| Ferizaj | (pas concerné — concierge direct) | — |
+| Prishtinë | 50-80 | Pub B2B + outreach manuel |
+| Prizren | 15-25 | Outreach manuel |
+| Pejë | 10-15 | Outreach manuel |
+| Autres | 10-20 cumulés | Organique |
+
+Si à J45 on doit activer le **test pivot Prishtinë**, on a déjà 30-50 leads tièdes à recontacter en priorité — bien plus efficace que de partir de zéro.
 
 ## Liste exécutable des fichiers à mettre à jour
 
