@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/screens/company_setup_screen.dart';
+import '../../features/auth/presentation/screens/company_mode_screen.dart';
+import '../../features/auth/presentation/providers/company_setup_draft_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/appointments/presentation/screens/appointments_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/landing_screen.dart';
@@ -17,8 +20,10 @@ import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/company/presentation/screens/capacity_settings_screen.dart';
 import '../../features/company/presentation/screens/my_company_reviews_screen.dart';
 import '../../features/company/presentation/screens/pending_approvals_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_inbox_screen.dart';
 import '../../features/employee_schedule/presentation/screens/schedule_settings_screen.dart';
 import '../../features/reviews/presentation/screens/submit_review_screen.dart';
+import '../widgets/app_top_bar.dart';
 import 'page_transitions.dart';
 import 'route_names.dart';
 
@@ -54,6 +59,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final isLandingRoute = currentPath == '/landing';
       final isCompanySetupRoute = currentPath == '/company-setup';
+      final isCompanyModeRoute = currentPath == '/company-mode';
 
       // Routes accessible without login: landing, auth routes, home, company detail.
       // Routes that require auth: /settings, /company/:id/book, /bookings.
@@ -66,9 +72,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isLoading) return null;
 
       // Authenticated company accounts without a Company record yet — force
-      // them through the business-info completion screen before anything else.
-      if (isLoggedIn && authState.needsCompanySetup && !isCompanySetupRoute) {
+      // them through the two-step setup flow before anything else.
+      if (isLoggedIn &&
+          authState.needsCompanySetup &&
+          !isCompanySetupRoute &&
+          !isCompanyModeRoute) {
         return '/company-setup';
+      }
+
+      // /company-mode requires a non-null draft from Step 1. If there is no
+      // draft (e.g. deep-link, page refresh on web) push back to Step 1.
+      if (isCompanyModeRoute) {
+        final draft = ref.read(companySetupDraftProvider);
+        if (draft == null) return '/company-setup';
       }
 
       // Authenticated users on landing/auth screens → home OR the original
@@ -77,7 +93,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       // the moment they log in during the booking flow.
       if (isLoggedIn &&
           !authState.needsCompanySetup &&
-          (isLandingRoute || isAuthRoute || isCompanySetupRoute)) {
+          (isLandingRoute ||
+              isAuthRoute ||
+              isCompanySetupRoute ||
+              isCompanyModeRoute)) {
         final returnTo = state.uri.queryParameters['returnTo'];
         if (returnTo != null && returnTo.isNotEmpty) {
           // Guard against loops: never honour a returnTo that points back
@@ -87,7 +106,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               returnTo.startsWith('/role-select') ||
               returnTo.startsWith('/landing') ||
               returnTo.startsWith('/forgot-password') ||
-              returnTo.startsWith('/company-setup');
+              returnTo.startsWith('/company-setup') ||
+              returnTo.startsWith('/company-mode');
           if (!loops) return returnTo;
         }
         return '/home';
@@ -148,6 +168,26 @@ final routerProvider = Provider<GoRouter>((ref) {
           key: state.pageKey,
           child: const CompanySetupScreen(),
         ),
+      ),
+      GoRoute(
+        path: '/company-mode',
+        name: RouteNames.companyMode,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const CompanyModeScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/verify-email',
+        name: RouteNames.verifyEmail,
+        pageBuilder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          return editorialSlidePage(
+            key: state.pageKey,
+            fromBottom: true,
+            child: EmailVerificationScreen(email: email),
+          );
+        },
       ),
       // ── /home — smart dispatch based on auth state ──────────────────
       // Authenticated users get the MainShell (bottom nav + IndexedStack).
@@ -224,6 +264,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => editorialSlidePage(
           key: state.pageKey,
           child: const PendingApprovalsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/notifications',
+        name: RouteNames.notificationsInbox,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const NotificationsInboxScreen(),
         ),
       ),
       GoRoute(
@@ -321,64 +369,50 @@ class _HomeDispatcher extends ConsumerWidget {
   }
 }
 
-/// Wraps [AppointmentsScreen] in a Scaffold with a back button when shown
-/// outside of the shell (i.e. reached from Settings as a pro).
+/// Wraps [AppointmentsScreen] dans un Scaffold avec `AppTopBar.standard`
+/// lorsqu'il est atteint depuis Settings (en dehors du shell).
 class _StandaloneAppointments extends StatelessWidget {
   const _StandaloneAppointments();
 
   @override
   Widget build(BuildContext context) {
-    return _BackOverlay(child: const AppointmentsScreen());
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppTopBar.standard(
+        title: 'Mes rendez-vous',
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go('/settings'),
+      ),
+      body: const AppointmentsScreen(),
+    );
   }
 }
 
-/// Wraps [ScheduleSettingsScreen] in a Scaffold with a back button. Same
-/// screen as the shell tab, but the `view` picks which cards are shown so
-/// "Mes horaires" and "Mes pauses" can be two distinct Settings entries.
+/// Wraps [ScheduleSettingsScreen] avec `AppTopBar.standard`. La vue [view]
+/// sélectionne les cards affichées — on passe [HeaderMode.none] pour que
+/// l'écran n'affiche pas sa propre barre (la barre est ici dans le Scaffold).
 class _StandaloneSchedule extends StatelessWidget {
   final ScheduleView view;
   const _StandaloneSchedule({required this.view});
 
   @override
   Widget build(BuildContext context) {
-    return _BackOverlay(child: ScheduleSettingsScreen(view: view));
-  }
-}
+    final title = switch (view) {
+      ScheduleView.hoursOnly => 'Mes horaires',
+      ScheduleView.breaksAndDaysOff => 'Mes pauses',
+      ScheduleView.all => 'Horaires',
+    };
 
-/// Shared wrapper — puts a floating ivory back button on top-left so any
-/// shell-aware screen can be reached from a plain GoRouter route.
-class _BackOverlay extends StatelessWidget {
-  final Widget child;
-  const _BackOverlay({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          Positioned.fill(child: child),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            left: 8,
-            child: Material(
-              color: Colors.transparent,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 18,
-                ),
-                onPressed: () => context.canPop()
-                    ? context.pop()
-                    : context.go('/settings'),
-                style: IconButton.styleFrom(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
-                ),
-              ),
-            ),
-          ),
-        ],
+      appBar: AppTopBar.standard(
+        title: title,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go('/settings'),
+      ),
+      body: ScheduleSettingsScreen(
+        view: view,
+        headerMode: HeaderMode.none,
       ),
     );
   }

@@ -24,7 +24,7 @@ class SocialLoginButtons extends ConsumerWidget {
     return Column(
       children: [
         _SocialButton(
-          iconAsset: 'assets/icons/google.svg',
+          iconAsset: 'assets/icons/google.png',
           label: context.l10n.continueWithGoogle,
           onPressed: isLoading
               ? null
@@ -33,7 +33,7 @@ class SocialLoginButtons extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         _SocialButton(
-          iconAsset: 'assets/icons/facebook.svg',
+          iconAsset: 'assets/icons/facebook.png',
           label: context.l10n.continueWithFacebook,
           onPressed: isLoading
               ? null
@@ -90,14 +90,24 @@ class _SocialButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(
-              iconAsset,
-              width: 20,
-              height: 20,
-              colorFilter: iconColor != null
-                  ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
-                  : null,
-            ),
+            // PNG assets (google.png, facebook.png) render as full-color Image.
+            // SVG assets (apple.svg) stay on SvgPicture so iconColor can tint
+            // the monochrome Apple glyph to match the button foreground.
+            iconAsset.endsWith('.svg')
+                ? SvgPicture.asset(
+                    iconAsset,
+                    width: 20,
+                    height: 20,
+                    colorFilter: iconColor != null
+                        ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
+                        : null,
+                  )
+                : Image.asset(
+                    iconAsset,
+                    width: 20,
+                    height: 20,
+                    filterQuality: FilterQuality.medium,
+                  ),
             const SizedBox(width: AppSpacing.sm + 2),
             Text(
               label,

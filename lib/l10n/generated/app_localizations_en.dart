@@ -1459,11 +1459,84 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get companySetupHeadline => 'Finish setting up your salon';
+  String get companySetupHeadline => 'Your salon details';
 
   @override
   String get companySetupSubtitle =>
       'A few more details to activate your owner dashboard.';
+
+  @override
+  String get companyModeHeadline => 'Booking mode';
+
+  @override
+  String get companyModeSubtitle => 'How clients book at your salon.';
+
+  @override
+  String companySetupStepIndicator(int current, int total) {
+    return 'Step $current / $total';
+  }
+
+  @override
+  String get companySetupNextButton => 'Next';
+
+  @override
+  String get companySetupSubmitButton => 'Confirm and create my salon';
+
+  @override
+  String get companySetupModeTitle => 'How does your salon work?';
+
+  @override
+  String get companySetupModeIndividualTitle => 'Individual mode';
+
+  @override
+  String get companySetupModeIndividualExample =>
+      'E.g. Salon with 2 stylists, each with their own schedule';
+
+  @override
+  String get companySetupModeIndividualBullet1 =>
+      'Each professional has their own schedule';
+
+  @override
+  String get companySetupModeIndividualBullet2 =>
+      'Clients choose their preferred stylist';
+
+  @override
+  String get companySetupModeIndividualBullet3 =>
+      'Invite your team at any time';
+
+  @override
+  String get companySetupModeIndividualBullet4 =>
+      'Recommended for pros who manage their own revenue';
+
+  @override
+  String get companySetupModeCapacityTitle => 'Capacity mode';
+
+  @override
+  String get companySetupModeCapacityExample =>
+      'E.g. Large salon with 5 parallel seats';
+
+  @override
+  String get companySetupModeCapacityBullet1 =>
+      'Clients pick a slot, not a specific pro';
+
+  @override
+  String get companySetupModeCapacityBullet2 =>
+      'The salon manages revenue collectively';
+
+  @override
+  String get companySetupModeCapacityBullet3 =>
+      'Add as many stations as needed';
+
+  @override
+  String get companySetupModeCapacityBullet4 =>
+      'Recommended for institutes with pooled revenue';
+
+  @override
+  String get companySetupModeBadgePopular => 'Popular';
+
+  @override
+  String get companySetupModeCaption =>
+      'You can change this setting later from My Salon → Settings.';
 
   @override
   String get salonUnisex => 'Salon · Men & Women';
@@ -2017,4 +2090,289 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comingSoonMessage => 'This feature is coming soon.';
+
+  @override
+  String get verifyEmailTitle => 'Confirm your email';
+
+  @override
+  String verifyEmailSubtitle(String email) {
+    return 'A 6-character code was sent to $email';
+  }
+
+  @override
+  String get verifyEmailOverline => 'VERIFICATION';
+
+  @override
+  String get verifyEmailConfirm => 'Confirm';
+
+  @override
+  String get verifyEmailResend => 'Resend code';
+
+  @override
+  String verifyEmailResendCooldown(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get verifyEmailSuccess => 'Email confirmed';
+
+  @override
+  String get verifyEmailSuccessTitle => 'Email confirmed';
+
+  @override
+  String get verifyEmailSuccessMessage =>
+      'Your address is now verified. You can book with peace of mind.';
+
+  @override
+  String get verifyEmailSuccessCta => 'Back to home';
+
+  @override
+  String get verifyEmailCodeRequired => 'Code is required';
+
+  @override
+  String get verifyEmailCodeLength => 'Code must be 6 characters';
+
+  @override
+  String get verifyEmailErrorInvalid => 'Invalid or expired code';
+
+  @override
+  String get verifyEmailErrorNotFound => 'No account linked to this email';
+
+  @override
+  String get unverifiedBannerMessage =>
+      'Confirm your email to secure your account';
+
+  @override
+  String get unverifiedBannerCta => 'Confirm';
+
+  @override
+  String get verifyEmailToBookTitle => 'Verify your email to book';
+
+  @override
+  String get verifyEmailToBookMessage =>
+      'We can only confirm an appointment once your email is verified. It only takes 30 seconds.';
+
+  @override
+  String get verifyEmailToBookCta => 'Verify my email';
+
+  @override
+  String get verifyEmailToBookDismiss => 'Later';
+
+  @override
+  String get autoApprovalEnabled => 'Auto-approval enabled';
+
+  @override
+  String get autoApprovalEmptyMessage =>
+      'All new appointments are confirmed directly. This list will stay empty while auto-approval is active.';
+
+  @override
+  String get autoApprovalEditCta => 'Change this setting';
+
+  @override
+  String get autoApprovalToggleLabel => 'Auto-approval';
+
+  @override
+  String get autoApprovalToggleHelper =>
+      'New appointments will be confirmed directly, without any validation step on your end.';
+
+  @override
+  String get autoApprovalCapacityOnly => 'Capacity mode only';
+
+  @override
+  String get autoApprovalBadgeAuto => 'auto';
+
+  @override
+  String get autoApprovalBadgeManual => 'manual';
+
+  @override
+  String get autoApprovalBadgeTitle => 'Review';
+
+  @override
+  String get autoApprovalConfirmEnableTitle => 'Enable auto-approval?';
+
+  @override
+  String get autoApprovalConfirmEnableMessage =>
+      'All new appointments will be confirmed directly, without any action from you.';
+
+  @override
+  String get autoApprovalConfirmDisableTitle => 'Disable auto-approval?';
+
+  @override
+  String get autoApprovalConfirmDisableMessage =>
+      'New appointments will go back through the \"To confirm\" queue.';
+
+  @override
+  String get autoApprovalConfirmAction => 'Confirm';
+
+  @override
+  String get deleteAccountModalTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountModalDescription =>
+      'This will permanently delete your account, your appointment history and your personal information. Your saved salons will be removed. This action cannot be undone.';
+
+  @override
+  String get deleteAccountModalCheckbox =>
+      'I understand that deletion is permanent';
+
+  @override
+  String get deleteAccountModalContinue => 'Continue';
+
+  @override
+  String deleteAccountConfirmPrompt(String keyword) {
+    return 'Type $keyword to confirm';
+  }
+
+  @override
+  String get deleteAccountConfirmAction => 'Permanently delete my account';
+
+  @override
+  String get deleteAccountTypeKeyword => 'DELETE';
+
+  @override
+  String get deleteAccountSuccess => 'Your account has been deleted.';
+
+  @override
+  String get deleteAccountErrorOwnerSalon =>
+      'You must transfer or delete your salon before you can delete your account.';
+
+  @override
+  String get deleteAccountErrorGeneric =>
+      'Something went wrong. Please try again later.';
+
+  @override
+  String get planningEmptyDayTitle => 'No appointments today.';
+
+  @override
+  String get planningEmptyDaySubtitle => 'Time for a Turkish coffee?';
+
+  @override
+  String tomorrowBookingBannerMessage(String time, String salon) {
+    return 'Tomorrow at $time at $salon →';
+  }
+
+  @override
+  String get shareAppTitle => 'Share Termini im';
+
+  @override
+  String get shareAppMessage =>
+      'Enjoying it? A friend who discovers it means one more salon in Kosovo.';
+
+  @override
+  String get shareAppCta => 'Share';
+
+  @override
+  String get shareAppLater => 'Later';
+
+  @override
+  String get notifCategoryAppointments => 'Appointments';
+
+  @override
+  String get notifCategoryCommunity => 'Community';
+
+  @override
+  String get notifCategoryMarketing => 'Marketing';
+
+  @override
+  String get notifTypeReminderEveningLabel => 'Evening reminder';
+
+  @override
+  String get notifTypeReminderEveningDesc =>
+      'Get a reminder the evening before your appointment.';
+
+  @override
+  String get notifTypeReminder2hLabel => '2-hour reminder';
+
+  @override
+  String get notifTypeReminder2hDesc =>
+      'A notification 2 hours before your appointment time.';
+
+  @override
+  String get notifTypeReviewRequestLabel => 'Review request';
+
+  @override
+  String get notifTypeReviewRequestDesc =>
+      'The day after your visit, we ask for your feedback.';
+
+  @override
+  String get notifTypeNewReviewLabel => 'New review';
+
+  @override
+  String get notifTypeNewReviewDesc =>
+      'Get notified when a client posts a review on your salon.';
+
+  @override
+  String get notifTypeCapacityFullLabel => 'Full capacity';
+
+  @override
+  String get notifTypeCapacityFullDesc =>
+      'Notification when all slots for a day are taken.';
+
+  @override
+  String get notifTypeWeeklyDigestLabel => 'Weekly digest';
+
+  @override
+  String get notifTypeWeeklyDigestDesc =>
+      'A summary of your activity each week.';
+
+  @override
+  String get notifTypeMonthlyReportLabel => 'Monthly report';
+
+  @override
+  String get notifTypeMonthlyReportDesc =>
+      'Statistics and trends for the past month.';
+
+  @override
+  String get notifTypeFavoriteNewPhotosLabel => 'New photos (favourites)';
+
+  @override
+  String get notifTypeFavoriteNewPhotosDesc =>
+      'When one of your favourite salons adds photos.';
+
+  @override
+  String get notifTypeFavoriteNewSlotsLabel => 'New slots (favourites)';
+
+  @override
+  String get notifTypeFavoriteNewSlotsDesc =>
+      'When a favourite salon opens new booking slots.';
+
+  @override
+  String get notifTypeMarketingLabel => 'Offers & news';
+
+  @override
+  String get notifTypeMarketingDesc =>
+      'Campaigns, promotions and Termini im updates.';
+
+  @override
+  String get notificationsInboxTitle => 'Inbox';
+
+  @override
+  String notificationsInboxUnreadCount(int count) {
+    return '$count unread';
+  }
+
+  @override
+  String get notificationsInboxMarkAllRead => 'Mark all as read';
+
+  @override
+  String get notificationsInboxEmptyTitle => 'Empty inbox';
+
+  @override
+  String get notificationsInboxEmptySubtitle =>
+      'Your notifications will appear here as they arrive.';
+
+  @override
+  String get notificationsInboxToday => 'Today';
+
+  @override
+  String get notificationsInboxYesterday => 'Yesterday';
+
+  @override
+  String get notificationsChannelPush => 'PUSH';
+
+  @override
+  String get notificationsChannelEmail => 'EMAIL';
+
+  @override
+  String get notificationsChannelInApp => 'IN-APP';
 }

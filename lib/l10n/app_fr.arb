@@ -533,8 +533,35 @@
       "url": { "type": "String" }
     }
   },
-  "companySetupHeadline": "Termine la configuration de ton salon",
+  "companySetupHeadline": "Infos de ton salon",
   "companySetupSubtitle": "Encore quelques infos pour activer ton espace propriétaire.",
+  "companyModeHeadline": "Mode de réservation",
+  "companyModeSubtitle": "Comment les clients réservent dans ton salon.",
+  "companySetupStepIndicator": "Étape {current} / {total}",
+  "@companySetupStepIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "companySetupNextButton": "Suivant",
+  "companySetupSubmitButton": "Valider et créer mon salon",
+
+  "companySetupModeTitle": "Comment fonctionne ton salon ?",
+  "companySetupModeIndividualTitle": "Mode individuel",
+  "companySetupModeIndividualExample": "Ex : Salon 2 coiffeuses, chacune son agenda",
+  "companySetupModeIndividualBullet1": "Chaque pro a son propre planning",
+  "companySetupModeIndividualBullet2": "Les clients choisissent leur pro préféré·e",
+  "companySetupModeIndividualBullet3": "Invite ton équipe à tout moment",
+  "companySetupModeIndividualBullet4": "Recommandé pour les pros qui gèrent leurs propres revenus",
+  "companySetupModeCapacityTitle": "Mode capacité",
+  "companySetupModeCapacityExample": "Ex : Grand salon, 5 places en parallèle",
+  "companySetupModeCapacityBullet1": "Les clients choisissent un créneau, pas un pro",
+  "companySetupModeCapacityBullet2": "Le salon gère les revenus collectivement",
+  "companySetupModeCapacityBullet3": "Ajoute autant de postes que nécessaire",
+  "companySetupModeCapacityBullet4": "Recommandé pour les instituts à revenus mutualisés",
+  "companySetupModeBadgePopular": "Populaire",
+  "companySetupModeCaption": "Tu peux changer ce paramètre plus tard depuis Mon Salon → Paramètres.",
   "salonUnisex": "Salon · Hommes & Femmes",
   "servicesOffered": "proposés",
   "approvalsTitle": "APPROBATIONS",
@@ -806,5 +833,126 @@
   "myBreaksEntry": "Mes pauses",
   "myBreaksEntrySubtitle": "Pauses récurrentes et congés",
   "comingSoon": "Bientôt",
-  "comingSoonMessage": "Cette fonctionnalité arrive bientôt."
+  "comingSoonMessage": "Cette fonctionnalité arrive bientôt.",
+
+  "verifyEmailTitle": "Confirme ton email",
+  "verifyEmailSubtitle": "Un code à 6 caractères a été envoyé à {email}",
+  "@verifyEmailSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyEmailOverline": "VÉRIFICATION",
+  "verifyEmailConfirm": "Confirmer",
+  "verifyEmailResend": "Renvoyer le code",
+  "verifyEmailResendCooldown": "Renvoyer dans {seconds}s",
+  "@verifyEmailResendCooldown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "verifyEmailSuccess": "Email confirmé",
+  "verifyEmailSuccessTitle": "Email confirmé",
+  "verifyEmailSuccessMessage": "Ton adresse est maintenant vérifiée. Tu peux réserver en toute sérénité.",
+  "verifyEmailSuccessCta": "Retour à l'accueil",
+  "verifyEmailCodeRequired": "Le code est requis",
+  "verifyEmailCodeLength": "Le code doit faire 6 caractères",
+  "verifyEmailErrorInvalid": "Code invalide ou expiré",
+  "verifyEmailErrorNotFound": "Aucun compte associé à cet email",
+  "unverifiedBannerMessage": "Confirme ton email pour sécuriser ton compte",
+  "unverifiedBannerCta": "Confirmer",
+  "verifyEmailToBookTitle": "Confirme ton email pour réserver",
+  "verifyEmailToBookMessage": "Ton RDV ne peut être confirmé qu'avec une adresse email vérifiée. Ça prend 30 secondes.",
+  "verifyEmailToBookCta": "Confirmer mon email",
+  "verifyEmailToBookDismiss": "Plus tard",
+
+  "autoApprovalEnabled": "Validation automatique activée",
+  "autoApprovalEmptyMessage": "Tous les nouveaux rendez-vous sont confirmés directement. Cette liste reste vide tant que la validation automatique est active.",
+  "autoApprovalEditCta": "Modifier ce paramètre",
+  "autoApprovalToggleLabel": "Validation automatique",
+  "autoApprovalToggleHelper": "Les nouveaux RDV seront confirmés directement, sans étape de validation de ta part.",
+  "autoApprovalCapacityOnly": "Disponible uniquement en mode capacité",
+  "autoApprovalBadgeAuto": "auto",
+  "autoApprovalBadgeManual": "manuelle",
+  "autoApprovalBadgeTitle": "Validation",
+  "autoApprovalConfirmEnableTitle": "Activer la validation automatique ?",
+  "autoApprovalConfirmEnableMessage": "Tous les nouveaux rendez-vous seront confirmés directement, sans ton intervention.",
+  "autoApprovalConfirmDisableTitle": "Désactiver la validation automatique ?",
+  "autoApprovalConfirmDisableMessage": "Les nouveaux rendez-vous passeront à nouveau par l'étape À confirmer.",
+  "autoApprovalConfirmAction": "Confirmer",
+
+  "deleteAccountModalTitle": "Supprimer ton compte ?",
+  "deleteAccountModalDescription": "Cette action supprimera définitivement ton compte, ton historique de rendez-vous et tes informations personnelles. Les salons que tu as favorisés seront retirés. Cette opération est irréversible.",
+  "deleteAccountModalCheckbox": "J'ai compris que la suppression est définitive",
+  "deleteAccountModalContinue": "Continuer",
+  "deleteAccountConfirmPrompt": "Tape {keyword} pour confirmer",
+  "@deleteAccountConfirmPrompt": {
+    "placeholders": {
+      "keyword": { "type": "String" }
+    }
+  },
+  "deleteAccountConfirmAction": "Supprimer définitivement mon compte",
+  "deleteAccountTypeKeyword": "SUPPRIMER",
+  "deleteAccountSuccess": "Ton compte a été supprimé.",
+  "deleteAccountErrorOwnerSalon": "Tu dois transférer ou supprimer ton salon avant de pouvoir supprimer ton compte.",
+  "deleteAccountErrorGeneric": "Une erreur est survenue. Réessaie plus tard.",
+
+  "planningEmptyDayTitle": "Pas de rendez-vous aujourd'hui.",
+  "planningEmptyDaySubtitle": "Le bon moment pour un café.",
+
+  "tomorrowBookingBannerMessage": "Demain à {time} chez {salon} →",
+  "@tomorrowBookingBannerMessage": {
+    "placeholders": {
+      "time":  { "type": "String" },
+      "salon": { "type": "String" }
+    }
+  },
+
+  "shareAppTitle": "Partage Termini im",
+  "shareAppMessage": "Aime ça ? Un·e ami·e qui le découvre, c'est un salon de plus au Kosovo.",
+  "shareAppCta": "Partager",
+  "shareAppLater": "Plus tard",
+
+  "notifCategoryAppointments": "Rendez-vous",
+  "notifCategoryCommunity": "Communauté",
+  "notifCategoryMarketing": "Marketing",
+
+  "notifTypeReminderEveningLabel": "Rappel la veille",
+  "notifTypeReminderEveningDesc": "Reçois un rappel le soir avant ton rendez-vous.",
+  "notifTypeReminder2hLabel": "Rappel 2h avant",
+  "notifTypeReminder2hDesc": "Une notification 2 heures avant l'heure du rendez-vous.",
+  "notifTypeReviewRequestLabel": "Demande d'avis",
+  "notifTypeReviewRequestDesc": "Le lendemain de ta visite, on te demande ton avis.",
+
+  "notifTypeNewReviewLabel": "Nouvel avis",
+  "notifTypeNewReviewDesc": "Sois informé(e) quand un client publie un avis sur ton salon.",
+  "notifTypeCapacityFullLabel": "Capacité atteinte",
+  "notifTypeCapacityFullDesc": "Notification quand tous les créneaux d'une journée sont pris.",
+  "notifTypeWeeklyDigestLabel": "Récap hebdo",
+  "notifTypeWeeklyDigestDesc": "Un résumé de ton activité chaque semaine.",
+  "notifTypeMonthlyReportLabel": "Rapport mensuel",
+  "notifTypeMonthlyReportDesc": "Statistiques et tendances du mois écoulé.",
+  "notifTypeFavoriteNewPhotosLabel": "Nouvelles photos (favoris)",
+  "notifTypeFavoriteNewPhotosDesc": "Quand un de tes salons favoris ajoute des photos.",
+  "notifTypeFavoriteNewSlotsLabel": "Nouveaux créneaux (favoris)",
+  "notifTypeFavoriteNewSlotsDesc": "Quand un salon favori ouvre de nouveaux créneaux.",
+
+  "notifTypeMarketingLabel": "Offres & actualités",
+  "notifTypeMarketingDesc": "Campagnes, promotions et nouveautés Termini im.",
+
+  "notificationsInboxTitle": "Reçues",
+  "notificationsInboxUnreadCount": "{count} non lues",
+  "@notificationsInboxUnreadCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationsInboxMarkAllRead": "Tout marquer comme lu",
+  "notificationsInboxEmptyTitle": "Boîte vide",
+  "notificationsInboxEmptySubtitle": "Tes notifications arriveront ici au fur et à mesure.",
+  "notificationsInboxToday": "Aujourd'hui",
+  "notificationsInboxYesterday": "Hier",
+  "notificationsChannelPush": "PUSH",
+  "notificationsChannelEmail": "EMAIL",
+  "notificationsChannelInApp": "IN-APP"
 }

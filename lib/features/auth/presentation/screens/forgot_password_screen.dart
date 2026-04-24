@@ -10,6 +10,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../providers/auth_provider.dart';
 
 /// Two-step forgot-password flow:
@@ -108,6 +109,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
+      appBar: AppTopBar.minimal(
+        onBack: () => context.canPop() ? context.pop() : context.go('/login'),
+      ),
       body: Stack(
         children: [
           _TopGradientDecoration(),
@@ -121,14 +126,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.lg),
-
-                  // Back button
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: _BackButton(),
-                  ),
-
-                  const SizedBox(height: AppSpacing.xl),
 
                   // Header illustration + title
                   _Header(emailSent: _emailSent),
@@ -207,39 +204,6 @@ class _TopGradientDecoration extends StatelessWidget {
               AppColors.primary.withValues(alpha: 0.0),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Back button
-// ---------------------------------------------------------------------------
-
-class _BackButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.canPop() ? context.pop() : context.goNamed('login'),
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.cardShadow,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 16,
-          color: AppColors.textPrimary,
         ),
       ),
     );
@@ -445,7 +409,7 @@ class _ResetCard extends StatelessWidget {
             AppTextField(
               controller: tokenController,
               label: context.l10n.resetToken,
-              hint: 'xxxxxxxx',
+              hint: 'A3B7KP',
               prefixIcon: Icons.vpn_key_outlined,
               keyboardType: TextInputType.text,
               validator: (v) => Validators.required(

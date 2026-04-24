@@ -1,6 +1,6 @@
 import '../../../../core/utils/extensions.dart';
 
-/// Represents a single time slot for a given day on the home card.
+/// A single day chip on the home card: "date + is there room?".
 class DaySlot {
   final String label; // e.g. "Mer.15"
   final DateTime date;
@@ -21,27 +21,15 @@ class DaySlot {
     );
   }
 
-  factory DaySlot.fromJson(Map<String, dynamic> json) {
-    return DaySlot(
-      label: json['label'] as String? ?? '',
-      date: DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now(),
-      available: json['available'] as bool? ?? true,
-    );
-  }
-
   /// Build from an availability item returned by the API:
-  /// { "date": "2026-04-17", "morning": true, "afternoon": false }
-  factory DaySlot.fromAvailabilityItem(
-    Map<String, dynamic> json, {
-    required bool useMorning,
-  }) {
-    final date = DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now();
-    final available =
-        (useMorning ? json['morning'] : json['afternoon']) as bool? ?? false;
+  /// { "date": "2026-04-17", "available": true }
+  factory DaySlot.fromAvailabilityItem(Map<String, dynamic> json) {
+    final date =
+        DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now();
     return DaySlot(
       label: date.dayAbbreviation,
       date: date,
-      available: available,
+      available: json['available'] as bool? ?? false,
     );
   }
 }
@@ -58,8 +46,10 @@ class CompanyCardModel {
   /// 1 = €, 2 = €€, 3 = €€€, 4 = €€€€
   final int priceLevel;
 
-  final List<DaySlot> morningSlots;
-  final List<DaySlot> afternoonSlots;
+  /// Up to 4 upcoming day chips (was split into morning + afternoon before —
+  /// the backend now ships a single `available` flag per day and the home
+  /// card displays 4 chips side by side).
+  final List<DaySlot> slots;
   final String bookingMode;
 
   /// Whether the authenticated user has marked this company as a favorite.
@@ -74,8 +64,7 @@ class CompanyCardModel {
     required this.rating,
     required this.reviewCount,
     required this.priceLevel,
-    required this.morningSlots,
-    required this.afternoonSlots,
+    required this.slots,
     this.bookingMode = 'employee_based',
     this.isFavorite = false,
   });
@@ -88,8 +77,7 @@ class CompanyCardModel {
     double? rating,
     int? reviewCount,
     int? priceLevel,
-    List<DaySlot>? morningSlots,
-    List<DaySlot>? afternoonSlots,
+    List<DaySlot>? slots,
     String? bookingMode,
     bool? isFavorite,
   }) {
@@ -101,8 +89,7 @@ class CompanyCardModel {
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       priceLevel: priceLevel ?? this.priceLevel,
-      morningSlots: morningSlots ?? this.morningSlots,
-      afternoonSlots: afternoonSlots ?? this.afternoonSlots,
+      slots: slots ?? this.slots,
       bookingMode: bookingMode ?? this.bookingMode,
       isFavorite: isFavorite ?? this.isFavorite,
     );
@@ -112,9 +99,6 @@ class CompanyCardModel {
   String get priceLevelDisplay => priceLevel.priceLevel;
 
   factory CompanyCardModel.fromJson(Map<String, dynamic> json) {
-    // The API returns a single `availability` array:
-    // [{ "date": "2026-04-17", "morning": true, "afternoon": false }, ...]
-    // We fan it out into two DaySlot lists — one per period.
     final availability =
         (json['availability'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
             [];
@@ -127,12 +111,7 @@ class CompanyCardModel {
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: json['reviewCount'] as int? ?? 0,
       priceLevel: json['priceLevel'] as int? ?? 2,
-      morningSlots: availability
-          .map((item) => DaySlot.fromAvailabilityItem(item, useMorning: true))
-          .toList(),
-      afternoonSlots: availability
-          .map((item) => DaySlot.fromAvailabilityItem(item, useMorning: false))
-          .toList(),
+      slots: availability.map(DaySlot.fromAvailabilityItem).toList(),
       bookingMode: json['bookingMode'] as String? ??
           json['booking_mode'] as String? ??
           'employee_based',

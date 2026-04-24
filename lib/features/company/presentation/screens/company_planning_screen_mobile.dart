@@ -406,6 +406,11 @@ class _CompanyPlanningScreenMobileState
 
     final services = company.categories.expand((c) => c.services).toList();
 
+    // C15 — Empty day: salon is open but no appointments visible.
+    if (visibleAppointments.isEmpty) {
+      return const PlanningEmptyDayView();
+    }
+
     final now = DateTime.now();
     final isToday = planningIsSameDay(selectedDate, now);
     final nowMinutes = isToday ? now.hour * 60 + now.minute : null;
@@ -3390,6 +3395,96 @@ class _PlanningWalkInDialogState extends ConsumerState<PlanningWalkInDialog> {
       ),
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// C15 — Empty day view (humour, no appointments)
+// ---------------------------------------------------------------------------
+
+/// Shown in day-view when the salon is open but has zero appointments.
+/// Tone: light, local, unexpected. No commercial CTA.
+class PlanningEmptyDayView extends StatelessWidget {
+  const PlanningEmptyDayView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Decorative dashed circle in bordeaux
+            CustomPaint(
+              size: const Size(72, 72),
+              painter: _DashedCirclePainter(color: AppColors.primary),
+              child: const SizedBox(width: 72, height: 72),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              context.l10n.planningEmptyDayTitle,
+              style: GoogleFonts.fraunces(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textPrimary,
+                height: 1.2,
+                letterSpacing: -0.3,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              context.l10n.planningEmptyDaySubtitle,
+              style: GoogleFonts.instrumentSans(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedCirclePainter extends CustomPainter {
+  final Color color;
+  const _DashedCirclePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color.withValues(alpha: 0.45)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    const dashCount = 20;
+    const gapRatio = 0.4;
+    final radius = size.width / 2 - 1;
+    final center = Offset(size.width / 2, size.height / 2);
+    const totalAngle = 2 * 3.141592653589793;
+    final dashAngle = totalAngle / dashCount * (1 - gapRatio);
+    final gapAngle = totalAngle / dashCount * gapRatio;
+
+    double angle = -3.141592653589793 / 2;
+    for (int i = 0; i < dashCount; i++) {
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        angle,
+        dashAngle,
+        false,
+        paint,
+      );
+      angle += dashAngle + gapAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedCirclePainter old) => old.color != color;
 }
 
 // ---------------------------------------------------------------------------

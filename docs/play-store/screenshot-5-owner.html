@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8" />
+<title>Termini im — Screenshot 5 — Owner dashboard (1080×1920)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:ital,wght@0,300..700;1,300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ivory:    #f7f2ea;
+    --surface:  #fcf7ee;
+    --bone:     #e8dcc8;
+    --ink:      #171311;
+    --muted:    #716059;
+    --line:     #d9cab3;
+    --burgundy: #7a2232;
+    --gold:     #c89b47;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: "Instrument Sans", sans-serif;
+  }
+
+  .export-hint {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  @media print { .export-hint { display: none; } }
+
+  .canvas {
+    width: 1080px;
+    height: 1920px;
+    background: var(--ivory);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .canvas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    z-index: 10;
+  }
+  .canvas::after {
+    content: "";
+    position: absolute;
+    top: -15%;
+    right: -20%;
+    width: 70%;
+    height: 55%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,34,50,0.08), transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    background: var(--ivory);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .status-bar .icons { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+
+  /* Editorial overlay */
+  .overlay-top {
+    padding: 36px 64px 30px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+    border-bottom: 1px solid var(--bone);
+  }
+  .kicker-line { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .kicker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+  .kicker-text { font-size: 11px; letter-spacing: 0.30em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .headline-editorial {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 60px;
+    line-height: 1.04;
+    color: var(--ink);
+    font-weight: 400;
+    letter-spacing: -1.5px;
+    margin-bottom: 12px;
+    font-variation-settings: "SOFT" 55;
+  }
+  .headline-editorial em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+    letter-spacing: -0.8px;
+  }
+  .subline { font-size: 22px; color: var(--muted); font-weight: 400; }
+
+  /* App content */
+  .app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* App bar */
+  .app-bar {
+    height: 72px;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--bone);
+    flex-shrink: 0;
+    background: var(--ivory);
+  }
+  .app-bar-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.4px;
+    font-variation-settings: "SOFT" 40;
+  }
+  .filter-btn {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .filter-btn .cal-icon { color: var(--burgundy); }
+
+  /* KPI tiles */
+  .kpi-row {
+    display: flex;
+    gap: 16px;
+    padding: 20px 48px;
+    flex-shrink: 0;
+  }
+  .kpi-tile {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--bone);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .kpi-value {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    line-height: 1;
+    font-variation-settings: "SOFT" 30;
+  }
+  .kpi-label { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.01em; margin-top: 2px; }
+  .kpi-tile.highlight { background: rgba(122,34,50,0.06); border-color: rgba(122,34,50,0.15); }
+  .kpi-tile.highlight .kpi-value { color: var(--burgundy); }
+
+  /* Section label */
+  .section-label {
+    padding: 0 48px 12px;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  /* Appointments list */
+  .appt-list {
+    padding: 0 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .appt-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 4px;
+  }
+
+  /* Time column */
+  .appt-time {
+    width: 88px;
+    padding-top: 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: -0.2px;
+    flex-shrink: 0;
+  }
+  .appt-time.now { color: var(--burgundy); }
+
+  /* Timeline line */
+  .appt-timeline {
+    width: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    padding-top: 22px;
+    gap: 0;
+  }
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--line);
+    flex-shrink: 0;
+  }
+  .timeline-dot.active { background: var(--burgundy); }
+  .timeline-dot.done { background: var(--bone); border: 2px solid var(--line); }
+  .timeline-line {
+    width: 1.5px;
+    flex: 1;
+    min-height: 24px;
+    background: var(--line);
+    margin: 4px 0;
+  }
+
+  /* Appointment card */
+  .appt-card {
+    flex: 1;
+    margin-left: 14px;
+    margin-bottom: 12px;
+    background: var(--surface);
+    border: 1px solid var(--bone);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .appt-card.active-now {
+    background: rgba(122,34,50,0.05);
+    border-color: rgba(122,34,50,0.22);
+  }
+  .appt-card.walk-in {
+    background: rgba(200,155,71,0.06);
+    border-color: rgba(200,155,71,0.25);
+    border-style: dashed;
+  }
+
+  /* Client avatar */
+  .client-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ivory);
+    flex-shrink: 0;
+  }
+  .av-e { background: linear-gradient(135deg, #2a7a45, #1a5530); }
+  .av-a { background: linear-gradient(135deg, #511522, #7a2232); }
+  .av-s { background: linear-gradient(135deg, #a07a2c, #c89b47); color: var(--ink); }
+  .av-r { background: linear-gradient(135deg, #2a3d7a, #4a5fa0); }
+  .av-k { background: linear-gradient(135deg, #332c29, #716059); }
+
+  .appt-info { flex: 1; min-width: 0; }
+  .appt-client {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .appt-client.active-now { color: var(--burgundy); }
+  .appt-details { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .appt-sep { color: var(--line); }
+
+  .appt-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .staff-badge {
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 6px;
+    background: var(--bone);
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  .status-pill {
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.01em;
+  }
+  .pill-now { background: rgba(122,34,50,0.12); color: var(--burgundy); }
+  .pill-done { background: var(--bone); color: var(--muted); }
+  .pill-walkin { background: rgba(200,155,71,0.15); color: #7a5a20; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    height: 80px;
+    background: var(--ivory);
+    border-top: 1px solid var(--bone);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .nav-icon { color: var(--muted); }
+  .nav-label { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.01em; }
+  .nav-item.active .nav-icon { color: var(--burgundy); }
+  .nav-item.active .nav-label { color: var(--burgundy); font-weight: 600; }
+  /* Active indicator dot */
+  .nav-item.active .nav-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--burgundy);
+    position: absolute;
+    bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="export-hint" style="display:flex;gap:10px;align-items:center;background:rgba(0,0,0,.78);color:#fff;padding:9px 14px;border-radius:10px;font-family:system-ui,sans-serif;font-size:13px;">
+  <span>Screenshot 5 — Owner · 1080×1920 →</span>
+  <button onclick="downloadPng('screenshot-5-owner')" style="background:#7a2232;color:#fff;border:0;padding:8px 14px;border-radius:6px;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px;">Télécharger PNG</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+<script>
+  function downloadPng(filename) {
+    const node = document.querySelector('.canvas');
+    htmlToImage.toPng(node, { width: 1080, height: 1920, pixelRatio: 1, cacheBust: true })
+      .then(d => { const a = document.createElement('a'); a.download = filename + '.png'; a.href = d; a.click(); })
+      .catch(e => alert('Erreur export : ' + e));
+  }
+</script>
+
+<div class="canvas">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+        <rect x="0" y="8" width="3" height="4" rx="0.7" fill="currentColor"/>
+        <rect x="4.5" y="5.5" width="3" height="6.5" rx="0.7" fill="currentColor"/>
+        <rect x="9" y="3" width="3" height="9" rx="0.7" fill="currentColor"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.7" fill="currentColor" opacity="0.35"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+        <path d="M8 9.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+        <path d="M8 6.5C9.9 6.5 11.6 7.3 12.8 8.6l1.4-1.4A8.5 8.5 0 008 5a8.5 8.5 0 00-6.2 2.2L3.2 8.6C4.4 7.3 6.1 6.5 8 6.5z"/>
+        <path d="M8 3.5c2.8 0 5.4 1.1 7.3 3l1.4-1.4A11.9 11.9 0 008 2 11.9 11.9 0 00-.7 5.1L.7 6.5C2.6 4.6 5.2 3.5 8 3.5z" opacity="0.45"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" stroke-opacity="0.35"/>
+        <rect x="2" y="2" width="16" height="8" rx="1.5" fill="currentColor"/>
+        <path d="M22.5 4v4a2 2 0 000-4z" fill="currentColor" fill-opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Editorial overlay -->
+  <div class="overlay-top">
+    <div class="kicker-line">
+      <div class="kicker-dot"></div>
+      <span class="kicker-text">Për sallonet</span>
+    </div>
+    <h1 class="headline-editorial">
+      Për sallonet —<br><em>falas gjithmonë.</em>
+    </h1>
+    <p class="subline">Pa komision. Pa abonim.</p>
+  </div>
+
+  <!-- App content -->
+  <div class="app-content">
+
+    <!-- App bar -->
+    <div class="app-bar">
+      <div class="app-bar-title">Planifikimi</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="filter-btn">
+          <div class="cal-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          Sot
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI row -->
+    <div class="kpi-row">
+      <div class="kpi-tile">
+        <div class="kpi-value">12</div>
+        <div class="kpi-label">Termine sot</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-value">4</div>
+        <div class="kpi-label">Ekipi aktiv</div>
+      </div>
+      <div class="kpi-tile highlight">
+        <div class="kpi-value">€340</div>
+        <div class="kpi-label">Të ardhura</div>
+      </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="section-label">Orari i ditës</div>
+    <div class="appt-list">
+
+      <!-- 09:00 -->
+      <div class="appt-group">
+        <div class="appt-time">09:00</div>
+        <div class="appt-timeline">
+          <div class="timeline-dot done"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="appt-card">
+          <div class="client-avatar av-e">E</div>
+          <div class="appt-info">
+            <div class="appt-client">Entela D.</div>
+            <div class="appt-details">
+              Manikyr klasik
+              <span class="appt-sep">·</span>
+              45 min
+            </div>
+          </div>
+          <div class="appt-right">
+            <div class="staff-badge">Dritoni</div>
+            <div class="status-pill pill-done">Kryer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10:30 — active now -->
+      <div class="appt-group">
+        <div class="appt-time now">10:30</div>
+        <div class="appt-timeline">
+          <div class="timeline-dot active"></div>
+          <div class="timeline-line" style="background:rgba(122,34,50,0.3);"></div>
+        </div>
+        <div class="appt-card active-now">
+          <div class="client-avatar av-a">A</div>
+          <div class="appt-info">
+            <div class="appt-client active-now">Arber K.</div>
+            <div class="appt-details">
+              Prerje burrash
+              <span class="appt-sep">·</span>
+              30 min
+            </div>
+          </div>
+          <div class="appt-right">
+            <div class="staff-badge">Ardit</div>
+            <div class="status-pill pill-now">Tani</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11:00 — walk-in -->
+      <div class="appt-group">
+        <div class="appt-time">11:00</div>
+        <div class="appt-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="appt-card walk-in">
+          <div class="client-avatar av-s">S</div>
+          <div class="appt-info">
+            <div class="appt-client">Walk-in · Selma</div>
+            <div class="appt-details">
+              Ngjyrosje flokësh
+              <span class="appt-sep">·</span>
+              90 min
+            </div>
+          </div>
+          <div class="appt-right">
+            <div class="staff-badge">Ardit</div>
+            <div class="status-pill pill-walkin">Walk-in</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 13:30 -->
+      <div class="appt-group">
+        <div class="appt-time">13:30</div>
+        <div class="appt-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="appt-card">
+          <div class="client-avatar av-r">R</div>
+          <div class="appt-info">
+            <div class="appt-client">Rina B.</div>
+            <div class="appt-details">
+              Styling &amp; Lyerje
+              <span class="appt-sep">·</span>
+              60 min
+            </div>
+          </div>
+          <div class="appt-right">
+            <div class="staff-badge">Dritoni</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 15:00 -->
+      <div class="appt-group">
+        <div class="appt-time">15:00</div>
+        <div class="appt-timeline">
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="appt-card">
+          <div class="client-avatar av-k">K</div>
+          <div class="appt-info">
+            <div class="appt-client">Klentoni I.</div>
+            <div class="appt-details">
+              Prerje barber
+              <span class="appt-sep">·</span>
+              30 min
+            </div>
+          </div>
+          <div class="appt-right">
+            <div class="staff-badge">Besnik</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <!-- Home -->
+      <div class="nav-item">
+        <div class="nav-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="nav-label">Home</div>
+      </div>
+      <!-- Planning — active -->
+      <div class="nav-item active" style="position:relative;">
+        <div class="nav-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="14" y2="18"/></svg>
+        </div>
+        <div class="nav-label">Planning</div>
+        <div class="nav-dot"></div>
+      </div>
+      <!-- Salon -->
+      <div class="nav-item">
+        <div class="nav-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M14 14h7v7h-7z"/><path d="M3 14h7v7H3z"/></svg>
+        </div>
+        <div class="nav-label">Salloni</div>
+      </div>
+      <!-- Settings -->
+      <div class="nav-item">
+        <div class="nav-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </div>
+        <div class="nav-label">Cilësimet</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

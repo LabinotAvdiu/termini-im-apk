@@ -1,6 +1,8 @@
+import 'dart:async' show unawaited;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/services/analytics_service.dart';
 import '../../../company_detail/data/datasources/company_detail_remote_datasource.dart';
 import '../../../company_detail/data/models/company_detail_model.dart';
 import '../../../company_detail/presentation/providers/company_detail_provider.dart';
@@ -40,6 +42,9 @@ class BookingState {
   final double? servicePrice;
   final int? serviceDuration;
   final String bookingMode;
+  /// When true and bookingMode == 'capacity_based', the booking will land as
+  /// confirmed (no pending queue). Used to show the correct success dialog copy.
+  final bool capacityAutoApprove;
   /// Salon's cancellation policy — shown on the confirmation step so the
   /// client knows their cancellation window upfront. `0` = no restriction.
   final int minCancelHours;
@@ -48,6 +53,11 @@ class BookingState {
   /// the UI and skips availability fetches on manual selection since that
   /// can't happen.
   final bool employeeLocked;
+
+  /// Date the user was searching for on the home screen. Kept so every
+  /// re-fetch of availability (employee change mid-flow) can re-apply the
+  /// same "window starts on target-1" trim the initial load uses.
+  final DateTime? targetDate;
 
   const BookingState({
     this.currentStep = 0,
@@ -67,8 +77,10 @@ class BookingState {
     this.servicePrice,
     this.serviceDuration,
     this.bookingMode = 'employee_based',
+    this.capacityAutoApprove = false,
     this.minCancelHours = 2,
     this.employeeLocked = false,
+    this.targetDate,
   });
 
   bool get canProceedStep0 =>
@@ -109,8 +121,10 @@ class BookingState {
     double? servicePrice,
     int? serviceDuration,
     String? bookingMode,
+    bool? capacityAutoApprove,
     int? minCancelHours,
     bool? employeeLocked,
+    DateTime? targetDate,
   }) {
     return BookingState(
       currentStep: currentStep ?? this.currentStep,
@@ -130,8 +144,10 @@ class BookingState {
       servicePrice: servicePrice ?? this.servicePrice,
       serviceDuration: serviceDuration ?? this.serviceDuration,
       bookingMode: bookingMode ?? this.bookingMode,
+      capacityAutoApprove: capacityAutoApprove ?? this.capacityAutoApprove,
       minCancelHours: minCancelHours ?? this.minCancelHours,
       employeeLocked: employeeLocked ?? this.employeeLocked,
+      targetDate: targetDate ?? this.targetDate,
     );
   }
 
@@ -154,6 +170,7 @@ class BookingState {
       servicePrice: servicePrice,
       serviceDuration: serviceDuration,
       bookingMode: bookingMode,
+      capacityAutoApprove: capacityAutoApprove,
     );
   }
 }
@@ -177,6 +194,7 @@ class BookingNotifier extends StateNotifier<BookingState> {
     required String companyId,
     String? serviceId,
     String? preselectedEmployeeId,
+    DateTime? preselectedDate,
   }) async {
     state = state.copyWith(isLoading: true, companyId: companyId);
 
@@ -240,10 +258,18 @@ class BookingNotifier extends StateNotifier<BookingState> {
 
       // Availability — when an employee is preselected, fetch their
       // schedule directly so the date picker only shows their free days.
-      final availability = await _bookingDatasource.getAvailability(
+      final rawAvailability = await _bookingDatasource.getAvailability(
         companyId: companyId,
         serviceId: serviceId,
         employeeId: preselectedEmployee?.id,
+      );
+
+      // When the user came in with a date in mind ("pour le 23"), trim the
+      // date picker to start on target-1 so the searched day sits in
+      // position 2 (matches the home card chips: [target-1, target, +1, +2]).
+      final availability = _trimAvailabilityToTarget(
+        rawAvailability,
+        preselectedDate,
       );
 
       state = state.copyWith(
@@ -257,18 +283,46 @@ class BookingNotifier extends StateNotifier<BookingState> {
         noPreference: preselectedEmployee == null,
         employeeLocked: preselectedEmployee != null,
         bookingMode: company.bookingMode,
+        capacityAutoApprove: company.capacityAutoApprove,
         minCancelHours: company.minCancelHours,
         isLoading: false,
+        targetDate: preselectedDate,
       );
 
-      // Auto-select first available date
-      final firstAvailable = availability
-          .where((d) => d.isAvailable)
-          .firstOrNull;
-      if (firstAvailable != null) {
-        final dateObj = DateTime.tryParse(firstAvailable.date);
-        if (dateObj != null) selectDate(dateObj);
+      // Pre-select the date the user was searching for on the home screen
+      // when it's actually available. Falls back to the first open day so
+      // the picker is never empty: if the searched date turns out to be
+      // closed or fully booked, the next open day is the obvious next best
+      // thing to offer, and the user can still navigate freely.
+      DateTime? chosenDate;
+      if (preselectedDate != null) {
+        final target = DateTime(
+          preselectedDate.year,
+          preselectedDate.month,
+          preselectedDate.day,
+        );
+        for (final d in availability) {
+          if (!d.isAvailable) continue;
+          final parsed = DateTime.tryParse(d.date);
+          if (parsed == null) continue;
+          if (parsed.year == target.year &&
+              parsed.month == target.month &&
+              parsed.day == target.day) {
+            chosenDate = parsed;
+            break;
+          }
+        }
       }
+
+      chosenDate ??= (() {
+        final firstAvailable =
+            availability.where((d) => d.isAvailable).firstOrNull;
+        return firstAvailable != null
+            ? DateTime.tryParse(firstAvailable.date)
+            : null;
+      })();
+
+      if (chosenDate != null) selectDate(chosenDate);
     } catch (e, stack) {
       // ignore: avoid_print
       print('Booking init error: $e\n$stack');
@@ -307,6 +361,13 @@ class BookingNotifier extends StateNotifier<BookingState> {
 
   void selectSlot(AvailableSlotModel slot) {
     state = state.copyWith(selectedSlot: slot);
+    // E25 — booking_slot_selected
+    if (state.companyId != null && state.serviceId != null) {
+      unawaited(AnalyticsService.instance.logBookingSlotSelected(
+        salonId: state.companyId!,
+        serviceId: state.serviceId!,
+      ));
+    }
   }
 
   List<AvailableSlotModel> slotsForSelectedDate() {
@@ -316,12 +377,17 @@ class BookingNotifier extends StateNotifier<BookingState> {
   Future<void> _refreshAvailability() async {
     if (state.companyId == null) return;
     try {
-      final availability = await _bookingDatasource.getAvailability(
+      final raw = await _bookingDatasource.getAvailability(
         companyId: state.companyId!,
         employeeId:
             state.noPreference ? null : state.selectedEmployee?.id,
         serviceId: state.serviceId,
       );
+      // Keep the target-1 window when the user is still searching with a
+      // date in mind, so the picker doesn't silently grow back to "today +
+      // 14 days" after a mid-flow employee change.
+      final availability = _trimAvailabilityToTarget(raw, state.targetDate);
+
       state = state.copyWith(
         availability: availability,
         availableSlots: const [],
@@ -329,15 +395,56 @@ class BookingNotifier extends StateNotifier<BookingState> {
         selectedSlot: null,
       );
 
-      // Auto-select first available date
-      final firstAvailable = availability
-          .where((d) => d.isAvailable)
-          .firstOrNull;
-      if (firstAvailable != null) {
-        final dateObj = DateTime.tryParse(firstAvailable.date);
-        if (dateObj != null) selectDate(dateObj);
+      // Prefer the user's searched date; fall back to the first open day.
+      DateTime? chosenDate;
+      final target = state.targetDate;
+      if (target != null) {
+        for (final d in availability) {
+          if (!d.isAvailable) continue;
+          final parsed = DateTime.tryParse(d.date);
+          if (parsed == null) continue;
+          if (parsed.year == target.year &&
+              parsed.month == target.month &&
+              parsed.day == target.day) {
+            chosenDate = parsed;
+            break;
+          }
+        }
       }
+      chosenDate ??= (() {
+        final firstAvailable =
+            availability.where((d) => d.isAvailable).firstOrNull;
+        return firstAvailable != null
+            ? DateTime.tryParse(firstAvailable.date)
+            : null;
+      })();
+      if (chosenDate != null) selectDate(chosenDate);
     } catch (_) {}
+  }
+
+  /// Drops days before `target - 1` so the date picker opens on the searched
+  /// day's neighbour. `target - 1` is clamped to today — the user can never
+  /// be offered a day in the past. Returns the input untouched when [target]
+  /// is null.
+  List<DayAvailability> _trimAvailabilityToTarget(
+    List<DayAvailability> raw,
+    DateTime? target,
+  ) {
+    if (target == null) return raw;
+
+    final now = DateTime.now();
+    final todayOnly = DateTime(now.year, now.month, now.day);
+    final targetOnly = DateTime(target.year, target.month, target.day);
+    final candidate = targetOnly.subtract(const Duration(days: 1));
+    final windowStart =
+        candidate.isBefore(todayOnly) ? todayOnly : candidate;
+
+    return raw.where((d) {
+      final parsed = DateTime.tryParse(d.date);
+      if (parsed == null) return true;
+      final dayOnly = DateTime(parsed.year, parsed.month, parsed.day);
+      return !dayOnly.isBefore(windowStart);
+    }).toList();
   }
 
   Future<void> _loadSlotsForDate(DateTime date) async {
@@ -392,6 +499,12 @@ class BookingNotifier extends StateNotifier<BookingState> {
       );
 
       state = state.copyWith(isLoading: false, isConfirmed: true);
+      // E25 — booking_confirmed
+      unawaited(AnalyticsService.instance.logBookingConfirmed(
+        salonId: companyId,
+        serviceId: state.serviceId ?? '',
+        durationMinutes: state.serviceDuration ?? 0,
+      ));
       return booking;
     } catch (e) {
       state = state.copyWith(isLoading: false);

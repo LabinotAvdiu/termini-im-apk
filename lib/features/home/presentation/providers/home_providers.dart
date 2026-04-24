@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/services/analytics_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/datasources/company_remote_datasource.dart';
 import '../../data/models/company_card_model.dart';
@@ -162,6 +163,15 @@ final companyListProvider =
     gender: genderStr,
     date: date?.toIso8601String().split('T').first,
   );
+
+  // E25 — search_performed (uniquement si l'utilisateur a saisi une query ou filtré)
+  if (search.isNotEmpty || city.isNotEmpty || date != null) {
+    ref.read(analyticsProvider).logSearchPerformed(
+          city: city.isNotEmpty ? city : null,
+          gender: genderStr != 'both' ? genderStr : null,
+          date: date,
+        );
+  }
 
   return notifier;
 });

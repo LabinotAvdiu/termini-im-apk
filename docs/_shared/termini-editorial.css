@@ -1,0 +1,351 @@
+/* Termini im — shared editorial print stylesheet
+ * Used by all strategic PDFs under /docs/*.html
+ */
+
+:root {
+  --bordeaux:      #7A2232;
+  --bordeaux-dark: #511522;
+  --bordeaux-soft: #9E3D4F;
+  --or:            #C89B47;
+  --or-soft:       #D9B46A;
+  --sand:          #F7F2EA;
+  --ivory:         #FCF7EE;
+  --ivory-alt:     #EFE6D5;
+  --bone:          #E8DCC8;
+  --border:        #D9CAB3;
+  --ink:           #171311;
+  --ink-2:         #332C29;
+  --muted:         #716059;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 20mm 18mm 22mm;
+  @bottom-left {
+    content: var(--footer-left, "Termini im · Prishtinë · 2026");
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 8.5pt;
+    color: #716059;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  @bottom-right {
+    content: counter(page) " / " counter(pages);
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 8.5pt;
+    color: #716059;
+    letter-spacing: 0.08em;
+  }
+}
+
+@page cover {
+  margin: 0;
+  @bottom-left { content: ""; }
+  @bottom-right { content: ""; }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--sand);
+  color: var(--ink);
+  font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Cover ---------- */
+.cover {
+  page: cover;
+  height: 297mm; width: 210mm;
+  background: var(--sand);
+  position: relative;
+  padding: 30mm 22mm;
+  page-break-after: always;
+  overflow: hidden;
+}
+.cover::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(200,155,71,0.14), transparent 55%),
+    radial-gradient(ellipse at 110% 100%, rgba(122,34,50,0.12), transparent 55%);
+  pointer-events: none;
+}
+.cover-eyebrow {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 9.5pt; letter-spacing: 0.36em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 8mm;
+}
+.cover-wordmark {
+  font-family: "Fraunces", serif; font-weight: 360; font-size: 62pt;
+  letter-spacing: -0.02em; color: var(--ink); line-height: 0.95;
+  margin: 0 0 2mm; position: relative; z-index: 1;
+}
+.cover-wordmark .im { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); font-weight: 400; }
+.cover-wordmark .dot { display: inline-block; width: 0.14em; height: 0.14em; background: var(--bordeaux); border-radius: 50%; margin: 0 0.04em 0.78em 0.02em; vertical-align: top; }
+.cover-title { font-family: "Fraunces", serif; font-weight: 320; font-size: 32pt; line-height: 1.08; letter-spacing: -0.01em; margin: 28mm 0 4mm; max-width: 145mm; color: var(--ink); }
+.cover-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); font-weight: 400; }
+.cover-sub { font-family: "Instrument Sans", sans-serif; font-size: 12.5pt; color: var(--ink-2); max-width: 130mm; line-height: 1.5; margin: 0 0 14mm; }
+.cover-meta {
+  position: absolute; bottom: 28mm; left: 22mm; right: 22mm;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: "Instrument Sans", sans-serif; font-size: 9pt;
+  letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted);
+  border-top: 1px solid var(--border); padding-top: 6mm;
+}
+.cover-meta strong { color: var(--ink); font-weight: 600; letter-spacing: 0.28em; }
+
+/* ---------- Content ---------- */
+.doc { padding: 0 2mm; }
+
+h1, h2, h3, h4 { font-family: "Fraunces", serif; font-weight: 400; color: var(--ink); letter-spacing: -0.005em; }
+h1.section { font-size: 24pt; line-height: 1.1; margin: 0 0 4mm; font-weight: 320; }
+h1.section .num { font-family: "Instrument Sans", sans-serif; font-size: 10pt; letter-spacing: 0.3em; text-transform: uppercase; color: var(--bordeaux); display: block; margin-bottom: 2.5mm; font-weight: 600; }
+h2 { font-size: 15pt; margin: 8mm 0 2.5mm; font-weight: 400; }
+h3 { font-size: 12pt; margin: 6mm 0 1.5mm; font-weight: 500; color: var(--ink); }
+h4 { font-size: 10.5pt; font-family: "Instrument Sans", sans-serif; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bordeaux); margin: 5mm 0 1.5mm; }
+p { margin: 0 0 3mm; }
+em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+strong { color: var(--ink); font-weight: 600; }
+code { font-family: "SF Mono", "Consolas", monospace; font-size: 9pt; background: var(--ivory-alt); padding: 0.4mm 1.5mm; border-radius: 0.6mm; color: var(--bordeaux-dark); }
+pre { background: var(--ink); color: var(--sand); padding: 3.5mm 5mm; border-radius: 1mm; font-family: "SF Mono", "Consolas", monospace; font-size: 8.5pt; line-height: 1.5; overflow-x: auto; margin: 3mm 0 5mm; page-break-inside: avoid; }
+pre .k { color: var(--or); }
+pre .c { color: #9e8f87; font-style: italic; }
+
+section { page-break-before: always; padding-top: 2mm; }
+section.no-break { page-break-before: auto; }
+.intro { page-break-before: always; padding-top: 6mm; }
+
+hr.divider { height: 1px; background: var(--border); margin: 6mm 0; border: none; }
+hr.rule-gold { width: 18mm; height: 2px; background: var(--or); margin: 1.5mm 0 5mm; border: none; }
+
+.lead {
+  font-family: "Fraunces", serif; font-weight: 330; font-size: 13pt; line-height: 1.5;
+  color: var(--ink-2); border-left: 2px solid var(--or); padding: 0 0 0 5mm; margin: 0 0 6mm;
+}
+.lead em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+
+.callout { background: var(--ivory); border: 1px solid var(--bone); border-left: 3px solid var(--bordeaux); padding: 4mm 5mm; margin: 4mm 0 5mm; border-radius: 1mm; page-break-inside: avoid; }
+.callout h4 { margin-top: 0; }
+.callout.gold { border-left-color: var(--or); }
+.callout.dark { background: var(--ink); color: var(--sand); border-color: var(--ink); border-left-color: var(--or); }
+.callout.dark h4 { color: var(--or); }
+.callout.dark strong { color: var(--ivory); }
+.callout.dark code { background: rgba(255,255,255,0.08); color: var(--or-soft); }
+
+.cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin: 3mm 0 5mm; }
+.cols-2 > div { background: var(--ivory); border: 1px solid var(--bone); padding: 4mm 5mm; border-radius: 1mm; page-break-inside: avoid; }
+.cols-2 > div h4 { margin-top: 0; }
+.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin: 3mm 0 5mm; }
+.cols-3 > div { background: var(--ivory); border: 1px solid var(--bone); padding: 3.5mm 4mm; border-radius: 1mm; page-break-inside: avoid; }
+
+.phase { border: 1px solid var(--border); border-radius: 1mm; padding: 5mm 6mm 4mm; margin: 5mm 0; page-break-inside: avoid; background: var(--ivory); }
+.phase .phase-head { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; border-bottom: 1px solid var(--bone); padding-bottom: 2.5mm; margin-bottom: 3mm; }
+.phase .phase-name { font-family: "Fraunces", serif; font-size: 14pt; font-weight: 400; color: var(--ink); margin: 0; }
+.phase .phase-meta { font-family: "Instrument Sans", sans-serif; font-size: 8.5pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bordeaux); white-space: nowrap; }
+.phase .phase-goal { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); font-size: 11.5pt; margin: 0 0 3mm; }
+
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size: 9.5pt; page-break-inside: avoid; }
+thead th { font-family: "Instrument Sans", sans-serif; font-size: 8.5pt; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bordeaux); font-weight: 600; border-bottom: 1.5px solid var(--bordeaux); padding: 2mm 3mm 2mm 0; text-align: left; vertical-align: bottom; }
+tbody td { padding: 2.5mm 3mm 2.5mm 0; border-bottom: 1px solid var(--bone); vertical-align: top; color: var(--ink-2); }
+tbody tr:last-child td { border-bottom: 1px solid var(--border); }
+td strong { color: var(--ink); }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--bordeaux); font-weight: 600; }
+table.tight td, table.tight th { padding: 1.5mm 2.5mm 1.5mm 0; font-size: 9pt; }
+
+ul, ol { padding-left: 5mm; margin: 0 0 3mm; }
+ul li, ol li { margin-bottom: 1.2mm; }
+ul.tight li, ol.tight li { margin-bottom: 0.4mm; }
+ul.clean { list-style: none; padding-left: 0; }
+ul.clean li { padding-left: 6mm; position: relative; }
+ul.clean li::before { content: ""; position: absolute; left: 0; top: 2.2mm; width: 3mm; height: 1.2px; background: var(--or); }
+
+.pull { font-family: "Fraunces", serif; font-weight: 330; font-size: 15pt; line-height: 1.35; color: var(--ink); text-align: left; margin: 5mm 0; padding: 3mm 0 3mm 8mm; border-left: 3px solid var(--bordeaux); }
+.pull em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin: 3mm 0 5mm; }
+.kpi-grid .kpi { background: var(--ivory); border: 1px solid var(--bone); border-top: 2px solid var(--or); padding: 3mm 4mm; page-break-inside: avoid; }
+.kpi .kpi-value { font-family: "Fraunces", serif; font-size: 18pt; line-height: 1; color: var(--bordeaux); font-weight: 400; margin: 0 0 1mm; }
+.kpi .kpi-label { font-family: "Instrument Sans", sans-serif; font-size: 8.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+.toc ol { list-style: none; padding: 0; margin: 4mm 0 0; counter-reset: toc; }
+.toc ol li { display: flex; align-items: baseline; gap: 3mm; padding: 1.8mm 0; border-bottom: 1px dotted var(--border); counter-increment: toc; }
+.toc ol li::before { content: counter(toc, decimal-leading-zero); font-family: "Instrument Sans", sans-serif; font-size: 8.5pt; letter-spacing: 0.18em; color: var(--bordeaux); font-weight: 600; min-width: 10mm; }
+.toc ol li .t { font-family: "Fraunces", serif; font-size: 12pt; color: var(--ink); flex: 1; }
+.toc ol li .p { font-family: "Instrument Sans", sans-serif; font-size: 9pt; color: var(--muted); letter-spacing: 0.08em; }
+
+ul.check { list-style: none; padding-left: 0; }
+ul.check li { padding-left: 7mm; position: relative; margin-bottom: 1.8mm; }
+ul.check li::before { content: ""; position: absolute; left: 0; top: 1.5mm; width: 3.5mm; height: 3.5mm; border: 1.5px solid var(--bordeaux); border-radius: 0.6mm; background: var(--ivory); }
+
+/* Day card (content calendar) */
+.day {
+  border: 1px solid var(--border);
+  border-radius: 1mm;
+  padding: 4mm 5mm;
+  margin: 3mm 0 4mm;
+  background: var(--ivory);
+  page-break-inside: avoid;
+}
+.day .day-head {
+  display: flex; align-items: baseline; gap: 3mm;
+  border-bottom: 1px solid var(--bone);
+  padding-bottom: 2mm;
+  margin-bottom: 2.5mm;
+}
+.day .day-num {
+  font-family: "Fraunces", serif;
+  font-size: 18pt; font-weight: 400; color: var(--bordeaux);
+  line-height: 0.9; min-width: 14mm;
+}
+.day .day-title {
+  font-family: "Fraunces", serif;
+  font-size: 11.5pt; font-weight: 400; color: var(--ink);
+  flex: 1; line-height: 1.25;
+}
+.day .day-chan {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 8pt; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--bordeaux); font-weight: 600;
+}
+.day .day-row {
+  display: grid;
+  grid-template-columns: 22mm 1fr;
+  gap: 3mm;
+  padding: 1.2mm 0;
+  font-size: 9.5pt;
+}
+.day .day-label {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 7.5pt; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+  padding-top: 0.6mm;
+}
+.day .day-val { color: var(--ink-2); }
+.day .day-val.copy {
+  font-family: "Fraunces", serif;
+  font-size: 11pt; line-height: 1.4; color: var(--ink);
+  border-left: 2px solid var(--or); padding-left: 3mm;
+  font-weight: 330;
+}
+.day .day-val.caption-sq,
+.day .day-val.caption-fr {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 9.5pt;
+}
+.day .day-val.prompt {
+  font-family: "SF Mono", "Consolas", monospace;
+  font-size: 8.5pt; color: var(--ink-2);
+  background: var(--ivory-alt);
+  padding: 2mm 3mm;
+  border-radius: 0.8mm;
+  line-height: 1.4;
+}
+.day .day-val.hashtags {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 8.5pt; color: var(--bordeaux-soft); letter-spacing: 0.02em;
+}
+
+/* Notification card */
+.notif {
+  border: 1px solid var(--border); border-radius: 1mm;
+  background: var(--ivory); padding: 3mm 4mm;
+  margin: 2.5mm 0 3mm;
+  page-break-inside: avoid;
+}
+.notif.push { border-left: 3px solid var(--bordeaux); }
+.notif.email { border-left: 3px solid var(--or); }
+.notif.inapp { border-left: 3px solid var(--bordeaux-soft); }
+.notif .notif-head {
+  display: flex; align-items: baseline; gap: 3mm;
+  margin-bottom: 1.5mm;
+}
+.notif .notif-tag {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 7.5pt; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--bordeaux); font-weight: 600;
+  white-space: nowrap;
+}
+.notif .notif-title {
+  font-family: "Fraunces", serif; font-weight: 400;
+  font-size: 11pt; color: var(--ink); flex: 1; line-height: 1.2;
+}
+.notif .notif-audience {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 7.5pt; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.notif .notif-row {
+  display: grid; grid-template-columns: 22mm 1fr;
+  gap: 3mm; padding: 0.8mm 0; font-size: 9pt;
+}
+.notif .notif-label {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 7.5pt; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.notif .notif-val { color: var(--ink-2); }
+.notif .notif-val.copy {
+  font-family: "Fraunces", serif; font-weight: 330;
+  font-size: 10.5pt; line-height: 1.4; color: var(--ink);
+}
+.notif .notif-val code {
+  font-family: "SF Mono", "Consolas", monospace; font-size: 8.5pt;
+  background: var(--ivory-alt); padding: 0.3mm 1.3mm; border-radius: 0.6mm;
+  color: var(--bordeaux-dark);
+}
+
+/* Bio preview */
+.bio {
+  border: 1px solid var(--border); border-radius: 1mm;
+  background: var(--ivory); padding: 4mm 5mm;
+  margin: 2.5mm 0 4mm;
+  max-width: 90mm;
+}
+.bio .bio-handle { font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 11pt; color: var(--ink); margin: 0 0 1mm; }
+.bio .bio-name { font-family: "Fraunces", serif; font-weight: 400; font-size: 12pt; color: var(--ink); margin: 0 0 2mm; }
+.bio .bio-lines { font-family: "Instrument Sans", sans-serif; font-size: 9.5pt; color: var(--ink-2); white-space: pre-line; line-height: 1.35; }
+.bio .bio-link { color: var(--bordeaux); font-size: 9pt; margin-top: 1.5mm; display: block; }
+
+/* Screen preview (coming soon) */
+.screen {
+  border: 1px solid var(--border); border-radius: 2mm;
+  background: var(--sand); padding: 8mm 7mm;
+  margin: 4mm 0 5mm;
+  position: relative;
+  page-break-inside: avoid;
+}
+.screen::before {
+  content: ""; position: absolute; top: 3mm; left: 5mm;
+  width: 2mm; height: 2mm; border-radius: 50%; background: var(--bordeaux);
+  box-shadow: 4mm 0 0 var(--or), 8mm 0 0 var(--bone);
+}
+.screen .s-wordmark { font-family: "Fraunces", serif; font-size: 16pt; color: var(--ink); margin: 5mm 0 1mm; }
+.screen .s-wordmark .im { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+.screen .s-hero { font-family: "Fraunces", serif; font-weight: 330; font-size: 20pt; line-height: 1.15; color: var(--ink); margin: 3mm 0 3mm; max-width: 140mm; }
+.screen .s-hero em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--bordeaux); }
+.screen .s-sub { font-family: "Instrument Sans", sans-serif; font-size: 10pt; color: var(--ink-2); max-width: 130mm; margin: 0 0 4mm; }
+.screen .s-ctas { display: flex; gap: 3mm; }
+.screen .s-btn { font-family: "Instrument Sans", sans-serif; font-size: 9pt; padding: 2.5mm 5mm; border-radius: 0.8mm; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
+.screen .s-btn.primary { background: var(--bordeaux); color: var(--ivory); }
+.screen .s-btn.ghost { border: 1px solid var(--bordeaux); color: var(--bordeaux); }
+.screen .s-foot { margin-top: 6mm; padding-top: 3mm; border-top: 1px solid var(--border); font-family: "Instrument Sans", sans-serif; font-size: 8pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+
+/* Misc */
+.smallcaps { font-family: "Instrument Sans", sans-serif; font-size: 9pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bordeaux); font-weight: 600; }
+.note { font-size: 9pt; color: var(--muted); font-style: italic; }
+
+/* Screen preview in browser */
+@media screen {
+  body { padding: 20px 0; }
+  .doc, .cover {
+    box-shadow: 0 20px 60px rgba(23,19,17,0.12);
+    margin: 0 auto 20px;
+    background: var(--sand);
+    width: 210mm; min-height: 297mm;
+    padding: 20mm 18mm 22mm;
+  }
+  .cover { padding: 30mm 22mm; }
+}

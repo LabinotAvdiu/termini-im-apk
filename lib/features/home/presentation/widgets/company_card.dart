@@ -12,27 +12,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../favorites/presentation/providers/favorite_provider.dart';
 import '../../../favorites/presentation/widgets/remove_favorite_dialog.dart';
 import '../../data/models/company_card_model.dart';
-
-String _shortDayName(BuildContext context, DateTime date) {
-  final l = context.l10n;
-  switch (date.weekday) {
-    case DateTime.monday:
-      return l.dayShortMon;
-    case DateTime.tuesday:
-      return l.dayShortTue;
-    case DateTime.wednesday:
-      return l.dayShortWed;
-    case DateTime.thursday:
-      return l.dayShortThu;
-    case DateTime.friday:
-      return l.dayShortFri;
-    case DateTime.saturday:
-      return l.dayShortSat;
-    case DateTime.sunday:
-    default:
-      return l.dayShortSun;
-  }
-}
+import '../providers/home_providers.dart';
 
 class CompanyCard extends ConsumerWidget {
   final CompanyCardModel company;
@@ -130,15 +110,12 @@ class CompanyCard extends ConsumerWidget {
                             child: _RatingRow(company: company),
                           ),
                           const SizedBox(height: AppSpacing.sm),
-                          _SlotRow(
-                            label: context.l10n.morning,
-                            slots: company.morningSlots,
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          _SlotRow(
-                            label: context.l10n.afternoon,
-                            slots: company.afternoonSlots,
-                          ),
+                          // Unified slot row — same layout as desktop: up to
+                          // 4 chips combined (morning + afternoon), no separate
+                          // "MATIN / APRÈS-MIDI" split. Reserves a fixed height
+                          // so a salon without upcoming slots keeps card
+                          // dimensions aligned with the rest of the grid.
+                          _CombinedSlotsRow(slots: company.slots),
                         ],
                       ),
                     ),
@@ -413,82 +390,87 @@ class _RatingRow extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Slot row
+// Combined slots row — mirrors the desktop layout: up to 4 chips, morning
+// and afternoon merged, same chip styling (ink fill when available, ivory
+// border when not). Fixed height keeps card dimensions stable even when a
+// salon has no upcoming slots.
 // ---------------------------------------------------------------------------
 
-class _SlotRow extends StatelessWidget {
-  final String label;
+class _CombinedSlotsRow extends StatelessWidget {
   final List<DaySlot> slots;
-
-  const _SlotRow({required this.label, required this.slots});
+  const _CombinedSlotsRow({required this.slots});
 
   @override
   Widget build(BuildContext context) {
-    // Fixed row height (matches the chip's rendered height) so salons with
-    // no upcoming slots don't make the card collapse shorter than salons
-    // with a packed row of chips.
     return SizedBox(
-      height: 24,
-      child: Row(
-        children: [
-          SizedBox(
-            width: 72,
-            child: Text(
-              label,
-              style: AppTextStyles.overline.copyWith(
-                fontWeight: FontWeight.w700,
-                color: AppColors.textHint,
-                letterSpacing: 0.6,
-              ),
+      height: 30,
+      child: slots.isEmpty
+          ? const SizedBox()
+          : Row(
+              children: slots
+                  .map(
+                    (slot) => Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: _UnifiedSlotChip(slot: slot),
+                    ),
+                  )
+                  .toList(),
             ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: slots
-                    .map((slot) => Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: _SlotChip(slot: slot),
-                        ))
-                    .toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
 
-// ---------------------------------------------------------------------------
-// Slot chip
-// ---------------------------------------------------------------------------
-
-class _SlotChip extends StatelessWidget {
+class _UnifiedSlotChip extends ConsumerWidget {
   final DaySlot slot;
-  const _SlotChip({required this.slot});
+  const _UnifiedSlotChip({required this.slot});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searched = ref.watch(dateFilterProvider);
+    final isTarget = searched != null &&
+        searched.year == slot.date.year &&
+        searched.month == slot.date.month &&
+        searched.day == slot.date.day;
+
+    // Target day = bordeaux hero. The rest keep the existing "ink fill when
+    // bookable / ivory when closed" treatment so the searched day reads
+    // clearly as the hero of the row without muddying the other chips.
+    final Color bg;
+    final Color borderColor;
+    final Color textColor;
+
+    if (isTarget && slot.available) {
+      bg = AppColors.primary;
+      borderColor = AppColors.primary;
+      textColor = AppColors.background;
+    } else if (isTarget) {
+      bg = AppColors.background;
+      borderColor = AppColors.primary;
+      textColor = AppColors.primary;
+    } else if (slot.available) {
+      bg = AppColors.textPrimary;
+      borderColor = AppColors.textPrimary;
+      textColor = AppColors.background;
+    } else {
+      bg = AppColors.background;
+      borderColor = AppColors.border;
+      textColor = AppColors.textHint;
+    }
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: slot.available ? AppColors.primary : AppColors.ivoryAlt,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: slot.available
-              ? AppColors.primary
-              : AppColors.border,
-          width: 1,
-        ),
+        color: bg,
+        border: Border.all(color: borderColor, width: isTarget ? 1.5 : 1),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        '${_shortDayName(context, slot.date)} ${slot.date.day}',
+        '${slot.date.day.toString().padLeft(2, '0')}/'
+        '${slot.date.month.toString().padLeft(2, '0')}',
         style: AppTextStyles.caption.copyWith(
-          color: slot.available ? AppColors.background : AppColors.textHint,
-          fontWeight: slot.available ? FontWeight.w600 : FontWeight.w400,
-          letterSpacing: 0.3,
+          color: textColor,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
         ),
       ),
     );

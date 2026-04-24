@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../appointments/data/models/appointment_model.dart';
 import '../../../appointments/presentation/providers/appointments_provider.dart';
 import '../providers/review_provider.dart';
@@ -108,19 +109,9 @@ class _SubmitReviewScreenMobileState
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          context.l10n.reviewSubmitTitle,
-          style: AppTextStyles.subtitle.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
+      appBar: AppTopBar.modal(
+        title: context.l10n.reviewSubmitTitle,
+        onClose: () => context.pop(),
       ),
       body: _submitted
           ? _SuccessView(onClose: () => context.pop())

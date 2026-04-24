@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Termini im — Choix du mode · Design Review</title>
+  <!-- Hint: F12 → Device toolbar → 390px pour simuler le rendu mobile exact -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ivory:      #f7f2ea;
+      --bone:       #e8dcc8;
+      --ink:        #171311;
+      --muted:      #716059;
+      --burgundy:   #7a2232;
+      --burgundy-2: #5d1a27;
+      --gold:       #c89b47;
+      --gold-light: #d9b46a;
+      --line:       #d9cab3;
+      --cream:      #fcf7ee;
+      --surface:    #fcf7ee;
+      --success:    #6f7e55;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--ivory); color: var(--ink); }
+    body {
+      font-family: "Instrument Sans", -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      padding: 64px 32px 96px;
+      position: relative;
+    }
+    /* Grain overlay */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; opacity: 0.28; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      z-index: 1;
+    }
+    /* Ambient gold glow */
+    body::after {
+      content: "";
+      position: fixed; top: -30%; right: -15%;
+      width: 70vw; height: 70vw; border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,155,71,0.09), transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .page { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: end; gap: 40px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px; margin-bottom: 56px;
+    }
+    .mast-kicker { font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .mast-title {
+      font-family: "Fraunces", serif; font-size: clamp(40px, 5.2vw, 76px);
+      font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 100;
+      line-height: 0.92; letter-spacing: -0.025em; color: var(--ink); margin-top: 10px;
+    }
+    .mast-title em { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; color: var(--burgundy); }
+    .mast-meta { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-align: right; line-height: 1.8; }
+    .mast-meta b { color: var(--burgundy); font-weight: 600; }
+
+    /* ── INTRO BLOCK ── */
+    .intro-block {
+      margin-bottom: 72px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+    }
+    .intro-text p { font-size: 14px; color: var(--muted); line-height: 1.75; max-width: 480px; }
+    .decisions-list { list-style: none; }
+    .decisions-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+      font-size: 13px; color: var(--ink); line-height: 1.5;
+    }
+    .decisions-list li:last-child { border-bottom: none; }
+    .d-num {
+      font-family: "Fraunces", serif; font-size: 22px; font-weight: 300;
+      color: var(--burgundy); line-height: 1; flex-shrink: 0; width: 24px;
+      font-variation-settings: "SOFT" 100;
+    }
+    .d-label { font-weight: 600; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
+
+    /* ── SECTION HEADER ── */
+    .section-header { margin-bottom: 48px; padding-top: 64px; border-top: 1px solid var(--line); }
+    .section-num {
+      font-family: "Fraunces", serif; font-size: 11px; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--muted); font-weight: 400; margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: "Fraunces", serif; font-size: clamp(28px, 3vw, 42px);
+      font-weight: 400; font-variation-settings: "SOFT" 60, "opsz" 72;
+      line-height: 1.05; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .section-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .section-sub { margin-top: 8px; font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 580px; }
+
+    /* ── FRAMES ROW ── */
+    .frames-row {
+      display: flex; gap: 64px; align-items: flex-start; flex-wrap: wrap;
+    }
+    .frame-col { display: flex; flex-direction: column; gap: 12px; }
+    .frame-label {
+      font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+
+    /* ── PHONE FRAME ── */
+    .phone-frame {
+      width: 390px; border-radius: 44px; background: #1a1a1a;
+      padding: 10px;
+      box-shadow: 0 2px 0 rgba(255,255,255,0.05) inset,
+                  0 40px 80px -30px rgba(23,19,17,0.35),
+                  0 12px 24px -12px rgba(23,19,17,0.20);
+      position: relative; flex-shrink: 0;
+    }
+    .phone-frame::after {
+      content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 30px; border-radius: 20px; background: #1a1a1a; z-index: 30;
+    }
+    .phone-screen {
+      width: 100%; border-radius: 36px; overflow: hidden;
+      position: relative; background: var(--ivory);
+    }
+
+    /* Status bar */
+    .status-bar {
+      position: relative; height: 50px; display: flex; align-items: flex-end;
+      justify-content: space-between; padding: 0 28px 8px;
+      font-size: 13px; font-weight: 600; font-family: "Instrument Sans"; z-index: 20;
+      color: var(--ink);
+    }
+    .sb-icons { display: flex; gap: 5px; align-items: center; }
+    .sb-icons svg { width: 15px; height: 15px; fill: var(--ink); }
+
+    /* AppBar */
+    .app-appbar {
+      height: 56px; display: flex; align-items: center;
+      padding: 0 20px; border-bottom: 1px solid var(--line);
+      background: var(--surface); position: relative;
+    }
+    .appbar-back { color: var(--muted); display: flex; align-items: center; flex-shrink: 0; }
+    .appbar-back svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+    .appbar-title {
+      font-family: "Fraunces", serif; font-size: 17px; font-weight: 400; color: var(--ink);
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+
+    /* Step indicator inside phone */
+    .step-indicator {
+      padding: 12px 20px 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .step-dot {
+      height: 3px; border-radius: 2px; background: var(--bone); flex: 1;
+      transition: background 0.3s;
+    }
+    .step-dot.done { background: var(--burgundy); opacity: 0.5; }
+    .step-dot.active { background: var(--burgundy); }
+
+    /* Section label inside form */
+    .form-section-label {
+      padding: 16px 20px 6px;
+      font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+    .form-question {
+      padding: 0 20px 20px;
+      font-family: "Fraunces", serif; font-size: 20px; font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      line-height: 1.2; color: var(--ink);
+    }
+    .form-question em {
+      font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy);
+    }
+
+    /* ── MODE CARDS (shared) ── */
+    .mode-cards-wrap {
+      padding: 0 20px 4px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .mode-card {
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      position: relative;
+      cursor: pointer;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+      overflow: hidden;
+    }
+    .mode-card:active { transform: scale(0.98); }
+
+    /* Selected state */
+    .mode-card.selected {
+      border-color: var(--burgundy);
+      box-shadow: 0 0 0 3px rgba(122,34,50,0.12), 0 4px 16px -4px rgba(122,34,50,0.18);
+    }
+
+    /* Checkmark top-right */
+    .card-check {
+      position: absolute; top: 14px; right: 14px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--bone); border: 1.5px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.18s, border-color 0.18s;
+    }
+    .mode-card.selected .card-check {
+      background: var(--burgundy); border-color: var(--burgundy);
+    }
+    .card-check svg { width: 11px; height: 11px; stroke: #fff; fill: none; opacity: 0; transition: opacity 0.18s; }
+    .mode-card.selected .card-check svg { opacity: 1; }
+
+    /* Badge */
+    .card-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--burgundy); color: #fff;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .card-badge-gold {
+      background: var(--gold); color: var(--ink);
+    }
+
+    /* Card header row */
+    .card-header {
+      display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;
+    }
+    .card-illustration {
+      width: 48px; height: 48px; flex-shrink: 0;
+      background: rgba(122,34,50,0.06); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mode-card:not(.selected) .card-illustration { background: rgba(113,96,89,0.07); }
+
+    .card-title-block { flex: 1; padding-right: 28px; }
+    .card-title {
+      font-family: "Fraunces", serif; font-size: 16px; font-weight: 500;
+      font-variation-settings: "SOFT" 50, "opsz" 36;
+      color: var(--ink); line-height: 1.15; letter-spacing: -0.01em;
+    }
+    .card-example {
+      font-family: "Instrument Serif", serif; font-style: italic;
+      font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4;
+    }
+
+    /* Divider */
+    .card-divider { height: 1px; background: var(--bone); margin: 12px 0; }
+
+    /* Mini schedule schema */
+    .mini-schema {
+      margin-bottom: 12px;
+      background: rgba(232,220,200,0.35);
+      border-radius: 10px; padding: 10px 12px;
+    }
+    .schema-row {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 5px;
+    }
+    .schema-row:last-child { margin-bottom: 0; }
+    .schema-time {
+      font-size: 9.5px; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.04em; min-width: 28px;
+    }
+    .schema-slot {
+      height: 18px; border-radius: 4px; flex: 1;
+      display: flex; align-items: center; padding: 0 7px;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.04em;
+      white-space: nowrap; overflow: hidden;
+    }
+    .schema-slot.booked {
+      background: rgba(122,34,50,0.12); color: var(--burgundy);
+    }
+    .schema-slot.booked-alt {
+      background: rgba(200,155,71,0.16); color: #7a600e;
+    }
+    .schema-slot.free {
+      background: rgba(113,96,89,0.08); color: var(--muted);
+      border: 1px dashed var(--line);
+    }
+
+    /* Capacity row: multiple slots */
+    .schema-cap-row {
+      display: flex; align-items: center; gap: 4px; margin-bottom: 5px;
+    }
+    .schema-cap-row:last-child { margin-bottom: 0; }
+    .cap-pill {
+      height: 18px; border-radius: 4px; flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8.5px; font-weight: 600; letter-spacing: 0.03em;
+    }
+    .cap-pill.taken { background: rgba(122,34,50,0.12); color: var(--burgundy); }
+    .cap-pill.taken-2 { background: rgba(200,155,71,0.16); color: #7a600e; }
+    .cap-pill.taken-3 { background: rgba(111,126,85,0.18); color: var(--success); }
+    .cap-pill.available { background: rgba(113,96,89,0.07); color: var(--muted); border: 1px dashed var(--line); }
+    .cap-label {
+      font-size: 9.5px; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.04em; min-width: 28px;
+    }
+    .cap-bar-wrap { flex: 1; }
+    .cap-bar-bg {
+      height: 6px; background: var(--bone); border-radius: 3px; overflow: hidden;
+    }
+    .cap-bar-fill {
+      height: 100%; border-radius: 3px; background: var(--burgundy);
+    }
+
+    /* Bullets */
+    .card-bullets { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .card-bullets li {
+      display: flex; align-items: flex-start; gap: 7px;
+      font-size: 11.5px; color: var(--ink); line-height: 1.45;
+    }
+    .card-bullets li::before {
+      content: ""; flex-shrink: 0; width: 4px; height: 4px;
+      border-radius: 50%; background: var(--gold); margin-top: 5px;
+    }
+    .mode-card.selected .card-bullets li::before { background: var(--burgundy); }
+
+    /* Caption below cards */
+    .mode-caption {
+      padding: 12px 20px 20px;
+      font-family: "Instrument Serif", serif; font-style: italic;
+      font-size: 12px; color: var(--burgundy); line-height: 1.55; text-align: center;
+    }
+
+    /* CTA */
+    .cta-btn {
+      margin: 4px 20px 24px;
+      height: 52px; border-radius: 14px;
+      background: var(--burgundy); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+    }
+
+    /* ── DESKTOP FRAME ── */
+    .desktop-frame {
+      border-radius: 12px; overflow: hidden; background: #1a1a1a;
+      box-shadow: 0 40px 80px -30px rgba(23,19,17,0.35),
+                  0 12px 24px -12px rgba(23,19,17,0.20);
+      flex-shrink: 0;
+      width: 860px;
+    }
+    .browser-chrome {
+      height: 36px; background: #242424; display: flex; align-items: center;
+      padding: 0 16px; gap: 12px;
+    }
+    .traffic-lights { display: flex; gap: 6px; }
+    .tl { width: 12px; height: 12px; border-radius: 50%; }
+    .tl.red { background: #ff5f57; }
+    .tl.yellow { background: #ffbd2e; }
+    .tl.green { background: #28c840; }
+    .url-bar {
+      flex: 1; height: 22px; background: #2e2e2e; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: rgba(255,255,255,0.35); font-family: "Instrument Sans";
+      letter-spacing: 0.02em;
+    }
+    .app-shell {
+      display: flex; background: var(--ivory); min-height: 640px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px; background: var(--surface); border-right: 1px solid var(--line);
+      padding: 20px 0; flex-shrink: 0;
+    }
+    .sidebar-logo {
+      font-family: "Fraunces", serif; font-size: 16px; font-weight: 400; color: var(--ink);
+      font-variation-settings: "SOFT" 60; padding: 0 18px 16px;
+      border-bottom: 1px solid var(--line); margin-bottom: 8px;
+    }
+    .sidebar-logo em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .sidebar-section {
+      font-size: 8.5px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600; padding: 10px 18px 4px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 18px; font-size: 13px; color: var(--muted);
+      cursor: pointer; font-weight: 400;
+    }
+    .sidebar-item svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; opacity: 0.6; }
+    .sidebar-item.active {
+      color: var(--burgundy); background: rgba(122,34,50,0.06);
+    }
+    .sidebar-item.active svg { opacity: 1; }
+    .sidebar-step-num {
+      width: 18px; height: 18px; border-radius: 50%; background: var(--bone);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: var(--muted); flex-shrink: 0;
+    }
+    .sidebar-item.active .sidebar-step-num { background: var(--burgundy); color: #fff; }
+    .sidebar-item.done .sidebar-step-num { background: rgba(111,126,85,0.2); color: var(--success); }
+
+    /* Main content area */
+    .main-content {
+      flex: 1; padding: 32px 40px; overflow-y: auto;
+    }
+    .main-header {
+      margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--line);
+    }
+    .main-header-kicker {
+      font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600; margin-bottom: 6px;
+    }
+    .main-header-title {
+      font-family: "Fraunces", serif; font-size: 28px; font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      color: var(--ink); line-height: 1.1; letter-spacing: -0.018em;
+    }
+    .main-header-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .main-header-sub { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+    /* Desktop mode cards: side by side */
+    .mode-cards-desktop {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .mode-card-desktop {
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      overflow: hidden;
+    }
+    .mode-card-desktop.selected {
+      border-color: var(--burgundy);
+      box-shadow: 0 0 0 3px rgba(122,34,50,0.10), 0 6px 24px -6px rgba(122,34,50,0.15);
+    }
+
+    /* Desktop checkmark */
+    .card-check-desktop {
+      position: absolute; top: 16px; right: 16px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--bone); border: 1.5px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mode-card-desktop.selected .card-check-desktop {
+      background: var(--burgundy); border-color: var(--burgundy);
+    }
+    .card-check-desktop svg { width: 12px; height: 12px; stroke: #fff; fill: none; opacity: 0; }
+    .mode-card-desktop.selected .card-check-desktop svg { opacity: 1; }
+
+    /* Desktop card illustration — bigger */
+    .card-illustration-desktop {
+      width: 56px; height: 56px; flex-shrink: 0;
+      background: rgba(122,34,50,0.06); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .mode-card-desktop:not(.selected) .card-illustration-desktop { background: rgba(113,96,89,0.07); }
+
+    .card-title-desktop {
+      font-family: "Fraunces", serif; font-size: 19px; font-weight: 500;
+      font-variation-settings: "SOFT" 50, "opsz" 36;
+      color: var(--ink); line-height: 1.15; letter-spacing: -0.01em;
+      margin-bottom: 3px; padding-right: 30px;
+    }
+    .card-example-desktop {
+      font-family: "Instrument Serif", serif; font-style: italic;
+      font-size: 13px; color: var(--muted); margin-bottom: 14px;
+    }
+
+    /* Desktop mini schema */
+    .mini-schema-desktop {
+      margin-bottom: 14px;
+      background: rgba(232,220,200,0.35);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .schema-row-desktop {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    }
+    .schema-row-desktop:last-child { margin-bottom: 0; }
+    .schema-time-desktop {
+      font-size: 10px; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.04em; min-width: 32px;
+    }
+    .schema-slot-desktop {
+      height: 20px; border-radius: 5px; flex: 1;
+      display: flex; align-items: center; padding: 0 9px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+      white-space: nowrap; overflow: hidden;
+    }
+    .schema-cap-row-desktop {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+    }
+    .schema-cap-row-desktop:last-child { margin-bottom: 0; }
+    .cap-label-desktop {
+      font-size: 10px; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.04em; min-width: 32px;
+    }
+    .cap-pill-desktop {
+      height: 20px; border-radius: 5px; flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.03em;
+    }
+
+    /* Desktop card divider */
+    .card-divider-desktop { height: 1px; background: var(--bone); margin: 14px 0; }
+
+    /* Desktop bullets */
+    .card-bullets-desktop { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .card-bullets-desktop li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12.5px; color: var(--ink); line-height: 1.45;
+    }
+    .card-bullets-desktop li::before {
+      content: ""; flex-shrink: 0; width: 4px; height: 4px;
+      border-radius: 50%; background: var(--gold); margin-top: 5px;
+    }
+    .mode-card-desktop.selected .card-bullets-desktop li::before { background: var(--burgundy); }
+
+    /* Desktop caption + CTA */
+    .desktop-footer {
+      margin-top: 20px; display: flex; align-items: center; justify-content: space-between;
+      gap: 24px;
+    }
+    .desktop-caption {
+      font-family: "Instrument Serif", serif; font-style: italic;
+      font-size: 13px; color: var(--burgundy); line-height: 1.5;
+    }
+    .desktop-cta {
+      flex-shrink: 0;
+      height: 46px; padding: 0 28px; border-radius: 12px;
+      background: var(--burgundy); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    /* ── ANNOTATION BLOCK ── */
+    .annotations { margin-top: 80px; padding-top: 64px; border-top: 1px solid var(--line); }
+    .annotations-title {
+      font-family: "Fraunces", serif; font-size: 26px; font-weight: 400;
+      font-variation-settings: "SOFT" 60, "opsz" 72;
+      color: var(--ink); margin-bottom: 32px; letter-spacing: -0.015em;
+    }
+    .annotations-title em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--burgundy); }
+    .annotation-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+    .annotation-item { }
+    .ann-num {
+      font-family: "Fraunces", serif; font-size: 32px; font-weight: 300;
+      color: var(--burgundy); opacity: 0.35; line-height: 1;
+      font-variation-settings: "SOFT" 100;
+      margin-bottom: 8px;
+    }
+    .ann-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); margin-bottom: 6px; }
+    .ann-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+    .ann-body em { font-family: "Instrument Serif", serif; font-style: italic; color: var(--ink); }
+
+    @media (max-width: 900px) {
+      .intro-block { grid-template-columns: 1fr; }
+      .annotation-grid { grid-template-columns: 1fr 1fr; }
+      .masthead { grid-template-columns: 1fr; gap: 12px; }
+      .mast-meta { text-align: left; }
+      .desktop-frame { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div>
+      <div class="mast-kicker">Design Proposal · Termini im</div>
+      <h1 class="mast-title">Choix du mode<br>de <em>booking</em></h1>
+    </div>
+    <div></div>
+    <div class="mast-meta">
+      <b>Company Setup · Étape 4/5</b><br>
+      Composant · UX Review<br>
+      PRISHTINË · 2026
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <div class="intro-block">
+    <div class="intro-text">
+      <p>
+        Ce composant remplace l'actuel sélecteur radio (jargon technique) par deux cards comparatives auto-explicatives. L'objectif : qu'un owner arrivant via Google Sign-In comprenne <em style="font-family:'Instrument Serif',serif;font-style:italic">immédiatement</em> quel mode correspond à son salon, sans aide externe.
+      </p>
+    </div>
+    <ul class="decisions-list">
+      <li>
+        <span class="d-num">1</span>
+        <div>
+          <span class="d-label">Pré-sélection</span>
+          "Individuel" est pré-sélectionné — 80 %+ des salons démarrent ainsi.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">2</span>
+        <div>
+          <span class="d-label">Schéma visuel</span>
+          Mini agenda fonctionnel (pas un emoji) illustrant le comportement réel côté client.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">3</span>
+        <div>
+          <span class="d-label">Badge "Populaire"</span>
+          Bordeaux sobre — recommandation éditoriale, pas pression commerciale.
+        </div>
+      </li>
+      <li>
+        <span class="d-num">4</span>
+        <div>
+          <span class="d-label">Caption rassurante</span>
+          Réduction d'anxiété : l'owner sait qu'il peut changer plus tard.
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION : FRAMES -->
+  <div class="section-header">
+    <div class="section-num">Section 01</div>
+    <h2 class="section-title">Rendu <em>screens</em></h2>
+    <p class="section-sub">Mobile 390px (gauche) + Desktop 1200px (droite). Le composant "Choix du mode" est isolé — le reste du formulaire est contextuel.</p>
+  </div>
+
+  <div class="frames-row">
+
+    <!-- ═══════════════════════════════════════════
+         PHONE FRAME
+    ════════════════════════════════════════════ -->
+    <div class="frame-col">
+      <div class="frame-label">Mobile · 390 × auto</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+
+          <!-- Status bar -->
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="sb-icons">
+              <!-- Signal -->
+              <svg viewBox="0 0 15 15"><rect x="0" y="9" width="3" height="6" rx="0.5"/><rect x="4" y="6" width="3" height="9" rx="0.5"/><rect x="8" y="3" width="3" height="12" rx="0.5"/><rect x="12" y="0" width="3" height="15" rx="0.5"/></svg>
+              <!-- Wifi -->
+              <svg viewBox="0 0 15 11" fill="none" stroke="var(--ink)" stroke-width="1.4"><path d="M7.5 8.5a1 1 0 110 2 1 1 0 010-2z" fill="var(--ink)" stroke="none"/><path d="M4.5 6C5.6 4.9 6.5 4.5 7.5 4.5s1.9.4 3 1.5"/><path d="M2 3.5C3.7 1.8 5.5 1 7.5 1s3.8.8 5.5 2.5"/></svg>
+              <!-- Battery -->
+              <svg viewBox="0 0 20 11" fill="none"><rect x="0.5" y="0.5" width="16" height="10" rx="2.5" stroke="var(--ink)" stroke-width="1"/><rect x="2" y="2" width="11" height="7" rx="1.5" fill="var(--ink)"/><path d="M17.5 3.5v4c.83-.5 1.5-1.1 1.5-2s-.67-1.5-1.5-2z" fill="var(--ink)"/></svg>
+            </div>
+          </div>
+
+          <!-- AppBar -->
+          <div class="app-appbar">
+            <div class="appbar-back">
+              <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <div class="appbar-title">Mon salon</div>
+          </div>
+
+          <!-- Step dots -->
+          <div class="step-indicator">
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+          </div>
+
+          <!-- Section label + question -->
+          <div class="form-section-label">Étape 4 sur 5</div>
+          <div class="form-question">Comment fonctionne<br>ton <em>salon</em> ?</div>
+
+          <!-- MODE CARDS -->
+          <div class="mode-cards-wrap">
+
+            <!-- Card 1 : individuel — SELECTED -->
+            <div class="mode-card selected">
+              <div class="card-check">
+                <svg viewBox="0 0 12 12" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg>
+              </div>
+
+              <div class="card-badge">Populaire</div>
+
+              <div class="card-header">
+                <div class="card-illustration">
+                  <!-- SVG : 1 chaise + horloge stylisée -->
+                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Chaise (silhouette éditoriale) -->
+                    <rect x="8" y="6" width="8" height="7" rx="2" fill="#7a2232" opacity="0.8"/>
+                    <rect x="9" y="13" width="6" height="1.5" rx="0.5" fill="#7a2232" opacity="0.5"/>
+                    <rect x="9" y="14.5" width="2" height="5" rx="1" fill="#7a2232" opacity="0.6"/>
+                    <rect x="13" y="14.5" width="2" height="5" rx="1" fill="#7a2232" opacity="0.6"/>
+                    <!-- Horloge petite -->
+                    <circle cx="21" cy="8" r="5" fill="none" stroke="#c89b47" stroke-width="1.5"/>
+                    <line x1="21" y1="5.5" x2="21" y2="8" stroke="#c89b47" stroke-width="1.2" stroke-linecap="round"/>
+                    <line x1="21" y1="8" x2="23" y2="8" stroke="#c89b47" stroke-width="1.2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="card-title-block">
+                  <div class="card-title">Mode individuel</div>
+                  <div class="card-example">Ex : Salon 2 coiffeuses, chacune son agenda</div>
+                </div>
+              </div>
+
+              <!-- Mini schema : 3 slots attribués à un pro nommé -->
+              <div class="mini-schema">
+                <div class="schema-row">
+                  <span class="schema-time">10h</span>
+                  <div class="schema-slot booked">Ardit — Coupe homme</div>
+                </div>
+                <div class="schema-row">
+                  <span class="schema-time">11h</span>
+                  <div class="schema-slot booked-alt">Mimoza — Balayage</div>
+                </div>
+                <div class="schema-row">
+                  <span class="schema-time">12h</span>
+                  <div class="schema-slot free">Disponible</div>
+                </div>
+              </div>
+
+              <div class="card-divider"></div>
+
+              <ul class="card-bullets">
+                <li>Chaque pro a son propre planning</li>
+                <li>Les clients choisissent leur pro préféré·e</li>
+                <li>Invite ton équipe à tout moment</li>
+                <li>Recommandé pour les pros qui gèrent leurs propres revenus</li>
+              </ul>
+            </div>
+
+            <!-- Card 2 : capacité — NOT SELECTED -->
+            <div class="mode-card">
+              <div class="card-check">
+                <svg viewBox="0 0 12 12" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg>
+              </div>
+
+              <div class="card-header">
+                <div class="card-illustration">
+                  <!-- SVG : 4 chaises alignées + barre de capacité -->
+                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 4 mini chaises alignées -->
+                    <rect x="2" y="7" width="5" height="5" rx="1.5" fill="#716059" opacity="0.5"/>
+                    <rect x="2.5" y="12" width="4" height="1" rx="0.3" fill="#716059" opacity="0.4"/>
+                    <rect x="3" y="13" width="1.5" height="3.5" rx="0.5" fill="#716059" opacity="0.4"/>
+                    <rect x="4.5" y="13" width="1.5" height="3.5" rx="0.5" fill="#716059" opacity="0.4"/>
+
+                    <rect x="8" y="7" width="5" height="5" rx="1.5" fill="#716059" opacity="0.5"/>
+                    <rect x="8.5" y="12" width="4" height="1" rx="0.3" fill="#716059" opacity="0.4"/>
+                    <rect x="9" y="13" width="1.5" height="3.5" rx="0.5" fill="#716059" opacity="0.4"/>
+                    <rect x="10.5" y="13" width="1.5" height="3.5" rx="0.5" fill="#716059" opacity="0.4"/>
+
+                    <rect x="14" y="7" width="5" height="5" rx="1.5" fill="#7a2232" opacity="0.6"/>
+                    <rect x="14.5" y="12" width="4" height="1" rx="0.3" fill="#7a2232" opacity="0.5"/>
+                    <rect x="15" y="13" width="1.5" height="3.5" rx="0.5" fill="#7a2232" opacity="0.5"/>
+                    <rect x="16.5" y="13" width="1.5" height="3.5" rx="0.5" fill="#7a2232" opacity="0.5"/>
+
+                    <rect x="20" y="7" width="5" height="5" rx="1.5" fill="#c89b47" opacity="0.6"/>
+                    <rect x="20.5" y="12" width="4" height="1" rx="0.3" fill="#c89b47" opacity="0.5"/>
+                    <rect x="21" y="13" width="1.5" height="3.5" rx="0.5" fill="#c89b47" opacity="0.5"/>
+                    <rect x="22.5" y="13" width="1.5" height="3.5" rx="0.5" fill="#c89b47" opacity="0.5"/>
+
+                    <!-- Barre capacité -->
+                    <rect x="2" y="22" width="24" height="3" rx="1.5" fill="#e8dcc8"/>
+                    <rect x="2" y="22" width="16" height="3" rx="1.5" fill="#7a2232" opacity="0.55"/>
+                    <text x="2" y="21" font-size="6" fill="#716059" font-family="sans-serif">3/4</text>
+                  </svg>
+                </div>
+                <div class="card-title-block">
+                  <div class="card-title">Mode capacité</div>
+                  <div class="card-example">Ex : Grand salon, 5 places en parallèle</div>
+                </div>
+              </div>
+
+              <!-- Mini schema : créneaux × N places -->
+              <div class="mini-schema">
+                <div class="schema-cap-row">
+                  <span class="cap-label">10h</span>
+                  <div class="cap-pill taken">Client 1</div>
+                  <div class="cap-pill taken-2">Client 2</div>
+                  <div class="cap-pill taken-3">Client 3</div>
+                  <div class="cap-pill available">Libre</div>
+                </div>
+                <div class="schema-cap-row">
+                  <span class="cap-label">11h</span>
+                  <div class="cap-pill taken">Client 4</div>
+                  <div class="cap-pill taken-2">Client 5</div>
+                  <div class="cap-pill available">Libre</div>
+                  <div class="cap-pill available">Libre</div>
+                </div>
+                <div class="schema-cap-row">
+                  <span class="cap-label" style="font-size:8px;color:var(--muted)">places</span>
+                  <div class="cap-bar-wrap" style="display:flex;flex-direction:column;gap:3px;">
+                    <div style="display:flex;align-items:center;gap:6px;flex:1;">
+                      <div class="cap-bar-bg" style="flex:1;"><div class="cap-bar-fill" style="width:75%;"></div></div>
+                      <span style="font-size:9px;color:var(--muted);min-width:24px;">3/4</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;flex:1;">
+                      <div class="cap-bar-bg" style="flex:1;"><div class="cap-bar-fill" style="width:50%;"></div></div>
+                      <span style="font-size:9px;color:var(--muted);min-width:24px;">2/4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-divider"></div>
+
+              <ul class="card-bullets">
+                <li>Les créneaux ne sont pas attribués à un pro</li>
+                <li>Le salon affecte les clients à l'arrivée</li>
+                <li>Recommandé pour 5+ pros ou instituts</li>
+              </ul>
+            </div>
+
+          </div><!-- end mode-cards-wrap -->
+
+          <!-- Caption rassurante -->
+          <div class="mode-caption">
+            Tu peux changer ce paramètre plus tard depuis Mon Salon → Paramètres.
+          </div>
+
+          <!-- CTA -->
+          <div class="cta-btn">Continuer</div>
+
+        </div><!-- phone-screen -->
+      </div><!-- phone-frame -->
+    </div><!-- frame-col -->
+
+    <!-- ═══════════════════════════════════════════
+         DESKTOP FRAME
+    ════════════════════════════════════════════ -->
+    <div class="frame-col">
+      <div class="frame-label">Desktop · 860px (représentatif 1200px)</div>
+      <div class="desktop-frame">
+        <!-- Browser chrome -->
+        <div class="browser-chrome">
+          <div class="traffic-lights">
+            <div class="tl red"></div><div class="tl yellow"></div><div class="tl green"></div>
+          </div>
+          <div class="url-bar">app.termini.im/company-setup</div>
+        </div>
+
+        <!-- App shell -->
+        <div class="app-shell">
+
+          <!-- Sidebar -->
+          <div class="sidebar">
+            <div class="sidebar-logo">Termini <em>im</em></div>
+            <div class="sidebar-section">Configuration</div>
+            <div class="sidebar-item done">
+              <div class="sidebar-step-num">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="2 5 4.5 7.5 8 3"/></svg>
+              </div>
+              Informations générales
+            </div>
+            <div class="sidebar-item done">
+              <div class="sidebar-step-num">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="2 5 4.5 7.5 8 3"/></svg>
+              </div>
+              Adresse &amp; contact
+            </div>
+            <div class="sidebar-item done">
+              <div class="sidebar-step-num">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="2 5 4.5 7.5 8 3"/></svg>
+              </div>
+              Téléphone
+            </div>
+            <div class="sidebar-item active">
+              <div class="sidebar-step-num">4</div>
+              Mode de booking
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-step-num">5</div>
+              Descriptif
+            </div>
+          </div>
+
+          <!-- Main -->
+          <div class="main-content">
+            <div class="main-header">
+              <div class="main-header-kicker">Étape 4 sur 5</div>
+              <div class="main-header-title">Comment fonctionne ton <em>salon</em> ?</div>
+              <div class="main-header-sub">Choisis le mode qui correspond à ton organisation. Tu pourras toujours le modifier depuis les paramètres.</div>
+            </div>
+
+            <!-- Desktop cards side-by-side -->
+            <div class="mode-cards-desktop">
+
+              <!-- Card 1 : individuel — SELECTED -->
+              <div class="mode-card-desktop selected">
+                <div class="card-check-desktop">
+                  <svg viewBox="0 0 12 12" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                  <div class="card-badge" style="margin-bottom:0;">Populaire</div>
+                </div>
+
+                <div class="card-illustration-desktop">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="9" y="6" width="10" height="9" rx="2.5" fill="#7a2232" opacity="0.8"/>
+                    <rect x="10" y="15" width="8" height="2" rx="0.5" fill="#7a2232" opacity="0.5"/>
+                    <rect x="10" y="17" width="2.5" height="6" rx="1.2" fill="#7a2232" opacity="0.6"/>
+                    <rect x="15.5" y="17" width="2.5" height="6" rx="1.2" fill="#7a2232" opacity="0.6"/>
+                    <circle cx="24" cy="9" r="6" fill="none" stroke="#c89b47" stroke-width="1.6"/>
+                    <line x1="24" y1="6" x2="24" y2="9" stroke="#c89b47" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="24" y1="9" x2="26.5" y2="9" stroke="#c89b47" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+
+                <div class="card-title-desktop">Mode individuel</div>
+                <div class="card-example-desktop">Ex : Salon 2 coiffeuses, chacune son agenda</div>
+
+                <div class="mini-schema-desktop">
+                  <div class="schema-row-desktop">
+                    <span class="schema-time-desktop">10h</span>
+                    <div class="schema-slot-desktop booked">Ardit — Coupe homme</div>
+                  </div>
+                  <div class="schema-row-desktop">
+                    <span class="schema-time-desktop">11h</span>
+                    <div class="schema-slot-desktop booked-alt">Mimoza — Balayage</div>
+                  </div>
+                  <div class="schema-row-desktop">
+                    <span class="schema-time-desktop">12h</span>
+                    <div class="schema-slot-desktop free">Disponible</div>
+                  </div>
+                </div>
+
+                <div class="card-divider-desktop"></div>
+
+                <ul class="card-bullets-desktop">
+                  <li>Chaque pro a son propre planning</li>
+                  <li>Les clients choisissent leur pro préféré·e</li>
+                  <li>Invite ton équipe à tout moment</li>
+                  <li>Recommandé pour les pros qui gèrent leurs propres revenus</li>
+                </ul>
+              </div>
+
+              <!-- Card 2 : capacité — NOT SELECTED -->
+              <div class="mode-card-desktop">
+                <div class="card-check-desktop">
+                  <svg viewBox="0 0 12 12" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg>
+                </div>
+
+                <div style="height:22px;margin-bottom:6px;"></div><!-- spacer to align with badge -->
+
+                <div class="card-illustration-desktop">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="6" width="6" height="7" rx="1.8" fill="#716059" opacity="0.45"/>
+                    <rect x="1.5" y="13" width="5" height="1.2" rx="0.3" fill="#716059" opacity="0.3"/>
+                    <rect x="2" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#716059" opacity="0.35"/>
+                    <rect x="4.2" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#716059" opacity="0.35"/>
+
+                    <rect x="9" y="6" width="6" height="7" rx="1.8" fill="#716059" opacity="0.45"/>
+                    <rect x="9.5" y="13" width="5" height="1.2" rx="0.3" fill="#716059" opacity="0.3"/>
+                    <rect x="10" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#716059" opacity="0.35"/>
+                    <rect x="12.2" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#716059" opacity="0.35"/>
+
+                    <rect x="17" y="6" width="6" height="7" rx="1.8" fill="#7a2232" opacity="0.65"/>
+                    <rect x="17.5" y="13" width="5" height="1.2" rx="0.3" fill="#7a2232" opacity="0.45"/>
+                    <rect x="18" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#7a2232" opacity="0.5"/>
+                    <rect x="20.2" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#7a2232" opacity="0.5"/>
+
+                    <rect x="25" y="6" width="6" height="7" rx="1.8" fill="#c89b47" opacity="0.65"/>
+                    <rect x="25.5" y="13" width="5" height="1.2" rx="0.3" fill="#c89b47" opacity="0.45"/>
+                    <rect x="26" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#c89b47" opacity="0.5"/>
+                    <rect x="28.2" y="14.2" width="1.8" height="4.5" rx="0.8" fill="#c89b47" opacity="0.5"/>
+
+                    <!-- Barre capacité -->
+                    <rect x="1" y="25" width="30" height="3.5" rx="1.75" fill="#e8dcc8"/>
+                    <rect x="1" y="25" width="22" height="3.5" rx="1.75" fill="#7a2232" opacity="0.5"/>
+                  </svg>
+                </div>
+
+                <div class="card-title-desktop">Mode capacité</div>
+                <div class="card-example-desktop">Ex : Grand salon, 5 places en parallèle</div>
+
+                <div class="mini-schema-desktop">
+                  <div class="schema-cap-row-desktop">
+                    <span class="cap-label-desktop">10h</span>
+                    <div class="cap-pill-desktop taken" style="background:rgba(122,34,50,0.12);color:var(--burgundy);">C.1</div>
+                    <div class="cap-pill-desktop taken-2" style="background:rgba(200,155,71,0.16);color:#7a600e;">C.2</div>
+                    <div class="cap-pill-desktop taken-3" style="background:rgba(111,126,85,0.18);color:var(--success);">C.3</div>
+                    <div class="cap-pill-desktop" style="background:rgba(113,96,89,0.07);color:var(--muted);border:1px dashed var(--line);">Libre</div>
+                  </div>
+                  <div class="schema-cap-row-desktop">
+                    <span class="cap-label-desktop">11h</span>
+                    <div class="cap-pill-desktop taken" style="background:rgba(122,34,50,0.12);color:var(--burgundy);">C.4</div>
+                    <div class="cap-pill-desktop taken-2" style="background:rgba(200,155,71,0.16);color:#7a600e;">C.5</div>
+                    <div class="cap-pill-desktop" style="background:rgba(113,96,89,0.07);color:var(--muted);border:1px dashed var(--line);">Libre</div>
+                    <div class="cap-pill-desktop" style="background:rgba(113,96,89,0.07);color:var(--muted);border:1px dashed var(--line);">Libre</div>
+                  </div>
+                  <div class="schema-cap-row-desktop" style="margin-top:6px;">
+                    <span class="cap-label-desktop" style="font-size:9px;">remplissage</span>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="cap-bar-bg" style="flex:1;"><div class="cap-bar-fill" style="width:75%;"></div></div>
+                        <span style="font-size:9.5px;color:var(--muted);min-width:28px;">3 / 4</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="cap-bar-bg" style="flex:1;"><div class="cap-bar-fill" style="width:50%;"></div></div>
+                        <span style="font-size:9.5px;color:var(--muted);min-width:28px;">2 / 4</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-divider-desktop"></div>
+
+                <ul class="card-bullets-desktop">
+                  <li>Les créneaux ne sont pas attribués à un pro</li>
+                  <li>Le salon affecte les clients à l'arrivée</li>
+                  <li>Recommandé pour 5+ pros ou instituts</li>
+                </ul>
+              </div>
+
+            </div><!-- mode-cards-desktop -->
+
+            <!-- Footer desktop -->
+            <div class="desktop-footer">
+              <div class="desktop-caption">
+                Tu peux changer ce paramètre plus tard depuis Mon Salon → Paramètres.
+              </div>
+              <div class="desktop-cta">Continuer →</div>
+            </div>
+
+          </div><!-- main-content -->
+        </div><!-- app-shell -->
+      </div><!-- desktop-frame -->
+    </div><!-- frame-col -->
+
+  </div><!-- frames-row -->
+
+  <!-- ANNOTATIONS -->
+  <div class="annotations">
+    <h2 class="annotations-title">Notes de <em>design</em></h2>
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="ann-num">01</div>
+        <div class="ann-title">Illustration SVG par card</div>
+        <div class="ann-body">
+          Card individuel : <em>1 chaise + horloge</em> (siège = pro individuel, horloge = son créneau propre). Card capacité : <em>4 chaises alignées + barre de remplissage</em> (n postes parallèles, niveau de remplissage visible en temps réel). Les formes sont géométriques, pas iconographiques — elles codifient le concept sans être littérales.
+        </div>
+      </div>
+      <div class="annotation-item">
+        <div class="ann-num">02</div>
+        <div class="ann-title">Pré-sélection "Individuel"</div>
+        <div class="ann-body">
+          "Mode individuel" est pré-sélectionné dès l'ouverture. Hick's Law : réduire la charge de décision pour l'owner qui découvre le produit. Le ring bordeaux + checkmark rempli indique clairement le choix actif. L'owner peut toujours basculer sur "Capacité" d'un tap.
+        </div>
+      </div>
+      <div class="annotation-item">
+        <div class="ann-num">03</div>
+        <div class="ann-title">Badge "Populaire" vs neutralité</div>
+        <div class="ann-body">
+          Tension résolue en faveur d'une recommandation éditoriale légère. Le badge bordeaux est sobre (pas d'étoile, pas de "Recommandé #1") — il signale la norme du marché sans pression. Un owner qui gère un grand institut se sent libre de choisir "Capacité" sans sentiment d'aller à contre-courant.
+        </div>
+      </div>
+      <div class="annotation-item">
+        <div class="ann-num">04</div>
+        <div class="ann-title">Schéma visuel fonctionnel</div>
+        <div class="ann-body">
+          Le mini-agenda dans chaque card n'est pas décoratif — il simule le rendu réel que verra le client final lors de la réservation. Pour "individuel" : prénoms de pro nommés (Ardit, Mimoza). Pour "capacité" : client anonymisé (C.1, C.2) + barre de remplissage. Compréhension immédiate sans lire les bullets.
+        </div>
+      </div>
+      <div class="annotation-item">
+        <div class="ann-num">05</div>
+        <div class="ann-title">Caption rassurante — réduction d'anxiété</div>
+        <div class="ann-body">
+          "Tu peux changer ce paramètre plus tard" réduit l'anxiété de l'owner face à un choix irréversible apparent. En Instrument Serif italic bordeaux — typographie douce, non-alarmiste. Positionnée après les deux cards, elle clôt la section avant le CTA principal.
+        </div>
+      </div>
+      <div class="annotation-item">
+        <div class="ann-num">06</div>
+        <div class="ann-title">Densité vs clarté</div>
+        <div class="ann-body">
+          Les cards concentrent 4 niveaux d'info (badge, titre, exemple, schéma, bullets) dans un espace mobile contraint. L'ordre est hiérarchisé : badge → titre → exemple italique (un seul scan) → schéma (validation visuelle) → bullets (confirmation). L'owner comprend le mode en 2 secondes, les bullets confirment pour les doubleurs.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- page -->
+</body>
+</html>

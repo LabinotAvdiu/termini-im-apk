@@ -8,9 +8,13 @@
 RewriteEngine On
 
 # Pretty URLs for static legal pages. Needs to come BEFORE the SPA fallback
-# so Apache serves the real HTML file instead of index.html. Add a rule per
-# legal page as they ship (terms.html is planned, not deployed yet).
+# so Apache serves the real HTML file instead of index.html. Each legal
+# document ships in 3 language variants; the canonical URL is the FR one
+# (default in Kosovo + diaspora FR), EN and SQ via /terms/en and /terms/sq.
 RewriteRule ^privacy/?$ privacy.html [L]
+RewriteRule ^terms/?$ terms.html [L]
+RewriteRule ^terms/en/?$ terms-en.html [L]
+RewriteRule ^terms/sq/?$ terms-sq.html [L]
 
 # If the request matches an existing file or directory, serve it directly.
 RewriteCond %{REQUEST_FILENAME} -f [OR]

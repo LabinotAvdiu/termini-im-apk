@@ -19,7 +19,9 @@ import '../../../support/data/models/support_models.dart';
 import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
+import '../../../shell/presentation/providers/shell_nav_provider.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/auto_approve_card.dart';
 import '../widgets/salon_geocoding_banner.dart';
 import 'company_dashboard_screen_mobile.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
@@ -133,7 +135,7 @@ class CompanyDashboardScreenDesktop extends ConsumerWidget {
 // Main scrollable content
 // ---------------------------------------------------------------------------
 
-class _DesktopMainContent extends StatelessWidget {
+class _DesktopMainContent extends ConsumerWidget {
   final CompanyDashboardState state;
   final _OnEditCompany onEditCompany;
   final VoidCallback onAddCategory;
@@ -173,7 +175,7 @@ class _DesktopMainContent extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final company = state.company;
 
     return RefreshIndicator(
@@ -251,6 +253,14 @@ class _DesktopMainContent extends StatelessWidget {
                 onEditService: onEditService,
                 onDeleteService: onDeleteService,
               ),
+
+              // Auto-approve sits right after services so it lands high on
+              // the page — the owner sees the validation policy before the
+              // scheduling details.
+              if (company.bookingMode == 'capacity_based') ...[
+                const SizedBox(height: AppSpacing.xl),
+                AutoApproveCard(key: ref.watch(autoApproveCardKeyProvider)),
+              ],
 
               const SizedBox(height: AppSpacing.xl),
 
@@ -455,8 +465,22 @@ class _MetricTilesRow extends StatelessWidget {
         Expanded(
           child: _KpiTile(
             label: l.dashboardKpiMode,
-            value: company.bookingMode == 'capacity_based' ? l.capacityMode : l.employee,
+            value: company.bookingMode == 'capacity_based'
+                ? l.capacityMode
+                : l.employee,
             isTextValue: true,
+            // Capacity-only: a tiny overline ("VALIDATION") above the
+            // italic qualifier ("auto" / "manuelle") so the footnote reads
+            // unambiguously — the mini-title makes clear what `auto` refers
+            // to. Without it, just "auto" felt orphaned.
+            sublabelTitle: company.bookingMode == 'capacity_based'
+                ? l.autoApprovalBadgeTitle
+                : null,
+            sublabel: company.bookingMode == 'capacity_based'
+                ? (company.capacityAutoApprove
+                    ? l.autoApprovalBadgeAuto
+                    : l.autoApprovalBadgeManual)
+                : null,
           ),
         ),
       ],
@@ -468,11 +492,21 @@ class _KpiTile extends StatelessWidget {
   final String label;
   final String value;
   final bool isTextValue;
+  /// Optional micro-title for the footnote, rendered as an overline above
+  /// [sublabel] (e.g. "VALIDATION" before "auto"). Gives the qualifier a
+  /// clear subject so it can be read in isolation.
+  final String? sublabelTitle;
+  /// Optional footnote under the value (e.g. "auto" / "manuelle" for the
+  /// capacity mode tile). Rendered with a short gold rule and an italic
+  /// serif line so it reads as a quiet editorial note, not a second KPI.
+  final String? sublabel;
 
   const _KpiTile({
     required this.label,
     required this.value,
     this.isTextValue = false,
+    this.sublabelTitle,
+    this.sublabel,
   });
 
   @override
@@ -515,6 +549,34 @@ class _KpiTile extends StatelessWidget {
                     height: 1.0,
                   ),
                 ),
+          if (sublabel != null) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: 22,
+              height: 1,
+              color: AppColors.secondary.withValues(alpha: 0.55),
+            ),
+            const SizedBox(height: 6),
+            if (sublabelTitle != null)
+              Text(
+                sublabelTitle!.toUpperCase(),
+                style: AppTextStyles.overline.copyWith(
+                  color: AppColors.textHint,
+                  letterSpacing: 1.4,
+                  fontSize: 10,
+                ),
+              ),
+            Text(
+              sublabel!,
+              style: GoogleFonts.instrumentSerif(
+                fontSize: 15,
+                fontStyle: FontStyle.italic,
+                color: AppColors.primary,
+                letterSpacing: 0.1,
+                height: 1.2,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -551,12 +613,7 @@ class _DesktopSalonInfoCard extends ConsumerWidget {
             children: [
               Text(
                 context.l10n.companyInfo,
-                style: GoogleFonts.fraunces(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.4,
-                  color: AppColors.textPrimary,
-                ),
+                style: AppTextStyles.h3,
               ),
               const Spacer(),
               TextButton.icon(
@@ -702,12 +759,7 @@ class _DesktopHoursCard extends StatelessWidget {
             children: [
               Text(
                 context.l10n.openingHours,
-                style: GoogleFonts.fraunces(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.4,
-                  color: AppColors.textPrimary,
-                ),
+                style: AppTextStyles.h3,
               ),
               const Spacer(),
               IconButton(
@@ -780,12 +832,7 @@ class _DesktopServicesSection extends ConsumerWidget {
             children: [
               Text(
                 context.l10n.servicesAndCategories,
-                style: GoogleFonts.fraunces(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.4,
-                  color: AppColors.textPrimary,
-                ),
+                style: AppTextStyles.h3,
               ),
               const Spacer(),
               TextButton.icon(
@@ -864,15 +911,7 @@ class _DesktopTeamSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.team,
-            style: GoogleFonts.fraunces(
-              fontSize: 22,
-              fontWeight: FontWeight.w400,
-              letterSpacing: -0.4,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          Text(context.l10n.team, style: AppTextStyles.h3),
           const SizedBox(height: AppSpacing.sm),
           const Divider(color: AppColors.divider, height: 1),
           const SizedBox(height: AppSpacing.sm),
@@ -1026,15 +1065,7 @@ class _DesktopGallerySection extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Text(
-                context.l10n.gallery,
-                style: GoogleFonts.fraunces(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.4,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              Text(context.l10n.gallery, style: AppTextStyles.h3),
               const Spacer(),
               if (uploading)
                 const SizedBox(
@@ -1092,12 +1123,7 @@ class _DesktopReviewsCard extends ConsumerWidget {
             children: [
               Text(
                 context.l10n.reviewsReceivedCardTitle,
-                style: GoogleFonts.fraunces(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.4,
-                  color: AppColors.textPrimary,
-                ),
+                style: AppTextStyles.h3,
               ),
               const Spacer(),
               TextButton(

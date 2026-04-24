@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -1910,6 +1911,8 @@ class _WalkInDialogState extends ConsumerState<_WalkInDialog> {
     if (!mounted) return;
     if (success) {
       Navigator.of(context).pop();
+      // E25 — walk_in_created
+      ref.read(analyticsProvider).logWalkInCreated();
       context.showSnackBar(context.l10n.walkInSuccess);
     } else {
       final error = ref.read(scheduleProvider).error;

@@ -7,11 +7,13 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../shell/presentation/providers/shell_nav_provider.dart';
 import '../../data/datasources/my_company_remote_datasource.dart';
 import '../providers/company_dashboard_provider.dart';
 import '../providers/pending_count_provider.dart';
 import '../widgets/pending_day_helpers.dart';
 import '../widgets/reject_appointment_dialog.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
 // ---------------------------------------------------------------------------
@@ -115,22 +117,28 @@ class _PendingApprovalsScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(_pendingProvider);
+    final dashboardState = ref.watch(companyDashboardProvider);
+    final company = dashboardState.company;
+
+    // When auto-approve is on for a capacity_based salon, appointments go
+    // straight to confirmed — the pending list is always empty by design.
+    // Show the editorial empty state instead of a real empty list so the
+    // owner understands why there's nothing here. We do NOT hide the menu
+    // item — navigation stays consistent.
+    final isAutoApproveActive = company != null &&
+        company.bookingMode == 'capacity_based' &&
+        company.capacityAutoApprove;
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(context.l10n.pendingApprovals, style: AppTextStyles.h3),
-        backgroundColor: AppColors.surface,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        shadowColor: AppColors.cardShadow,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: state.isLoading
+      appBar: AppTopBar.standard(title: context.l10n.pendingApprovals),
+      body: isAutoApproveActive
+          ? _AutoApproveEmptyView(
+              onEditSetting: () => ref
+                  .read(shellNavProvider.notifier)
+                  .request(ShellTab.salon, scrollTo: 'autoApprove'),
+            )
+          : state.isLoading
           ? const SkeletonPendingApprovals()
           : Builder(
               builder: (context) {
@@ -572,4 +580,167 @@ class _EmptyView extends StatelessWidget {
       ),
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Auto-approve editorial empty state
+//
+// Shown when the salon is in capacity_based mode AND capacityAutoApprove=true.
+// Replaces the pending list content (the menu item itself stays visible).
+// ---------------------------------------------------------------------------
+
+class _AutoApproveEmptyView extends StatelessWidget {
+  final VoidCallback onEditSetting;
+
+  const _AutoApproveEmptyView({required this.onEditSetting});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.xxl,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Bordeaux circle (64dp) with checkmark + dashed ring
+            _DashedRingIcon(),
+            const SizedBox(height: AppSpacing.lg),
+            // Fraunces italic headline — design proposal copy
+            Text(
+              context.l10n.autoApprovalEnabled,
+              style: GoogleFonts.fraunces(
+                fontSize: 22,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textPrimary,
+                height: 1.3,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            // Instrument Sans body — explain why the list is empty
+            Text(
+              context.l10n.autoApprovalEmptyMessage,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textHint,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            // CTA — navigate to capacity settings to toggle the flag
+            OutlinedButton(
+              onPressed: onEditSetting,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(color: AppColors.primary, width: 1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: 12,
+                ),
+              ),
+              child: Text(
+                context.l10n.autoApprovalEditCta,
+                style: AppTextStyles.buttonSmall
+                    .copyWith(color: AppColors.primary),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 64dp circle in bordeaux with a white checkmark and a dashed outer ring.
+class _DashedRingIcon extends StatelessWidget {
+  const _DashedRingIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 80,
+      height: 80,
+      child: CustomPaint(
+        painter: _DashedCirclePainter(
+          color: AppColors.primary.withValues(alpha: 0.35),
+          strokeWidth: 1.5,
+          dashLength: 4,
+          gapLength: 3,
+        ),
+        child: Center(
+          child: Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.30),
+                width: 1,
+              ),
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              size: 30,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedCirclePainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashLength;
+  final double gapLength;
+
+  const _DashedCirclePainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.dashLength,
+    required this.gapLength,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final radius = (size.width / 2) - strokeWidth / 2;
+    final center = Offset(size.width / 2, size.height / 2);
+    final circumference = 2 * 3.141592653589793 * radius;
+    final dashCount = circumference / (dashLength + gapLength);
+    final dashAngle = (dashLength / circumference) * 2 * 3.141592653589793;
+    final gapAngle = (gapLength / circumference) * 2 * 3.141592653589793;
+
+    double startAngle = -3.141592653589793 / 2;
+    for (int i = 0; i < dashCount.floor(); i++) {
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        dashAngle,
+        false,
+        paint,
+      );
+      startAngle += dashAngle + gapAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedCirclePainter oldDelegate) =>
+      oldDelegate.color != color ||
+      oldDelegate.strokeWidth != strokeWidth ||
+      oldDelegate.dashLength != dashLength ||
+      oldDelegate.gapLength != gapLength;
 }

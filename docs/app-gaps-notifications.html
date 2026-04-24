@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Termini im — Gaps produit &amp; système de notifications</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="_shared/termini-editorial.css" />
+<style>
+  :root { --footer-left: "Termini im · Produit &amp; Notifications · 2026"; }
+</style>
+</head>
+<body>
+
+<!-- ========================================================= COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">Prishtinë · 2026 · Playbook 03 / 03</div>
+  <div class="cover-wordmark"><span class="dot"></span>Termini <span class="im">im</span></div>
+  <h1 class="cover-title">
+    Ce qui manque au produit avant de lancer — <em>et le système de notifications au complet.</em>
+  </h1>
+  <p class="cover-sub">
+    Les must-have techniques avant J30, les nice-to-have pour les 90 jours d'après, et chaque
+    notification que l'app doit envoyer — déclencheur, moment, audience, copie finale en
+    albanais et français. Rien d'inventé : que de l'exécutable.
+  </p>
+  <div class="cover-meta">
+    <span>Document technique · <strong>backlog-ready</strong></span>
+    <span>Avril 2026</span>
+  </div>
+</div>
+
+<div class="doc">
+
+<!-- ========================================================= PRÉAMBULE -->
+<section class="intro">
+  <h1 class="section"><span class="num">Préambule</span>Le principe : <em>lancer avec moins, pas avec plus</em></h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    La pire erreur produit au lancement n'est pas <em>d'oublier une feature</em> — c'est
+    d'en embarquer trop. Ce document liste ce qui est <strong>vraiment must-have</strong>
+    avant J30 (la liste est plus courte que tu crois), ce qui peut attendre, et surtout le
+    squelette de <em>toutes</em> les notifications que l'app doit envoyer dès J1.
+  </p>
+
+  <h3>Deux règles de validation avant d'ajouter quoi que ce soit</h3>
+  <ol>
+    <li><strong>Est-ce que le lancement échoue si cette feature n'est pas là ?</strong> Si non, c'est nice-to-have, on la pousse après.</li>
+    <li><strong>Est-ce qu'on peut la livrer en &lt; 3 jours-dev solo ?</strong> Si non, et qu'elle n'est pas à la règle 1, on la découpe en version minimale ou on la retire.</li>
+  </ol>
+
+  <div class="callout gold">
+    <h4>Doctrine produit pour 30 jours</h4>
+    <p style="margin:0;">
+      Moins de surfaces, plus d'intégrité. Un flow de réservation qui marche sans bug vaut
+      mieux que 10 features semi-finies. Si tu dois choisir entre fixer un bug sur le flow
+      principal ou ajouter une feature nouvelle — <em>tu fixes le bug</em>. Toujours.
+    </p>
+  </div>
+</section>
+
+<!-- ========================================================= TOC -->
+<section class="toc">
+  <h1 class="section"><span class="num">Sommaire</span>Table des matières</h1>
+  <hr class="rule-gold" />
+  <ol>
+    <li><span class="t">Must-have produit avant J30</span><span class="p">§ 1</span></li>
+    <li><span class="t">Le site public — www.termini-im.com</span><span class="p">§ 2</span></li>
+    <li><span class="t">Stores — App Store &amp; Google Play</span><span class="p">§ 3</span></li>
+    <li><span class="t">Légal, RGPD, conformité</span><span class="p">§ 4</span></li>
+    <li><span class="t">Système de notifications — vue d'ensemble</span><span class="p">§ 5</span></li>
+    <li><span class="t">Notifications client — push, email, in-app</span><span class="p">§ 6</span></li>
+    <li><span class="t">Notifications salon — push, email, in-app</span><span class="p">§ 7</span></li>
+    <li><span class="t">Architecture technique notifications</span><span class="p">§ 8</span></li>
+    <li><span class="t">Analytics, crash reporting, remote config</span><span class="p">§ 9</span></li>
+    <li><span class="t">Nice-to-have post-lancement (J30 → J120)</span><span class="p">§ 10</span></li>
+    <li><span class="t">Opérations &amp; support</span><span class="p">§ 11</span></li>
+  </ol>
+</section>
+
+<!-- ========================================================= 1. MUST-HAVE -->
+<section>
+  <h1 class="section"><span class="num">Section 1</span>Must-have produit avant J30</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Onze lignes dans ce tableau. C'est <em>tout</em> ce qui doit être là à J30. Tout le reste
+    est nice-to-have et vit dans la §10.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th style="width:28%;">Must-have</th>
+        <th style="width:10%;">Effort</th>
+        <th>Pourquoi c'est bloquant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><strong>Site public « Coming soon » → « Télécharge »</strong></td>
+        <td>2 j</td>
+        <td>Les pubs et les partages pointeront là. Sans site, pas de waitlist, pas de SEO, pas de conversion diaspora. Voir §2.</td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td><strong>Apple Sign-In sur iOS</strong></td>
+        <td>1 j</td>
+        <td>Obligatoire App Store Guideline 4.8 dès qu'on a Google / Facebook Sign-In. Sans ça, la review iOS est rejetée. Plugin <code>sign_in_with_apple</code> est déjà dans <code>pubspec.yaml</code> — juste à câbler côté backend.</td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td><strong>Push notifications iOS opérationnelles</strong></td>
+        <td>1 j</td>
+        <td>APNs configuré côté Firebase, cert Apple Push valide, flow de demande permission géré proprement (ATT iOS 14+). Android est déjà en prod.</td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td><strong>Push web (FCM web)</strong></td>
+        <td>0,5 j</td>
+        <td>Le service worker <code>firebase-messaging-sw.js</code> existe déjà dans <code>web/</code>. Reste à tester sur desktop Chrome + mobile Chrome Android. iOS Safari web push = hors scope (optionnel iOS 16.4+).</td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td><strong>Listings App Store + Google Play finalisés</strong></td>
+        <td>2 j</td>
+        <td>Screenshots × 5 par plateforme, description SQ + FR + EN, keywords ASO, vidéo preview. Voir §3.</td>
+      </tr>
+      <tr>
+        <td class="num">6</td>
+        <td><strong>Analytics (GA4 + Mixpanel ou Amplitude)</strong></td>
+        <td>1 j</td>
+        <td>Sans mesure, impossible de piloter phase 1. Les KPIs de la stratégie (rétention J+30, CAC par côté) exigent un tracking propre dès J1.</td>
+      </tr>
+      <tr>
+        <td class="num">7</td>
+        <td><strong>Crash reporting (Firebase Crashlytics)</strong></td>
+        <td>0,5 j</td>
+        <td>Si l'app plante chez une owner au 3ᵉ jour de la phase 1, sans télémétrie tu le découvres via un DM rageur 2 jours plus tard. Inacceptable.</td>
+      </tr>
+      <tr>
+        <td class="num">8</td>
+        <td><strong>Feature flags / Remote Config (Firebase)</strong></td>
+        <td>0,5 j</td>
+        <td>Pouvoir killer une feature à distance sans redéployer. Stratégique pour 1) kill switch de secours, 2) A/B tests post-launch.</td>
+      </tr>
+      <tr>
+        <td class="num">9</td>
+        <td><strong>CGU + Politique de confidentialité bilingues SQ/FR</strong></td>
+        <td>1 j</td>
+        <td>App Store et Google Play les exigent. RGPD exige la privacy pour la diaspora EU. Voir §4.</td>
+      </tr>
+      <tr>
+        <td class="num">10</td>
+        <td><strong>Flow de suppression de compte en-app</strong></td>
+        <td>1 j</td>
+        <td>Apple l'exige depuis iOS 2022. Google Play depuis 2024. Sans ce flow, review rejetée automatiquement.</td>
+      </tr>
+      <tr>
+        <td class="num">11</td>
+        <td><strong>Templates emails transactionnels en prod</strong></td>
+        <td>2 j</td>
+        <td>Welcome, verification OTP, password reset, booking confirmation — tous en SQ/FR/EN. Infra déjà prête (Resend + <code>no-reply@termini-im.com</code>, DKIM/SPF/DMARC PASS, queue worker systemd). Reste à finaliser le rendu HTML avec la palette éditoriale et à câbler chaque trigger côté Laravel.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="note" style="margin-top: 4mm;">Effort total approximatif : <strong>~12 jours-dev solo</strong>. Si tu démarres J-12 en parallèle du setup marketing, c'est tenable.</p>
+
+  <h3>Ce qui est <em>déjà là</em> et qu'on ne touche pas</h3>
+  <div class="cols-2">
+    <div>
+      <h4>Côté client</h4>
+      <ul class="tight">
+        <li>Auth email + OTP 6 chiffres</li>
+        <li>Google &amp; Facebook Sign-In</li>
+        <li>Recherche salon (ville, date, genre)</li>
+        <li>Flow booking 3 étapes</li>
+        <li>Fiche salon + galerie + avis</li>
+        <li>Partage WhatsApp avec pré-sélection employé</li>
+        <li>Page privacy éditoriale</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Côté salon</h4>
+      <ul class="tight">
+        <li>Dashboard owner / planning employé</li>
+        <li>Planning jour / semaine / mois + conflits</li>
+        <li>Walk-in 3 taps</li>
+        <li>Gestion équipe + invite + services</li>
+        <li>Horaires + pauses récurrentes + jours off</li>
+        <li>Modération avis</li>
+        <li>Push FCM Android en prod</li>
+        <li>Modal contact support → backend ticket</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================= 2. SITE PUBLIC -->
+<section>
+  <h1 class="section"><span class="num">Section 2</span>Le site public — <code>www.termini-im.com</code></h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Le site public n'est <em>pas</em> l'app web. C'est une vitrine marketing distincte. Son rôle :
+    convertir le trafic froid (ads, influenceurs, presse, SEO) en waitlist pendant phase 0,
+    puis en téléchargements à partir de J30.
+  </p>
+
+  <h3>Structure des pages (minimum viable au lancement)</h3>
+  <table class="tight">
+    <thead><tr><th>URL</th><th>Rôle</th><th>État cible J30</th></tr></thead>
+    <tbody>
+      <tr><td><code>/</code></td><td>Landing hero + waitlist (phase 0) → download CTA (phase 1)</td><td>Must-have</td></tr>
+      <tr><td><code>/sallone</code></td><td>Annuaire salons pilotes (utile dès phase 1)</td><td>Must-have J30</td></tr>
+      <tr><td><code>/per-sallonet</code> (pour salons)</td><td>Pitch B2B + Typeform signup pilote</td><td>Must-have</td></tr>
+      <tr><td><code>/privacy</code></td><td>Politique confidentialité bilingue</td><td>Déjà là ✓</td></tr>
+      <tr><td><code>/terms</code></td><td>CGU bilingues</td><td>Must-have</td></tr>
+      <tr><td><code>/kontakt</code></td><td>Email, formulaire support, horaires</td><td>Must-have</td></tr>
+      <tr><td><code>/faq</code></td><td>12-15 questions récurrentes</td><td>Nice-to-have</td></tr>
+      <tr><td><code>/qytete/prishtine</code>, <code>/qytete/prizren</code>, <code>/qytete/peja</code></td><td>Pages ville — seeds SEO</td><td>Phase 3</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Technique — le plus simple qui marche</h3>
+  <p>
+    <strong>Statique ou Astro</strong>. Hébergé sur Netlify ou Vercel (gratuit). CDN inclus.
+    HTTPS auto. Déploiement par push git. Pas besoin de CMS au début — tout vit en markdown
+    dans le même repo que l'app Flutter.
+  </p>
+
+  <h3>Meta &amp; SEO minimum</h3>
+  <ul class="check">
+    <li>Titre par page bilingue SQ (&lt; 60 car) + description (&lt; 160 car)</li>
+    <li>Open Graph image 1200×630 PNG avec <code>logo-stacked.svg</code> centré</li>
+    <li>Twitter Card (type <code>summary_large_image</code>)</li>
+    <li>Schema.org <code>MobileApplication</code> en JSON-LD</li>
+    <li>Sitemap.xml + robots.txt</li>
+    <li>Canonical tags (important si FR/SQ/EN coexistent)</li>
+    <li>Hreflang tags (bonne pratique diaspora)</li>
+    <li>Favicon + apple-touch-icon + manifest.json</li>
+  </ul>
+</section>
+
+<!-- ========================================================= 3. STORES -->
+<section>
+  <h1 class="section"><span class="num">Section 3</span>Stores — App Store &amp; Google Play</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Une app sans listing soigné est une app invisible. Voici les éléments à préparer,
+    paste-ready pour les deux plateformes.
+  </p>
+
+  <h3>Noms &amp; identités</h3>
+  <table class="tight">
+    <thead><tr><th>Champ</th><th>Valeur</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Nom de l'app</strong></td><td>Termini im</td><td>Partout identique. Max 30 car App Store.</td></tr>
+      <tr><td><strong>Sous-titre App Store</strong></td><td>Rezervo termine në 30 sek.</td><td>Max 30 car.</td></tr>
+      <tr><td><strong>Description courte Google Play</strong></td><td>Rezervo terminin tënd në 30 sekonda. Sallonet e Kosovës, në xhep.</td><td>Max 80 car.</td></tr>
+      <tr><td><strong>Bundle ID (iOS)</strong></td><td><code>com.terminiim.app</code></td><td>Définitif, ne change jamais.</td></tr>
+      <tr><td><strong>Package name (Android)</strong></td><td><code>com.terminiim.app</code></td><td>Idem.</td></tr>
+      <tr><td><strong>Catégorie principale</strong></td><td>Lifestyle</td><td>iOS + Android</td></tr>
+      <tr><td><strong>Catégorie secondaire</strong></td><td>Productivity</td><td>iOS uniquement</td></tr>
+      <tr><td><strong>Classification</strong></td><td>4+ (iOS) / PEGI 3 (Android)</td><td>Aucun contenu mature</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Description longue (SQ, 4 000 car max Google Play, 4 000 car max App Store)</h3>
+  <div class="callout">
+    <p style="margin:0 0 3mm;"><strong>Termini im — aplikacioni shqip për rezervim termine te sallonet e Kosovës.</strong></p>
+    <p style="margin:0 0 3mm;">Falas për klientët, falas për sallonet. Pa komision, pa abonim, kurrë.</p>
+    <p style="margin:0 0 3mm;"><strong>Për klientët :</strong> gjej sallonin më të afërt, filtro sipas qytetit, datës dhe gjinisë. Rezervo në 30 sekonda, merr kujtesë automatike një ditë më parë dhe një orë para. Shto në të preferuarat, shiko historikun, ndaj me shoqet një sallon ose një frizer në veçanti.</p>
+    <p style="margin:0 0 3mm;"><strong>Për sallonet :</strong> prano rezervime 24/7 pa u ngacmuar nga telefoni gjatë prerjes. Menagjo ekipin, oraret, ditët off, pauzat. Shiko planin e ditës në një shikim. Mode individual (një frizer — një orar) ose mode kapaciteti (sallon i plotë — X vende paralelisht).</p>
+    <p style="margin:0 0 3mm;"><strong>Karakteristikat kryesore :</strong></p>
+    <ul style="margin:0;">
+      <li>Rezervim online 24/7 në 30 sekonda</li>
+      <li>Kujtesë automatike — një ditë para + një orë para</li>
+      <li>Ndarje me lidhje direkte për frizeren tënde</li>
+      <li>Walk-in në 3 prekje për sallonet</li>
+      <li>Galeria e sallonit me foto profesionale</li>
+      <li>Komente dhe vlerësime të modereshme</li>
+      <li>Njoftime push të menjëhershme për sallonet</li>
+      <li>Shqip · Français · English</li>
+    </ul>
+    <p style="margin:3mm 0 0;">Bërë në Prishtinë. Për Prishtinën — dhe gjithë Kosovën.</p>
+  </div>
+
+  <h3>Keywords ASO</h3>
+  <h4>iOS (100 car max, séparés par virgule)</h4>
+  <pre>termin,sallon,frizer,bukuri,kosova,prishtine,rezervim,friziere,barber,stil,manicure,dasma,estetike</pre>
+
+  <h4>Google Play — pas de champ dédié, les mots-clés sont dans la description</h4>
+  <p class="note">Assure-toi que ces termes apparaissent naturellement dans la description longue : termin, sallon, frizer, friziere, barberi, bukuri, estetike, manicure, Kosova, Prishtinë, Prizren, Peja, rezervim online.</p>
+
+  <h3>Screenshots — 5 par plateforme, par langue</h3>
+  <ol>
+    <li><strong>Hero</strong> — Écran recherche salons, « Kosova ka shumë <em>stil.</em> » en overlay</li>
+    <li><strong>Fiche salon</strong> — Galerie + services + bouton « Rezervo »</li>
+    <li><strong>Flow booking</strong> — Choix créneau, illustrant la rapidité</li>
+    <li><strong>Confirmation</strong> — Écran « Termini yt është konfirmuar »</li>
+    <li><strong>Owner / salon</strong> — Planning jour, overlay « Për sallonet — falas gjithmonë »</li>
+  </ol>
+  <p class="note">Format iOS : 1290×2796 (iPhone 15 Pro Max). Android : 1080×1920. Mockups dans Figma ou Screenshots Pro.</p>
+
+  <h3>App Preview Video (iOS, optionnel mais fort)</h3>
+  <p>15-30 sec, vertical, tournée sur simulateur ou appareil réel, pas de musique, légère animation. Montre le flow de réservation en 1 prise. Coût maison : 2h.</p>
+
+  <h3>Checklist administrative</h3>
+  <ul class="check">
+    <li>Compte Apple Developer payé (~99 €/an)</li>
+    <li>Compte Google Play Developer payé (~25 € one-time)</li>
+    <li>Comptes <strong>App Store Connect</strong> et <strong>Google Play Console</strong> créés au nom propre (tu es solo pour l'instant)</li>
+    <li>TestFlight configuré pour les salons pilotes (iOS beta)</li>
+    <li>Internal testing track configurée (Android)</li>
+    <li>URLs privacy + terms entrées dans les deux consoles</li>
+    <li>Questionnaire sécurité Google Play complété (data collection declarations)</li>
+    <li>Questionnaire App Privacy iOS complété (champs par catégorie de data)</li>
+  </ul>
+</section>
+
+<!-- ========================================================= 4. LÉGAL -->
+<section>
+  <h1 class="section"><span class="num">Section 4</span>Légal, RGPD, conformité</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Le Kosovo n'est pas dans l'UE, mais <em>la diaspora oui</em>. Dès qu'une cliente de Lyon
+    réserve, on traite des données d'un citoyen européen — donc RGPD s'applique. Anticipe.
+  </p>
+
+  <h3>Documents à publier avant J30</h3>
+  <table class="tight">
+    <thead><tr><th>Document</th><th>Où</th><th>Langue</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CGU (Kushtet e Përdorimit)</strong></td><td><code>/terms</code></td><td>SQ + FR + EN</td><td>0,5 j (template avocat SaaS + adaptation)</td></tr>
+      <tr><td><strong>Politique de confidentialité</strong></td><td><code>/privacy</code> ✓</td><td>SQ + FR + EN</td><td>Déjà publiée — relire, vérifier conformité RGPD</td></tr>
+      <tr><td><strong>Cookie Policy</strong></td><td><code>/cookies</code> ou intégré privacy</td><td>SQ + FR + EN</td><td>0,25 j</td></tr>
+      <tr><td><strong>Contrat Salon Pilote</strong></td><td>PDF signé DocuSign/HelloSign</td><td>SQ + FR</td><td>0,5 j</td></tr>
+      <tr><td><strong>Mentions légales</strong> (entité, SIRET équivalent, contact)</td><td>Footer site</td><td>Multilingue</td><td>0,1 j</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Flows produit obligatoires RGPD + stores</h3>
+  <ul class="check">
+    <li><strong>Export de mes données</strong> — bouton dans Settings → email JSON avec toutes les données perso sous 30 j</li>
+    <li><strong>Suppression de compte</strong> — bouton dans Settings, confirmation à 2 étapes, suppression sous 30 j (soft delete + purge)</li>
+    <li><strong>Consentement marketing</strong> — opt-in explicite, jamais pré-coché, case distincte de l'acceptation CGU</li>
+    <li><strong>Consentement cookies</strong> — banner web avec <em>reject all</em> aussi proéminent que <em>accept all</em></li>
+    <li><strong>Âge minimum 16 ans</strong> — champ de confirmation à l'inscription</li>
+    <li><strong>Registre des traitements</strong> — document interne tenu à jour (exigence RGPD article 30)</li>
+  </ul>
+
+  <div class="callout">
+    <h4>Le conseil pratique</h4>
+    <p style="margin:0;">
+      Prends un avocat 2h pour faire revoir CGU + privacy. ~300 € bien investis qui te
+      couvrent pour les 2 prochaines années. Templates gratuits : <em>iubenda</em>,
+      <em>Termly</em>, <em>Clara.io</em>. Pour le Kosovo spécifiquement, un cabinet local
+      connait les subtilités (loi kosovare 06/L-082 sur la protection des données).
+    </p>
+  </div>
+</section>
+
+<!-- ========================================================= 5. NOTIFICATIONS INTRO -->
+<section>
+  <h1 class="section"><span class="num">Section 5</span>Système de notifications — vue d'ensemble</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Une bonne notification arrive au bon moment, dit ce qu'il faut dire en &lt; 80 caractères,
+    et ne réveille personne à 23h. Mauvaise : l'inverse. Ce qui suit cartographie <em>toutes</em>
+    les notifications que l'app doit être capable d'envoyer, par canal et par audience.
+  </p>
+
+  <h3>Les 3 canaux &amp; leurs rôles</h3>
+  <div class="cols-3">
+    <div>
+      <h4>Push (mobile + web)</h4>
+      <p>Canal immédiat, &lt; 80 car, action rapide. À utiliser pour ce qui a une <em>fenêtre d'action courte</em> : RDV confirmé, rappel, annulation.</p>
+    </div>
+    <div>
+      <h4>Email</h4>
+      <p>Canal différé, récap, legal-friendly. Pour les éléments dont l'utilisateur a besoin de la trace écrite : welcome, verification, confirmation détaillée, weekly digest.</p>
+    </div>
+    <div>
+      <h4>In-app</h4>
+      <p>Canal contextuel — l'utilisateur est dans l'app. Badge, toast, banner, modal. Pour les moments de relance (rating, partage) et les annonces produit.</p>
+    </div>
+  </div>
+
+  <h3>Principes de copywriting notification</h3>
+  <ul class="clean">
+    <li><strong>La première phrase contient l'info clé.</strong> L'utilisatrice lit 3 mots avant de décider si elle déverrouille.</li>
+    <li><strong>Jamais de verbe à l'impératif criard.</strong> On dit <em>« Termini yt të premten »</em>, pas <em>« RÉSERVE MAINTENANT ! »</em></li>
+    <li><strong>Personnaliser avec le nom du salon / de l'employé.</strong> Donjeta > « le salon »</li>
+    <li><strong>Une seule action par notif.</strong> Pas deux CTA dans un push.</li>
+    <li><strong>Pas d'emoji, sauf exception utilitaire.</strong> 🗓️ pour un RDV, 💇 pour un style, mais pas 🔥✨💯.</li>
+    <li><strong>Respect du fuseau local.</strong> Pas de notif marketing avant 9h ou après 20h locale.</li>
+  </ul>
+
+  <h3>Le système en chiffres</h3>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-value">27</div><div class="kpi-label">Notifications au total</div></div>
+    <div class="kpi"><div class="kpi-value">12</div><div class="kpi-label">Côté client</div></div>
+    <div class="kpi"><div class="kpi-value">11</div><div class="kpi-label">Côté salon</div></div>
+    <div class="kpi"><div class="kpi-value">4</div><div class="kpi-label">Communes / admin</div></div>
+    <div class="kpi"><div class="kpi-value">8</div><div class="kpi-label">Obligatoires J1</div></div>
+    <div class="kpi"><div class="kpi-value">19</div><div class="kpi-label">Pouvant être phasées</div></div>
+  </div>
+</section>
+
+<!-- ========================================================= 6. NOTIFS CLIENT -->
+<section>
+  <h1 class="section"><span class="num">Section 6</span>Notifications client — push, email, in-app</h1>
+  <hr class="rule-gold" />
+
+  <h2>6.1 Push mobile &amp; web</h2>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Auth</div><div class="notif-title">Code de vérification email</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Inscription email — POST <code>/auth/register</code></div></div>
+    <div class="notif-row"><div class="notif-label">Timing</div><div class="notif-val">Immédiat (&lt; 5s)</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Kodi yt i verifikimit</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Kodi: <strong>428195</strong>. Vlen për 10 minuta.</div></div>
+    <div class="notif-row"><div class="notif-label">Titre FR</div><div class="notif-val copy">Ton code de vérification</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">Code : <strong>428195</strong>. Valide 10 minutes.</div></div>
+    <div class="notif-row"><div class="notif-label">Deep link</div><div class="notif-val"><code>terminiim://auth/verify?email=...</code></div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Booking</div><div class="notif-title">RDV confirmé</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Booking créé avec succès</div></div>
+    <div class="notif-row"><div class="notif-label">Timing</div><div class="notif-val">Immédiat</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Termini yt është konfirmuar ✓</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Te {salon} me {frizer}, {data} në {ora}.</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">Chez {salon} avec {frizer}, le {data} à {ora}.</div></div>
+    <div class="notif-row"><div class="notif-label">Deep link</div><div class="notif-val"><code>terminiim://bookings/{id}</code></div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Reminder</div><div class="notif-title">Rappel veille — J-1</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Scheduled job la veille du RDV à 20h00 heure locale du salon</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Nesër — termini te {salon}</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Nesër në {ora} me {frizer}. Anulo ose zhvendos nëse nevojitet.</div></div>
+    <div class="notif-row"><div class="notif-label">Titre FR</div><div class="notif-val copy">Demain — rendez-vous chez {salon}</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">Demain à {ora} avec {frizer}. Annule ou déplace si besoin.</div></div>
+    <div class="notif-row"><div class="notif-label">Opt-out</div><div class="notif-val">Oui, depuis Settings → Notifications</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Reminder</div><div class="notif-title">Rappel 1h avant</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Scheduled job T-60min</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Termini yt për 1 orë</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Në {ora} te {salon}. {adresa}.</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">À {ora} chez {salon}. {adresa}.</div></div>
+    <div class="notif-row"><div class="notif-label">Deep link</div><div class="notif-val"><code>terminiim://bookings/{id}/directions</code> (ouvre Maps)</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Booking</div><div class="notif-title">Salon a annulé ton RDV</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner annule un RDV existant</div></div>
+    <div class="notif-row"><div class="notif-label">Timing</div><div class="notif-val">Immédiat</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Termini yt është anuluar</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{salon} ka anuluar për {data} {ora}. Gjej tjetër?</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">{salon} a annulé le {data} à {ora}. Trouver un autre ?</div></div>
+    <div class="notif-row"><div class="notif-label">Deep link</div><div class="notif-val"><code>terminiim://salons/{salonId}</code></div></div>
+    <div class="notif-row"><div class="notif-label">Tone</div><div class="notif-val">Factuel, pas alarmiste. Propose alternative immédiate.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Booking</div><div class="notif-title">Salon a modifié ton RDV</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner change date ou heure d'un RDV</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Ndryshim në terminin tënd</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Zhvendosur nga {ora e vjetër} në {ora e re}. Konfirmo ose anulo.</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">Déplacé de {ora vjetër} à {ora re}. Confirme ou annule.</div></div>
+    <div class="notif-row"><div class="notif-label">Action</div><div class="notif-val">Deux boutons dans la notif iOS/Android : <em>Accepter</em> / <em>Annuler</em></div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Engagement</div><div class="notif-title">Demande d'avis post-RDV</div><div class="notif-audience">Phase 1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Scheduled J+1 18h après l'heure prévue du RDV</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Si shkoi te {salon}?</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Një vlerësim në 10 sek ndihmon të tjerët të zgjedhin mirë.</div></div>
+    <div class="notif-row"><div class="notif-label">Corps FR</div><div class="notif-val copy">Un avis en 10 sec aide les autres à bien choisir.</div></div>
+    <div class="notif-row"><div class="notif-label">Opt-out</div><div class="notif-val">Oui</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Marketing</div><div class="notif-title">Salon favori — nouvelles photos</div><div class="notif-audience">Phase 2 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner upload 3+ nouvelles photos galerie sur un salon que l'utilisateur a en favori</div></div>
+    <div class="notif-row"><div class="notif-label">Timing</div><div class="notif-val">Digest quotidien à 18h (pas individuel)</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">{salon} ka shtuar foto të reja</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Shiko galerinë e re — frymëzim për terminin tënd të radhës.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Marketing</div><div class="notif-title">Salon favori — nouveaux créneaux</div><div class="notif-audience">Phase 2 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner ouvre ≥ 5 nouveaux créneaux sur les 14 prochains jours</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">{frizer} ka vende të lira këtë javë</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">3 vende të reja nga {data 1} deri {data 2}.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Reactivation</div><div class="notif-title">Re-booking suggestion</div><div class="notif-audience">Phase 2 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">35 jours depuis dernier RDV complété, 0 nouveau RDV</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Ka kaluar një muaj…</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{frizer} te {salon} ka vende këtë javë. Në 30 sek.</div></div>
+    <div class="notif-row"><div class="notif-label">Frequency cap</div><div class="notif-val">1 max / 60 j</div></div>
+  </div>
+
+  <h2>6.2 Email client</h2>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Onboarding</div><div class="notif-title">Welcome email</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Compte créé + email vérifié</div></div>
+    <div class="notif-row"><div class="notif-label">Timing</div><div class="notif-val">T+5 min après vérification</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">Mirë se erdhe te Termini im — termini yt i parë në 30 sek</div></div>
+    <div class="notif-row"><div class="notif-label">Objet FR</div><div class="notif-val copy">Bienvenue sur Termini im — ton premier RDV en 30 secondes</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">Prénom + 3 étapes visuelles (Trouver · Réserver · Recevoir rappel) + CTA « Gjej salloni im » + signature fondateur</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Transactionnel</div><div class="notif-title">Confirmation RDV — récap</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Booking créé</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">Termini yt ✓ te {salon}, {data}</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">Récap complet : date, heure, adresse, salon, employé, services, durée totale, annulation 1-click, ajout calendrier (ICS attaché)</div></div>
+    <div class="notif-row"><div class="notif-label">Design</div><div class="notif-val">Palette éditoriale, logo stacked en header, footer discret avec liens unsub</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Transactionnel</div><div class="notif-title">OTP — code de vérification</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Signup ou password reset</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">Kodi yt: 428195</div></div>
+    <div class="notif-row"><div class="notif-label">Note</div><div class="notif-val">Pour l'objet, la convention moderne est de mettre le code directement dans le subject line — permet lecture sans ouvrir le mail.</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Engagement</div><div class="notif-title">Newsletter mensuelle</div><div class="notif-audience">Phase 2 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Premier mercredi du mois 11h Prishtinë</div></div>
+    <div class="notif-row"><div class="notif-label">Objet</div><div class="notif-val copy">{Mois} te Termini im — stili i ri, sallonet e reja</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">3 sections : 1) Lajmet (nouveaux salons), 2) Tendencat (coiffures du mois, éditorial), 3) Një histori (profile salon pilote + témoignage)</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Diaspora</div><div class="notif-title">Campagne été — diaspora</div><div class="notif-audience">Phase 4 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">1er mai chaque année (pic retour juin-août)</div></div>
+    <div class="notif-row"><div class="notif-label">Objet</div><div class="notif-val copy">Po kthehesh verën? Rezervo tashmë.</div></div>
+    <div class="notif-row"><div class="notif-label">Ciblage</div><div class="notif-val">Emails enregistrés avec langue FR/DE/EN + localisation détectée hors Kosovo</div></div>
+  </div>
+
+  <h2>6.3 In-app client</h2>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Banner</div><div class="notif-title">Rappel RDV demain</div><div class="notif-audience">J1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">App ouverte le soir J-1 d'un RDV</div></div>
+    <div class="notif-row"><div class="notif-label">Placement</div><div class="notif-val">Banner haut d'écran home, dismissible</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">Nesër në {ora} te {salon} →</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Modal</div><div class="notif-title">Prompt de rating App Store</div><div class="notif-audience">Phase 1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">3ᵉ RDV complété avec rating &gt; 4 ⭐</div></div>
+    <div class="notif-row"><div class="notif-label">Fréquence</div><div class="notif-val">Max 1× / an (API iOS native respecte ça auto)</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">Po e pëlqen Termini im? Vlerësimi yt (30 sek) na ndihmon të arrijmë më shumë.</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Toast</div><div class="notif-title">Confirmation légère</div><div class="notif-audience">J1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Booking créé, favori ajouté, avis soumis</div></div>
+    <div class="notif-row"><div class="notif-label">Durée</div><div class="notif-val">2 sec, auto-dismiss</div></div>
+    <div class="notif-row"><div class="notif-label">Textes SQ</div><div class="notif-val copy">"Konfirmuar ✓" · "Shtuar te të preferuarat" · "Faleminderit për vlerësimin"</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Prompt</div><div class="notif-title">Prompt partage après 1er RDV</div><div class="notif-audience">Phase 2</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">1er RDV complété avec succès</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">A e pëlqeve? Ndaje me një shoqe — ajo merr 20 % zbritje në terminin e saj të parë.</div></div>
+    <div class="notif-row"><div class="notif-label">Note</div><div class="notif-val">Code promo partenariat salon (opt-in du salon), pas global</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Banner</div><div class="notif-title">Announcement nouvelle feature</div><div class="notif-audience">Phase 2+</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Remote Config flag activé</div></div>
+    <div class="notif-row"><div class="notif-label">Fréquence</div><div class="notif-val">Max 1 active à la fois, dismissible, max 2 semaines d'affichage</div></div>
+  </div>
+</section>
+
+<!-- ========================================================= 7. NOTIFS SALON -->
+<section>
+  <h1 class="section"><span class="num">Section 7</span>Notifications salon — push, email, in-app</h1>
+  <hr class="rule-gold" />
+
+  <h2>7.1 Push salon (owner + employé)</h2>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Booking</div><div class="notif-title">Nouveau RDV reçu</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Booking créé affectant le compte</div></div>
+    <div class="notif-row"><div class="notif-label">Destinataire</div><div class="notif-val">Owner + employé concerné (si mode individuel)</div></div>
+    <div class="notif-row"><div class="notif-label">Timing</div><div class="notif-val">Immédiat, &lt; 2 sec</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Termin i ri ✓ — {klienti}</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{data} në {ora} · {shërbimi} · {kohëzgjatja}</div></div>
+    <div class="notif-row"><div class="notif-label">Deep link</div><div class="notif-val"><code>terminiim://my-salon/bookings/{id}</code></div></div>
+    <div class="notif-row"><div class="notif-label">Son</div><div class="notif-val">Son distinct (cf. <code>assets/sounds/</code> à ajouter — marquant, court, non agressif)</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Booking</div><div class="notif-title">RDV annulé par cliente</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Termin i anuluar — {klienti}</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{data} {ora} me {frizer}. Vendi është i lirë tani.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Booking</div><div class="notif-title">RDV modifié par cliente</div><div class="notif-audience">Phase 1</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Ndryshim — {klienti}</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Zhvendosur në {data e re} {ora e re}. Konfirmuar automatikisht.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Walk-in</div><div class="notif-title">Walk-in créé par employé</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Employé crée un walk-in</div></div>
+    <div class="notif-row"><div class="notif-label">Destinataire</div><div class="notif-val">Owner uniquement</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Walk-in te salloni yt</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{emri punonjësit} shtoi {klienti} në {ora}.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Feedback</div><div class="notif-title">Nouvel avis publié</div><div class="notif-audience">J1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Cliente soumet un avis après RDV</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ (4-5 ⭐)</div><div class="notif-val copy">Vlerësim i ri — {rating} yje ⭐</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ (1-3 ⭐)</div><div class="notif-val copy">Koment i ri nga {klienti}</div></div>
+    <div class="notif-row"><div class="notif-label">Note</div><div class="notif-val">Ton plus factuel sur les notes basses — ne pas mettre l'étoile dans le titre pour éviter l'effet « alarme »</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Daily</div><div class="notif-title">Résumé matinal</div><div class="notif-audience">Phase 2 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Chaque matin 8h heure locale, si ≥ 1 RDV prévu</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Sot — {N} termine</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Fillo në {ora e parë}. Gjithë dita në aplikacion.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Team</div><div class="notif-title">Employé a modifié son planning</div><div class="notif-audience">Phase 2</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Employé change horaires / pauses / jours off</div></div>
+    <div class="notif-row"><div class="notif-label">Destinataire</div><div class="notif-val">Owner</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">{emri} ka ndryshuar orarin</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{detajet e ndryshimit}. Kontrollo nëse ka konflikte.</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Team</div><div class="notif-title">Demande jour off</div><div class="notif-audience">Phase 2</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Employé soumet une demande jour off (feature à ajouter — voir §10)</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Capacity</div><div class="notif-title">Capacité atteinte — mode capacité</div><div class="notif-audience">Phase 1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Salon en mode capacité atteint 100 % pour un jour donné</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Plot për {data}</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">Të gjitha vendet janë rezervuar. A duhet të shtosh kapacitet?</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Support</div><div class="notif-title">Réponse support reçue</div><div class="notif-audience">J1</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Përgjigje nga ekipi Termini im</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{pjesa e parë e mesazhit}</div></div>
+  </div>
+
+  <div class="notif push">
+    <div class="notif-head"><div class="notif-tag">Push · Growth</div><div class="notif-title">Ton salon a été partagé</div><div class="notif-audience">Phase 2 · Opt-in</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Link de partage salon ouvert par &gt; 10 personnes uniques en 24h (seuil)</div></div>
+    <div class="notif-row"><div class="notif-label">Titre SQ</div><div class="notif-val copy">Salloni yt po ndahet 👥</div></div>
+    <div class="notif-row"><div class="notif-label">Corps SQ</div><div class="notif-val copy">{N} persona hapën linkun tënd sot. Shiko kush rezervoi.</div></div>
+  </div>
+
+  <h2>7.2 Email salon</h2>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Onboarding</div><div class="notif-title">Welcome owner</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner signe et vérifie email</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">Mirë se erdhe — 5 hapa për salloni yt në Termini im</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">Checklist visuelle 5 étapes : 1) Shto foto, 2) Konfigro shërbimet, 3) Ngarko orari, 4) Fto ekipin, 5) Ndaj linkun. Signature fondateur + WhatsApp perso.</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Onboarding</div><div class="notif-title">Welcome employee (invitation)</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner invite un employé</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">{owner} të ka ftuar te Termini im</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">Bouton « Pranoj ftesën » → onboarding employé. Court, personnel, signé par le salon pas par Termini.</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Digest</div><div class="notif-title">Résumé hebdo</div><div class="notif-audience">Phase 2</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Lundi 8h heure locale</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">Java jote te Termini im — {N} termine, {rating} ⭐ mesatare</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">3 chiffres : RDV confirmés, no-show, rating moyen. Tendance vs semaine précédente. Tip du lundi (1 conseil growth).</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Monthly</div><div class="notif-title">Rapport mensuel owner</div><div class="notif-audience">Phase 3</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">{Muaji}: salloni yt në numra</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">RDV totaux, nouveaux clients, rétention, heures pic, top 3 services, top 3 employés. PDF attaché.</div></div>
+  </div>
+
+  <div class="notif email">
+    <div class="notif-head"><div class="notif-tag">Email · Retention</div><div class="notif-title">Retention — salon inactif</div><div class="notif-audience">Phase 1</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">7 j sans ouvrir l'app ET 0 RDV reçu sur la période</div></div>
+    <div class="notif-row"><div class="notif-label">Objet SQ</div><div class="notif-val copy">Gjithçka në rregull me sallonin tënd?</div></div>
+    <div class="notif-row"><div class="notif-label">Contenu</div><div class="notif-val">Message court, personnel. Offre ligne directe fondateur WhatsApp.</div></div>
+  </div>
+
+  <h2>7.3 In-app salon</h2>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Badge</div><div class="notif-title">Badge nouveau RDV sur dashboard</div><div class="notif-audience">J1</div></div>
+    <div class="notif-row"><div class="notif-label">Placement</div><div class="notif-val">Icône planning + chiffre en bordeaux</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Alert</div><div class="notif-title">Conflit horaire détecté</div><div class="notif-audience">J1 · Obligatoire</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">Owner ou employé crée un créneau qui chevauche un RDV / pause</div></div>
+    <div class="notif-row"><div class="notif-label">Placement</div><div class="notif-val">Modal bloquant jusqu'à résolution</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">Ky orar mbivendoset me {detajet}. Zgjidh si ta rregullosh.</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Empty state</div><div class="notif-title">Planning vide</div><div class="notif-audience">J1</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">S'ke termine sot. Koha për një kafe turke?</div></div>
+    <div class="notif-row"><div class="notif-label">Ton</div><div class="notif-val">Humour léger, local, pas de CTA commercial</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Reminder</div><div class="notif-title">Galerie vide depuis 30 j</div><div class="notif-audience">Phase 2</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">Shto 3 foto të reja — klientët rezervojnë 3× më shumë kur salloni ka foto të freskëta.</div></div>
+  </div>
+
+  <div class="notif inapp">
+    <div class="notif-head"><div class="notif-tag">In-app · Milestone</div><div class="notif-title">Félicitations — 100ᵉ RDV</div><div class="notif-audience">Phase 2</div></div>
+    <div class="notif-row"><div class="notif-label">Trigger</div><div class="notif-val">100ᵉ, 500ᵉ, 1000ᵉ RDV cumulé</div></div>
+    <div class="notif-row"><div class="notif-label">Texte SQ</div><div class="notif-val copy">Urime. Termini i {N}-të te Termini im. Ti je në rrugë të mirë.</div></div>
+    <div class="notif-row"><div class="notif-label">Note</div><div class="notif-val">Petit confetti (<code>confetti</code> package déjà dans pubspec). Pas plus.</div></div>
+  </div>
+</section>
+
+<!-- ========================================================= 8. ARCHI TECH -->
+<section>
+  <h1 class="section"><span class="num">Section 8</span>Architecture technique notifications</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Le backend Laravel doit orchestrer tout ça proprement. Voici le squelette minimal — 1
+    table pour la config, 1 pour le log, et des jobs asynchrones par canal.
+  </p>
+
+  <h3>Infrastructure mail déjà en place</h3>
+  <div class="callout">
+    <p style="margin: 0 0 2mm;"><strong>Le pipeline email est prêt</strong> — pas un gap à combler, juste à câbler pour chaque type de notif.</p>
+    <ul class="tight" style="margin: 0;">
+      <li>Transport : <strong>Resend</strong> (<code>resend/resend-laravel</code>), free tier 3 000 emails/mois, région eu-west-1</li>
+      <li>From : <code>no-reply@termini-im.com</code> — <em>jamais</em> utilisé pour recevoir</li>
+      <li>Reply-To : <code>support@termini-im.com</code> — toutes les réponses atterrissent là</li>
+      <li>DKIM / SPF / DMARC : tous PASS, DNS OVH à jour</li>
+      <li>Queue worker systemd (<code>termini-im-api-worker.service</code>) tourne en continu → les envois ne bloquent jamais les requêtes HTTP</li>
+      <li>Localisation automatique via <code>Mail::to($user)->locale($user->locale)->send(...)</code></li>
+    </ul>
+  </div>
+
+  <h3>Modèle côté backend Laravel</h3>
+  <pre><span class="c">// Tables minimum</span>
+notification_preferences   <span class="c">-- user_id, channel, type, enabled</span>
+notifications_log          <span class="c">-- user_id, channel, type, payload, sent_at, read_at, clicked_at</span>
+scheduled_notifications    <span class="c">-- job queue avec run_at précis (Horizon / Laravel queue)</span>
+
+<span class="c">// Canaux</span>
+App\Notifications\BookingConfirmedNotification via <span class="k">[fcm, mail, database]</span>
+    ->viaRoutes($user, $locale);
+
+<span class="c">// Exemple flow</span>
+BookingService::create()
+  -> dispatch(SendBookingConfirmedJob::class)
+     -> Push via FCM (mobile) ou Web Push
+     -> Email via Mail::to($user)->locale($user->locale)->send(...)
+        <span class="c">// From: no-reply@termini-im.com (Resend), Reply-To: support@termini-im.com</span>
+     -> Row dans notifications_log
+     -> Planifie 2 jobs futurs:
+        · ReminderDayBeforeJob  at T-20h
+        · Reminder1HourBeforeJob at T-1h
+</pre>
+
+  <h3>Règles globales à coder dès J1</h3>
+  <ul class="check">
+    <li><strong>Quiet hours</strong> — aucune notif non-transactionnelle entre 21h et 9h heure locale du destinataire</li>
+    <li><strong>Dedup</strong> — jamais la même notif 2× en &lt; 10 min (hash <code>user_id + type + ref_id</code>)</li>
+    <li><strong>Frequency cap</strong> — max 5 pushes non-transactionnelles par utilisateur par semaine</li>
+    <li><strong>Unsubscribe token</strong> — présent dans chaque email marketing, 1-click unsubscribe conforme RFC 8058</li>
+    <li><strong>Localization</strong> — sélection langue basée sur <code>user.locale</code>, fallback SQ</li>
+    <li><strong>Deep links</strong> — tous les deep links doivent être universels (Apple Universal Links + Android App Links + fallback web)</li>
+    <li><strong>Retry avec backoff</strong> — si FCM échoue, 3 tentatives : immédiat, 30s, 2min. Puis abandon silencieux + log.</li>
+    <li><strong>Preview builder</strong> — tool interne où tu peux prévisualiser n'importe quelle notif avant envoi prod</li>
+  </ul>
+
+  <h3>Matrice des canaux — qui reçoit quoi par défaut</h3>
+  <table class="tight">
+    <thead>
+      <tr><th>Type</th><th>Push</th><th>Email</th><th>In-app</th><th>Opt-out</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Vérification email (OTP)</td><td>✓</td><td>✓</td><td>—</td><td>Non</td></tr>
+      <tr><td>Booking confirmé (client)</td><td>✓</td><td>✓</td><td>Toast</td><td>Non</td></tr>
+      <tr><td>Rappel veille / 1h</td><td>✓</td><td>—</td><td>Banner</td><td>Oui</td></tr>
+      <tr><td>Annulation / modification</td><td>✓</td><td>✓</td><td>—</td><td>Non</td></tr>
+      <tr><td>Nouveau RDV (salon)</td><td>✓</td><td>—</td><td>Badge</td><td>Non</td></tr>
+      <tr><td>Nouvel avis</td><td>✓</td><td>—</td><td>Badge</td><td>Oui</td></tr>
+      <tr><td>Marketing / reactivation</td><td>✓</td><td>✓</td><td>—</td><td>Oui (double opt-in)</td></tr>
+      <tr><td>Newsletter</td><td>—</td><td>✓</td><td>—</td><td>Oui</td></tr>
+      <tr><td>Weekly digest (salon)</td><td>—</td><td>✓</td><td>—</td><td>Oui</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================================================= 9. ANALYTICS -->
+<section>
+  <h1 class="section"><span class="num">Section 9</span>Analytics, crash reporting, remote config</h1>
+  <hr class="rule-gold" />
+
+  <h3>Stack recommandé — minimum viable</h3>
+  <table class="tight">
+    <thead><tr><th>Outil</th><th>Rôle</th><th>Coût</th><th>Alternative</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Firebase Analytics</strong></td><td>Events natifs iOS/Android, gratuit illimité</td><td class="num">0 €</td><td>—</td></tr>
+      <tr><td><strong>Google Analytics 4</strong></td><td>Analytics web (landing + app web Flutter)</td><td class="num">0 €</td><td>—</td></tr>
+      <tr><td><strong>Mixpanel</strong> ou <strong>Amplitude</strong></td><td>Funnels détaillés, retention, cohortes — indispensable pour piloter phase 1</td><td class="num">0 € → 25 €/mois</td><td>PostHog (open-source, self-host possible)</td></tr>
+      <tr><td><strong>Firebase Crashlytics</strong></td><td>Crashs iOS/Android, stacktraces, breadcrumbs</td><td class="num">0 €</td><td>Sentry</td></tr>
+      <tr><td><strong>Firebase Remote Config</strong></td><td>Feature flags, kill switches, A/B tests</td><td class="num">0 €</td><td>GrowthBook</td></tr>
+      <tr><td><strong>Meta Pixel</strong></td><td>Conversions pour les ads Meta futures</td><td class="num">0 €</td><td>—</td></tr>
+      <tr><td><strong>Sentry</strong> (optionnel)</td><td>Erreurs backend Laravel + frontend web</td><td class="num">0 → 26 €/mois</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Events à tracker dès J1 (ordre de priorité)</h3>
+  <div class="cols-2">
+    <div>
+      <h4>Onboarding</h4>
+      <ul class="tight">
+        <li><code>signup_started</code></li>
+        <li><code>signup_completed</code> (source : email/google/fb/apple)</li>
+        <li><code>email_verified</code></li>
+        <li><code>profile_completed</code></li>
+      </ul>
+      <h4>Discovery</h4>
+      <ul class="tight">
+        <li><code>search_performed</code> (filters)</li>
+        <li><code>salon_viewed</code> (salonId)</li>
+        <li><code>favorite_added</code></li>
+        <li><code>share_link_copied</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Booking</h4>
+      <ul class="tight">
+        <li><code>booking_started</code></li>
+        <li><code>booking_slot_selected</code></li>
+        <li><code>booking_confirmed</code></li>
+        <li><code>booking_cancelled</code></li>
+        <li><code>booking_rescheduled</code></li>
+      </ul>
+      <h4>Salon (owner)</h4>
+      <ul class="tight">
+        <li><code>salon_activated</code></li>
+        <li><code>team_invite_sent</code></li>
+        <li><code>walkin_created</code></li>
+        <li><code>gallery_photo_uploaded</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Feature flags à poser dès J1 (Remote Config)</h3>
+  <ul class="clean">
+    <li><code>force_update_required</code> — forcer l'update en cas de bug critique</li>
+    <li><code>maintenance_mode</code> — écran maintenance si backend down</li>
+    <li><code>marketing_notifs_enabled</code> — kill switch global pour notifs non-transactionnelles</li>
+    <li><code>diaspora_campaign_banner</code> — afficher banner campagne été (phase 4)</li>
+    <li><code>new_onboarding_variant</code> — A/B test onboarding</li>
+    <li><code>share_incentive_enabled</code> — activer code promo partage (phase 2)</li>
+  </ul>
+</section>
+
+<!-- ========================================================= 10. NICE-TO-HAVE -->
+<section>
+  <h1 class="section"><span class="num">Section 10</span>Nice-to-have post-lancement (J30 → J120)</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Ce qui n'est pas dans la §1 vit ici. Ordonné par priorité décroissante. Feuille de route
+    pour les 90 jours d'après-lancement.
+  </p>
+
+  <h3>Priorité P1 — dans les 30 premiers jours post-launch</h3>
+  <ul class="clean">
+    <li><strong>Onboarding tutoriel produit</strong> — 3 écrans coach pour client (découvrir / réserver / rappels) et 5 écrans pour owner</li>
+    <li><strong>Tooltip system</strong> — marker « nouveau » sur features récemment ajoutées</li>
+    <li><strong>Support ticket UI côté admin</strong> — actuellement l'email part mais pas de tableau de bord pour y répondre proprement</li>
+    <li><strong>Gestion des no-shows</strong> — marquer un RDV comme no-show, stats par client, éventuel blocage après N no-shows</li>
+    <li><strong>Brouillon de RDV</strong> — pour les owners qui veulent pré-réserver mais confirmer plus tard</li>
+    <li><strong>Couleurs employés dans planning</strong> — une teinte par personne, visible d'un coup d'œil</li>
+  </ul>
+
+  <h3>Priorité P2 — entre J60 et J90</h3>
+  <ul class="clean">
+    <li><strong>Demande de jour off employé → approbation owner</strong> (workflow formel)</li>
+    <li><strong>Statistiques basiques owner</strong> — RDV jour/semaine/mois, top 3 employés, top 3 services</li>
+    <li><strong>Notifications SMS</strong> (fallback si push désactivé)</li>
+    <li><strong>Ajout au calendrier</strong> (iCal, Google Calendar, Apple Calendar) depuis fiche RDV client</li>
+    <li><strong>Mode offline lecture</strong> — planning visible sans réseau</li>
+    <li><strong>Export planning hebdomadaire PDF</strong></li>
+    <li><strong>Deep linking &amp; Universal Links</strong> complet pour partage salon et employé</li>
+  </ul>
+
+  <h3>Priorité P3 — entre J90 et J120</h3>
+  <ul class="clean">
+    <li><strong>Multi-langues admin complet</strong> (DE, IT, TR pour diaspora)</li>
+    <li><strong>Système de favoris avec tags</strong> (coiffeur·se préféré·e, barber habituel, manucure d'urgence…)</li>
+    <li><strong>Historique visuel client</strong> — photos des coiffures passées (opt-in, pour la cliente elle-même)</li>
+    <li><strong>Fidélité / carte points</strong> — 10 RDV = 1 offert, configurable par salon</li>
+    <li><strong>Paiement en ligne optionnel</strong> — acompte pour réserver, via Stripe ou provider local</li>
+    <li><strong>Widget iOS / Android</strong> — prochain RDV en home screen</li>
+    <li><strong>Apple Wallet</strong> — pass pour chaque RDV confirmé</li>
+  </ul>
+
+  <h3>Priorité P4 — au-delà</h3>
+  <ul class="clean">
+    <li><strong>AI assistant owner</strong> — « Donjeta a pas pris de RDV depuis 2 mois, tu veux lui envoyer un message ? »</li>
+    <li><strong>Marketing automation</strong> (campagnes push/email segmentées — feature premium)</li>
+    <li><strong>Multi-site</strong> pour chaînes</li>
+    <li><strong>API publique</strong> pour intégrations tierces</li>
+    <li><strong>Chat salon ↔ client</strong> in-app (attention — change la nature du produit, à évaluer)</li>
+  </ul>
+</section>
+
+<!-- ========================================================= 11. OPS -->
+<section>
+  <h1 class="section"><span class="num">Section 11</span>Opérations &amp; support</h1>
+  <hr class="rule-gold" />
+
+  <p class="lead">
+    Ce qui fait tenir un lancement solo n'est pas la feature, c'est la réponse rapide quand
+    un salon t'écrit « ça marche pas ». Voici le setup support minimum.
+  </p>
+
+  <h3>Canaux de support (par ordre d'usage attendu)</h3>
+  <ol>
+    <li><strong>Modal in-app « Contacter le support »</strong> — déjà en place, arrive dans <code>support_tickets</code></li>
+    <li><strong>WhatsApp business fondateur</strong> — numéro dédié, uniquement pour les salons pilotes phase 1</li>
+    <li><strong>Email <code>support@termini-im.com</code></strong> — fallback pour tout le monde (déjà configuré, redirige vers Gmail fondateur via OVH)</li>
+    <li><strong>DM Instagram</strong> — à surveiller mais jamais utilisé pour des tickets sérieux, rediriger vers les canaux ci-dessus</li>
+  </ol>
+
+  <h3>SLA à tenir dès J1</h3>
+  <table class="tight">
+    <thead><tr><th>Canal</th><th>Jours ouvrés</th><th>Weekend</th></tr></thead>
+    <tbody>
+      <tr><td>WhatsApp pilotes</td><td class="num">&lt; 2h</td><td class="num">&lt; 8h</td></tr>
+      <tr><td>Support in-app</td><td class="num">&lt; 12h</td><td class="num">&lt; 24h</td></tr>
+      <tr><td>Email <code>hello@</code></td><td class="num">&lt; 24h</td><td class="num">&lt; 48h</td></tr>
+      <tr><td>DM Instagram</td><td class="num">&lt; 24h</td><td class="num">&lt; 48h</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Outils support minimum</h3>
+  <ul class="tight">
+    <li><strong>Helpscout free</strong> ou <strong>Plain</strong> — boîte mail commune + historique (éviter Gmail brut)</li>
+    <li><strong>Typeform feedback trimestriel</strong> — envoyé aux salons pilotes tous les 3 mois</li>
+    <li><strong>Notion</strong> — base de connaissances interne : bugs connus, FAQs salon, procédures</li>
+  </ul>
+
+  <h3>Playbook incidents</h3>
+  <div class="callout dark">
+    <p style="margin: 0 0 3mm;"><strong>Si l'app est down &gt; 5 min :</strong></p>
+    <ol style="margin:0;">
+      <li>Post IG story immédiate : « On a un souci — on est dessus, estimation {durée}. »</li>
+      <li>Email immédiat aux owners pilotes (ne pas les laisser découvrir par une cliente en colère)</li>
+      <li>Post-mortem publié sous 48h sur le blog / IG — transparence totale</li>
+      <li>Activation feature flag <code>maintenance_mode</code> pendant la résolution</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ========================================================= OUTRO -->
+<section class="no-break" style="margin-top: 16mm;">
+  <hr class="rule-gold" />
+  <p style="font-family: 'Fraunces', serif; font-size: 14pt; line-height: 1.4; color: var(--ink); max-width: 150mm;">
+    Un produit prêt à lancer n'est pas un produit <em>fini.</em>
+    C'est un produit <strong>dont les bords dangereux ont été limés</strong> — et dont la
+    voix, à chaque notification, respecte la personne qu'elle atteint.
+  </p>
+  <p style="font-family: 'Instrument Sans', sans-serif; font-size: 9pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-top: 8mm;">
+    Termini im · Playbook 03 · Prishtinë · 2026
+  </p>
+</section>
+
+</div>
+
+</body>
+</html>

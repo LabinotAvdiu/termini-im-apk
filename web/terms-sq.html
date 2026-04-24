@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kushtet e Përdorimit · Termini im</title>
+<meta name="description" content="Kushtet e Përdorimit të Termini im — platformë rezervimi takimesh për salona dhe berberë.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ivory: #f7f2ea;
+    --surface: #fcf7ee;
+    --bone: #e8dcc8;
+    --ink: #171311;
+    --ink-soft: #332c29;
+    --muted: #716059;
+    --line: #d9cab3;
+    --burgundy: #7a2232;
+    --gold: #c89b47;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  header.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .brand-dot {
+    width: 8px; height: 8px;
+    background: var(--burgundy);
+    border-radius: 50%;
+  }
+  .brand-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+  .brand-name em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .lang-switcher a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .lang-switcher a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--muted);
+  }
+  .lang-switcher .active {
+    color: var(--burgundy);
+    font-weight: 600;
+  }
+  .lang-sep {
+    color: var(--line);
+  }
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .kicker .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px 0;
+  }
+  h1 em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .updated {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 40px;
+  }
+  h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 44px 0 12px 0;
+    color: var(--burgundy);
+  }
+  h3 {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 28px 0 8px 0;
+  }
+  p, li {
+    color: var(--ink-soft);
+  }
+  a {
+    color: var(--burgundy);
+    text-decoration: underline;
+    text-decoration-color: rgba(122, 34, 50, 0.35);
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    text-decoration-color: var(--burgundy);
+  }
+  ul {
+    padding-left: 22px;
+  }
+  li + li {
+    margin-top: 4px;
+  }
+  li::marker {
+    color: var(--gold);
+  }
+  .rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 40px 0;
+  }
+  .rule::before, .rule::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .rule span {
+    width: 4px; height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--burgundy);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 28px 0;
+    font-size: 14px;
+  }
+  .notice {
+    background: var(--surface);
+    border: 1px solid var(--bone);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-dot {
+    width: 6px; height: 6px;
+    background: var(--burgundy);
+    border-radius: 50%;
+  }
+  .footer-wordmark {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 14px;
+  }
+  .footer-wordmark em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .footer-tagline {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-left: 14px;
+  }
+  footer a {
+    color: var(--muted);
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+    text-decoration: none;
+  }
+  .back::before {
+    content: "\2190 ";
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="brand">
+    <span class="brand-dot"></span>
+    <span class="brand-name">Termini <em>im</em></span>
+  </header>
+
+  <nav class="lang-switcher">
+    <a href="/terms">FR</a>
+    <span class="lang-sep">·</span>
+    <a href="/terms-en">EN</a>
+    <span class="lang-sep">·</span>
+    <span class="active">SQ</span>
+  </nav>
+
+  <a href="/" class="back">kthehu në faqen kryesore</a>
+
+  <div class="kicker"><span class="dot"></span>Kushtet e Përdorimit · Versioni shqip</div>
+  <h1>Kushtet e <em>Përdorimit</em></h1>
+  <p class="updated">Përditësimi i fundit · Prill 2026</p>
+
+  <p>
+    Mirë se erdhe në Termini im. Para se të përdorësh platformën, të lusim të lexosh këto Kushte Përdorimi.
+    Ato përcaktojnë rregullat ndërmjet teje dhe nesh, qoftë klient, profesionist apo punonjës.
+    Duke krijuar një llogari ose duke përdorur shërbimet tona, ti pranon tërësinë e këtyre kushteve.
+  </p>
+
+  <div class="callout">
+    Shkurtimisht: Termini im është falas, pa komisione dhe pa abonim. Roli ynë është të lidhim klientët me salonet —
+    marrëdhënia e shërbimit mbetet ndërmjet teje dhe profesionistit që ke zgjedhur.
+  </div>
+
+  <h2>1. Hyrje</h2>
+  <p>
+    Termini im është një platformë rezervimi takimesh online për salona flokësh, berberë dhe studio bukurie,
+    e disponueshme në internet në adresën <a href="https://www.termini-im.com">www.termini-im.com</a> dhe nëpërmjet
+    aplikacioneve mobile iOS dhe Android.
+  </p>
+  <p>
+    Platforma është e publikuar nga Labinot Avdiu, me seli në Prishtinë, Kosovë. Për çdo pyetje lidhur me këto kushte,
+    mund të na shkruash në <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    Përdorimi i Termini im nënkupton pranimin e plotë të këtyre Kushteve të Përdorimit. Nëse nuk jeni dakord me ndonjë
+    dispozitë, ju lusim të mos e përdorni shërbimin.
+  </p>
+
+  <h2>2. Përkufizimet</h2>
+  <ul>
+    <li><strong>Përdoruesi</strong> — çdo person që hyn në platformë, me ose pa llogari.</li>
+    <li><strong>Klienti</strong> — një përdorues i regjistruar që rezervon takime nëpërmjet Termini im.</li>
+    <li><strong>Profesionisti / Saloni</strong> — një përdorues i regjistruar që ofron shërbime flokësh, berberimi apo
+      kujdesi dhe menaxhon objektin e tij nëpërmjet platformës.</li>
+    <li><strong>Punonjësi</strong> — një bashkëpunëtor i lidhur me llogarinë e Profesionistit, i cili mund të menaxhojë
+      orarin e tij dhe të pranojë rezervime.</li>
+    <li><strong>Takimi</strong> — një rezervim i konfirmuar ndërmjet një Klienti dhe një Profesionisti (ose njërit prej
+      punonjësve të tij) për një shërbim të caktuar, në datën dhe orën e rënë dakord.</li>
+    <li><strong>Platforma</strong> — tërësia e shërbimeve të ofruara nga Termini im: faqja web, aplikacionet mobile,
+      API-ja dhe ndërfaqet e administrimit.</li>
+  </ul>
+
+  <h2>3. Qasja në shërbim</h2>
+  <p>
+    Termini im është plotësisht falas për Klientët. Profesionistët gjithashtu përfitojnë qasje pa pagesë: asnjë komision
+    nuk mbahet nga takimet dhe asnjë abonim nuk kërkohet për të hyrë në funksionet bazë të platformës.
+  </p>
+  <p>
+    Për të përdorur Termini im, duhet të krijosh një llogari personale. Regjistrimi është i hapur për çdo person
+    <strong>16 vjeç e lart</strong>. Përdorimi i shërbimit nga persona nën këtë moshë nuk lejohet.
+  </p>
+  <p>
+    Termini im rezervon të drejtën të ndryshojë, pezullojë ose ndërpresë tërësinë ose pjesë të shërbimit, përkohësisht
+    ose përfundimisht, sidomos për mirëmbajtje ose përmirësime teknike.
+  </p>
+
+  <h2>4. Llogaria e përdoruesit</h2>
+  <p>
+    Çdo person mund të ketë vetëm një llogari aktive. Krijimi i llogarive të shumëfishta për të njëjtin individ është
+    i ndaluar, përveç rasteve kur ne e kemi aprovuar shprehimisht (p.sh. një profesionist që menaxhon disa objekte
+    të ndryshme).
+  </p>
+  <p>
+    Ti je përgjegjës për konfidencialitetin e fjalëkalimit tënd dhe për të gjitha veprimet e kryera nga llogaria jote.
+    Nëse dyshon për qasje të paautorizuar, na kontakto menjëherë në
+    <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    Mund ta fshish llogarinë tënde në çdo kohë nga <strong>Cilësimet → Fshi llogarinë time</strong>. Fshirja është
+    e pakthyeshme dhe rezulton në heqjen e të dhënave tuaja personale sipas
+    <a href="/privacy">Politikës sonë të Privatësisë</a>.
+  </p>
+
+  <h2>5. Detyrimet e Klientit</h2>
+  <p>
+    Duke rezervuar një takim nëpërmjet Termini im, Klienti merr përsipër:
+  </p>
+  <ul>
+    <li>Të paraqitet në kohë ose të njoftojë salonin sa më shpejt të jetë e mundur nëse nuk mund të vijë.</li>
+    <li>Të respektojë afatin e anulimit të specifikuar nga saloni.</li>
+    <li>T'i trajtojë punonjësit e salonit me respekt dhe mirësjellje.</li>
+    <li>Të ofrojë informacione të sakta gjatë rezervimit (emri, kontaktet, shërbimi i kërkuar).</li>
+    <li>Të mos e përdorë platformën për qëllime mashtruese ose për të bërë rezervime fiktive.</li>
+  </ul>
+  <p>
+    Shkeljet e përsëritura të këtyre detyrimeve mund të çojnë në pezullimin e llogarisë.
+  </p>
+
+  <h2>6. Detyrimet e Profesionistit</h2>
+  <p>
+    Një Profesionist i regjistruar në Termini im merr përsipër:
+  </p>
+  <ul>
+    <li>Të ofrojë informacione të sakta dhe të azhurnuara për objektin e tij: emri, adresa, orari, shërbimet dhe çmimet.</li>
+    <li>T'i respektojë takimet e konfirmuara ose t'i njoftojë Klientët sa më shpejt në rast anulimi të pashmangshëm.</li>
+    <li>Të ofrojë cilësi shërbimi në përputhje me informacionet e paraqitura në platformë.</li>
+    <li>Ta mbajë disponibilitetin të azhurnuar për të shmangur konfliktet e orarit.</li>
+    <li>Të moderojë përmbajtjet e publikuara nga ekipi i tij në përputhje me këto Kushte.</li>
+    <li>Të mos e përdorë Termini im për kontakte tregtare të padëshiruara.</li>
+  </ul>
+
+  <h2>7. Përgjegjësia e Termini im</h2>
+  <p>
+    Termini im vepron vetëm si ndërmjetës teknik ndërmjet Klientëve dhe Profesionistëve. Platforma lehtëson lidhjen
+    dhe rezervimin e takimeve, por nuk ndërhyn në realizimin e shërbimit.
+  </p>
+  <p>
+    Si rrjedhojë, Termini im nuk mund të mbahet përgjegjës për:
+  </p>
+  <ul>
+    <li>Cilësinë, përputhshmërinë ose rezultatin e shërbimit të ofruar nga Profesionisti.</li>
+    <li>Një takim të anuluar, shtyrë ose të pahonoruar nga njëra prej palëve.</li>
+    <li>Çdo mosmarrëveshje ndërmjet një Klienti dhe një Profesionisti.</li>
+    <li>Një ndërprerje të përkohshme të shërbimit për shkak mirëmbajtjeje, incidenti teknik ose ngjarje të jashtme.</li>
+  </ul>
+  <p>
+    Termini im nuk garanton disponibilitet të pandërprerë të platformës (100% uptime). Ne bëjmë çdo përpjekje për
+    të siguruar vazhdimësinë e shërbimit.
+  </p>
+
+  <h2>8. Përmbajtjet e përdoruesve</h2>
+  <p>
+    Përdoruesit mund të publikojnë përmbajtje në platformë: foto galerie, vlerësime salonesh dhe informacione profili.
+    Duke dërguar këto përmbajtje, ti i jep Termini im një licencë jo-ekskluzive, botërore dhe pa pagesë për t'i shfaqur,
+    riprodhuar dhe përshtatur brenda kuadrit të shërbimit.
+  </p>
+  <p>
+    Ti ruan të gjitha të drejtat mbi përmbajtjet që publikon dhe mund t'i heqësh në çdo kohë. Termini im rezervon
+    të drejtën të fshijë çdo përmbajtje që shkel këto Kushte, është e paligjshme, ofenduese ose mashtruese.
+  </p>
+  <p>
+    Është e ndaluar të publikohen përmbajtje që cënojnë të drejtat e palëve të treta, janë shpifëse, diskriminuese
+    ose përmbajnë informacione personale të të tjerëve pa pëlqimin e tyre.
+  </p>
+
+  <h2>9. Të dhënat personale</h2>
+  <p>
+    Mbledhja dhe përpunimi i të dhënave tuaja personale rregullohen nga
+    <a href="/privacy">Politika jonë e Privatësisë</a>, e disponueshme gjithmonë nga platforma.
+    Ky dokument detajon të dhënat e mbledhura, qëllimet e tyre, periudhat e ruajtjes dhe të drejtat tuaja (qasje,
+    korrigjim, fshirje, portabilitet).
+  </p>
+
+  <h2>10. Fshirja dhe mbyllja e llogarisë</h2>
+  <p>
+    Mund të kërkosh fshirjen e llogarisë në çdo kohë nga <strong>Cilësimet → Fshi llogarinë time</strong>.
+    Kjo veprim është i pakthyeshëm: të dhënat tuaja personale dhe historiku i takimeve do të fshihen brenda afateve
+    të parashikuara në Politikën tonë të Privatësisë.
+  </p>
+  <p>
+    Termini im rezervon të drejtën të pezullojë ose mbyllë një llogari në rast shkelje të këtyre Kushteve,
+    përdorimi mashtrues ose dëmi të shkaktuar ndaj Përdoruesve të tjerë ose platformës. Kur është e mundur,
+    Përdoruesi i përkatshëm do të njoftohet me email.
+  </p>
+
+  <h2>11. Pronësia intelektuale</h2>
+  <p>
+    Marka Termini im, logoja, dizajni, ndërfaqet, kodi burimor, përmbajtjet editoriale dhe të gjitha elementet
+    përbërëse të platformës janë pronë ekskluzive e botuesit ose partnerëve të tij.
+  </p>
+  <p>
+    Çdo riprodhim, nxjerrje, rishpërndarje ose shfrytëzim tregtar i këtyre elementeve pa autorizim të shkruar
+    paraprak është rreptësishtë i ndaluar.
+  </p>
+
+  <h2>12. Ndryshimet e Kushteve</h2>
+  <p>
+    Këto Kushte Përdorimi mund të përditësohen. Në rast ndryshimi thelbësor, do të njoftohesh me email ose njoftim
+    brenda aplikacionit <strong>30 ditë para</strong> hyrjes në fuqi të kushteve të reja. Data e përditësimit të fundit
+    është gjithmonë e shënuar në krye të këtij dokumenti.
+  </p>
+  <p>
+    Vazhdimi i përdorimit të shërbimit pas datës së hyrjes në fuqi nënkupton pranimin e kushteve të azhurnuara.
+  </p>
+
+  <h2>13. Ligji i zbatueshëm</h2>
+  <p>
+    Këto Kushte rregullohen nga ligji i Republikës së Kosovës. Në rast mosmarrëveshjeje, palët do të mundohen të
+    gjejnë një zgjidhje miqësore para çdo veprimi juridik.
+  </p>
+  <p>
+    Përdoruesit që banojnë në Bashkimin Evropian ruajnë, sido qoftë, të drejtat e detyrueshme që u jep GDPR-i
+    (Rregullorja e Përgjithshme për Mbrojtjen e të Dhënave) dhe legjislacioni i zbatueshëm i BE-së për mbrojtjen
+    e konsumatorëve në internet.
+  </p>
+
+  <h2>14. Kontakti</h2>
+  <p>
+    Për çdo pyetje lidhur me këto Kushte, për të ushtruar të drejtat tuaja ose për të raportuar një shkelje:
+  </p>
+  <ul>
+    <li>Email: <a href="mailto:support@termini-im.com">support@termini-im.com</a></li>
+    <li>Faqja: <a href="https://www.termini-im.com">www.termini-im.com</a></li>
+  </ul>
+
+  <h2>15. Informacione ligjore</h2>
+  <p>
+    <strong>Botuesi:</strong> Labinot Avdiu, person fizik me vendbanim në Prishtinë, Kosovë.
+    Kontakti: <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    <strong>Drejtori i botimit:</strong> Labinot Avdiu.
+  </p>
+  <p>
+    <strong>Pritja:</strong> OVH SAS — 2 rue Kellermann, 59100 Roubaix, Francë —
+    <a href="https://www.ovhcloud.com" rel="noopener">ovhcloud.com</a>. Serveri ndodhet në Roubaix (Francë).
+  </p>
+
+  <div class="rule"><span></span></div>
+
+  <div class="notice">
+    Ky dokument ofrohet vetëm për qëllime informuese. Një avokat i specializuar do të konsultohet për versionin e prodhimit.
+  </div>
+
+  <footer>
+    <div class="footer-brand">
+      <span class="footer-dot"></span>
+      <span class="footer-wordmark">Termini <em>im</em></span>
+      <span class="footer-tagline">Prishtinë · 2026</span>
+    </div>
+    <div>
+      <a href="/privacy">Politika e Privatësisë</a>
+      <span style="margin: 0 8px; color: var(--line);">·</span>
+      <a href="https://www.termini-im.com">www.termini-im.com</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

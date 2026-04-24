@@ -28,6 +28,15 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+
+    // Certains plugins Flutter (image_picker, flutter_local_notifications, …)
+    // compilent encore avec source/target Java 8 et le compilateur JDK
+    // récent émet un warning "obsolete". Les plugins ne sont pas sous notre
+    // contrôle → on masque le bruit au niveau JavaCompile pour tous les
+    // sous-projets. Le code de l'app reste en Java 17 (voir app/build.gradle.kts).
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.add("-Xlint:-options")
+    }
 }
 
 tasks.register<Delete>("clean") {

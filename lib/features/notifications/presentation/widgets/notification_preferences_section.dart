@@ -82,7 +82,7 @@ class _NotificationPreferencesSectionState
 
         if (!_permissionGranted) const SizedBox(height: AppSpacing.sm),
 
-        // Carte éditoriale principale
+        // Carte éditoriale principale — préférences (push on/off)
         _NotificationCard(
           isLoading: state.isLoading && state.preferences == null,
           preferences: state.preferences,

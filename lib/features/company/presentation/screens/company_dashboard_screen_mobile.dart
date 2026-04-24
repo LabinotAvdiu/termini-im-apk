@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/widgets/avatar_editor.dart';
@@ -16,7 +17,9 @@ import '../../../support/data/models/support_models.dart';
 import '../../../support/presentation/widgets/contact_support_dialog.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
+import '../../../shell/presentation/providers/shell_nav_provider.dart';
 import '../providers/company_dashboard_provider.dart';
+import '../widgets/auto_approve_card.dart';
 import '../widgets/salon_geocoding_banner.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
@@ -137,6 +140,16 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
                                 onEditService: onEditService,
                                 onDeleteService: onDeleteService,
                               ),
+                              // Auto-approve sits right after services so it's
+                              // the first capacity-related card the owner
+                              // sees — before the breaks/days-off settings.
+                              if (state.company!.bookingMode ==
+                                  'capacity_based') ...[
+                                const SizedBox(height: AppSpacing.md),
+                                AutoApproveCard(
+                                  key: ref.watch(autoApproveCardKeyProvider),
+                                ),
+                              ],
                               const SizedBox(height: AppSpacing.md),
                               if (state.company!.bookingMode ==
                                   'capacity_based') ...[
@@ -220,10 +233,10 @@ class _MobileAppBar extends ConsumerWidget {
 
     return SliverAppBar(
       pinned: true,
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.surface,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      scrolledUnderElevation: 0,
+      scrolledUnderElevation: 1,
       shadowColor: AppColors.cardShadow,
       title: Row(
         mainAxisSize: MainAxisSize.min,
@@ -288,6 +301,11 @@ class _MobileAppBar extends ConsumerWidget {
 // Section card — exported for reuse in desktop
 // ---------------------------------------------------------------------------
 
+/// Carte de section exportée — réutilisée dans le layout desktop.
+///
+/// Délègue intégralement à [AppCard.section] pour garantir un chrome uniforme
+/// avec toutes les autres cartes de l'app (pastille ronde 40×40 ivoryAlt,
+/// titre h3 Fraunces, border divider, ombre cardShadow).
 class DashboardSectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -304,56 +322,11 @@ class DashboardSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.divider, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF171311).withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.sm,
-              AppSpacing.sm,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  ),
-                  child: Icon(icon, size: 18, color: AppColors.primary),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.subtitle
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                if (trailing != null) trailing!,
-              ],
-            ),
-          ),
-          const Divider(height: 1, thickness: 0.5, color: AppColors.divider),
-          child,
-        ],
-      ),
+    return AppCard.section(
+      title: title,
+      icon: icon,
+      trailing: trailing,
+      child: child,
     );
   }
 }

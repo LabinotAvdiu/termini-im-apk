@@ -11,6 +11,8 @@ class CompanyDetailModel {
   final String? phone;
   final String? phoneSecondary;
   final String bookingMode;
+  /// When true (capacity_based only), new bookings land as confirmed directly.
+  final bool capacityAutoApprove;
   /// Salon's target gender — 'men' | 'women' | 'both'. Defaults to 'both'
   /// when the backend doesn't specify.
   final String gender;
@@ -36,6 +38,7 @@ class CompanyDetailModel {
     this.phone,
     this.phoneSecondary,
     this.bookingMode = 'employee_based',
+    this.capacityAutoApprove = false,
     this.gender = 'both',
     this.minCancelHours = 2,
     this.isFavorite = false,
@@ -54,6 +57,7 @@ class CompanyDetailModel {
     String? phone,
     String? phoneSecondary,
     String? bookingMode,
+    bool? capacityAutoApprove,
     String? gender,
     int? minCancelHours,
     bool? isFavorite,
@@ -71,6 +75,7 @@ class CompanyDetailModel {
       phone: phone ?? this.phone,
       phoneSecondary: phoneSecondary ?? this.phoneSecondary,
       bookingMode: bookingMode ?? this.bookingMode,
+      capacityAutoApprove: capacityAutoApprove ?? this.capacityAutoApprove,
       gender: gender ?? this.gender,
       minCancelHours: minCancelHours ?? this.minCancelHours,
       isFavorite: isFavorite ?? this.isFavorite,
@@ -107,6 +112,9 @@ class CompanyDetailModel {
       bookingMode: data['bookingMode'] as String? ??
           data['booking_mode'] as String? ??
           'employee_based',
+      capacityAutoApprove: data['capacityAutoApprove'] as bool? ??
+          data['capacity_auto_approve'] as bool? ??
+          false,
       gender: (data['gender'] as String?) ?? 'both',
       minCancelHours: data['minCancelHours'] as int? ??
           data['min_cancel_hours'] as int? ??

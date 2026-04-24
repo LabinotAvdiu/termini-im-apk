@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/auth_prompt_sheet.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
@@ -13,7 +14,9 @@ import '../../../company/presentation/widgets/salon_geocoding_banner.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart';
 import '../widgets/complete_profile_banner.dart';
+import '../widgets/diaspora_banner.dart';
 import '../widgets/search_filter_bar.dart';
+import '../widgets/tomorrow_booking_banner.dart';
 
 /// Mobile presentation for the home / search screen (M1 editorial design).
 ///
@@ -33,7 +36,7 @@ class HomeScreenMobile extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: _MobileAppBar(),
+      appBar: _HomeAppBar(),
       body: RefreshIndicator(
         color: AppColors.primary,
         backgroundColor: AppColors.surface,
@@ -41,15 +44,18 @@ class HomeScreenMobile extends ConsumerWidget {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            // Email verification banner
-            SliverToBoxAdapter(child: _EmailVerificationBanner()),
-
             // Profile completion nudge (gender / phone missing).
             const SliverToBoxAdapter(child: CompleteProfileBanner()),
 
             // Salon geocoding warning — shown to owners whose salon has no
             // Google address + no GPS (can't be ranked in proximity search).
             const SliverToBoxAdapter(child: SalonGeocodingBanner()),
+
+            // C16 — Tomorrow booking reminder banner (self-gating)
+            const SliverToBoxAdapter(child: TomorrowBookingBanner()),
+
+            // E27 — Diaspora banner (Remote Config gate + locale gate + session dismiss)
+            const SliverToBoxAdapter(child: DiasporaBanner()),
 
             // Feature 2 — Upcoming appointment reminder banner (auth users only)
             SliverToBoxAdapter(
@@ -132,63 +138,44 @@ class HomeScreenMobile extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// AppBar
+// AppBar home — utilise AppTopBar.shell avec trailing adapté au contexte.
 // ---------------------------------------------------------------------------
 
-class _MobileAppBar extends ConsumerWidget implements PreferredSizeWidget {
+/// AppBar de la home (shell + guest).
+///
+/// Authentifié : wordmark seul (les actions bell/avatar sont dans le shell).
+/// Guest : wordmark + icône langue + icône connexion.
+class _HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(64);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppBar(
-      backgroundColor: AppColors.surface,
-      elevation: 0,
-      scrolledUnderElevation: 1,
-      shadowColor: AppColors.cardShadow,
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            margin: const EdgeInsets.only(right: AppSpacing.xs),
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-          ),
-          Text(
-            'Termini im',
-            style: AppTextStyles.h3.copyWith(
-              color: AppColors.textPrimary,
-              letterSpacing: -0.3,
-            ),
-          ),
-        ],
-      ),
-      centerTitle: false,
-      actions: [
-        if (!ref.watch(authStateProvider).isAuthenticated) ...[
-          IconButton(
-            icon: const Icon(
-              Icons.language_rounded,
-              color: AppColors.textSecondary,
-            ),
-            tooltip: context.l10n.language,
-            onPressed: () => showLanguageSheet(context),
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.person_outline_rounded,
-              color: AppColors.primary,
-            ),
-            tooltip: context.l10n.login,
-            onPressed: () => showAuthPromptSheet(context),
-          ),
-        ],
-        const SizedBox(width: AppSpacing.xs),
-      ],
+    final isAuthenticated = ref.watch(
+      authStateProvider.select((s) => s.isAuthenticated),
+    );
+
+    return AppTopBar.shell(
+      trailing: isAuthenticated
+          ? null
+          : [
+              IconButton(
+                icon: const Icon(
+                  Icons.language_rounded,
+                  color: AppColors.textSecondary,
+                ),
+                tooltip: context.l10n.language,
+                onPressed: () => showLanguageSheet(context),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.person_outline_rounded,
+                  color: AppColors.primary,
+                ),
+                tooltip: context.l10n.login,
+                onPressed: () => showAuthPromptSheet(context),
+              ),
+            ],
     );
   }
 }
@@ -215,66 +202,6 @@ class _ResultsLabel extends StatelessWidget {
       style: AppTextStyles.bodySmall.copyWith(
         color: AppColors.textSecondary,
         fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Email verification banner
-// ---------------------------------------------------------------------------
-
-class _EmailVerificationBanner extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authStateProvider).user;
-
-    if (user == null || user.emailVerified) return const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        AppSpacing.sm,
-        AppSpacing.md,
-        0,
-      ),
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.40),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            Icons.warning_amber_rounded,
-            color: AppColors.warning,
-            size: 22,
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.emailNotVerifiedTitle,
-                  style: AppTextStyles.body.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  context.l10n.emailNotVerifiedMessage,
-                  style: AppTextStyles.bodySmall,
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

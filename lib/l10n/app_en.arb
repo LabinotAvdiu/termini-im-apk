@@ -533,8 +533,36 @@
       "url": { "type": "String" }
     }
   },
-  "companySetupHeadline": "Finish setting up your salon",
+  "companySetupHeadline": "Your salon details",
   "companySetupSubtitle": "A few more details to activate your owner dashboard.",
+  "companyModeHeadline": "Booking mode",
+  "companyModeSubtitle": "How clients book at your salon.",
+  "companySetupStepIndicator": "Step {current} / {total}",
+  "@companySetupStepIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "companySetupNextButton": "Next",
+  "companySetupSubmitButton": "Confirm and create my salon",
+
+  "companySetupModeTitle": "How does your salon work?",
+  "companySetupModeIndividualTitle": "Individual mode",
+  "companySetupModeIndividualExample": "E.g. Salon with 2 stylists, each with their own schedule",
+  "companySetupModeIndividualBullet1": "Each professional has their own schedule",
+  "companySetupModeIndividualBullet2": "Clients choose their preferred stylist",
+  "companySetupModeIndividualBullet3": "Invite your team at any time",
+  "companySetupModeIndividualBullet4": "Recommended for pros who manage their own revenue",
+  "companySetupModeCapacityTitle": "Capacity mode",
+  "companySetupModeCapacityExample": "E.g. Large salon with 5 parallel seats",
+  "companySetupModeCapacityBullet1": "Clients pick a slot, not a specific pro",
+  "companySetupModeCapacityBullet2": "The salon manages revenue collectively",
+  "companySetupModeCapacityBullet3": "Add as many stations as needed",
+  "companySetupModeCapacityBullet4": "Recommended for institutes with pooled revenue",
+  "companySetupModeBadgePopular": "Popular",
+  "companySetupModeCaption": "You can change this setting later from My Salon → Settings.",
+
   "salonUnisex": "Salon · Men & Women",
   "servicesOffered": "offered",
   "approvalsTitle": "APPROVALS",
@@ -806,5 +834,126 @@
   "myBreaksEntry": "My breaks",
   "myBreaksEntrySubtitle": "Recurring breaks and days off",
   "comingSoon": "Coming soon",
-  "comingSoonMessage": "This feature is coming soon."
+  "comingSoonMessage": "This feature is coming soon.",
+
+  "verifyEmailTitle": "Confirm your email",
+  "verifyEmailSubtitle": "A 6-character code was sent to {email}",
+  "@verifyEmailSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyEmailOverline": "VERIFICATION",
+  "verifyEmailConfirm": "Confirm",
+  "verifyEmailResend": "Resend code",
+  "verifyEmailResendCooldown": "Resend in {seconds}s",
+  "@verifyEmailResendCooldown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "verifyEmailSuccess": "Email confirmed",
+  "verifyEmailSuccessTitle": "Email confirmed",
+  "verifyEmailSuccessMessage": "Your address is now verified. You can book with peace of mind.",
+  "verifyEmailSuccessCta": "Back to home",
+  "verifyEmailCodeRequired": "Code is required",
+  "verifyEmailCodeLength": "Code must be 6 characters",
+  "verifyEmailErrorInvalid": "Invalid or expired code",
+  "verifyEmailErrorNotFound": "No account linked to this email",
+  "unverifiedBannerMessage": "Confirm your email to secure your account",
+  "unverifiedBannerCta": "Confirm",
+  "verifyEmailToBookTitle": "Verify your email to book",
+  "verifyEmailToBookMessage": "We can only confirm an appointment once your email is verified. It only takes 30 seconds.",
+  "verifyEmailToBookCta": "Verify my email",
+  "verifyEmailToBookDismiss": "Later",
+
+  "autoApprovalEnabled": "Auto-approval enabled",
+  "autoApprovalEmptyMessage": "All new appointments are confirmed directly. This list will stay empty while auto-approval is active.",
+  "autoApprovalEditCta": "Change this setting",
+  "autoApprovalToggleLabel": "Auto-approval",
+  "autoApprovalToggleHelper": "New appointments will be confirmed directly, without any validation step on your end.",
+  "autoApprovalCapacityOnly": "Capacity mode only",
+  "autoApprovalBadgeAuto": "auto",
+  "autoApprovalBadgeManual": "manual",
+  "autoApprovalBadgeTitle": "Review",
+  "autoApprovalConfirmEnableTitle": "Enable auto-approval?",
+  "autoApprovalConfirmEnableMessage": "All new appointments will be confirmed directly, without any action from you.",
+  "autoApprovalConfirmDisableTitle": "Disable auto-approval?",
+  "autoApprovalConfirmDisableMessage": "New appointments will go back through the \"To confirm\" queue.",
+  "autoApprovalConfirmAction": "Confirm",
+
+  "deleteAccountModalTitle": "Delete your account?",
+  "deleteAccountModalDescription": "This will permanently delete your account, your appointment history and your personal information. Your saved salons will be removed. This action cannot be undone.",
+  "deleteAccountModalCheckbox": "I understand that deletion is permanent",
+  "deleteAccountModalContinue": "Continue",
+  "deleteAccountConfirmPrompt": "Type {keyword} to confirm",
+  "@deleteAccountConfirmPrompt": {
+    "placeholders": {
+      "keyword": { "type": "String" }
+    }
+  },
+  "deleteAccountConfirmAction": "Permanently delete my account",
+  "deleteAccountTypeKeyword": "DELETE",
+  "deleteAccountSuccess": "Your account has been deleted.",
+  "deleteAccountErrorOwnerSalon": "You must transfer or delete your salon before you can delete your account.",
+  "deleteAccountErrorGeneric": "Something went wrong. Please try again later.",
+
+  "planningEmptyDayTitle": "No appointments today.",
+  "planningEmptyDaySubtitle": "Time for a Turkish coffee?",
+
+  "tomorrowBookingBannerMessage": "Tomorrow at {time} at {salon} →",
+  "@tomorrowBookingBannerMessage": {
+    "placeholders": {
+      "time":  { "type": "String" },
+      "salon": { "type": "String" }
+    }
+  },
+
+  "shareAppTitle": "Share Termini im",
+  "shareAppMessage": "Enjoying it? A friend who discovers it means one more salon in Kosovo.",
+  "shareAppCta": "Share",
+  "shareAppLater": "Later",
+
+  "notifCategoryAppointments": "Appointments",
+  "notifCategoryCommunity": "Community",
+  "notifCategoryMarketing": "Marketing",
+
+  "notifTypeReminderEveningLabel": "Evening reminder",
+  "notifTypeReminderEveningDesc": "Get a reminder the evening before your appointment.",
+  "notifTypeReminder2hLabel": "2-hour reminder",
+  "notifTypeReminder2hDesc": "A notification 2 hours before your appointment time.",
+  "notifTypeReviewRequestLabel": "Review request",
+  "notifTypeReviewRequestDesc": "The day after your visit, we ask for your feedback.",
+
+  "notifTypeNewReviewLabel": "New review",
+  "notifTypeNewReviewDesc": "Get notified when a client posts a review on your salon.",
+  "notifTypeCapacityFullLabel": "Full capacity",
+  "notifTypeCapacityFullDesc": "Notification when all slots for a day are taken.",
+  "notifTypeWeeklyDigestLabel": "Weekly digest",
+  "notifTypeWeeklyDigestDesc": "A summary of your activity each week.",
+  "notifTypeMonthlyReportLabel": "Monthly report",
+  "notifTypeMonthlyReportDesc": "Statistics and trends for the past month.",
+  "notifTypeFavoriteNewPhotosLabel": "New photos (favourites)",
+  "notifTypeFavoriteNewPhotosDesc": "When one of your favourite salons adds photos.",
+  "notifTypeFavoriteNewSlotsLabel": "New slots (favourites)",
+  "notifTypeFavoriteNewSlotsDesc": "When a favourite salon opens new booking slots.",
+
+  "notifTypeMarketingLabel": "Offers & news",
+  "notifTypeMarketingDesc": "Campaigns, promotions and Termini im updates.",
+
+  "notificationsInboxTitle": "Inbox",
+  "notificationsInboxUnreadCount": "{count} unread",
+  "@notificationsInboxUnreadCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationsInboxMarkAllRead": "Mark all as read",
+  "notificationsInboxEmptyTitle": "Empty inbox",
+  "notificationsInboxEmptySubtitle": "Your notifications will appear here as they arrive.",
+  "notificationsInboxToday": "Today",
+  "notificationsInboxYesterday": "Yesterday",
+  "notificationsChannelPush": "PUSH",
+  "notificationsChannelEmail": "EMAIL",
+  "notificationsChannelInApp": "IN-APP"
 }

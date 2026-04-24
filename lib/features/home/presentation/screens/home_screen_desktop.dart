@@ -17,6 +17,8 @@ import '../../data/models/gender_filter.dart';
 import '../providers/home_providers.dart';
 import '../widgets/company_card.dart' show FavoriteBadge;
 import '../widgets/complete_profile_banner.dart';
+import '../widgets/diaspora_banner.dart';
+import '../widgets/tomorrow_booking_banner.dart';
 import '../../../company/presentation/widgets/salon_geocoding_banner.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 
@@ -102,6 +104,12 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
                     // Salon geocoding warning — owners whose salon has no
                     // Google address + no GPS won't be found in search.
                     const SalonGeocodingBanner(),
+
+                    // C16 — Tomorrow booking reminder banner (self-gating)
+                    const TomorrowBookingBanner(),
+
+                    // E27 — Diaspora banner (Remote Config gate)
+                    const DiasporaBanner(),
 
                     // Hero
                     _DesktopHero(),
@@ -897,10 +905,9 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
   Widget build(BuildContext context) {
     final company = widget.company;
     // Combine morning + afternoon slots, take first 4
-    final allSlots = [
-      ...company.morningSlots,
-      ...company.afternoonSlots,
-    ].take(4).toList();
+    // Backend already trims to 4 day entries and collapses morning/afternoon
+    // into a single `available` flag — just read `slots` as-is.
+    final allSlots = company.slots;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -1157,27 +1164,55 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
 // Desktop slot chip
 // ---------------------------------------------------------------------------
 
-class _DesktopSlotChip extends StatelessWidget {
+class _DesktopSlotChip extends ConsumerWidget {
   final DaySlot slot;
 
   const _DesktopSlotChip({required this.slot});
 
   @override
-  Widget build(BuildContext context) {
-    // "Hot" slots are available ones — displayed with ink fill per D1 spec
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searched = ref.watch(dateFilterProvider);
+    final isTarget = searched != null &&
+        searched.year == slot.date.year &&
+        searched.month == slot.date.month &&
+        searched.day == slot.date.day;
+
+    // Target day gets the bordeaux hero treatment. Same rules as mobile —
+    // see company_card._UnifiedSlotChip for the reasoning.
+    final Color bg;
+    final Color borderColor;
+    final Color textColor;
+
+    if (isTarget && slot.available) {
+      bg = AppColors.primary;
+      borderColor = AppColors.primary;
+      textColor = AppColors.background;
+    } else if (isTarget) {
+      bg = AppColors.background;
+      borderColor = AppColors.primary;
+      textColor = AppColors.primary;
+    } else if (slot.available) {
+      bg = AppColors.textPrimary;
+      borderColor = AppColors.textPrimary;
+      textColor = AppColors.background;
+    } else {
+      bg = AppColors.background;
+      borderColor = AppColors.border;
+      textColor = AppColors.textHint;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: slot.available ? AppColors.textPrimary : AppColors.background,
-        border: Border.all(
-          color: slot.available ? AppColors.textPrimary : AppColors.border,
-        ),
+        color: bg,
+        border: Border.all(color: borderColor, width: isTarget ? 1.5 : 1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        '${slot.date.day}/${slot.date.month}',
+        '${slot.date.day.toString().padLeft(2, '0')}/'
+        '${slot.date.month.toString().padLeft(2, '0')}',
         style: AppTextStyles.caption.copyWith(
-          color: slot.available ? AppColors.background : AppColors.textHint,
+          color: textColor,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),

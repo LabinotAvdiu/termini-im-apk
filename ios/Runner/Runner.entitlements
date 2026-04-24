@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+		APNs environment — "development" pour Debug / TestFlight internal,
+		"production" pour App Store release.
+
+		Xcode alterne automatiquement cette valeur selon la configuration de
+		build (Debug/Release) quand on coche "Push Notifications" dans
+		Signing & Capabilities. Si tu ne vois pas ce fichier bouger entre
+		deux builds, vérifie que les deux entitlements files (Debug +
+		Release) pointent bien tous les deux ici ou duppliquer en
+		`RunnerRelease.entitlements`.
+	-->
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
+</plist>

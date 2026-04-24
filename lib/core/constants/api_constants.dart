@@ -2,11 +2,17 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 abstract class ApiConstants {
-  // Override via --dart-define=API_BASE_URL=https://api.termini-im.com/api at build time.
-  // Without an override, Android emulator uses 10.0.2.2 to reach the host; other
-  // platforms fall back to localhost.
+  // Override via --dart-define=API_BASE_URL=http://localhost:8080/api at build
+  // time for local dev. Release builds (including those uploaded to Play
+  // Store / TestFlight) resolve to the production API unless overridden.
   static const String _envBaseUrl =
       String.fromEnvironment('API_BASE_URL', defaultValue: '');
+
+  /// Set to true only during local development. When true and no
+  /// `API_BASE_URL` override is provided, falls back to `10.0.2.2`
+  /// (Android emulator) or `localhost` (iOS simulator / web).
+  static const bool _useLocalInDev =
+      bool.fromEnvironment('USE_LOCAL_API', defaultValue: false);
 
   static final String baseUrl = _resolveBaseUrl();
 
@@ -14,10 +20,14 @@ abstract class ApiConstants {
     if (_envBaseUrl.isNotEmpty) {
       return _envBaseUrl;
     }
-    if (!kIsWeb && Platform.isAndroid) {
-      return 'http://10.0.2.2:8080/api';
+    if (_useLocalInDev) {
+      if (!kIsWeb && Platform.isAndroid) {
+        return 'http://10.0.2.2:8080/api';
+      }
+      return 'http://localhost:8080/api';
     }
-    return 'http://localhost:8080/api';
+    // Production default — Play Store / TestFlight AABs hit this path.
+    return 'https://api.termini-im.com/api';
   }
 
   static const Duration connectTimeout = Duration(seconds: 30);
@@ -43,6 +53,9 @@ abstract class ApiConstants {
   // Email verification
   static const String verifyEmail         = '/auth/verify-email';
   static const String resendVerification  = '/auth/resend-verification';
+
+  // Account deletion (required by App Store / Play Store)
+  static const String deleteAccount       = '/auth/account';
 
   // ---------------------------------------------------------------------------
   // Companies
@@ -128,10 +141,23 @@ abstract class ApiConstants {
   static const String supportTickets = '/support-tickets';
 
   // ---------------------------------------------------------------------------
+  // E28 — Client error reporting (public POST, auth:sanctum GET)
+  // ---------------------------------------------------------------------------
+  static const String clientErrors = '/errors';
+
+  // ---------------------------------------------------------------------------
   // Notifications push
   // ---------------------------------------------------------------------------
   static const String myDevices                  = '/me/devices';
   static const String myNotificationPreferences  = '/me/notification-preferences';
+  // D19 — Granular notification preferences (all users, channel × type)
+  static const String myNotificationPreferencesGranular = '/me/notification-preferences/granular';
+  // D20 — Notifications log (inbox)
+  static const String myNotificationsLog = '/me/notifications-log';
+  static String myNotificationsLogMarkRead(int id) =>
+      '/me/notifications-log/$id/read';
+  static const String myNotificationsLogReadAll =
+      '/me/notifications-log/read-all';
 
   // ---------------------------------------------------------------------------
   // My Schedule (authenticated employee endpoints)

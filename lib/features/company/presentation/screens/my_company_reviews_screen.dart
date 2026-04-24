@@ -6,7 +6,11 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_empty_state.dart';
+import '../../../../core/widgets/app_error_state.dart';
+import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../reviews/data/models/review_model.dart';
 import '../../../reviews/presentation/providers/review_provider.dart';
 
@@ -19,29 +23,30 @@ class MyCompanyReviewsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text(
-          context.l10n.reviewsReceived,
-          style: AppTextStyles.h3.copyWith(color: AppColors.textPrimary),
-        ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-      ),
+      appBar: AppTopBar.standard(title: context.l10n.reviewsReceived),
       body: state.isLoading && state.reviews.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            )
-          : state.reviews.isEmpty && !state.isLoading
+          // Skeleton loader conforme §2.7 — remplace le CircularProgressIndicator
+          // plein écran qui créait un flash de layout au chargement.
+          ? const AppReviewsLoadingSkeleton()
+          : state.error != null && state.reviews.isEmpty
+              // État d'erreur normé §2.8 — était absent précédemment.
               ? Center(
-                  child: Text(
-                    context.l10n.reviewsEmpty,
-                    style: AppTextStyles.body.copyWith(
-                      color: AppColors.textHint,
-                    ),
+                  child: AppErrorState(
+                    message: state.error!,
+                    onRetry: () =>
+                        ref.read(myCompanyReviewsProvider.notifier).load(),
                   ),
                 )
-              : RefreshIndicator(
+              : state.reviews.isEmpty && !state.isLoading
+                  // État vide normé §2.6 — remplace le simple Text centré sans icône.
+                  ? Center(
+                      child: AppEmptyState(
+                        icon: Icons.star_outline_rounded,
+                        title: context.l10n.reviewsEmpty,
+                        variant: AppEmptyStateVariant.neutral,
+                      ),
+                    )
+                  : RefreshIndicator(
                   color: AppColors.primary,
                   backgroundColor: AppColors.surface,
                   onRefresh: () =>

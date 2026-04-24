@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/services/analytics_service.dart';
 import '../../data/repositories/favorite_repository.dart';
 import '../../../home/presentation/providers/home_providers.dart';
 import '../../../company_detail/presentation/providers/company_detail_provider.dart';
@@ -40,6 +41,8 @@ class FavoriteNotifier extends Notifier<AsyncValue<void>> {
     try {
       await _repo.add(companyId);
       state = const AsyncData(null);
+      // E25 — favorite_added
+      ref.read(analyticsProvider).logFavoriteAdded(salonId: companyId);
       return true;
     } catch (e, st) {
       // Rollback

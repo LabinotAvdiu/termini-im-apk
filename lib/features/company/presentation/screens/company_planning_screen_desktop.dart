@@ -469,6 +469,11 @@ class _DesktopTimelineContentState
     );
     final services = company.categories.expand((c) => c.services).toList();
 
+    // C15 — Empty day: salon is open but no appointments visible.
+    if (visibleAppointments.isEmpty) {
+      return const PlanningEmptyDayView();
+    }
+
     final now = DateTime.now();
     final isToday = planningIsSameDay(selectedDate, now);
     final nowMinutes = isToday ? now.hour * 60 + now.minute : null;

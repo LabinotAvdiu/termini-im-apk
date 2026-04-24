@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
+import '../../../../core/services/analytics_service.dart';
 import '../../data/datasources/appointments_remote_datasource.dart';
 import '../../data/models/appointment_model.dart';
 
@@ -153,6 +154,10 @@ class AppointmentsNotifier extends StateNotifier<AppointmentsState> {
           await HapticFeedback.mediumImpact();
         }
       }
+      // E25 — booking_cancelled
+      _ref.read(analyticsProvider).logBookingCancelled(
+            reason: reason ?? 'no_reason',
+          );
       return true;
     } catch (e) {
       if (!mounted) return false;

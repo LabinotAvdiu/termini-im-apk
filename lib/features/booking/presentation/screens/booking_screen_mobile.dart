@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/skeletons/skeleton_widgets.dart';
 import '../providers/booking_provider.dart';
 import '../widgets/step_indicator.dart';
@@ -39,10 +40,10 @@ class BookingScreenMobile extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: _MobileAppBar(
-        serviceName: state.serviceName,
-        currentStep: state.currentStep,
-        onBack: onBack,
+      appBar: AppTopBar.modal(
+        title: context.l10n.bookingAppBarTitle,
+        subtitle: 'Étape ${state.currentStep + 1} / 2',
+        onClose: onBack,
       ),
       body: state.isLoading && state.employees.isEmpty
           ? const _LoadingView()
@@ -139,66 +140,6 @@ class _EmployeeAndTimeStepState extends ConsumerState<_EmployeeAndTimeStep> {
         ],
         const Expanded(child: TimeSlotSelection()),
       ],
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// AppBar
-// ---------------------------------------------------------------------------
-
-class _MobileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? serviceName;
-  final int currentStep;
-  final VoidCallback onBack;
-
-  const _MobileAppBar({
-    required this.serviceName,
-    required this.currentStep,
-    required this.onBack,
-  });
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppColors.background,
-      title: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'ÉTAPE ${currentStep + 1}/2',
-            style: AppTextStyles.overline.copyWith(
-              color: AppColors.textHint,
-              letterSpacing: 1.2,
-            ),
-          ),
-          Text(
-            context.l10n.bookingAppBarTitle,
-            style: AppTextStyles.h3,
-          ),
-        ],
-      ),
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.border),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 16,
-            color: AppColors.textPrimary,
-          ),
-          onPressed: onBack,
-          tooltip: context.l10n.back,
-          padding: EdgeInsets.zero,
-        ),
-      ),
     );
   }
 }

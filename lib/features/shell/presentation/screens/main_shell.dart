@@ -16,9 +16,11 @@ import '../../../company/presentation/screens/company_dashboard_screen.dart';
 import '../../../company/presentation/screens/company_planning_screen.dart';
 import '../../../company/presentation/screens/pending_approvals_screen.dart';
 import '../../../employee_schedule/presentation/screens/schedule_settings_screen.dart';
+import '../../../auth/presentation/widgets/unverified_email_banner.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../support/data/models/support_models.dart';
 import '../../../support/presentation/widgets/contact_support_dialog.dart';
+import '../providers/shell_nav_provider.dart';
 
 /// Main shell shown only to authenticated users.
 ///
@@ -105,6 +107,23 @@ class _MainShellState extends ConsumerState<MainShell> {
       onTap: _onTabTapped,
     );
 
+    // React to nav requests posted from inside a tab (e.g. the auto-approve
+    // empty state on "À confirmer" asking to jump back to Mon Salon and
+    // scroll to the toggle). The payload carries the target [ShellTab] id
+    // and optionally a scroll anchor consumed by the destination screen.
+    ref.listen<ShellNavRequest?>(shellNavProvider, (previous, next) {
+      if (next == null) return;
+      final targetIndex = tabs.indexWhere((t) => t.id == next.tab);
+      if (targetIndex >= 0 && targetIndex != _selectedIndex) {
+        setState(() => _selectedIndex = targetIndex);
+      }
+      // When there's no follow-up scroll, clear the request now — otherwise
+      // keep it around so the destination screen can consume it after layout.
+      if (next.scrollTo == null) {
+        ref.read(shellNavProvider.notifier).clear();
+      }
+    });
+
     if (ResponsiveLayout.isDesktop(context)) {
       return Scaffold(
         backgroundColor: AppColors.background,
@@ -113,9 +132,16 @@ class _MainShellState extends ConsumerState<MainShell> {
           children: [
             _ShellSidebar(tabs: tabs),
             Expanded(
-              child: IndexedStack(
-                index: safeIndex,
-                children: pages,
+              child: Column(
+                children: [
+                  const UnverifiedEmailBanner(),
+                  Expanded(
+                    child: IndexedStack(
+                      index: safeIndex,
+                      children: pages,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -124,9 +150,16 @@ class _MainShellState extends ConsumerState<MainShell> {
     }
 
     return Scaffold(
-      body: IndexedStack(
-        index: safeIndex,
-        children: pages,
+      body: Column(
+        children: [
+          const UnverifiedEmailBanner(),
+          Expanded(
+            child: IndexedStack(
+              index: safeIndex,
+              children: pages,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: _ShellBottomNav(tabs: tabs),
     );
@@ -143,6 +176,9 @@ class _TabSpec {
   final bool selected;
   final int badgeCount;
   final VoidCallback onTap;
+  /// Logical id used to resolve a tab index from a [ShellNavRequest].
+  /// `null` for non-switchable tabs (profile shortcut).
+  final ShellTab? id;
 
   const _TabSpec({
     required this.icon,
@@ -150,6 +186,7 @@ class _TabSpec {
     required this.selected,
     required this.onTap,
     this.badgeCount = 0,
+    this.id,
   });
 }
 
@@ -173,6 +210,7 @@ List<_TabSpec> _buildTabs({
   }
 
   add((i) => _TabSpec(
+        id: ShellTab.home,
         icon: Icons.search_rounded,
         label: context.l10n.search,
         selected: selectedIndex == i,
@@ -181,6 +219,7 @@ List<_TabSpec> _buildTabs({
 
   if (isOwner) {
     add((i) => _TabSpec(
+          id: ShellTab.salon,
           icon: Icons.storefront_rounded,
           label: context.l10n.mySalon,
           selected: selectedIndex == i,
@@ -192,6 +231,7 @@ List<_TabSpec> _buildTabs({
   // regardless of booking mode). The underlying screen is the same.
   if (isOwner || isEmployee) {
     add((i) => _TabSpec(
+          id: ShellTab.planning,
           icon: Icons.view_timeline_rounded,
           label: context.l10n.myPlanning,
           selected: selectedIndex == i,
@@ -204,6 +244,7 @@ List<_TabSpec> _buildTabs({
   // employees don't have a per-user schedule at all.
   if (isIndividualEmployee) {
     add((i) => _TabSpec(
+          id: ShellTab.schedule,
           icon: Icons.schedule_rounded,
           label: context.l10n.scheduleSettings,
           selected: selectedIndex == i,
@@ -213,6 +254,7 @@ List<_TabSpec> _buildTabs({
 
   if (isCapacityOwner) {
     add((i) => _TabSpec(
+          id: ShellTab.pending,
           icon: Icons.pending_actions_rounded,
           label: context.l10n.pendingApprovalsShort,
           selected: selectedIndex == i,
@@ -223,6 +265,7 @@ List<_TabSpec> _buildTabs({
 
   if (isClient) {
     add((i) => _TabSpec(
+          id: ShellTab.appointments,
           icon: Icons.calendar_month_rounded,
           label: context.l10n.myAppointments,
           selected: selectedIndex == i,

@@ -2797,7 +2797,7 @@ abstract class AppLocalizations {
   /// No description provided for @companySetupHeadline.
   ///
   /// In fr, this message translates to:
-  /// **'Termine la configuration de ton salon'**
+  /// **'Infos de ton salon'**
   String get companySetupHeadline;
 
   /// No description provided for @companySetupSubtitle.
@@ -2805,6 +2805,126 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Encore quelques infos pour activer ton espace propriétaire.'**
   String get companySetupSubtitle;
+
+  /// No description provided for @companyModeHeadline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode de réservation'**
+  String get companyModeHeadline;
+
+  /// No description provided for @companyModeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment les clients réservent dans ton salon.'**
+  String get companyModeSubtitle;
+
+  /// No description provided for @companySetupStepIndicator.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étape {current} / {total}'**
+  String companySetupStepIndicator(int current, int total);
+
+  /// No description provided for @companySetupNextButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivant'**
+  String get companySetupNextButton;
+
+  /// No description provided for @companySetupSubmitButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider et créer mon salon'**
+  String get companySetupSubmitButton;
+
+  /// No description provided for @companySetupModeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment fonctionne ton salon ?'**
+  String get companySetupModeTitle;
+
+  /// No description provided for @companySetupModeIndividualTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode individuel'**
+  String get companySetupModeIndividualTitle;
+
+  /// No description provided for @companySetupModeIndividualExample.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex : Salon 2 coiffeuses, chacune son agenda'**
+  String get companySetupModeIndividualExample;
+
+  /// No description provided for @companySetupModeIndividualBullet1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque pro a son propre planning'**
+  String get companySetupModeIndividualBullet1;
+
+  /// No description provided for @companySetupModeIndividualBullet2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les clients choisissent leur pro préféré·e'**
+  String get companySetupModeIndividualBullet2;
+
+  /// No description provided for @companySetupModeIndividualBullet3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invite ton équipe à tout moment'**
+  String get companySetupModeIndividualBullet3;
+
+  /// No description provided for @companySetupModeIndividualBullet4.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandé pour les pros qui gèrent leurs propres revenus'**
+  String get companySetupModeIndividualBullet4;
+
+  /// No description provided for @companySetupModeCapacityTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode capacité'**
+  String get companySetupModeCapacityTitle;
+
+  /// No description provided for @companySetupModeCapacityExample.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex : Grand salon, 5 places en parallèle'**
+  String get companySetupModeCapacityExample;
+
+  /// No description provided for @companySetupModeCapacityBullet1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les clients choisissent un créneau, pas un pro'**
+  String get companySetupModeCapacityBullet1;
+
+  /// No description provided for @companySetupModeCapacityBullet2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le salon gère les revenus collectivement'**
+  String get companySetupModeCapacityBullet2;
+
+  /// No description provided for @companySetupModeCapacityBullet3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute autant de postes que nécessaire'**
+  String get companySetupModeCapacityBullet3;
+
+  /// No description provided for @companySetupModeCapacityBullet4.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandé pour les instituts à revenus mutualisés'**
+  String get companySetupModeCapacityBullet4;
+
+  /// No description provided for @companySetupModeBadgePopular.
+  ///
+  /// In fr, this message translates to:
+  /// **'Populaire'**
+  String get companySetupModeBadgePopular;
+
+  /// No description provided for @companySetupModeCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu peux changer ce paramètre plus tard depuis Mon Salon → Paramètres.'**
+  String get companySetupModeCaption;
 
   /// No description provided for @salonUnisex.
   ///
@@ -3783,6 +3903,510 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Cette fonctionnalité arrive bientôt.'**
   String get comingSoonMessage;
+
+  /// No description provided for @verifyEmailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirme ton email'**
+  String get verifyEmailTitle;
+
+  /// No description provided for @verifyEmailSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un code à 6 caractères a été envoyé à {email}'**
+  String verifyEmailSubtitle(String email);
+
+  /// No description provided for @verifyEmailOverline.
+  ///
+  /// In fr, this message translates to:
+  /// **'VÉRIFICATION'**
+  String get verifyEmailOverline;
+
+  /// No description provided for @verifyEmailConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get verifyEmailConfirm;
+
+  /// No description provided for @verifyEmailResend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renvoyer le code'**
+  String get verifyEmailResend;
+
+  /// No description provided for @verifyEmailResendCooldown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renvoyer dans {seconds}s'**
+  String verifyEmailResendCooldown(int seconds);
+
+  /// No description provided for @verifyEmailSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email confirmé'**
+  String get verifyEmailSuccess;
+
+  /// No description provided for @verifyEmailSuccessTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email confirmé'**
+  String get verifyEmailSuccessTitle;
+
+  /// No description provided for @verifyEmailSuccessMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton adresse est maintenant vérifiée. Tu peux réserver en toute sérénité.'**
+  String get verifyEmailSuccessMessage;
+
+  /// No description provided for @verifyEmailSuccessCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
+  String get verifyEmailSuccessCta;
+
+  /// No description provided for @verifyEmailCodeRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code est requis'**
+  String get verifyEmailCodeRequired;
+
+  /// No description provided for @verifyEmailCodeLength.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code doit faire 6 caractères'**
+  String get verifyEmailCodeLength;
+
+  /// No description provided for @verifyEmailErrorInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code invalide ou expiré'**
+  String get verifyEmailErrorInvalid;
+
+  /// No description provided for @verifyEmailErrorNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun compte associé à cet email'**
+  String get verifyEmailErrorNotFound;
+
+  /// No description provided for @unverifiedBannerMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirme ton email pour sécuriser ton compte'**
+  String get unverifiedBannerMessage;
+
+  /// No description provided for @unverifiedBannerCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get unverifiedBannerCta;
+
+  /// No description provided for @verifyEmailToBookTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirme ton email pour réserver'**
+  String get verifyEmailToBookTitle;
+
+  /// No description provided for @verifyEmailToBookMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton RDV ne peut être confirmé qu\'avec une adresse email vérifiée. Ça prend 30 secondes.'**
+  String get verifyEmailToBookMessage;
+
+  /// No description provided for @verifyEmailToBookCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer mon email'**
+  String get verifyEmailToBookCta;
+
+  /// No description provided for @verifyEmailToBookDismiss.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get verifyEmailToBookDismiss;
+
+  /// No description provided for @autoApprovalEnabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validation automatique activée'**
+  String get autoApprovalEnabled;
+
+  /// No description provided for @autoApprovalEmptyMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les nouveaux rendez-vous sont confirmés directement. Cette liste reste vide tant que la validation automatique est active.'**
+  String get autoApprovalEmptyMessage;
+
+  /// No description provided for @autoApprovalEditCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier ce paramètre'**
+  String get autoApprovalEditCta;
+
+  /// No description provided for @autoApprovalToggleLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validation automatique'**
+  String get autoApprovalToggleLabel;
+
+  /// No description provided for @autoApprovalToggleHelper.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les nouveaux RDV seront confirmés directement, sans étape de validation de ta part.'**
+  String get autoApprovalToggleHelper;
+
+  /// No description provided for @autoApprovalCapacityOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible uniquement en mode capacité'**
+  String get autoApprovalCapacityOnly;
+
+  /// No description provided for @autoApprovalBadgeAuto.
+  ///
+  /// In fr, this message translates to:
+  /// **'auto'**
+  String get autoApprovalBadgeAuto;
+
+  /// No description provided for @autoApprovalBadgeManual.
+  ///
+  /// In fr, this message translates to:
+  /// **'manuelle'**
+  String get autoApprovalBadgeManual;
+
+  /// No description provided for @autoApprovalBadgeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validation'**
+  String get autoApprovalBadgeTitle;
+
+  /// No description provided for @autoApprovalConfirmEnableTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer la validation automatique ?'**
+  String get autoApprovalConfirmEnableTitle;
+
+  /// No description provided for @autoApprovalConfirmEnableMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les nouveaux rendez-vous seront confirmés directement, sans ton intervention.'**
+  String get autoApprovalConfirmEnableMessage;
+
+  /// No description provided for @autoApprovalConfirmDisableTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactiver la validation automatique ?'**
+  String get autoApprovalConfirmDisableTitle;
+
+  /// No description provided for @autoApprovalConfirmDisableMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les nouveaux rendez-vous passeront à nouveau par l\'étape À confirmer.'**
+  String get autoApprovalConfirmDisableMessage;
+
+  /// No description provided for @autoApprovalConfirmAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get autoApprovalConfirmAction;
+
+  /// No description provided for @deleteAccountModalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ton compte ?'**
+  String get deleteAccountModalTitle;
+
+  /// No description provided for @deleteAccountModalDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette action supprimera définitivement ton compte, ton historique de rendez-vous et tes informations personnelles. Les salons que tu as favorisés seront retirés. Cette opération est irréversible.'**
+  String get deleteAccountModalDescription;
+
+  /// No description provided for @deleteAccountModalCheckbox.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai compris que la suppression est définitive'**
+  String get deleteAccountModalCheckbox;
+
+  /// No description provided for @deleteAccountModalContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get deleteAccountModalContinue;
+
+  /// No description provided for @deleteAccountConfirmPrompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tape {keyword} pour confirmer'**
+  String deleteAccountConfirmPrompt(String keyword);
+
+  /// No description provided for @deleteAccountConfirmAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer définitivement mon compte'**
+  String get deleteAccountConfirmAction;
+
+  /// No description provided for @deleteAccountTypeKeyword.
+  ///
+  /// In fr, this message translates to:
+  /// **'SUPPRIMER'**
+  String get deleteAccountTypeKeyword;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton compte a été supprimé.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountErrorOwnerSalon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu dois transférer ou supprimer ton salon avant de pouvoir supprimer ton compte.'**
+  String get deleteAccountErrorOwnerSalon;
+
+  /// No description provided for @deleteAccountErrorGeneric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue. Réessaie plus tard.'**
+  String get deleteAccountErrorGeneric;
+
+  /// No description provided for @planningEmptyDayTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de rendez-vous aujourd\'hui.'**
+  String get planningEmptyDayTitle;
+
+  /// No description provided for @planningEmptyDaySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le bon moment pour un café.'**
+  String get planningEmptyDaySubtitle;
+
+  /// No description provided for @tomorrowBookingBannerMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain à {time} chez {salon} →'**
+  String tomorrowBookingBannerMessage(String time, String salon);
+
+  /// No description provided for @shareAppTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage Termini im'**
+  String get shareAppTitle;
+
+  /// No description provided for @shareAppMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aime ça ? Un·e ami·e qui le découvre, c\'est un salon de plus au Kosovo.'**
+  String get shareAppMessage;
+
+  /// No description provided for @shareAppCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get shareAppCta;
+
+  /// No description provided for @shareAppLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get shareAppLater;
+
+  /// No description provided for @notifCategoryAppointments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendez-vous'**
+  String get notifCategoryAppointments;
+
+  /// No description provided for @notifCategoryCommunity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Communauté'**
+  String get notifCategoryCommunity;
+
+  /// No description provided for @notifCategoryMarketing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marketing'**
+  String get notifCategoryMarketing;
+
+  /// No description provided for @notifTypeReminderEveningLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel la veille'**
+  String get notifTypeReminderEveningLabel;
+
+  /// No description provided for @notifTypeReminderEveningDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reçois un rappel le soir avant ton rendez-vous.'**
+  String get notifTypeReminderEveningDesc;
+
+  /// No description provided for @notifTypeReminder2hLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel 2h avant'**
+  String get notifTypeReminder2hLabel;
+
+  /// No description provided for @notifTypeReminder2hDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une notification 2 heures avant l\'heure du rendez-vous.'**
+  String get notifTypeReminder2hDesc;
+
+  /// No description provided for @notifTypeReviewRequestLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande d\'avis'**
+  String get notifTypeReviewRequestLabel;
+
+  /// No description provided for @notifTypeReviewRequestDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le lendemain de ta visite, on te demande ton avis.'**
+  String get notifTypeReviewRequestDesc;
+
+  /// No description provided for @notifTypeNewReviewLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvel avis'**
+  String get notifTypeNewReviewLabel;
+
+  /// No description provided for @notifTypeNewReviewDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sois informé(e) quand un client publie un avis sur ton salon.'**
+  String get notifTypeNewReviewDesc;
+
+  /// No description provided for @notifTypeCapacityFullLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité atteinte'**
+  String get notifTypeCapacityFullLabel;
+
+  /// No description provided for @notifTypeCapacityFullDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notification quand tous les créneaux d\'une journée sont pris.'**
+  String get notifTypeCapacityFullDesc;
+
+  /// No description provided for @notifTypeWeeklyDigestLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récap hebdo'**
+  String get notifTypeWeeklyDigestLabel;
+
+  /// No description provided for @notifTypeWeeklyDigestDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un résumé de ton activité chaque semaine.'**
+  String get notifTypeWeeklyDigestDesc;
+
+  /// No description provided for @notifTypeMonthlyReportLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapport mensuel'**
+  String get notifTypeMonthlyReportLabel;
+
+  /// No description provided for @notifTypeMonthlyReportDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques et tendances du mois écoulé.'**
+  String get notifTypeMonthlyReportDesc;
+
+  /// No description provided for @notifTypeFavoriteNewPhotosLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelles photos (favoris)'**
+  String get notifTypeFavoriteNewPhotosLabel;
+
+  /// No description provided for @notifTypeFavoriteNewPhotosDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand un de tes salons favoris ajoute des photos.'**
+  String get notifTypeFavoriteNewPhotosDesc;
+
+  /// No description provided for @notifTypeFavoriteNewSlotsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveaux créneaux (favoris)'**
+  String get notifTypeFavoriteNewSlotsLabel;
+
+  /// No description provided for @notifTypeFavoriteNewSlotsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand un salon favori ouvre de nouveaux créneaux.'**
+  String get notifTypeFavoriteNewSlotsDesc;
+
+  /// No description provided for @notifTypeMarketingLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Offres & actualités'**
+  String get notifTypeMarketingLabel;
+
+  /// No description provided for @notifTypeMarketingDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campagnes, promotions et nouveautés Termini im.'**
+  String get notifTypeMarketingDesc;
+
+  /// No description provided for @notificationsInboxTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reçues'**
+  String get notificationsInboxTitle;
+
+  /// No description provided for @notificationsInboxUnreadCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} non lues'**
+  String notificationsInboxUnreadCount(int count);
+
+  /// No description provided for @notificationsInboxMarkAllRead.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout marquer comme lu'**
+  String get notificationsInboxMarkAllRead;
+
+  /// No description provided for @notificationsInboxEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boîte vide'**
+  String get notificationsInboxEmptyTitle;
+
+  /// No description provided for @notificationsInboxEmptySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tes notifications arriveront ici au fur et à mesure.'**
+  String get notificationsInboxEmptySubtitle;
+
+  /// No description provided for @notificationsInboxToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get notificationsInboxToday;
+
+  /// No description provided for @notificationsInboxYesterday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hier'**
+  String get notificationsInboxYesterday;
+
+  /// No description provided for @notificationsChannelPush.
+  ///
+  /// In fr, this message translates to:
+  /// **'PUSH'**
+  String get notificationsChannelPush;
+
+  /// No description provided for @notificationsChannelEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'EMAIL'**
+  String get notificationsChannelEmail;
+
+  /// No description provided for @notificationsChannelInApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'IN-APP'**
+  String get notificationsChannelInApp;
 }
 
 class _AppLocalizationsDelegate
