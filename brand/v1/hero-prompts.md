@@ -149,6 +149,40 @@ brand/
         └── ...
 ```
 
+---
+
+## Prompts bonus · Ferizaj (ville pilote)
+
+Deux prompts supplémentaires pour signaler visuellement que le lancement démarre à Ferizaj. À utiliser dans les posts J4 (carousel « Quelque chose arrive »), J16 (éditorial « Kosova ka shumë stil, fillojmë nga Ferizaj »), et J24-J27 (révélation salons pilotes).
+
+### Prompt 7 — Mood opener · Ferizaj
+
+**Usage** : post J4 slide « Fillojmë nga Ferizaj », ou éditorial J16.
+
+```
+editorial photography, soft late afternoon light in Ferizaj town center,
+Balkan Ottoman-era architecture in the background (clock tower silhouette),
+a narrow cobblestone lane with a vintage barber pole in foreground,
+warm terracotta walls, muted burgundy awning, brass café chair detail,
+35mm film grain, Kinfolk magazine aesthetic, minimal composition,
+no text no logo, no people clearly visible --ar 4:5 --style raw --s 250
+```
+
+### Prompt 8 — Le commerce local Ferizaj
+
+**Usage** : portrait d'une rue marchande, à associer à un propos genre « Tes voisins vont ici. Toi aussi. »
+
+```
+editorial photography, soft morning light on a Ferizaj commercial street,
+a row of small shopfronts with aged metal rolling shutters half-open,
+a hand-painted salon sign in subtle burgundy, brass door handle catching light,
+linen curtain behind the glass, slow life mood, 35mm film grain,
+Kinfolk aesthetic, no text on the sign visible clearly, no people faces,
+--ar 4:5 --style raw --s 250
+```
+
+---
+
 ## Extensions possibles (si tu veux + d'images)
 
 Si tu veux monter à 12 au lieu de 6, duplique avec variations :

@@ -393,7 +393,7 @@ Frizer · Barberi · Estetikë.</div>
     <li><strong>Compte à rebours</strong> — visible, 30 jours, connecté à une date fixe en JS (<code>new Date('2026-05-22T18:00:00+02:00')</code> — à ajuster)</li>
     <li><strong>Section « Për ty »</strong> (pour toi — côté client, <em>sans genre en albanais</em>) — 3 blocs : <em>Zbulo · Rezervo · Kujtohu</em> (Découvre · Réserve · Souviens-toi)</li>
     <li><strong>Section « Për sallonin tënd »</strong> (pour ton salon) — 3 blocs : <em>Më pak thirrje · Më shumë kohë · Zero komision</em> (Moins d'appels · Plus de temps · Zéro commission)</li>
-    <li><strong>Pilotes wanted</strong> — « Kërkojmë 30 sallone pilot në Prishtinë. Je je sallon? Regjistrohu — fotot janë falas. » + CTA Typeform</li>
+    <li><strong>Pilotes wanted</strong> — « Kërkojmë 15 sallone pilot në Ferizaj — maji 2026. Qytete tjera: regjistrohu, vjen radha juaj. » + CTA Typeform avec champ ville obligatoire</li>
     <li><strong>FAQ rapide</strong> — 4 questions, réponses courtes (voir plus bas)</li>
     <li><strong>Footer</strong> — email, réseaux, mentions légales, sélecteur de langue (SQ / FR / EN)</li>
   </ol>
@@ -459,12 +459,15 @@ Frizer · Barberi · Estetikë.</div>
   <h4>Bloc pilotes</h4>
   <div class="callout gold">
     <p style="font-family:'Fraunces',serif; font-size: 13pt; margin: 0 0 3mm;">
-      Kërkojmë <strong>30 sallone pilot</strong> në Prishtinë.
+      Kërkojmë <strong>15 sallone pilot në Ferizaj</strong> — maji 2026.
     </p>
     <p style="margin: 0 0 3mm;">
       Sesioni fotografik profesional — falas. Konfigurimi i sallonit — bëjmë ne. Badge « Pilot Termini im » — në vitrinën tënde dhe në bio Instagram. Komision — kurrë.
     </p>
-    <p class="note" style="margin:0;">FR · Nous cherchons 30 salons pilotes à Prishtinë. Shooting photo pro — gratuit. Configuration du salon — on la fait pour toi. Badge « Pilote Termini im » — sur ta vitrine et dans ta bio Instagram. Commission — jamais.</p>
+    <p style="margin: 0 0 3mm;">
+      <strong>Je nga qytet tjetër?</strong> Regjistrohu. Prishtinën e hapim në korrik. Prizren, Pejë — pas.
+    </p>
+    <p class="note" style="margin:0;">FR · Nous cherchons 15 salons pilotes à Ferizaj — mai 2026. Shooting photo pro — gratuit. Configuration du salon — on la fait pour toi. Badge « Pilote Termini im » — sur ta vitrine et dans ta bio Instagram. Commission — jamais. Tu es d'une autre ville ? Inscris-toi. On ouvre Prishtinë en juillet, puis Prizren et Pejë.</p>
   </div>
 
   <h4>FAQ rapide (4 questions)</h4>
@@ -477,7 +480,7 @@ Frizer · Barberi · Estetikë.</div>
       </tr>
       <tr>
         <td><strong>Kur lansohet?</strong></td>
-        <td>Maji 2026. Regjistrohu për të qenë i pari/e para.</td>
+        <td>Ferizaj — maji 2026. Prishtinë — korriku 2026. Qytete tjera pas. Regjistrohu për të qenë i pari/e para në qytetin tënd.</td>
       </tr>
       <tr>
         <td><strong>Si e fitoni paranë ju?</strong></td>
@@ -500,6 +503,7 @@ Frizer · Barberi · Estetikë.</div>
     <li>Sitemap.xml + robots.txt (même si pas beaucoup de pages)</li>
     <li>GA4 + Meta Pixel + événements conversion configurés</li>
     <li>Cookie banner minimal (RGPD — obligatoire même si site kosovar, diaspora oblige)</li>
+    <li>Formulaire Typeform salon contient un champ obligatoire <code>qyteti</code> (Ferizaj / Prishtinë / Prizren / Pejë / Gjakovë / Mitrovicë / Gjilan / Tjetër) et un champ « Tu veux commencer quand ? » (Tash / Te lansimi)</li>
   </ul>
 </section>
 
@@ -750,7 +754,7 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
       <div class="day-title">Carousel 5 slides — « Quelque chose arrive »</div>
       <div class="day-chan">IG Feed · 18h30</div>
     </div>
-    <div class="day-row"><div class="day-label">Format</div><div class="day-val">Carrousel 5 slides éditoriales (4:5). Slide 1 : « Diçka po vjen. » (Quelque chose arrive). Slides 2-4 : images teaser beauté Prishtinë. Slide 5 : « Nga maji. <em>Termini im.</em> »</div></div>
+    <div class="day-row"><div class="day-label">Format</div><div class="day-val">Carrousel 5 slides éditoriales (4:5). Slide 1 : « Diçka po vjen. » (Quelque chose arrive). Slides 2-3 : images teaser beauté (mix Ferizaj + mood Kosovo). Slide 4 : « Fillojmë nga <em>Ferizaj.</em> » (On commence par Ferizaj). Slide 5 : « Nga maji. <em>Termini im.</em> »</div></div>
     <div class="day-row"><div class="day-label">Prompt IA</div><div class="day-val prompt">[base prompt §6] + "series of 3 editorial beauty salon still lifes: 1) vintage comb on burgundy velvet, 2) gold scissors on ivory linen, 3) mirror reflecting soft window light, --ar 4:5"</div></div>
     <div class="day-row"><div class="day-label">Caption FR</div><div class="day-val caption-fr">Pour qui aime prendre soin. Pour qui aime bien faire. Pour qui n'aime pas attendre le téléphone. <em>Termini im</em> — le/la tienne.</div></div>
     <div class="day-row"><div class="day-label">Hashtags</div><div class="day-val hashtags">#comingsoon #prishtine #kosova #bukuri #editorial #frizer #sallon #terminiim</div></div>
@@ -817,7 +821,7 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
       <div class="day-chan">IG Reel + Story · 18h30</div>
     </div>
     <div class="day-row"><div class="day-label">Format</div><div class="day-val">Selfie vidéo, 60 secondes, cadre moyen à la taille, fond neutre (mur ivoire ou fenêtre). Pas de coupes. Pas de musique. Sous-titres SQ obligatoires (tu parles FR, on ajoute SQ en burn-in via CapCut).</div></div>
-    <div class="day-row"><div class="day-label">Script FR</div><div class="day-val copy">« Je m'appelle Labinot. Je construis Termini im parce que ma mère et ma sœur prennent encore RDV chez le coiffeur par WhatsApp, et que la moitié du temps le salon ne répond pas. Ça n'a aucun sens en 2026. Termini im sera gratuit — pour toujours. Et on démarre à Prishtinë. »</div></div>
+    <div class="day-row"><div class="day-label">Script FR</div><div class="day-val copy">« Je m'appelle Labinot. Je construis Termini im parce que ma mère et ma sœur prennent encore RDV chez le coiffeur par WhatsApp, et que la moitié du temps le salon ne répond pas. Ça n'a aucun sens en 2026. Termini im sera gratuit — pour toujours. Et on démarre à <strong>Ferizaj</strong>, ma ville natale, avec les salons qui m'ont vu grandir. Prishtinë ensuite, puis tout le Kosovo. »</div></div>
     <div class="day-row"><div class="day-label">Caption SQ</div><div class="day-val caption-sq">Pse po e ndërtoj <em>Termini im.</em> 60 sekonda.</div></div>
   </div>
 
@@ -899,12 +903,12 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
   <div class="day">
     <div class="day-head">
       <div class="day-num">J16</div>
-      <div class="day-title">Éditorial — « Prishtinë, capitale du stil »</div>
+      <div class="day-title">Éditorial — « Kosova ka shumë stil, fillojmë nga Ferizaj »</div>
       <div class="day-chan">IG Feed · 18h30</div>
     </div>
     <div class="day-row"><div class="day-label">Format</div><div class="day-val">Carrousel 5 photos de rue, style éditorial. Mode, café, devanture de salon, jeune couple, vitrine. Filtre uniforme.</div></div>
-    <div class="day-row"><div class="day-label">Prompt IA complément</div><div class="day-val prompt">[base prompt §6] + "street photography of young Kosovar fashion, Mother Teresa boulevard, cappuccino on marble table, warm late afternoon, --ar 4:5"</div></div>
-    <div class="day-row"><div class="day-label">Caption FR</div><div class="day-val caption-fr">Il suffit de regarder — Prishtinë a toujours été une capitale du <em>stil.</em> On la sert simplement mieux.</div></div>
+    <div class="day-row"><div class="day-label">Prompt IA complément</div><div class="day-val prompt">[base prompt §6] + "street photography in Ferizaj town center, young Kosovar fashion, cappuccino on marble table, traditional Ottoman architecture blurred in background, warm late afternoon light, --ar 4:5"</div></div>
+    <div class="day-row"><div class="day-label">Caption FR</div><div class="day-val caption-fr">Il suffit de regarder — le Kosovo a toujours eu du <em>stil.</em> On commence à Ferizaj, ma ville. Prishtinë en juillet. Tout le Kosovo ensuite.</div></div>
   </div>
 
   <!-- J17 -->
@@ -983,7 +987,7 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
       <div class="day-chan">IG Feed + Reel · 18h30</div>
     </div>
     <div class="day-row"><div class="day-label">Format</div><div class="day-val">Portrait pro noir et blanc d'un(e) des premier(e)s owners pilotes dans son salon. Caption : sa phrase à lui/elle, tutoyée, courte.</div></div>
-    <div class="day-row"><div class="day-label">Exemple caption</div><div class="day-val copy">« Arbnora, 12 ans de métier à Dragodan. Elle est le 3ᵉ salon pilote de <em>Termini im.</em> Tu veux être le 4ᵉ ? Lien en bio. »</div></div>
+    <div class="day-row"><div class="day-label">Exemple caption</div><div class="day-val copy">« [Nom owner], [N] ans de métier à Ferizaj. Iel est le 3ᵉ pilote fondateur de <em>Termini im.</em> Tu veux être le 4ᵉ ? Lien en bio. » <em>[Remplacer [Nom owner] et [N] par le pilote fondateur réel une fois signé.]</em></div></div>
   </div>
 
   <!-- J24 -->
@@ -993,7 +997,7 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
       <div class="day-title">Story — révélation J-6 « 5 salons bientôt »</div>
       <div class="day-chan">IG Story · 12h + 19h</div>
     </div>
-    <div class="day-row"><div class="day-label">Format</div><div class="day-val">3 stories : (1) « 5 sallone, të gjitha në Prishtinë, të gjitha <em>pilot.</em> » (2) 5 logos fondus + noms (si autorisés). (3) Sticker « Dua të provoj » → lien waitlist.</div></div>
+    <div class="day-row"><div class="day-label">Format</div><div class="day-val">3 stories : (1) « 5 sallone, të gjitha në Ferizaj, të gjitha <em>pilot themelues.</em> » (2) 5 logos fondus + noms (si autorisés). (3) Sticker « Dua të provoj » → lien waitlist.</div></div>
   </div>
 
   <!-- J25 -->
@@ -1024,8 +1028,8 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
       <div class="day-title">Dévoilement des 5 premiers salons</div>
       <div class="day-chan">IG Feed + Story + FB · 18h30</div>
     </div>
-    <div class="day-row"><div class="day-label">Format</div><div class="day-val">Post carrousel 6 slides. Slide 1 : « <em>I paraqesim 5 e parët.</em> » (On te présente les 5 premiers.) Slides 2-6 : un salon par slide avec photo pro, nom, quartier, spécialité. Story identique.</div></div>
-    <div class="day-row"><div class="day-label">Caption FR</div><div class="day-val copy">Cinq salons. Cinq univers. Cinq confiances qu'on n'oubliera pas d'avoir gagnées en premier. À Prishtinë. <em>Termini im</em> — dans 3 jours.</div></div>
+    <div class="day-row"><div class="day-label">Format</div><div class="day-val">Post carrousel 6 slides. Slide 1 : « <em>I paraqesim 5 e parët te Ferizaj.</em> » (On te présente les 5 premiers de Ferizaj.) Slides 2-6 : un salon par slide avec photo pro, nom, quartier de Ferizaj, spécialité. Story identique.</div></div>
+    <div class="day-row"><div class="day-label">Caption FR</div><div class="day-val copy">Cinq salons. Cinq univers. Cinq confiances qu'on n'oubliera pas d'avoir gagnées en premier. À Ferizaj — ma ville. <em>Termini im</em> — dans 3 jours.</div></div>
   </div>
 
   <!-- J28 -->
@@ -1057,7 +1061,7 @@ Remplace <span class="k">--ar 4:5</span> par <span class="k">--ar 16:9</span>
       <div class="day-chan">Tous · 18h30 Prishtinë sharp</div>
     </div>
     <div class="day-row"><div class="day-label">Format</div><div class="day-val">Post IG feed annonce officielle + Reel 15 sec + Story en rafale + TikTok + Post Facebook + email waitlist + message WhatsApp à ton cercle. Tout simultané. Toute la journée, tu réponds aux DMs.</div></div>
-    <div class="day-row"><div class="day-label">Caption finale FR</div><div class="day-val copy">On y est. 5 salons à Prishtinë. Une app qui marche sur iOS, Android et web. Zéro commission, gratuite pour toujours, en albanais en premier.<br /><br />Télécharge. Réserve. Dis-nous ce qu'il faut améliorer.<br /><br /><em>Termini im. Prishtinë. 2026.</em></div></div>
+    <div class="day-row"><div class="day-label">Caption finale FR</div><div class="day-val copy">On y est. 5 salons à Ferizaj. Une app qui marche sur iOS, Android et web. Zéro commission, gratuite pour toujours, en albanais en premier.<br /><br />Télécharge. Réserve. Dis-nous ce qu'il faut améliorer.<br /><br /><em>Nga Ferizaj, për tërë Kosovën. Termini im. 2026.</em></div></div>
     <div class="day-row"><div class="day-label">Hashtags</div><div class="day-val hashtags">#terminiim #launch #prishtine #kosova #bukuri #stil #frizer #sallon #kosovastyle #shqip</div></div>
   </div>
 </section>
