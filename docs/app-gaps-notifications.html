@@ -597,6 +597,19 @@
   <h1 class="section"><span class="num">Section 7</span>Notifications salon — push, email, in-app</h1>
   <hr class="rule-gold" />
 
+  <div class="callout gold">
+    <h4>Web push pleinement supporté pour les owners desktop</h4>
+    <p style="margin:0;">
+      Plusieurs owners au Kosovo (surtout 40+, multi-site, ou réception du salon équipée d'un ordi) préfèrent gérer
+      Termini im depuis un navigateur plutôt que sur mobile. Le <strong>service worker FCM web est déjà en prod</strong>
+      (<code>web/firebase-messaging-sw.js</code>) — toutes les notifications « Push » de cette section sont donc livrées
+      sur 3 canaux complémentaires : <strong>FCM Android + APNs iOS + Web push</strong>. Un owner sur ordi à l'accueil
+      reçoit le « ding » nouveau RDV même si son téléphone est en silencieux pendant une coupe. Argument terrain fort
+      pour les owners méfiants des apps mobiles : <em>« tu peux tout gérer depuis ton navigateur, le téléphone tu le
+      laisses tranquille »</em>.
+    </p>
+  </div>
+
   <h2>7.1 Push salon (owner + employé)</h2>
 
   <div class="notif push">
