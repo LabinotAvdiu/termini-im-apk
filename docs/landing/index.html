@@ -42,11 +42,12 @@
   <meta name="twitter:image" content="https://termini-im.com/og-cover.png" />
   <meta name="twitter:image:alt" content="Termini im — Kosova ka shumë stil. Ferizaj, maji 2026." />
 
-  <!-- Favicon — un seul fichier SVG sert tous les contextes (browser tab,
-       iOS home screen, macOS Safari pinned tab) -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="apple-touch-icon" href="favicon.svg" />
-  <link rel="mask-icon" href="favicon.svg" color="#7A2232" />
+  <!-- Favicon — même set que l'app Flutter (web/) pour cohérence cross-surface
+       (onglet navigateur, iOS home screen, Android web) -->
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+  <link rel="icon" sizes="192x192" href="icons/Icon-192.png" />
+  <link rel="icon" sizes="512x512" href="icons/Icon-512.png" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -722,17 +723,23 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      align-items: stretch;
     }
-    .modal .when-tile { position: relative; }
+    .modal .when-tile { position: relative; height: 100%; }
     .modal .when-tile input { position: absolute; opacity: 0; pointer-events: none; }
     .modal .when-tile label {
-      display: block;
-      padding: 14px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 78px;
+      padding: 12px 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
       background: #fff;
       transition: all 0.15s;
+      height: 100%;
     }
     .modal .when-tile input:checked + label {
       border-color: var(--bordeaux);
@@ -920,10 +927,10 @@
       <h2 data-i18n="pilotsTitle">Kërkojmë <strong>30 sallone pionierë në Ferizaj</strong> — maji 2026.</h2>
       <p data-i18n="pilotsBody">Sesioni fotografik profesional — falas. Konfigurimi i sallonit — bëjmë ne. Badge « Pionier Termini im » — në vitrinën tënde dhe në bio Instagram. Komision — kurrë.</p>
       <p class="pilots-cities" data-i18n="pilotsCities"><strong>Je nga qytet tjetër?</strong> Regjistrohu. Prishtinën e hapim në korrik. Prizren, Pejë — pas.</p>
-      <a class="btn btn-primary" href="https://termini-im.typeform.com/pilot-salon" target="_blank" rel="noopener" data-i18n="pilotsCta">
+      <button class="btn btn-primary" onclick="openWaitlist('owner')" data-i18n="pilotsCta">
         Regjistro sallonin tim
         <span class="arrow">→</span>
-      </a>
+      </button>
     </div>
   </section>
 
@@ -992,8 +999,8 @@
       <div>
         <h4 data-i18n="footLegal">Ligjore</h4>
         <ul>
-          <li><a href="terms-sq.html" data-i18n="footTerms" data-i18n-href="termsHref">Kushtet e përdorimit</a></li>
-          <li><a href="privacy.html" data-i18n="footPrivacy">Privatësia</a></li>
+          <li><a href="/terms-sq" data-i18n="footTerms" data-i18n-href="termsHref">Kushtet e përdorimit</a></li>
+          <li><a href="/privacy" data-i18n="footPrivacy">Privatësia</a></li>
         </ul>
       </div>
     </div>
@@ -1055,7 +1062,7 @@
 
           <label class="check-row">
             <input type="checkbox" name="cgu_accepted" required />
-            <span data-i18n="formCgu">Duke klikuar, pranoj <a href="terms-sq.html" target="_blank">kushtet e përdorimit</a> dhe <a href="privacy.html" target="_blank">privatësinë</a>.</span>
+            <span data-i18n="formCgu">Duke klikuar, pranoj <a href="/terms-sq" target="_blank">kushtet e përdorimit</a> dhe <a href="/privacy" target="_blank">privatësinë</a>.</span>
           </label>
 
           <button type="submit" class="btn btn-primary" style="justify-content:center;" data-i18n="modalSubmit">Regjistrohem</button>
@@ -1148,7 +1155,7 @@
 
           <label class="check-row">
             <input type="checkbox" name="cgu_accepted" required />
-            <span data-i18n="formCgu">Duke klikuar, pranoj <a href="terms-sq.html" target="_blank">kushtet e përdorimit</a> dhe <a href="privacy.html" target="_blank">privatësinë</a>.</span>
+            <span data-i18n="formCgu">Duke klikuar, pranoj <a href="/terms-sq" target="_blank">kushtet e përdorimit</a> dhe <a href="/privacy" target="_blank">privatësinë</a>.</span>
           </label>
 
           <button type="submit" class="btn btn-primary" style="justify-content:center;" data-i18n="modalSubmit">Regjistrohem</button>
@@ -1229,8 +1236,8 @@
         formWhenNowHelp: 'Pioner i gatshëm — kontaktomë',
         formWhenLaunch: 'Te lansimi',
         formWhenLaunchHelp: 'Maji 2026, kam kohë',
-        formCgu: 'Duke klikuar, pranoj <a href="terms-sq.html" target="_blank">kushtet e përdorimit</a> dhe <a href="privacy.html" target="_blank">privatësinë</a>.',
-        termsHref: 'terms-sq.html',
+        formCgu: 'Duke klikuar, pranoj <a href="/terms-sq" target="_blank">kushtet e përdorimit</a> dhe <a href="/privacy" target="_blank">privatësinë</a>.',
+        termsHref: '/terms-sq',
         // Errors
         errRequired: 'Detyrueshme',
         errContactInvalid: 'Email i pavlefshëm ose telefon (+383)',
@@ -1299,8 +1306,8 @@
         formWhenNowHelp: 'Pionnier prêt — contactez-moi',
         formWhenLaunch: 'Au lancement',
         formWhenLaunchHelp: 'Mai 2026, j\'ai le temps',
-        formCgu: 'En cliquant, j\'accepte les <a href="terms.html" target="_blank">conditions d\'utilisation</a> et la <a href="privacy.html" target="_blank">politique de confidentialité</a>.',
-        termsHref: 'terms.html',
+        formCgu: 'En cliquant, j\'accepte les <a href="/terms" target="_blank">conditions d\'utilisation</a> et la <a href="/privacy" target="_blank">politique de confidentialité</a>.',
+        termsHref: '/terms',
         errRequired: 'Obligatoire',
         errContactInvalid: 'Email invalide ou téléphone (+383)',
         errCgu: 'Acceptation des conditions requise',
@@ -1368,8 +1375,8 @@
         formWhenNowHelp: 'Pioneer ready — reach out',
         formWhenLaunch: 'At launch',
         formWhenLaunchHelp: 'May 2026, no rush',
-        formCgu: 'By clicking, I accept the <a href="terms-en.html" target="_blank">terms</a> and <a href="privacy.html" target="_blank">privacy policy</a>.',
-        termsHref: 'terms-en.html',
+        formCgu: 'By clicking, I accept the <a href="/terms-en" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy policy</a>.',
+        termsHref: '/terms-en',
         errRequired: 'Required',
         errContactInvalid: 'Invalid email or phone (+383)',
         errCgu: 'Terms acceptance required',
@@ -1615,7 +1622,7 @@
         const key = el.dataset.i18nPlaceholder;
         if (dict[key]) el.placeholder = dict[key];
       });
-      // Language-aware hrefs (e.g. terms-sq.html / terms.html / terms-en.html)
+      // Language-aware hrefs (e.g. /terms-sq / terms.html / /terms-en)
       document.querySelectorAll('[data-i18n-href]').forEach(el => {
         const key = el.dataset.i18nHref;
         if (dict[key]) el.setAttribute('href', dict[key]);

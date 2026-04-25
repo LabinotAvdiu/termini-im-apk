@@ -6,6 +6,9 @@
 <title>Politique de confidentialité · Termini im</title>
 <meta name="description" content="Politique de confidentialité de Termini im — plateforme de prise de rendez-vous pour salons et barbiers.">
 
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icons/Icon-192.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -60,6 +63,38 @@
     font-family: "Instrument Serif", serif;
     font-style: italic;
     color: var(--burgundy);
+  }
+  .lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .lang-switcher a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .lang-switcher a:hover {
+    color: var(--ink);
+  }
+  .lang-switcher .active {
+    color: var(--burgundy);
+  }
+  .lang-switcher .lang-sep {
+    color: var(--line);
+  }
+  .lang-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding: 10px 14px;
+    background: rgba(122, 34, 50, 0.04);
+    border-left: 2px solid var(--burgundy);
+    border-radius: 0 4px 4px 0;
   }
   .kicker {
     font-size: 10px;
@@ -189,6 +224,18 @@
     <span class="brand-dot"></span>
     <span class="brand-name">Termini <em>im</em></span>
   </header>
+
+  <nav class="lang-switcher" aria-label="Choisir la langue">
+    <span class="active">FR</span>
+    <span class="lang-sep">·</span>
+    <a href="/privacy" title="Versioni shqip do të jetë i disponueshëm së shpejti">SQ</a>
+    <span class="lang-sep">·</span>
+    <a href="/privacy" title="English version coming soon">EN</a>
+  </nav>
+
+  <p class="lang-note">
+    Cette page est disponible en français. Une version <strong>shqip</strong> et <strong>english</strong> arrivera bientôt — en attendant, les <a href="/terms-sq" style="color:var(--burgundy);">kushtet e përdorimit</a> sont déjà disponibles dans les 3 langues.
+  </p>
 
   <a href="/" class="back">retour à l'accueil</a>
 
