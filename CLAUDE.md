@@ -41,7 +41,7 @@ palette, typography and logo from here, not from `Lagedi/frontend`.
 
 - Wordmark: "Termini" in Fraunces ink + "im" in Instrument Serif italic bourgogne
 - Signature bourgogne dot above (`.`) — see `assets/branding/logo-primary.svg`
-- Tagline format: `PRISHTINË · 2026` in Instrument Sans, letter-spacing `0.28em`
+- Tagline format: `FERIZAJ · 2026` in Instrument Sans, letter-spacing `0.28em`
 
 Never use "TERMINI IM" in all-caps spaced characters — that was a prototype
 style that is no longer current.
