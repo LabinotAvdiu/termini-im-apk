@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    name: Build Flutter Web & Deploy
+    name: Deploy pre-launch landing + Flutter web
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -33,7 +33,7 @@ jobs:
         run: flutter test
 
       - name: Build web release
-        run: flutter build web --release --dart-define=API_BASE_URL=https://api.termini-im.com/api
+        run: flutter build web --release --dart-define=API_BASE_URL=https://api.termini-im.com/api --base-href "/app/"
 
       - name: Setup SSH key
         run: |
@@ -42,12 +42,26 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p ${{ secrets.VPS_SSH_PORT }} -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Deploy to VPS
+      - name: Deploy pre-launch landing to /var/www/termini-im/
+        # The landing is the public face of termini-im.com until launch.
+        # When launch ships, swap this back to deploying build/web/ to root
+        # (or remove the --base-href flag and deploy build/web/ here too).
+        run: |
+          rsync -avz --delete \
+            --exclude '/app/' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }} -o StrictHostKeyChecking=yes" \
+            docs/landing/ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/termini-im/
+
+      - name: Deploy Flutter web to /var/www/termini-im/app/
+        # Keep the Flutter web build accessible at /app/ during pre-launch
+        # so internal QA / shared booking links still resolve (the mobile
+        # apps continue to use api.termini-im.com directly).
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }} -o StrictHostKeyChecking=yes" \
             build/web/ \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/termini-im/
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/termini-im/app/
 
       - name: Cleanup SSH key
         if: always()
