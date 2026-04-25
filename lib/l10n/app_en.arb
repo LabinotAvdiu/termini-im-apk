@@ -872,6 +872,7 @@
   "autoApprovalEditCta": "Change this setting",
   "autoApprovalToggleLabel": "Auto-approval",
   "autoApprovalToggleHelper": "New appointments will be confirmed directly, without any validation step on your end.",
+  "autoApprovalEmployeeReadOnly": "In individual mode, every appointment is confirmed automatically — the client picks their employee and time, and the booking lands straight in your schedule.",
   "autoApprovalCapacityOnly": "Capacity mode only",
   "autoApprovalBadgeAuto": "auto",
   "autoApprovalBadgeManual": "manual",

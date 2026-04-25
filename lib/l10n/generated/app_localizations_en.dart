@@ -2176,6 +2176,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'New appointments will be confirmed directly, without any validation step on your end.';
 
   @override
+  String get autoApprovalEmployeeReadOnly =>
+      'In individual mode, every appointment is confirmed automatically — the client picks their employee and time, and the booking lands straight in your schedule.';
+
+  @override
   String get autoApprovalCapacityOnly => 'Capacity mode only';
 
   @override

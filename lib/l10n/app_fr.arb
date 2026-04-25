@@ -871,6 +871,7 @@
   "autoApprovalEditCta": "Modifier ce paramètre",
   "autoApprovalToggleLabel": "Validation automatique",
   "autoApprovalToggleHelper": "Les nouveaux RDV seront confirmés directement, sans étape de validation de ta part.",
+  "autoApprovalEmployeeReadOnly": "En mode individuel, chaque RDV est confirmé automatiquement — le client choisit son employé et le créneau, et la réservation arrive directement dans ton planning.",
   "autoApprovalCapacityOnly": "Disponible uniquement en mode capacité",
   "autoApprovalBadgeAuto": "auto",
   "autoApprovalBadgeManual": "manuelle",

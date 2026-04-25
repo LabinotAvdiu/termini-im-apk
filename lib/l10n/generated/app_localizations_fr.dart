@@ -2186,6 +2186,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les nouveaux RDV seront confirmés directement, sans étape de validation de ta part.';
 
   @override
+  String get autoApprovalEmployeeReadOnly =>
+      'En mode individuel, chaque RDV est confirmé automatiquement — le client choisit son employé et le créneau, et la réservation arrive directement dans ton planning.';
+
+  @override
   String get autoApprovalCapacityOnly =>
       'Disponible uniquement en mode capacité';
 
