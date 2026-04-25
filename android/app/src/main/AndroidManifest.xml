@@ -44,6 +44,28 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- App Links — opens the app directly when the user taps a
+                 https://www.termini-im.com/company/* link in WhatsApp,
+                 Facebook, iMessage, etc. Requires the matching
+                 /.well-known/assetlinks.json on www.termini-im.com to be
+                 served (with the Play App Signing SHA-256). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"/>
+                <data android:host="www.termini-im.com"/>
+                <data android:pathPrefix="/company/"/>
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"/>
+                <data android:host="termini-im.com"/>
+                <data android:pathPrefix="/company/"/>
+            </intent-filter>
         </activity>
         <!-- FCM background message handler channel -->
         <meta-data
