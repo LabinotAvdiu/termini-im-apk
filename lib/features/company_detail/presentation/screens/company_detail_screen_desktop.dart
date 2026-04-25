@@ -253,7 +253,7 @@ class _GuestTopActions extends ConsumerWidget {
           child: GestureDetector(
             onTap: () {
               final returnTo = GoRouterState.of(context).uri.toString();
-              context.goNamed(
+              context.pushNamed(
                 RouteNames.login,
                 queryParameters: {'returnTo': returnTo},
               );
@@ -956,7 +956,7 @@ class _DesktopMainColumn extends StatelessWidget {
           (cat) => _DesktopCategorySection(
             category: cat,
             onServiceChosen: (service) {
-              context.goNamed(
+              context.pushNamed(
                 RouteNames.booking,
                 pathParameters: {'id': companyId},
                 queryParameters: {

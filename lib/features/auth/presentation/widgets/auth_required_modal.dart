@@ -111,7 +111,7 @@ class _AuthRequiredSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.goNamed(
+                context.pushNamed(
                   RouteNames.login,
                   queryParameters: {'returnTo': returnTo},
                 );
@@ -140,7 +140,7 @@ class _AuthRequiredSheet extends StatelessWidget {
             child: OutlinedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.goNamed(
+                context.pushNamed(
                   RouteNames.roleSelect,
                   queryParameters: {'returnTo': returnTo},
                 );

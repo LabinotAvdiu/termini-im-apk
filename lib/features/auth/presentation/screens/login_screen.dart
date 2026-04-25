@@ -469,7 +469,7 @@ class _FormCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                onTap: () => context.go('/forgot-password'),
+                onTap: () => context.push('/forgot-password'),
                 child: Text(
                   context.l10n.forgotPassword,
                   style: GoogleFonts.instrumentSerif(
@@ -622,7 +622,7 @@ class _SignupLink extends StatelessWidget {
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
         ),
         GestureDetector(
-          onTap: () => context.goNamed(RouteNames.roleSelect),
+          onTap: () => context.pushNamed(RouteNames.roleSelect),
           child: Text(
             context.l10n.signupNow,
             style: GoogleFonts.instrumentSerif(

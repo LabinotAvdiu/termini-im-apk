@@ -914,7 +914,7 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: () => context.goNamed(
+        onTap: () => context.pushNamed(
           RouteNames.companyDetail,
           pathParameters: {'id': company.id},
         ),
@@ -1123,7 +1123,7 @@ class _DesktopSalonCardState extends ConsumerState<_DesktopSalonCard> {
                           MouseRegion(
                             cursor: SystemMouseCursors.click,
                             child: GestureDetector(
-                              onTap: () => context.goNamed(
+                              onTap: () => context.pushNamed(
                                 RouteNames.companyDetail,
                                 pathParameters: {'id': company.id},
                               ),

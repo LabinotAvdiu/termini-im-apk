@@ -368,7 +368,7 @@ class _DesktopRoleCardState extends State<_DesktopRoleCard>
                   final returnTo = GoRouterState.of(context)
                       .uri
                       .queryParameters['returnTo'];
-                  context.goNamed(
+                  context.pushNamed(
                     RouteNames.signup,
                     queryParameters: {
                       'role': widget.role,
@@ -547,7 +547,7 @@ class _DesktopLoginLinkState extends State<_DesktopLoginLink> {
           onEnter: (_) => setState(() => _hovered = true),
           onExit: (_) => setState(() => _hovered = false),
           child: GestureDetector(
-            onTap: () => context.goNamed(RouteNames.login),
+            onTap: () => context.pushNamed(RouteNames.login),
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 150),
               style: TextStyle(

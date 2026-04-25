@@ -1026,7 +1026,7 @@ class _DesktopCapacityCard extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () => context.goNamed(RouteNames.capacitySettings),
+            onPressed: () => context.pushNamed(RouteNames.capacitySettings),
             child: Text(
               context.l10n.configureAction,
               style: AppTextStyles.bodySmall.copyWith(color: AppColors.primary),
@@ -1128,7 +1128,7 @@ class _DesktopReviewsCard extends ConsumerWidget {
               const Spacer(),
               TextButton(
                 onPressed: () =>
-                    context.goNamed(RouteNames.myCompanyReviews),
+                    context.pushNamed(RouteNames.myCompanyReviews),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   padding: EdgeInsets.zero,

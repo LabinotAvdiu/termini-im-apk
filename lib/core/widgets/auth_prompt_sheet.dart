@@ -84,7 +84,7 @@ void showAuthPromptSheet(BuildContext context) {
               ),
               onPressed: () {
                 Navigator.of(ctx).pop();
-                context.goNamed(RouteNames.login);
+                context.pushNamed(RouteNames.login);
               },
               child: Text(
                 l.login,
@@ -109,7 +109,7 @@ void showAuthPromptSheet(BuildContext context) {
               ),
               onPressed: () {
                 Navigator.of(ctx).pop();
-                context.goNamed(RouteNames.roleSelect);
+                context.pushNamed(RouteNames.roleSelect);
               },
               child: Text(
                 l.signup,

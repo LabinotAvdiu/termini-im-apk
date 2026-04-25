@@ -121,7 +121,7 @@ class _TomorrowBannerContent extends ConsumerWidget {
     );
 
     return GestureDetector(
-      onTap: () => context.goNamed('my-appointments'),
+      onTap: () => context.pushNamed('my-appointments'),
       child: Container(
         margin: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,

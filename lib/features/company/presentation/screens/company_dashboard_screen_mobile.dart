@@ -579,7 +579,7 @@ class _MobileCapacityCard extends StatelessWidget {
         icon: const Icon(Icons.arrow_forward_ios_rounded,
             size: 16, color: AppColors.primary),
         tooltip: context.l10n.capacitySettingsTitle,
-        onPressed: () => context.goNamed(RouteNames.capacitySettings),
+        onPressed: () => context.pushNamed(RouteNames.capacitySettings),
       ),
       child: Column(
         children: [
@@ -591,7 +591,7 @@ class _MobileCapacityCard extends StatelessWidget {
                 style: AppTextStyles.body),
             trailing: const Icon(Icons.chevron_right_rounded,
                 size: 20, color: AppColors.textHint),
-            onTap: () => context.goNamed(RouteNames.capacitySettings),
+            onTap: () => context.pushNamed(RouteNames.capacitySettings),
           ),
         ],
       ),

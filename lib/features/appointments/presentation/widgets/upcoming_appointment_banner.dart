@@ -128,7 +128,7 @@ class _UpcomingAppointmentBannerState
       child: FadeTransition(
         opacity: _fadeAnim,
         child: GestureDetector(
-          onTap: () => context.goNamed(RouteNames.appointments),
+          onTap: () => context.pushNamed(RouteNames.appointments),
           child: Container(
             margin: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md,

@@ -1561,7 +1561,7 @@ class _LoginLink extends StatelessWidget {
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
         ),
         GestureDetector(
-          onTap: () => context.goNamed(RouteNames.login),
+          onTap: () => context.pushNamed(RouteNames.login),
           child: Text(
             context.l10n.loginNow,
             style: GoogleFonts.instrumentSerif(
