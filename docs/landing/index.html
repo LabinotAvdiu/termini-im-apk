@@ -513,6 +513,361 @@
       .faq .answer { padding-left: 50px; font-size: 14px; }
     }
 
+    /* ---------- Avail strip (sous hero) ---------- */
+    .avail-strip {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 22px 32px 26px;
+      border-top: 1px solid var(--border);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+    }
+    .avail-strip .as-lead {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      letter-spacing: 0;
+      text-transform: none;
+      font-size: 13px;
+      color: var(--bordeaux);
+      margin-right: 18px;
+    }
+    .avail-strip .as-dot {
+      display: inline-block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--or);
+      margin: 0 14px 2px;
+      vertical-align: middle;
+    }
+
+    /* ---------- Scarcity strip ---------- */
+    .scarcity {
+      position: relative;
+      z-index: 5;
+      background: var(--bordeaux);
+      color: var(--ivory);
+      text-align: center;
+      padding: 18px 32px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+    .scarcity .scar-num {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--or-soft);
+      letter-spacing: -0.5px;
+      text-transform: none;
+      font-size: 17px;
+      margin-right: 6px;
+    }
+    .scarcity .scar-sep {
+      margin: 0 14px;
+      opacity: 0.5;
+    }
+
+    /* ---------- Editorial grid 2×3 (per-sallon refonte) ---------- */
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+    }
+    .editorial-cell {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 42px 38px 44px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .editorial-cell .roman {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--or);
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .editorial-cell .roman::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bone);
+    }
+    .editorial-cell .e-icon {
+      color: var(--bordeaux);
+      margin-bottom: 2px;
+    }
+    .editorial-cell .e-icon svg {
+      width: 26px;
+      height: 26px;
+      stroke-width: 1.6;
+    }
+    .editorial-cell h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.4px;
+      line-height: 1.15;
+      margin: 0;
+    }
+    .editorial-cell h3 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--bordeaux);
+    }
+    .editorial-cell p {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: var(--ink-2);
+      margin: 0;
+    }
+    @media (max-width: 720px) {
+      .editorial-grid { grid-template-columns: 1fr; }
+      .editorial-cell { padding: 32px 28px; }
+      .editorial-cell h3 { font-size: 21px; }
+    }
+
+    /* ---------- Import spread (papier → digital) ---------- */
+    .import-section {
+      background: var(--ivory);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 5;
+    }
+    .import-spread {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 96px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .import-spread .copy .kicker {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--bordeaux);
+      margin-bottom: 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .import-spread .copy .kicker::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--or);
+    }
+    .import-spread .copy h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(32px, 4vw, 46px);
+      font-weight: 400;
+      letter-spacing: -1.2px;
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+    .import-spread .copy h2 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--bordeaux);
+    }
+    .import-spread .copy .lead {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--ink-2);
+      margin-bottom: 22px;
+    }
+    .import-spread .sources {
+      list-style: none;
+      margin: 0 0 22px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .import-spread .sources li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--ink-2);
+    }
+    .import-spread .sources li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 6px; height: 6px;
+      background: var(--or);
+      border-radius: 50%;
+    }
+    .import-spread .copy .note {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--muted);
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      line-height: 1.6;
+    }
+    .import-visual {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .paper-card {
+      background: var(--sand);
+      border: 1px solid var(--border);
+      padding: 30px 28px 34px;
+      position: relative;
+      transform: rotate(-1.4deg);
+      box-shadow: 0 10px 28px -18px rgba(81, 21, 34, 0.22);
+    }
+    .paper-card::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: 28px;
+      width: 38px; height: 18px;
+      background: rgba(200, 155, 71, 0.32);
+      transform: rotate(-4deg);
+      border-radius: 1px;
+    }
+    .paper-card .paper-label {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: block;
+    }
+    .paper-card .scribble {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 15.5px;
+      color: var(--ink-2);
+      margin: 0 0 8px;
+      display: block;
+      line-height: 1.45;
+    }
+    .paper-card .scribble.strike {
+      text-decoration: line-through;
+      text-decoration-color: var(--bordeaux);
+      text-decoration-thickness: 1.5px;
+      color: var(--muted);
+    }
+    .paper-card .scribble.fade { color: var(--muted); }
+    .paper-card .scribble:last-child { margin-bottom: 0; }
+    .transform-arrow {
+      width: 1px;
+      background: var(--border);
+      height: 36px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .transform-arrow::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 9px; height: 9px;
+      border-right: 1px solid var(--bordeaux);
+      border-bottom: 1px solid var(--bordeaux);
+    }
+    .digital-card {
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--bordeaux);
+      padding: 24px 26px 26px;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: 0 14px 36px -22px rgba(23, 19, 17, 0.28);
+    }
+    .digital-card::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: 28px;
+      width: 7px; height: 7px;
+      background: var(--or);
+      border-radius: 50%;
+    }
+    .digital-card .dig-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--bone);
+      margin-bottom: 8px;
+    }
+    .digital-card .dig-header .day {
+      font-family: 'Fraunces', serif;
+      font-size: 15px;
+      color: var(--ink);
+      letter-spacing: -0.2px;
+    }
+    .digital-card .dig-header .day em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--bordeaux);
+    }
+    .digital-card .dig-header .meta {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--or);
+    }
+    .digital-card .dig-row {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      padding: 11px 0;
+      border-bottom: 1px dashed var(--bone);
+    }
+    .digital-card .dig-row:last-child { border-bottom: 0; padding-bottom: 2px; }
+    .digital-card .dig-row .time {
+      font-family: 'Fraunces', serif;
+      font-size: 15px;
+      color: var(--bordeaux);
+      font-feature-settings: "tnum";
+      letter-spacing: -0.3px;
+      min-width: 58px;
+    }
+    .digital-card .dig-row .name {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+    .digital-card .dig-row.walkin .name {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--or);
+    }
+    @media (max-width: 880px) {
+      .import-spread { grid-template-columns: 1fr; gap: 56px; padding: 72px 24px; }
+    }
+
     /* ---------- Footer ---------- */
     footer {
       position: relative;
@@ -864,6 +1219,12 @@
     </div>
   </section>
 
+  <!-- ========= AVAIL STRIP ========= -->
+  <div class="avail-strip">
+    <span class="as-lead" data-i18n="availLead">Disponibël</span>
+    iOS<span class="as-dot"></span>Android<span class="as-dot"></span>Web<span class="as-dot"></span><span data-i18n="availFromMay">Nga maji 2026</span>
+  </div>
+
   <!-- ========= COUNTDOWN ========= -->
   <div class="countdown-wrap">
     <div class="countdown-overline" data-i18n="countdownOverline">Lansimi në</div>
@@ -873,6 +1234,11 @@
       <div class="count-cell"><span class="num" id="c-mins">00</span><span class="label" data-i18n="mins">Min</span></div>
       <div class="count-cell"><span class="num" id="c-secs">00</span><span class="label" data-i18n="secs">Sek</span></div>
     </div>
+  </div>
+
+  <!-- ========= SCARCITY STRIP ========= -->
+  <div class="scarcity">
+    <span class="scar-num" id="scar-remaining">23</span><span data-i18n="scarRemaining">vende të lira nga 30</span><span class="scar-sep">·</span><span data-i18n="scarPilots">Pionierët e parë në Ferizaj</span>
   </div>
 
   <!-- ========= POUR TOI ========= -->
@@ -904,18 +1270,97 @@
         <div class="kicker" data-i18n="perSallonKicker">Për sallonin tënd</div>
         <h2 data-i18n="perSallonTitle">Më pak thirrje. Më <em>shumë</em> kohë.</h2>
       </div>
-      <div class="cols-3">
-        <div class="feature">
-          <h3 data-i18n="s1Title">Më pak thirrje</h3>
-          <p data-i18n="s1Body">Klientët e tu rezervojnë 24/7 pa të thirrë.</p>
+      <div class="editorial-grid">
+
+        <div class="editorial-cell">
+          <span class="roman">I</span>
+          <span class="e-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="12" y1="4" x2="12" y2="20"/><circle cx="7.5" cy="10" r="0.9" fill="currentColor"/><circle cx="7.5" cy="14" r="0.9" fill="currentColor"/><line x1="15.5" y1="9" x2="19" y2="9"/><line x1="15.5" y1="12" x2="19" y2="12"/><line x1="15.5" y1="15" x2="19" y2="15"/></svg>
+          </span>
+          <h3 data-i18n="s1Title">Dy mënyra planifikimi</h3>
+          <p data-i18n="s1Body">Mënyra <em>individuale</em> — secili punëtor me planin e tij, për barberi e frizeri. Mënyra e <em>kapacitetit</em> — X vende paralele, pa caktim individual, për institute estetike.</p>
         </div>
-        <div class="feature">
-          <h3 data-i18n="s2Title">Më shumë kohë</h3>
-          <p data-i18n="s2Body">15 orë në muaj nga telefoni — dhurata jonë për ty.</p>
+
+        <div class="editorial-cell">
+          <span class="roman">II</span>
+          <span class="e-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16h12l-1.5-2.5V10a4.5 4.5 0 0 0-9 0v3.5L6 16z"/><path d="M10.5 19a1.5 1.5 0 0 0 3 0"/><circle cx="18" cy="6" r="2.4" fill="currentColor" stroke="none"/></svg>
+          </span>
+          <h3 data-i18n="s2Title">Njoftime, jo telefonata</h3>
+          <p data-i18n="s2Body">Çdo termin i ri — direkt në xhep ose në kompjuter. Klientët rezervojnë 24/7 pa të thirrë. <em>15 orë në muaj</em> të kthehen nga telefoni.</p>
         </div>
-        <div class="feature">
-          <h3 data-i18n="s3Title">Zero komision</h3>
-          <p data-i18n="s3Body">100 % e fitimit tënd mbetet yti. Gjithmonë.</p>
+
+        <div class="editorial-cell">
+          <span class="roman">III</span>
+          <span class="e-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"/><circle cx="17" cy="9.5" r="2.2"/><path d="M3 19c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 14.5c1.7-1 4.5-1 6.5 1.5"/></svg>
+          </span>
+          <h3 data-i18n="s3Title">Llogaritë e stafit</h3>
+          <p data-i18n="s3Body">Çdo punëtor me planin e tij — pushimet, lejet, ditët e lirë. Pronari sheh gjithçka. <em>Pa konflikte, pa fletore të përbashkët.</em></p>
+        </div>
+
+        <div class="editorial-cell">
+          <span class="roman">IV</span>
+          <span class="e-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v14h-5"/><path d="M10 12H3M3 12l3-3M3 12l3 3"/></svg>
+          </span>
+          <h3 data-i18n="s4Title">Klient pa termin, në 3 hapa</h3>
+          <p data-i18n="s4Body">Një klient hyn pa rezervim? E regjistron në <em>5 sekonda</em> dhe vazhdon punën pa ndërprerje.</p>
+        </div>
+
+        <div class="editorial-cell">
+          <span class="roman">V</span>
+          <span class="e-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h9A1.5 1.5 0 0 1 21 10v8.5A1.5 1.5 0 0 1 19.5 20h-15A1.5 1.5 0 0 1 3 18.5z"/><path d="M12 11.5v5.5M9.5 14.5l2.5 2.5 2.5-2.5"/></svg>
+          </span>
+          <h3 data-i18n="s5Title">Sjellim agjendën tënde</h3>
+          <p data-i18n="s5Body">Ti na e dërgon agjendën — letër, WhatsApp, Instagram. Ne e digjitalizojmë, <em>falas</em>, gjatë konfigurimit. Asgjë e humbur.</p>
+        </div>
+
+        <div class="editorial-cell">
+          <span class="roman">VI</span>
+          <span class="e-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><circle cx="8" cy="8" r="2.2"/><circle cx="16" cy="16" r="2.2"/></svg>
+          </span>
+          <h3 data-i18n="s6Title">Zero komision</h3>
+          <p data-i18n="s6Body">100 % e fitimit yt mbetet yti. Pa abonim, pa komision, pa kushte. <em>Gjithmonë.</em></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========= IMPORT SPREAD ========= -->
+  <section class="import-section">
+    <div class="import-spread">
+      <div class="copy">
+        <div class="kicker" data-i18n="importKicker">Onboarding</div>
+        <h2 data-i18n="importTitle">Sjellim agjendën <em>tënde.</em></h2>
+        <p class="lead" data-i18n="importLead">Ti na e dërgon listën e termineve që ke tashmë — në letër, në WhatsApp, në Instagram. Ne e digjitalizojmë gjatë konfigurimit. Pa humbur asnjë termin. Pa rishkrime.</p>
+        <ul class="sources">
+          <li data-i18n="importSrc1">Agjenda në letër — fotografo, na e dërgo</li>
+          <li data-i18n="importSrc2">Bisedat WhatsApp dhe Instagram — i lexojmë me ty</li>
+          <li data-i18n="importSrc3">Excel ose Google Calendar — i importojmë drejtpërdrejt</li>
+        </ul>
+        <p class="note" data-i18n="importNote">Pjesë e konfigurimit pionier. Ne vijmë në sallon, e bëjmë sëbashku, në një takim 90-minutësh. Falas, kurrë në faturë.</p>
+      </div>
+      <div class="import-visual" aria-hidden="true">
+        <div class="paper-card">
+          <span class="paper-label" data-i18n="importBefore">Para — agjenda në letër</span>
+          <span class="scribble strike">Drita — e mërkurë 14:00</span>
+          <span class="scribble strike">Egzon — pa kohë saktë</span>
+          <span class="scribble fade">"…ma konfirmo të lutem"</span>
+          <span class="scribble fade">Dasma e shtunë — sa veta?</span>
+        </div>
+        <div class="transform-arrow"></div>
+        <div class="digital-card">
+          <div class="dig-header">
+            <span class="day"><span data-i18n="importToday">Sot</span> · <em data-i18n="importTuesday">e martë</em></span>
+            <span class="meta">Termini im</span>
+          </div>
+          <div class="dig-row"><span class="time">10:00</span><span class="name">Drita Krasniqi</span></div>
+          <div class="dig-row"><span class="time">11:30</span><span class="name">Egzon Hoxha</span></div>
+          <div class="dig-row walkin"><span class="time">14:00</span><span class="name" data-i18n="importWalkin">Klient pa termin</span></div>
         </div>
       </div>
     </div>
@@ -975,7 +1420,72 @@
             <span class="q-text" data-i18n="q4">A funksionon në celular dhe kompjuter?</span>
           </span>
         </summary>
-        <div class="answer" data-i18n="a4">iOS, Android dhe web. Gjithçka e sinkronizuar.</div>
+        <div class="answer" data-i18n="a4">iOS, Android dhe web. Gjithçka e sinkronizuar — termini i regjistruar nga celulari shfaqet menjëherë në PC.</div>
+      </details>
+
+      <details>
+        <summary>
+          <span class="q-inner">
+            <span class="q-icon" aria-hidden="true">
+              <!-- Folder with arrow in — import -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h9A1.5 1.5 0 0 1 21 10v8.5A1.5 1.5 0 0 1 19.5 20h-15A1.5 1.5 0 0 1 3 18.5z"/><path d="M12 11.5v5.5M9.5 14.5l2.5 2.5 2.5-2.5"/></svg>
+            </span>
+            <span class="q-text" data-i18n="q5">Si i kalojmë RDV-të e mia ekzistuese?</span>
+          </span>
+        </summary>
+        <div class="answer" data-i18n="a5">Nuk e bën ti. Vijmë në sallon, marrim agjendën tënde — letër, WhatsApp, Instagram, Excel — dhe e digjitalizojmë sëbashku në një takim 90-minutësh. Falas. Pjesë e konfigurimit pionier.</div>
+      </details>
+
+      <details>
+        <summary>
+          <span class="q-inner">
+            <span class="q-icon" aria-hidden="true">
+              <!-- People — staff free -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"/><circle cx="17" cy="9.5" r="2.2"/><path d="M3 19c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 14.5c1.7-1 4.5-1 6.5 1.5"/></svg>
+            </span>
+            <span class="q-text" data-i18n="q6">A duhet të paguaj për stafin tim?</span>
+          </span>
+        </summary>
+        <div class="answer" data-i18n="a6">Jo. Çdo punëtor ka llogarinë e vet — me planin, pushimet, lejet — pa pagesë shtesë. Pa kufi në numër punëtorësh.</div>
+      </details>
+
+      <details>
+        <summary>
+          <span class="q-inner">
+            <span class="q-icon" aria-hidden="true">
+              <!-- Phone with check — habit -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h6v16H5z"/><path d="M7 17h2"/><path d="M14 9l2 2 4-4"/></svg>
+            </span>
+            <span class="q-text" data-i18n="q7">Po klientët e mi që duan të më marrin në telefon?</span>
+          </span>
+        </summary>
+        <div class="answer" data-i18n="a7">Telefonata mbetet — Termini im nuk e mbyll. Por të rinjtë që do të vijnë rishtazi rezervojnë vetë, pa të prishur punën. Klientët e besueshëm do të mësohen vetë — kur shohin se është më e shpejtë.</div>
+      </details>
+
+      <details>
+        <summary>
+          <span class="q-inner">
+            <span class="q-icon" aria-hidden="true">
+              <!-- Shield — reliability -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+            </span>
+            <span class="q-text" data-i18n="q8">Çfarë ndodh nëse aplikacioni s'punon në një ditë me dasmë?</span>
+          </span>
+        </summary>
+        <div class="answer" data-i18n="a8">Numri im personal është në kontaktin tënd që në ditën e parë — gjatë 6 muajve të parë, pioniert më marrin direkt në WhatsApp. Backup në letër? Eksport PDF i agjendës me një klikim. Asgjë nuk varet vetëm nga aplikacioni.</div>
+      </details>
+
+      <details>
+        <summary>
+          <span class="q-inner">
+            <span class="q-icon" aria-hidden="true">
+              <!-- Stopwatch — quick setup -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="7"/><path d="M12 10v4l2.5 1.5"/><path d="M9 4h6M12 4v3"/></svg>
+            </span>
+            <span class="q-text" data-i18n="q9">Sa kohë merr konfigurimi?</span>
+          </span>
+        </summary>
+        <div class="answer" data-i18n="a9">90 minuta në sallonin tënd. Krijojmë llogarinë, importojmë agjendën, ftojmë stafin, vendosim shërbimet me çmime. Largohemi me sallonin gati për rezervime.</div>
       </details>
     </div>
   </section>
@@ -1082,7 +1592,7 @@
       <button class="modal-close" onclick="closeWaitlist()" aria-label="Close">×</button>
       <div class="modal-form">
         <h3 id="modalOwnerTitle" data-i18n="modalOwnerTitle">Kam sallon · <em>Regjistrohem.</em></h3>
-        <p class="modal-sub" data-i18n="modalOwnerSub">Kërkojmë 15 sallone pionierë në Ferizaj. Foto profesionale + konfigurim — falas.</p>
+        <p class="modal-sub" data-i18n="modalOwnerSub">Kërkojmë 30 sallone pionierë në Ferizaj. Foto profesionale, konfigurim dhe import i agjendës — falas.</p>
         <form data-form-type="owner" novalidate>
 
           <div>
@@ -1192,20 +1702,43 @@
         f1Title: 'Zbulo', f1Body: 'Gjej sallonin më të afërt, filtro sipas gjinisë, datës, qytetit.',
         f2Title: 'Rezervo', f2Body: 'Tri hapa. Tridhjetë sekonda. Pa thirrje, pa pritje.',
         f3Title: 'Kujtohu', f3Body: 'Kujtesa automatike një ditë më parë dhe 1 orë para.',
+        availLead: 'Disponibël',
+        availFromMay: 'Nga maji 2026',
+        scarRemaining: 'vende të lira nga 30',
+        scarPilots: 'Pionierët e parë në Ferizaj',
         perSallonKicker: 'Për sallonin tënd',
         perSallonTitle: 'Më pak thirrje. Më <em>shumë</em> kohë.',
-        s1Title: 'Më pak thirrje', s1Body: 'Klientët e tu rezervojnë 24/7 pa të thirrë.',
-        s2Title: 'Më shumë kohë', s2Body: '15 orë në muaj nga telefoni — dhurata jonë për ty.',
-        s3Title: 'Zero komision', s3Body: '100 % e fitimit tënd mbetet yti. Gjithmonë.',
+        s1Title: 'Dy mënyra planifikimi', s1Body: 'Mënyra <em>individuale</em> — secili punëtor me planin e tij, për barberi e frizeri. Mënyra e <em>kapacitetit</em> — X vende paralele, pa caktim individual, për institute estetike.',
+        s2Title: 'Njoftime, jo telefonata', s2Body: 'Çdo termin i ri — direkt në xhep ose në kompjuter. Klientët rezervojnë 24/7 pa të thirrë. <em>15 orë në muaj</em> të kthehen nga telefoni.',
+        s3Title: 'Llogaritë e stafit', s3Body: 'Çdo punëtor me planin e tij — pushimet, lejet, ditët e lirë. Pronari sheh gjithçka. <em>Pa konflikte, pa fletore të përbashkët.</em>',
+        s4Title: 'Klient pa termin, në 3 hapa', s4Body: 'Një klient hyn pa rezervim? E regjistron në <em>5 sekonda</em> dhe vazhdon punën pa ndërprerje.',
+        s5Title: 'Sjellim agjendën tënde', s5Body: 'Ti na e dërgon agjendën — letër, WhatsApp, Instagram. Ne e digjitalizojmë, <em>falas</em>, gjatë konfigurimit. Asgjë e humbur.',
+        s6Title: 'Zero komision', s6Body: '100 % e fitimit tënd mbetet yti. Pa abonim, pa komision, pa kushte. <em>Gjithmonë.</em>',
+        importKicker: 'Konfigurimi i parë',
+        importTitle: 'Sjellim agjendën <em>tënde.</em>',
+        importLead: 'Ti na e dërgon listën e termineve që ke tashmë — në letër, në WhatsApp, në Instagram. Ne e digjitalizojmë gjatë konfigurimit. Pa humbur asnjë termin. Pa rishkrime.',
+        importSrc1: 'Agjenda në letër — fotografo, na e dërgo',
+        importSrc2: 'Bisedat WhatsApp dhe Instagram — i lexojmë me ty',
+        importSrc3: 'Excel ose Google Calendar — i importojmë drejtpërdrejt',
+        importNote: 'Pjesë e konfigurimit pionier. Ne vijmë në sallon, e bëjmë sëbashku, në një takim 90-minutësh. Falas, kurrë në faturë.',
+        importBefore: 'Para — agjenda në letër',
+        importToday: 'Sot',
+        importTuesday: 'e martë',
+        importWalkin: 'Klient pa termin',
         pilotsTitle: 'Kërkojmë <strong>30 sallone pionierë në Ferizaj</strong> — maji 2026.',
-        pilotsBody: 'Sesioni fotografik profesional — falas. Konfigurimi i sallonit — bëjmë ne. Badge « Pionier Termini im » — në vitrinën tënde dhe në bio Instagram. Komision — kurrë.',
+        pilotsBody: 'Sesioni fotografik profesional — falas. Konfigurimi i sallonit dhe importi i agjendës — bëjmë ne. Badge « Pionier Termini im » — në vitrinën tënde dhe në bio Instagram. Komision — kurrë.',
         pilotsCities: '<strong>Je nga qytet tjetër?</strong> Regjistrohu. Prishtinën e hapim në korrik. Prizren, Pejë — pas.',
         pilotsCta: 'Regjistro sallonin tim',
         faqKicker: 'Pyetje të shpeshta',
         faqTitle: 'Gjithçka që duhet të dish.',
         q1: 'A është falas vërtet?', a1: 'Po. Pa komision. Pa abonim. Pa kushte të fshehta.',
         q2: 'Kur lansohet?', a2: 'Ferizaj — maji 2026. Prishtinë — korriku 2026. Qytete tjera pas. Regjistrohu për të qenë i pari/e para në qytetin tënd.',
-        q4: 'A funksionon në celular dhe kompjuter?', a4: 'iOS, Android dhe web. Gjithçka e sinkronizuar.',
+        q4: 'A funksionon në celular dhe kompjuter?', a4: 'iOS, Android dhe web. Gjithçka e sinkronizuar — termini i regjistruar nga celulari shfaqet menjëherë në PC.',
+        q5: 'Si i kalojmë terminet e mia ekzistuese?', a5: 'Nuk e bën ti. Vijmë në sallon, marrim agjendën tënde — letër, WhatsApp, Instagram, Excel — dhe e digjitalizojmë sëbashku në një takim 90-minutësh. Falas. Pjesë e konfigurimit pionier.',
+        q6: 'A duhet të paguaj për stafin tim?', a6: 'Jo. Çdo punëtor ka llogarinë e vet — me planin, pushimet, lejet — pa pagesë shtesë. Pa kufi në numrin e punëtorëve.',
+        q7: 'Po klientët e mi që duan të më marrin në telefon?', a7: 'Telefonata mbetet — Termini im nuk e mbyll. Por klientët e rinj që vijnë rishtazi rezervojnë vetë, pa të prishur punën. Klientët e besueshëm do të mësohen vetë — kur shohin se është më e shpejtë.',
+        q8: 'Çfarë ndodh nëse aplikacioni s\'punon në një ditë me dasmë?', a8: 'Numri im personal është në kontaktet e tua që në ditën e parë — gjatë 6 muajve të parë, pionierët më shkruajnë drejtpërdrejt në WhatsApp. Kopje rezervë në letër? Agjenda eksportohet në PDF me një klikim. Asgjë nuk varet vetëm nga aplikacioni.',
+        q9: 'Sa kohë merr konfigurimi?', a9: '90 minuta në sallonin tënd. Krijojmë llogarinë, importojmë agjendën, ftojmë stafin, vendosim shërbimet me çmime. Largohemi me sallonin gati për rezervime.',
         footTagline: 'Aplikacioni shqip për rezervim termine. Ferizaj · 2026.',
         footContact: 'Kontakto', footLegal: 'Ligjore',
         footTerms: 'Kushtet e përdorimit', footPrivacy: 'Privatësia',
@@ -1214,7 +1747,7 @@
         modalClientTitle: 'Jam klient · <em>Më njofto.</em>',
         modalClientSub: 'Katër fusha. Pa abonim, pa thirrje. Të njoftojmë të parët në qytetin tënd.',
         modalOwnerTitle: 'Kam sallon · <em>Regjistrohem.</em>',
-        modalOwnerSub: 'Kërkojmë 15 sallone pionierë në Ferizaj. Foto profesionale + konfigurim — falas.',
+        modalOwnerSub: 'Kërkojmë 30 sallone pionierë në Ferizaj. Foto profesionale, konfigurim dhe import i agjendës — falas.',
         modalSubmit: 'Regjistrohem',
         modalSuccessTitle: 'U regjistrua!',
         modalSuccessSub: 'Do të marrësh lajme nga ne kur Termini im të jetë gati.',
@@ -1264,20 +1797,43 @@
         f1Title: 'Découvre', f1Body: 'Trouve le salon le plus proche, filtre par genre, date, ville.',
         f2Title: 'Réserve', f2Body: 'Trois étapes. Trente secondes. Sans appel, sans attente.',
         f3Title: 'Souviens-toi', f3Body: 'Rappels automatiques la veille et 1h avant.',
+        availLead: 'Disponible',
+        availFromMay: 'Dès mai 2026',
+        scarRemaining: 'places restantes sur 30',
+        scarPilots: 'Premiers pionniers à Ferizaj',
         perSallonKicker: 'Pour ton salon',
         perSallonTitle: 'Moins d\'appels. <em>Plus</em> de temps.',
-        s1Title: 'Moins d\'appels', s1Body: 'Tes clients réservent 24/7 sans te déranger.',
-        s2Title: 'Plus de temps', s2Body: '15 heures par mois récupérées sur le téléphone — notre cadeau pour toi.',
-        s3Title: 'Zéro commission', s3Body: '100 % de ton chiffre d\'affaires reste à toi. Toujours.',
+        s1Title: 'Deux modes de planning', s1Body: 'Mode <em>individuel</em> pour barbier et coiffeur·se — chaque pro avec son agenda. Mode <em>capacité</em> pour institut — X créneaux en parallèle, sans attribution individuelle.',
+        s2Title: 'Push, plus d\'appels', s2Body: 'Chaque RDV — direct dans ta poche ou sur ton PC. Tes clients réservent 24/7 sans te déranger. <em>15 heures par mois</em> récupérées du téléphone.',
+        s3Title: 'Comptes employés', s3Body: 'Chaque pro avec son agenda — pauses, congés, jours off. L\'owner voit tout. <em>Sans conflit, sans carnet partagé.</em>',
+        s4Title: 'Walk-in en 3 taps', s4Body: 'Un client passe sans RDV ? Tu l\'enregistres en <em>5 secondes</em> et tu reprends ta coupe sans coupure.',
+        s5Title: 'On migre ton agenda', s5Body: 'Papier, WhatsApp, Instagram — on les digitalise nous, <em>gratuitement</em>, pendant la mise en route. Rien de perdu.',
+        s6Title: 'Zéro commission', s6Body: '100 % de ton chiffre d\'affaires reste à toi. Sans abonnement, sans commission, sans conditions. <em>Toujours.</em>',
+        importKicker: 'Onboarding',
+        importTitle: 'On migre <em>ton agenda.</em>',
+        importLead: 'Ta liste de RDV existants — sur papier, dans WhatsApp, dans Instagram — on la digitalise pendant la mise en route. Sans rien perdre. Sans rien réécrire deux fois.',
+        importSrc1: 'Agenda papier — tu prends une photo, tu nous l\'envoies',
+        importSrc2: 'Conversations WhatsApp et Instagram — on les lit avec toi',
+        importSrc3: 'Excel ou Google Calendar — on importe directement',
+        importNote: 'Inclus dans la configuration pionnier. On vient au salon, on le fait ensemble en un rendez-vous de 90 minutes. Gratuit, jamais facturé.',
+        importBefore: 'Avant — agenda papier',
+        importToday: 'Aujourd\'hui',
+        importTuesday: 'mardi',
+        importWalkin: 'Walk-in accepté',
         pilotsTitle: 'Nous cherchons <strong>30 salons pilotes à Ferizaj</strong> — mai 2026.',
-        pilotsBody: 'Shooting photo pro — gratuit. Configuration du salon — on la fait pour toi. Badge « Pilote Termini im » — sur ta vitrine et dans ta bio Instagram. Commission — jamais.',
+        pilotsBody: 'Shooting photo pro — gratuit. Configuration du salon et migration de l\'agenda — on s\'en charge. Badge « Pilote Termini im » — sur ta vitrine et dans ta bio Instagram. Commission — jamais.',
         pilotsCities: '<strong>D\'une autre ville ?</strong> Inscris-toi. On ouvre Prishtinë en juillet. Prizren, Pejë — ensuite.',
         pilotsCta: 'Inscrire mon salon',
         faqKicker: 'Questions fréquentes',
         faqTitle: 'Tout ce que tu dois savoir.',
         q1: 'C\'est vraiment gratuit ?', a1: 'Oui. Sans commission. Sans abonnement. Sans conditions cachées.',
         q2: 'Quand ça sort ?', a2: 'Ferizaj — mai 2026. Prishtinë — juillet 2026. Autres villes ensuite. Inscris-toi pour être parmi les premiers dans ta ville.',
-        q4: 'Ça marche sur mobile et ordinateur ?', a4: 'iOS, Android et web. Tout est synchronisé.',
+        q4: 'Ça marche sur mobile et ordinateur ?', a4: 'iOS, Android et web. Tout est synchronisé — un RDV pris depuis le mobile apparaît immédiatement sur le PC.',
+        q5: 'Comment je migre mes RDV existants ?', a5: 'Tu ne le fais pas. On vient au salon, on prend ton agenda — papier, WhatsApp, Instagram, Excel — et on le digitalise ensemble en un rendez-vous de 90 minutes. Gratuit. Inclus dans le pack pionnier.',
+        q6: 'Je dois payer pour mon équipe ?', a6: 'Non. Chaque employé a son propre compte — avec agenda, pauses, congés — sans frais supplémentaires. Pas de limite sur le nombre d\'employés.',
+        q7: 'Et mes clients qui veulent m\'appeler ?', a7: 'Le téléphone reste — Termini im ne le ferme pas. Mais les nouveaux clients réservent seuls, sans interrompre ta coupe. Les fidèles s\'y mettront naturellement quand ils verront que c\'est plus rapide.',
+        q8: 'Et si l\'app plante un jour de mariage ?', a8: 'Mon numéro perso est dans tes contacts dès le jour 1 — pendant les 6 premiers mois, les pionniers m\'écrivent direct sur WhatsApp. Backup papier ? Export PDF de ton agenda en un clic. Rien ne dépend uniquement de l\'app.',
+        q9: 'Combien de temps prend la mise en route ?', a9: '90 minutes dans ton salon. On crée le compte, on importe l\'agenda, on invite l\'équipe, on configure les services et les prix. On part avec un salon prêt à recevoir des réservations.',
         footTagline: 'L\'application albanaise pour réserver tes rendez-vous. Ferizaj · 2026.',
         footContact: 'Contact', footLegal: 'Mentions légales',
         footTerms: 'Conditions', footPrivacy: 'Confidentialité',
@@ -1285,7 +1841,7 @@
         modalClientTitle: 'Je suis client · <em>Tiens-moi au courant.</em>',
         modalClientSub: 'Quatre champs. Sans abonnement, sans appels. Tu seras parmi les premiers dans ta ville.',
         modalOwnerTitle: 'J\'ai un salon · <em>Je m\'inscris.</em>',
-        modalOwnerSub: 'On cherche 15 salons pionniers à Ferizaj. Shooting pro + configuration — gratuit.',
+        modalOwnerSub: 'On cherche 30 salons pionniers à Ferizaj. Shooting pro, configuration et migration de l\'agenda — gratuit.',
         modalSubmit: 'M\'inscrire',
         modalSuccessTitle: 'C\'est fait !',
         modalSuccessSub: 'Tu recevras des nouvelles dès que Termini im sera prêt.',
@@ -1333,20 +1889,43 @@
         f1Title: 'Discover', f1Body: 'Find the nearest salon, filter by gender, date, city.',
         f2Title: 'Book', f2Body: 'Three steps. Thirty seconds. No calls, no waiting.',
         f3Title: 'Remember', f3Body: 'Automatic reminders the day before and 1h ahead.',
+        availLead: 'Available',
+        availFromMay: 'From May 2026',
+        scarRemaining: 'spots left of 30',
+        scarPilots: 'First pioneers in Ferizaj',
         perSallonKicker: 'For your salon',
         perSallonTitle: 'Fewer calls. <em>More</em> time.',
-        s1Title: 'Fewer calls', s1Body: 'Your clients book 24/7 without calling you.',
-        s2Title: 'More time', s2Body: '15 hours a month back from the phone — our gift to you.',
-        s3Title: 'Zero commission', s3Body: '100% of your revenue stays yours. Always.',
+        s1Title: 'Two planning modes', s1Body: '<em>Individual</em> mode for barbers and stylists — each pro with their own schedule. <em>Capacity</em> mode for institutes — X parallel slots, no individual assignment.',
+        s2Title: 'Push, no calls', s2Body: 'Every new booking — straight to your pocket or PC. Clients book 24/7 without calling you. <em>15 hours a month</em> reclaimed from the phone.',
+        s3Title: 'Staff accounts', s3Body: 'Each employee with their own schedule — breaks, days off, leaves. The owner sees everything. <em>No conflicts, no shared paper.</em>',
+        s4Title: 'Walk-in in 3 taps', s4Body: 'A client walks in without a booking? You log them in <em>5 seconds</em> and resume your cut without interruption.',
+        s5Title: 'We move your schedule', s5Body: 'Paper, WhatsApp, Instagram — we digitize it for you, <em>free</em>, during onboarding. Nothing lost.',
+        s6Title: 'Zero commission', s6Body: '100% of your revenue stays yours. No subscription, no commission, no terms. <em>Always.</em>',
+        importKicker: 'Onboarding',
+        importTitle: 'We move <em>your schedule.</em>',
+        importLead: 'Your existing list of bookings — on paper, in WhatsApp, in Instagram — we digitize it during onboarding. Nothing lost. Nothing rewritten twice.',
+        importSrc1: 'Paper agenda — snap a photo, send it to us',
+        importSrc2: 'WhatsApp and Instagram threads — we read them with you',
+        importSrc3: 'Excel or Google Calendar — we import directly',
+        importNote: 'Part of the pioneer setup. We come to the salon, do it together in a 90-minute session. Free, never billed.',
+        importBefore: 'Before — paper agenda',
+        importToday: 'Today',
+        importTuesday: 'Tuesday',
+        importWalkin: 'Walk-in accepted',
         pilotsTitle: 'We\'re looking for <strong>30 pilot salons in Ferizaj</strong> — May 2026.',
-        pilotsBody: 'Professional photo shoot — free. Salon setup — we handle it. "Termini im Pilot" badge — on your storefront and Instagram bio. Commission — never.',
+        pilotsBody: 'Professional photo shoot — free. Salon setup and schedule migration — we handle it. "Termini im Pilot" badge — on your storefront and Instagram bio. Commission — never.',
         pilotsCities: '<strong>From another city?</strong> Sign up. We open Prishtinë in July. Prizren, Pejë — after.',
         pilotsCta: 'Register my salon',
         faqKicker: 'Frequent questions',
         faqTitle: 'Everything you need to know.',
         q1: 'Is it really free?', a1: 'Yes. No commission. No subscription. No hidden terms.',
         q2: 'When does it launch?', a2: 'Ferizaj — May 2026. Prishtinë — July 2026. Other cities to follow. Sign up to be among the first in your city.',
-        q4: 'Does it work on mobile and desktop?', a4: 'iOS, Android and web. Everything synced.',
+        q4: 'Does it work on mobile and desktop?', a4: 'iOS, Android and web. Everything synced — a booking made on mobile shows up on the PC instantly.',
+        q5: 'How do I migrate my existing bookings?', a5: 'You don\'t. We come to the salon, take your agenda — paper, WhatsApp, Instagram, Excel — and digitize it together in a 90-minute session. Free. Part of the pioneer pack.',
+        q6: 'Do I have to pay for my staff?', a6: 'No. Each employee gets their own account — with their schedule, breaks, leaves — at no extra cost. No cap on staff count.',
+        q7: 'What about clients who want to call me?', a7: 'The phone stays — Termini im doesn\'t shut it down. But new clients book on their own, without breaking your cut. Loyal ones will switch on their own once they see it\'s faster.',
+        q8: 'What if the app fails on a wedding day?', a8: 'My personal number is in your contacts from day one — for the first 6 months, pioneers message me directly on WhatsApp. Paper backup? One-click PDF export of your schedule. Nothing depends solely on the app.',
+        q9: 'How long does setup take?', a9: '90 minutes in your salon. We create the account, import the schedule, invite the team, set up services and pricing. We leave with a salon ready to take bookings.',
         footTagline: 'The Albanian app to book your appointments. Ferizaj · 2026.',
         footContact: 'Contact', footLegal: 'Legal',
         footTerms: 'Terms', footPrivacy: 'Privacy',
@@ -1354,7 +1933,7 @@
         modalClientTitle: 'I\'m a client · <em>Notify me.</em>',
         modalClientSub: 'Four fields. No subscription, no calls. You\'ll be among the first in your city.',
         modalOwnerTitle: 'I have a salon · <em>Sign me up.</em>',
-        modalOwnerSub: 'We\'re looking for 15 pioneer salons in Ferizaj. Pro shoot + setup — free.',
+        modalOwnerSub: 'We\'re looking for 30 pioneer salons in Ferizaj. Pro shoot, setup and schedule migration — free.',
         modalSubmit: 'Sign up',
         modalSuccessTitle: 'You\'re in!',
         modalSuccessSub: 'You\'ll hear from us as soon as Termini im is live.',
