@@ -140,16 +140,13 @@ class CompanyDashboardScreenMobile extends ConsumerWidget {
                                 onEditService: onEditService,
                                 onDeleteService: onDeleteService,
                               ),
-                              // Auto-approve sits right after services so it's
-                              // the first capacity-related card the owner
-                              // sees — before the breaks/days-off settings.
-                              if (state.company!.bookingMode ==
-                                  'capacity_based') ...[
-                                const SizedBox(height: AppSpacing.md),
-                                AutoApproveCard(
-                                  key: ref.watch(autoApproveCardKeyProvider),
-                                ),
-                              ],
+                              // Auto-approve indicator — toggle en capacity_based,
+                              // read-only en employee_based. Affichée dans les
+                              // 2 modes pour signaler la politique de validation.
+                              const SizedBox(height: AppSpacing.md),
+                              AutoApproveCard(
+                                key: ref.watch(autoApproveCardKeyProvider),
+                              ),
                               const SizedBox(height: AppSpacing.md),
                               if (state.company!.bookingMode ==
                                   'capacity_based') ...[
@@ -579,7 +576,7 @@ class _MobileCapacityCard extends StatelessWidget {
         icon: const Icon(Icons.arrow_forward_ios_rounded,
             size: 16, color: AppColors.primary),
         tooltip: context.l10n.capacitySettingsTitle,
-        onPressed: () => context.goNamed(RouteNames.capacitySettings),
+        onPressed: () => context.pushNamed(RouteNames.capacitySettings),
       ),
       child: Column(
         children: [
@@ -591,7 +588,7 @@ class _MobileCapacityCard extends StatelessWidget {
                 style: AppTextStyles.body),
             trailing: const Icon(Icons.chevron_right_rounded,
                 size: 20, color: AppColors.textHint),
-            onTap: () => context.goNamed(RouteNames.capacitySettings),
+            onTap: () => context.pushNamed(RouteNames.capacitySettings),
           ),
         ],
       ),

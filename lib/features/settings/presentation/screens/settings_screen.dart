@@ -300,7 +300,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppTopBar.standard(
         title: context.l10n.settingsTitle,
-        onBack: () => context.go('/home'),
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go('/home'),
       ),
       body: isDesktop ? _buildDesktop(context) : _buildMobile(context),
     );
@@ -1025,7 +1026,7 @@ class _MyPagesSection extends ConsumerWidget {
             _SettingsTile(
               icon: Icons.calendar_month_rounded,
               title: context.l10n.myAppointments,
-              onTap: () => context.goNamed(RouteNames.myAppointments),
+              onTap: () => context.pushNamed(RouteNames.myAppointments),
             ),
             const Divider(
                 height: 1, color: AppColors.divider, indent: 48),
@@ -1096,7 +1097,7 @@ class _MyNotificationsTileState extends ConsumerState<_MyNotificationsTile> {
               ),
             )
           : null,
-      onTap: () => context.goNamed(RouteNames.notificationsInbox),
+      onTap: () => context.pushNamed(RouteNames.notificationsInbox),
     );
   }
 }
@@ -1137,7 +1138,7 @@ class _OwnerSpaceSection extends ConsumerWidget {
               icon: Icons.event_available_rounded,
               title: context.l10n.myScheduleEntry,
               subtitle: context.l10n.myScheduleEntrySubtitle,
-              onTap: () => context.goNamed(RouteNames.mySchedule),
+              onTap: () => context.pushNamed(RouteNames.mySchedule),
             ),
             const Divider(
                 height: 1, color: AppColors.divider, indent: 48),
@@ -1145,7 +1146,7 @@ class _OwnerSpaceSection extends ConsumerWidget {
               icon: Icons.coffee_outlined,
               title: context.l10n.myBreaksEntry,
               subtitle: context.l10n.myBreaksEntrySubtitle,
-              onTap: () => context.goNamed(RouteNames.myBreaks),
+              onTap: () => context.pushNamed(RouteNames.myBreaks),
             ),
           ],
         ),

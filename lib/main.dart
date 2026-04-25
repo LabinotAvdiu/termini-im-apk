@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:ui' show PlatformDispatcher;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
@@ -11,6 +12,7 @@ import 'core/notifications/models/in_app_notification.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/notifications/providers/in_app_notification_provider.dart';
 import 'core/router/app_router.dart';
+import 'core/services/deep_link_service.dart';
 import 'core/services/error_reporter_service.dart';
 import 'core/services/models/error_report.dart';
 import 'core/services/remote_config_service.dart';
@@ -147,6 +149,14 @@ void main() async {
   NotificationService.setInAppCallback((InAppNotification notification) {
     container.read(inAppNotificationProvider.notifier).show(notification);
   });
+
+  // App Links (Android) / Universal Links (iOS) — quand l'utilisateur clique
+  // un https://www.termini-im.com/company/{id} depuis WhatsApp/Facebook/iMessage,
+  // l'OS lance l'app et nous remet l'URI ; on la convertit en navigation
+  // GoRouter. Sur web le service est un no-op (le path strategy s'en charge).
+  unawaited(
+    DeepLinkService.instance.init(() => container.read(routerProvider)),
+  );
 
   runApp(
     UncontrolledProviderScope(

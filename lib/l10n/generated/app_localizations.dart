@@ -4054,6 +4054,12 @@ abstract class AppLocalizations {
   /// **'Les nouveaux RDV seront confirmés directement, sans étape de validation de ta part.'**
   String get autoApprovalToggleHelper;
 
+  /// No description provided for @autoApprovalEmployeeReadOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'En mode individuel, chaque RDV est confirmé automatiquement — le client choisit son employé et le créneau, et la réservation arrive directement dans ton planning.'**
+  String get autoApprovalEmployeeReadOnly;
+
   /// No description provided for @autoApprovalCapacityOnly.
   ///
   /// In fr, this message translates to:

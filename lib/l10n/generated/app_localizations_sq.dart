@@ -2180,6 +2180,10 @@ class AppLocalizationsSq extends AppLocalizations {
       'Takimet e reja do të konfirmohen drejtpërdrejt, pa asnjë hap validimi nga ana jote.';
 
   @override
+  String get autoApprovalEmployeeReadOnly =>
+      'Në modalitetin individual, çdo takim konfirmohet automatikisht — klienti zgjedh punonjësin dhe orarin, dhe rezervimi mbërrin gati në planingun tënd.';
+
+  @override
   String get autoApprovalCapacityOnly => 'Vetëm në modalitetin e kapacitetit';
 
   @override

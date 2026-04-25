@@ -270,12 +270,12 @@ class _InboxList extends ConsumerWidget {
         'new_review',
       }.contains(entry.type);
       if (isOwnerType) {
-        context.go('/pending-approvals');
+        context.push('/pending-approvals');
       } else {
-        context.go('/my-appointments');
+        context.push('/my-appointments');
       }
     } else if (entry.refType == 'review') {
-      context.go('/my-company/reviews');
+      context.push('/my-company/reviews');
     }
     // Pas de deep link pour email/marketing : tap sans navigation
   }

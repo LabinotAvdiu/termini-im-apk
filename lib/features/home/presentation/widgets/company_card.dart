@@ -42,7 +42,7 @@ class CompanyCard extends ConsumerWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         child: InkWell(
-          onTap: () => context.goNamed(
+          onTap: () => context.pushNamed(
             RouteNames.companyDetail,
             pathParameters: {'id': company.id},
           ),
@@ -140,7 +140,7 @@ class CompanyCard extends ConsumerWidget {
                     children: [
                       if (!isMobile)
                         OutlinedButton(
-                          onPressed: () => context.goNamed(
+                          onPressed: () => context.pushNamed(
                             RouteNames.companyDetail,
                             pathParameters: {'id': company.id},
                           ),
@@ -492,7 +492,7 @@ class _BookButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {
         ref.read(uxPrefsProvider.notifier).lightImpact();
-        context.goNamed(
+        context.pushNamed(
           RouteNames.companyDetail,
           pathParameters: {'id': companyId},
         );

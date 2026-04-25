@@ -8,13 +8,18 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../providers/company_dashboard_provider.dart';
 
-/// Auto-approve toggle for capacity-based salons. Drop-in widget that reads
-/// the current company from [companyDashboardProvider] and fires the toggle
-/// action through the same notifier — parents don't have to thread props.
+/// Auto-approve indicator for the salon dashboard.
 ///
-/// Renders nothing when the company isn't loaded or when [bookingMode] is not
-/// `capacity_based`, so callers can plant it unconditionally in both mobile
-/// and desktop dashboards.
+/// • capacity_based : a real toggle the owner can flip — auto-confirm or
+///   send every booking to the pending queue first.
+/// • employee_based : informational only — appointments are always
+///   auto-confirmed when an employee + slot are picked, the owner has no
+///   pending queue to validate. The card renders in a read-only style with
+///   a fixed "active" state and a helper line explaining why it can't be
+///   changed.
+///
+/// Renders nothing when the company isn't loaded so callers can plant it
+/// unconditionally in both mobile and desktop dashboards.
 class AutoApproveCard extends ConsumerWidget {
   const AutoApproveCard({super.key});
 
@@ -22,8 +27,24 @@ class AutoApproveCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(companyDashboardProvider);
     final company = state.company;
-    if (company == null || company.bookingMode != 'capacity_based') {
+    if (company == null) {
       return const SizedBox.shrink();
+    }
+
+    final isCapacity = company.bookingMode == 'capacity_based';
+
+    // Employee-based : read-only "always on" surface — pas de toggle
+    // pour rester cohérent avec la logique backend (création toujours en
+    // status=confirmed). On affiche quand même la carte pour que le owner
+    // sache que ses RDV passent en automatique.
+    if (!isCapacity) {
+      return AppCard.toggle(
+        icon: Icons.check_circle_outline_rounded,
+        title: context.l10n.autoApprovalToggleLabel,
+        subtitle: context.l10n.autoApprovalEmployeeReadOnly,
+        value: true,
+        onChanged: null, // disabled — read-only in employee mode
+      );
     }
 
     return AppCard.toggle(

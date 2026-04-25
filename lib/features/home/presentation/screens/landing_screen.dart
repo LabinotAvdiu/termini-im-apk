@@ -553,7 +553,7 @@ class _AuthLinks extends ConsumerWidget {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () => context.goNamed(RouteNames.login),
+              onPressed: () => context.pushNamed(RouteNames.login),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.textPrimary,
                 foregroundColor: AppColors.background,
@@ -575,7 +575,7 @@ class _AuthLinks extends ConsumerWidget {
             width: double.infinity,
             height: 50,
             child: OutlinedButton(
-              onPressed: () => context.goNamed(RouteNames.roleSelect),
+              onPressed: () => context.pushNamed(RouteNames.roleSelect),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textPrimary,
                 side: const BorderSide(color: AppColors.border, width: 1),

@@ -351,7 +351,7 @@ class _MobileInfoSheet extends StatelessWidget {
             (cat) => ServiceCategorySection(
               category: cat,
               onServiceChosen: (service) {
-                context.goNamed(
+                context.pushNamed(
                   RouteNames.booking,
                   pathParameters: {'id': companyId},
                   queryParameters: {
@@ -496,7 +496,7 @@ class _MobileGuestActions extends ConsumerWidget {
             child: InkWell(
               onTap: () {
                 final returnTo = GoRouterState.of(context).uri.toString();
-                context.goNamed(
+                context.pushNamed(
                   RouteNames.login,
                   queryParameters: {'returnTo': returnTo},
                 );

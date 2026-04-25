@@ -254,13 +254,12 @@ class _DesktopMainContent extends ConsumerWidget {
                 onDeleteService: onDeleteService,
               ),
 
-              // Auto-approve sits right after services so it lands high on
-              // the page — the owner sees the validation policy before the
-              // scheduling details.
-              if (company.bookingMode == 'capacity_based') ...[
-                const SizedBox(height: AppSpacing.xl),
-                AutoApproveCard(key: ref.watch(autoApproveCardKeyProvider)),
-              ],
+              // Auto-approve indicator — a real toggle in capacity_based,
+              // a read-only "always on" surface in employee_based. Sits
+              // right after services so the validation policy is visible
+              // before the scheduling details.
+              const SizedBox(height: AppSpacing.xl),
+              AutoApproveCard(key: ref.watch(autoApproveCardKeyProvider)),
 
               const SizedBox(height: AppSpacing.xl),
 
@@ -1026,7 +1025,7 @@ class _DesktopCapacityCard extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () => context.goNamed(RouteNames.capacitySettings),
+            onPressed: () => context.pushNamed(RouteNames.capacitySettings),
             child: Text(
               context.l10n.configureAction,
               style: AppTextStyles.bodySmall.copyWith(color: AppColors.primary),
@@ -1128,7 +1127,7 @@ class _DesktopReviewsCard extends ConsumerWidget {
               const Spacer(),
               TextButton(
                 onPressed: () =>
-                    context.goNamed(RouteNames.myCompanyReviews),
+                    context.pushNamed(RouteNames.myCompanyReviews),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   padding: EdgeInsets.zero,

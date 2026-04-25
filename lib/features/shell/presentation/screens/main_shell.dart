@@ -124,44 +124,65 @@ class _MainShellState extends ConsumerState<MainShell> {
       }
     });
 
+    // Android back button: when the user is on a non-home tab, intercept the
+    // pop and switch back to the home tab instead of exiting the app. On the
+    // home tab, allow the system to handle the pop (closes the app).
+    final canPop = safeIndex == 0;
+
     if (ResponsiveLayout.isDesktop(context)) {
-      return Scaffold(
-        backgroundColor: AppColors.background,
-        body: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _ShellSidebar(tabs: tabs),
-            Expanded(
-              child: Column(
-                children: [
-                  const UnverifiedEmailBanner(),
-                  Expanded(
-                    child: IndexedStack(
-                      index: safeIndex,
-                      children: pages,
+      return PopScope(
+        canPop: canPop,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop && _selectedIndex != 0) {
+            setState(() => _selectedIndex = 0);
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background,
+          body: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ShellSidebar(tabs: tabs),
+              Expanded(
+                child: Column(
+                  children: [
+                    const UnverifiedEmailBanner(),
+                    Expanded(
+                      child: IndexedStack(
+                        index: safeIndex,
+                        children: pages,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
 
-    return Scaffold(
-      body: Column(
-        children: [
-          const UnverifiedEmailBanner(),
-          Expanded(
-            child: IndexedStack(
-              index: safeIndex,
-              children: pages,
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _selectedIndex != 0) {
+          setState(() => _selectedIndex = 0);
+        }
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            const UnverifiedEmailBanner(),
+            Expanded(
+              child: IndexedStack(
+                index: safeIndex,
+                children: pages,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        bottomNavigationBar: _ShellBottomNav(tabs: tabs),
       ),
-      bottomNavigationBar: _ShellBottomNav(tabs: tabs),
     );
   }
 }
@@ -274,11 +295,13 @@ List<_TabSpec> _buildTabs({
   }
 
   // Profile — routes out of the shell to the Settings screen (index is ignored).
+  // `push` (not `go`) so the Android back button pops Settings back to /home
+  // with the shell tab state preserved, instead of exiting the app.
   list.add(_TabSpec(
     icon: Icons.person_outline_rounded,
     label: context.l10n.profile,
     selected: false,
-    onTap: () => context.go('/settings'),
+    onTap: () => context.push('/settings'),
   ));
 
   return list;

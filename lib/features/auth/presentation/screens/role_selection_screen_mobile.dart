@@ -189,7 +189,7 @@ class _RoleCard extends StatelessWidget {
           final returnTo = GoRouterState.of(context)
               .uri
               .queryParameters['returnTo'];
-          context.goNamed(
+          context.pushNamed(
             RouteNames.signup,
             queryParameters: {
               'role': role,
@@ -298,7 +298,7 @@ class _BottomLoginLink extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => context.goNamed(RouteNames.login),
+            onTap: () => context.pushNamed(RouteNames.login),
             child: Text(
               context.l10n.loginNow,
               style: const TextStyle(

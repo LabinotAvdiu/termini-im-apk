@@ -15,5 +15,19 @@
 	-->
 	<key>aps-environment</key>
 	<string>development</string>
+
+	<!--
+		Universal Links — opens the app directly when the user taps a
+		https://www.termini-im.com/company/{id} link in iMessage, Mail,
+		Safari, etc. Requires the matching apple-app-site-association
+		(AASA) file at https://www.termini-im.com/.well-known/apple-app-site-association
+		to be served (Content-Type: application/json) with the right
+		Team ID + Bundle ID in the appIDs entry.
+	-->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:www.termini-im.com</string>
+		<string>applinks:termini-im.com</string>
+	</array>
 </dict>
 </plist>
