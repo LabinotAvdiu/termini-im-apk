@@ -19,6 +19,8 @@
 ## Target Audience
 **Target companies:** Salons indépendants 1–10 postes au Kosovo (≈ 1.8M habitants, ~250k à Prishtina) et dans la diaspora albanophone (France, Belgique, Suisse, Allemagne, Macédoine du Nord, Albanie). Cible secondaire : instituts d'esthétique, barberies urbaines, studios manucure. Aujourd'hui la plupart prennent encore RDV par téléphone ou DM Instagram.
 
+**Ville pilote initiale (mai 2026) :** Ferizaj (~42k habitants, ville natale du fondateur, ~10-25 intros warm). Prishtinë et autres villes du Kosovo entrent en phase d'expansion à partir de juillet 2026. Les salons hors Ferizaj peuvent s'inscrire sur la waitlist dès maintenant — ils sont activés par vagues par ville.
+
 **Decision-makers:**
 - **Owner / propriétaire** (solo ou multi-employés) — choisit l'outil, porte la décision
 - **Employé / coiffeur·se** — utilise l'app au quotidien, influence par le confort d'usage
@@ -49,10 +51,10 @@
 
 | Persona | Cares about | Challenge | Value we promise |
 |---------|-------------|-----------|------------------|
-| **Drita, 28, consultante marketing, Prishtinë** (cliente locale coiffure/beauté) | Trouver sa coiffeuse de confiance, ne pas devoir rappeler 3 fois | Donjeta ne répond pas toujours sur WhatsApp, elle finit par aller ailleurs faute de confirmation | Voir les créneaux dispos en temps réel, réserver en 20 secondes, recevoir un rappel |
-| **Egzon, 26, ingénieur software, Prishtinë** (client local barberie) | Un rasoir propre et un dégradé toutes les 2-3 semaines, sans friction | Son barbier ne prend que par téléphone entre 11h et 14h — or Egzon est en meeting ; arrive souvent sans RDV et attend 40 min | Réservation en 30 sec depuis le bureau, rappel avant de quitter l'appart, zéro appel téléphonique |
-| **Fjolla, 32, diaspora Lyon** (cliente diaspora) | Se faire coiffer dès le lendemain de son arrivée au pays | Elle ne connaît plus personnellement les salons, ne veut pas chercher un numéro +383 | Découvrir et réserver depuis Lyon, 2 semaines avant, en albanais ou français |
-| **Karim, 45, owner barberie** (owner individuel, segment hommes) | Garder ses mains libres pendant une coupe, réduire les no-shows | Il manque 30 % de ses appels, son carnet papier est illisible, 10–15 % de no-shows | Planning digital par employé, rappels auto veille + 1h avant, notifs push à chaque nouveau RDV |
+| **Drita, 28, consultante marketing, Ferizaj** (cliente locale coiffure/beauté) | Trouver sa coiffeuse de confiance, ne pas devoir rappeler 3 fois | Son salon habituel ne répond pas toujours sur WhatsApp, elle finit par aller ailleurs faute de confirmation | Voir les créneaux dispos en temps réel, réserver en 20 secondes, recevoir un rappel |
+| **Egzon, 26, ingénieur software, Ferizaj** (client local barberie) | Un rasoir propre et un dégradé toutes les 2-3 semaines, sans friction | Son barbier ne prend que par téléphone entre 11h et 14h — or Egzon est en meeting ; arrive souvent sans RDV et attend 40 min | Réservation en 30 sec depuis le bureau, rappel avant de quitter l'appart, zéro appel téléphonique |
+| **Fjolla, 32, diaspora Lyon** (cliente diaspora) | Se faire coiffer dès le lendemain de son arrivée chez sa famille à Ferizaj | Elle ne connaît plus personnellement les salons, ne veut pas chercher un numéro +383 | Découvrir et réserver depuis Lyon 2 semaines avant le retour, en albanais ou français |
+| **Karim, 45, owner barberie, Ferizaj** (owner individuel, segment hommes, pilote fondateur) | Garder ses mains libres pendant une coupe, réduire les no-shows | Il manque 30 % de ses appels, son carnet papier est illisible, 10–15 % de no-shows | Planning digital par employé, rappels auto veille + 1h avant, notifs push à chaque nouveau RDV |
 | **Donjeta, 34, salon esthétique Prishtinë** (owner capacité, segment femmes) | Exposer la capacité du salon sans attribuer de pro | Ses 4 employées travaillent en parallèle, les clientes prennent « la première dispo » | Mode capacité : le salon affiche « X créneaux restants », pas de casse-tête d'attribution |
 | **Employé·e** (user secondaire, tous genres) | Avoir SON planning, ses pauses, ses off | Dans les outils SaaS classiques, tout est centralisé côté owner, l'employé n'a rien | Compte employé dédié, gestion perso des horaires et jours off, avec check de conflits |
 

@@ -289,7 +289,7 @@
       <li>Njoftime push të menjëhershme për sallonet</li>
       <li>Shqip · Français · English</li>
     </ul>
-    <p style="margin:3mm 0 0;">Bërë në Prishtinë. Për Prishtinën — dhe gjithë Kosovën.</p>
+    <p style="margin:3mm 0 0;">Bërë në Ferizaj. Për Ferizajn, Prishtinën — dhe gjithë Kosovën.</p>
   </div>
 
   <h3>Keywords ASO</h3>
@@ -297,7 +297,7 @@
   <pre>termin,sallon,frizer,bukuri,kosova,prishtine,rezervim,friziere,barber,stil,manicure,dasma,estetike</pre>
 
   <h4>Google Play — pas de champ dédié, les mots-clés sont dans la description</h4>
-  <p class="note">Assure-toi que ces termes apparaissent naturellement dans la description longue : termin, sallon, frizer, friziere, barberi, bukuri, estetike, manicure, Kosova, Prishtinë, Prizren, Peja, rezervim online.</p>
+  <p class="note">Assure-toi que ces termes apparaissent naturellement dans la description longue : termin, sallon, frizer, friziere, barberi, bukuri, estetike, manicure, Kosova, Ferizaj, Prishtinë, Prizren, Peja, rezervim online.</p>
 
   <h3>Screenshots — 5 par plateforme, par langue</h3>
   <ol>
@@ -596,6 +596,19 @@
 <section>
   <h1 class="section"><span class="num">Section 7</span>Notifications salon — push, email, in-app</h1>
   <hr class="rule-gold" />
+
+  <div class="callout gold">
+    <h4>Web push pleinement supporté pour les owners desktop</h4>
+    <p style="margin:0;">
+      Plusieurs owners au Kosovo (surtout 40+, multi-site, ou réception du salon équipée d'un ordi) préfèrent gérer
+      Termini im depuis un navigateur plutôt que sur mobile. Le <strong>service worker FCM web est déjà en prod</strong>
+      (<code>web/firebase-messaging-sw.js</code>) — toutes les notifications « Push » de cette section sont donc livrées
+      sur 3 canaux complémentaires : <strong>FCM Android + APNs iOS + Web push</strong>. Un owner sur ordi à l'accueil
+      reçoit le « ding » nouveau RDV même si son téléphone est en silencieux pendant une coupe. Argument terrain fort
+      pour les owners méfiants des apps mobiles : <em>« tu peux tout gérer depuis ton navigateur, le téléphone tu le
+      laisses tranquille »</em>.
+    </p>
+  </div>
 
   <h2>7.1 Push salon (owner + employé)</h2>
 

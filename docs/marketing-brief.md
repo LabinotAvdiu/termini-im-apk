@@ -39,9 +39,13 @@ Le nom vient de l'albanais : *termini im* = "mon rendez-vous".
 
 ## 3. Marchés cibles
 
-### Marché primaire
-- **Kosovo** — 1.8M habitants, dont ~250k à Prishtina. Sous-équipé en outils digitaux de réservation. La grande majorité des salons prennent encore RDV par téléphone ou Instagram.
+### Marché primaire — Ferizaj (lancement mai 2026)
+- **Ferizaj** — ~42k habitants ville, ~109k métropole. 4ᵉ ville du Kosovo, corridor industriel Prishtinë-Skopje, diaspora Suisse/Allemagne forte. ~80 à 140 salons estimés sur la ville. Pilote lancement choisi pour densité réseau personnel du fondateur (~10-25 intros chaudes).
+- **Liquidité cible** : 15-20 salons actifs (≥ 15 % du marché local) avant ouverture Prishtinë.
 - **Langues** : Albanais (SQ) par défaut, Français (FR) pour la diaspora Kosovo en France / Belgique / Suisse, Anglais (EN) pour l'international
+
+### Marché d'expansion — Prishtinë (juillet 2026)
+- **Prishtinë** — 1.8M habitants Kosovo total, ~250k Prishtinë. Sous-équipé en outils digitaux. Ouverture en phase M3-M4 avec la preuve sociale de Ferizaj (« 20 salons à Ferizaj, maintenant on ouvre ici »).
 
 ### Marché secondaire
 - **Diaspora albanophone** — Albanais de France (~600k), Suisse, Belgique, Allemagne. Quand ils rentrent au pays l'été, ils prennent RDV via l'app
@@ -183,11 +187,17 @@ Le nom vient de l'albanais : *termini im* = "mon rendez-vous".
 - Ne connaît pas personnellement les salons actuels
 - → Termini im : book depuis Lyon 2 semaines avant
 
-### Owner individual : **Karim, 45 ans, barberie Paris**
+### Owner individual : **Karim, 45 ans, barberie Ferizaj** (pilote fondateur)
 - 2 employés en plus de lui
 - Gère les RDV par téléphone et calendrier papier
 - Perte de temps + pas de rappels = 10-15% de no-shows
 - → Termini im : plus d'appels à décrocher, rappels auto, historique client
+
+### Client local homme : **Egzon, 26 ans, ingénieur software Ferizaj**
+- Barbe et dégradé toutes les 2-3 semaines
+- Travaille en télétravail, son barbier prend les RDV par téléphone entre 11h et 14h uniquement — or Egzon est souvent en meeting
+- Finit par passer sans RDV et attendre 30-40 min
+- → Termini im : réserve en 30 sec depuis son bureau, rappel avant de quitter l'appart, zéro appel téléphonique
 
 ### Owner capacité : **Donjeta, 34 ans, salon esthétique Prishtina**
 - Salon de 4 employées, services en parallèle

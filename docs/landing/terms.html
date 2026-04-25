@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conditions Générales d'Utilisation · Termini im</title>
+<meta name="description" content="Conditions Générales d'Utilisation de Termini im — plateforme de prise de rendez-vous pour salons et barbiers.">
+
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ivory: #f7f2ea;
+    --surface: #fcf7ee;
+    --bone: #e8dcc8;
+    --ink: #171311;
+    --ink-soft: #332c29;
+    --muted: #716059;
+    --line: #d9cab3;
+    --burgundy: #7a2232;
+    --gold: #c89b47;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  header.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .brand-dot {
+    width: 8px; height: 8px;
+    background: var(--burgundy);
+    border-radius: 50%;
+  }
+  .brand-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+  .brand-name em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .lang-switcher a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .lang-switcher a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--muted);
+  }
+  .lang-switcher .active {
+    color: var(--burgundy);
+    font-weight: 600;
+  }
+  .lang-sep {
+    color: var(--line);
+  }
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .kicker .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px 0;
+  }
+  h1 em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .updated {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 40px;
+  }
+  h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 44px 0 12px 0;
+    color: var(--burgundy);
+  }
+  h3 {
+    font-family: "Instrument Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 28px 0 8px 0;
+  }
+  p, li {
+    color: var(--ink-soft);
+  }
+  a {
+    color: var(--burgundy);
+    text-decoration: underline;
+    text-decoration-color: rgba(122, 34, 50, 0.35);
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    text-decoration-color: var(--burgundy);
+  }
+  ul {
+    padding-left: 22px;
+  }
+  li + li {
+    margin-top: 4px;
+  }
+  li::marker {
+    color: var(--gold);
+  }
+  .rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 40px 0;
+  }
+  .rule::before, .rule::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .rule span {
+    width: 4px; height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--burgundy);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 28px 0;
+    font-size: 14px;
+  }
+  .notice {
+    background: var(--surface);
+    border: 1px solid var(--bone);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-dot {
+    width: 6px; height: 6px;
+    background: var(--burgundy);
+    border-radius: 50%;
+  }
+  .footer-wordmark {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 14px;
+  }
+  .footer-wordmark em {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+  }
+  .footer-tagline {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-left: 14px;
+  }
+  footer a {
+    color: var(--muted);
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    color: var(--burgundy);
+    text-decoration: none;
+  }
+  .back::before {
+    content: "\2190 ";
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="brand">
+    <span class="brand-dot"></span>
+    <span class="brand-name">Termini <em>im</em></span>
+  </header>
+
+  <nav class="lang-switcher">
+    <span class="active">FR</span>
+    <span class="lang-sep">·</span>
+    <a href="/terms-en">EN</a>
+    <span class="lang-sep">·</span>
+    <a href="/terms-sq">SQ</a>
+  </nav>
+
+  <a href="/" class="back">retour à l'accueil</a>
+
+  <div class="kicker"><span class="dot"></span>Conditions d'utilisation · Version française</div>
+  <h1>Conditions <em>générales</em></h1>
+  <p class="updated">Dernière mise à jour · Avril 2026</p>
+
+  <p>
+    Bienvenue sur Termini im. Avant d'utiliser la plateforme, nous t'invitons à lire ces Conditions Générales
+    d'Utilisation. Elles définissent les règles du jeu entre toi et nous, que tu sois client, professionnel ou employé.
+    En créant un compte ou en utilisant nos services, tu acceptes ces conditions dans leur intégralité.
+  </p>
+
+  <div class="callout">
+    En bref : Termini im est gratuit, sans commission et sans abonnement. Notre rôle est de connecter les clients avec
+    les salons — la relation de service reste entre toi et le professionnel que tu as choisi.
+  </div>
+
+  <h2>1. Préambule</h2>
+  <p>
+    Termini im est une plateforme de prise de rendez-vous en ligne pour salons de coiffure, barbiers et instituts de beauté,
+    accessible sur le web à l'adresse <a href="https://www.termini-im.com">www.termini-im.com</a> et via les applications
+    mobiles iOS et Android.
+  </p>
+  <p>
+    L'éditeur de la plateforme est Labinot Avdiu, domicilié à Prishtinë, Kosovo. Pour toute question relative aux présentes
+    conditions, tu peux nous écrire à <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    L'utilisation de Termini im vaut acceptation pleine et entière des présentes Conditions Générales d'Utilisation (CGU).
+    Si tu n'es pas d'accord avec l'une des dispositions, nous t'invitons à ne pas utiliser le service.
+  </p>
+
+  <h2>2. Définitions</h2>
+  <ul>
+    <li><strong>Utilisateur</strong> — toute personne qui accède à la plateforme, avec ou sans compte.</li>
+    <li><strong>Client</strong> — un utilisateur inscrit qui prend des rendez-vous via Termini im.</li>
+    <li><strong>Professionnel / Salon</strong> — un utilisateur inscrit qui propose des services de coiffure, de barberie
+      ou de soin et gère son établissement via la plateforme.</li>
+    <li><strong>Employé</strong> — un collaborateur d'un salon, rattaché au compte du Professionnel, qui peut gérer
+      son propre planning et accueillir des rendez-vous.</li>
+    <li><strong>Rendez-vous</strong> — une réservation confirmée entre un Client et un Professionnel (ou l'un de ses
+      Employés) pour une prestation déterminée, à une date et une heure convenues.</li>
+    <li><strong>Plateforme</strong> — l'ensemble des services proposés par Termini im : site web, applications mobiles,
+      API et interfaces d'administration.</li>
+  </ul>
+
+  <h2>3. Accès au service</h2>
+  <p>
+    Termini im est entièrement gratuit pour les Clients. Les Professionnels bénéficient également d'un accès sans frais :
+    aucune commission n'est prélevée sur les rendez-vous, aucun abonnement n'est requis pour accéder aux fonctionnalités
+    de base de la plateforme.
+  </p>
+  <p>
+    Pour utiliser Termini im, tu dois créer un compte personnel. L'inscription est ouverte à toute personne âgée d'au
+    moins <strong>16 ans</strong>. En dessous de cet âge, l'utilisation du service n'est pas autorisée.
+  </p>
+  <p>
+    Termini im se réserve le droit de modifier, suspendre ou interrompre tout ou partie du service, temporairement ou
+    définitivement, notamment pour des opérations de maintenance ou des évolutions techniques.
+  </p>
+
+  <h2>4. Compte utilisateur</h2>
+  <p>
+    Chaque personne ne peut détenir qu'un seul compte actif. Il est interdit de créer plusieurs comptes pour un même
+    individu, sauf accord explicite de notre part (ex. un professionnel qui gère plusieurs enseignes distinctes).
+  </p>
+  <p>
+    Tu es responsable de la confidentialité de ton mot de passe et de l'ensemble des actions effectuées depuis ton
+    compte. En cas de suspicion d'accès non autorisé, contacte-nous immédiatement à
+    <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    Tu peux supprimer ton compte à tout moment depuis <strong>Paramètres → Supprimer mon compte</strong>. La suppression
+    est définitive et entraîne l'effacement de tes données personnelles conformément à notre
+    <a href="/privacy">Politique de Confidentialité</a>.
+  </p>
+
+  <h2>5. Obligations du Client</h2>
+  <p>
+    En prenant un rendez-vous via Termini im, le Client s'engage à :
+  </p>
+  <ul>
+    <li>Se présenter à l'heure convenue ou prévenir le salon dans les meilleurs délais en cas d'empêchement.</li>
+    <li>Respecter le délai d'annulation indiqué par le salon concerné.</li>
+    <li>Traiter le personnel du salon avec respect et courtoisie.</li>
+    <li>Fournir des informations exactes lors de la réservation (nom, coordonnées, service souhaité).</li>
+    <li>Ne pas utiliser la plateforme à des fins frauduleuses ou pour effectuer des réservations fictives.</li>
+  </ul>
+  <p>
+    Un comportement répété contraire à ces obligations peut entraîner la suspension du compte.
+  </p>
+
+  <h2>6. Obligations du Professionnel</h2>
+  <p>
+    Le Professionnel qui s'inscrit sur Termini im s'engage à :
+  </p>
+  <ul>
+    <li>Renseigner des informations exactes et à jour sur son établissement : nom, adresse, horaires, services et tarifs.</li>
+    <li>Honorer les rendez-vous confirmés ou notifier les Clients dans les meilleurs délais en cas d'annulation inévitable.</li>
+    <li>Fournir une qualité de service conforme aux informations présentées sur la plateforme.</li>
+    <li>Maintenir ses disponibilités à jour afin d'éviter les conflits de planning.</li>
+    <li>Modérer les contenus publiés par son équipe dans le respect des présentes CGU.</li>
+    <li>Ne pas utiliser Termini im à des fins de démarchage commercial non consenti.</li>
+  </ul>
+
+  <h2>7. Responsabilité de Termini im</h2>
+  <p>
+    Termini im agit en qualité d'intermédiaire technique entre les Clients et les Professionnels. La plateforme facilite
+    la mise en relation et la prise de rendez-vous, mais n'intervient pas dans la réalisation de la prestation.
+  </p>
+  <p>
+    À ce titre, Termini im ne peut être tenu responsable de :
+  </p>
+  <ul>
+    <li>La qualité, la conformité ou le résultat de la prestation effectuée par le Professionnel.</li>
+    <li>Un rendez-vous annulé, reporté ou non honoré par l'une des parties.</li>
+    <li>Un litige survenu entre un Client et un Professionnel.</li>
+    <li>Une interruption temporaire du service due à une maintenance, un incident technique ou un événement extérieur.</li>
+  </ul>
+  <p>
+    Termini im ne garantit pas une disponibilité ininterrompue de la plateforme (100 % uptime). Nous mettons en œuvre
+    les meilleurs efforts pour assurer la continuité du service.
+  </p>
+
+  <h2>8. Contenus utilisateurs</h2>
+  <p>
+    Les Utilisateurs peuvent publier des contenus sur la plateforme : photos de galerie, avis sur des salons, informations
+    de profil. En publiant ces contenus, tu accordes à Termini im une licence non-exclusive, mondiale et gratuite pour les
+    afficher, les reproduire et les adapter dans le cadre du service.
+  </p>
+  <p>
+    Tu conserves tous tes droits sur les contenus que tu publies et peux les retirer à tout moment. Termini im se réserve
+    le droit de supprimer tout contenu contraire aux présentes CGU, illicite, offensant ou trompeur.
+  </p>
+  <p>
+    Il est interdit de publier des contenus portant atteinte aux droits de tiers, diffamatoires, discriminatoires ou
+    contenant des informations personnelles d'autrui sans leur consentement.
+  </p>
+
+  <h2>9. Données personnelles</h2>
+  <p>
+    La collecte et le traitement de tes données personnelles sont régis par notre
+    <a href="/privacy">Politique de Confidentialité</a>, accessible en permanence depuis la plateforme.
+    Ce document détaille les données collectées, leur finalité, leur durée de conservation et tes droits (accès,
+    rectification, suppression, portabilité).
+  </p>
+
+  <h2>10. Suppression et clôture du compte</h2>
+  <p>
+    Tu peux demander la suppression de ton compte à tout moment depuis <strong>Paramètres → Supprimer mon compte</strong>.
+    Cette action est irréversible : tes données personnelles et ton historique de rendez-vous seront effacés dans les
+    délais prévus par notre Politique de Confidentialité.
+  </p>
+  <p>
+    Termini im se réserve le droit de suspendre ou de clôturer un compte en cas de non-respect des présentes CGU,
+    d'utilisation frauduleuse, ou d'atteinte portée à d'autres Utilisateurs ou à la plateforme elle-même. Le cas échéant,
+    l'Utilisateur concerné sera notifié par email dans la mesure du possible.
+  </p>
+
+  <h2>11. Propriété intellectuelle</h2>
+  <p>
+    La marque Termini im, son logo, son design, ses interfaces, son code source, ses textes éditoriaux et l'ensemble
+    des éléments constitutifs de la plateforme sont la propriété exclusive de l'éditeur ou de ses partenaires.
+  </p>
+  <p>
+    Toute reproduction, extraction, redistribution ou exploitation commerciale de ces éléments sans autorisation écrite
+    préalable est strictement interdite.
+  </p>
+
+  <h2>12. Modifications des CGU</h2>
+  <p>
+    Ces Conditions Générales d'Utilisation peuvent être mises à jour. En cas de modification substantielle, nous
+    t'informerons par email ou par notification dans l'application <strong>30 jours avant</strong> l'entrée en vigueur
+    des nouvelles conditions. La date de dernière mise à jour est toujours indiquée en haut de ce document.
+  </p>
+  <p>
+    La poursuite de l'utilisation du service après la date d'entrée en vigueur vaut acceptation des nouvelles conditions.
+  </p>
+
+  <h2>13. Droit applicable</h2>
+  <p>
+    Les présentes CGU sont régies par le droit de la République du Kosovo. En cas de litige, les parties s'efforceront
+    de trouver une solution amiable avant tout recours judiciaire.
+  </p>
+  <p>
+    Les utilisateurs résidant dans l'Union européenne bénéficient, quoi qu'il en soit, des droits impératifs que leur
+    confère le RGPD (Règlement Général sur la Protection des Données) et la législation européenne applicable en matière
+    de protection des consommateurs en ligne.
+  </p>
+
+  <h2>14. Contact</h2>
+  <p>
+    Pour toute question relative aux présentes conditions, pour exercer tes droits ou pour signaler un abus :
+  </p>
+  <ul>
+    <li>Email : <a href="mailto:support@termini-im.com">support@termini-im.com</a></li>
+    <li>Site : <a href="https://www.termini-im.com">www.termini-im.com</a></li>
+  </ul>
+
+  <h2>15. Mentions légales</h2>
+  <p>
+    <strong>Éditeur :</strong> Labinot Avdiu, personne physique domiciliée à Prishtinë, Kosovo.
+    Contact : <a href="mailto:support@termini-im.com">support@termini-im.com</a>.
+  </p>
+  <p>
+    <strong>Directeur de la publication :</strong> Labinot Avdiu.
+  </p>
+  <p>
+    <strong>Hébergement :</strong> OVH SAS — 2 rue Kellermann, 59100 Roubaix, France —
+    <a href="https://www.ovhcloud.com" rel="noopener">ovhcloud.com</a>. Serveur situé à Roubaix (France).
+  </p>
+
+  <div class="rule"><span></span></div>
+
+  <div class="notice">
+    Ce document est fourni à titre informatif. Un avocat spécialisé sera consulté pour la version de production.
+  </div>
+
+  <footer>
+    <div class="footer-brand">
+      <span class="footer-dot"></span>
+      <span class="footer-wordmark">Termini <em>im</em></span>
+      <span class="footer-tagline">Prishtinë · 2026</span>
+    </div>
+    <div>
+      <a href="/privacy">Politique de confidentialité</a>
+      <span style="margin: 0 8px; color: var(--line);">·</span>
+      <a href="https://www.termini-im.com">www.termini-im.com</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
