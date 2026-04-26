@@ -1,10 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <!-- Termini im · Open Graph cover (1200×630, ratio 1.91:1 — WhatsApp/FB/LinkedIn)
-       Convertir en PNG :
-         · Inkscape : inkscape og-cover.svg --export-png=og-cover.png -w 1200 -h 630
-         · Online   : cloudconvert.com / svgomg / etc.
-         · macOS    : qlmanage -t -s 1200 og-cover.svg && rename to og-cover.png
-       Cible : < 300 KB après conversion (sinon WhatsApp ne render pas) -->
+  <!-- Termini im - Open Graph cover (1200x630, ratio 1.91:1 / WhatsApp, FB, LinkedIn).
+       Source de verite pour /og-default.png. Conversion PNG via Inkscape, CloudConvert
+       ou le script Node @resvg/resvg-js + sharp documente dans le commit message
+       de docs/landing/og-default.png. Cible: moins de 300 KB pour WhatsApp. -->
 
   <defs>
     <!-- Subtle grain texture matching the landing page -->
@@ -41,24 +39,28 @@
         letter-spacing="-3">Termini <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">im.</tspan></text>
 
   <!-- Editorial divider -->
-  <line x1="540" y1="294" x2="660" y2="294" stroke="#D9CAB3" stroke-width="1"/>
+  <line x1="540" y1="312" x2="660" y2="312" stroke="#D9CAB3" stroke-width="1"/>
 
-  <!-- Tagline (SQ) -->
-  <text x="600" y="370"
-        font-family="Fraunces, serif"
-        font-size="48"
+  <!-- Hero tagline — exact match with the splash screen + desktop home hero
+       ("Kosova ka shumë stil." with italic burgundy "stil."). Fraunces
+       display + Instrument Serif italic. -->
+  <text x="600" y="395"
+        font-family="Fraunces, Georgia, serif"
+        font-size="58"
         font-weight="300"
         fill="#171311"
         text-anchor="middle"
-        letter-spacing="-1">Kosova ka shumë <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">stil.</tspan></text>
+        letter-spacing="-1.5">Kosova ka shumë <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">stil.</tspan></text>
 
-  <!-- Subtitle line -->
-  <text x="600" y="430"
+  <!-- Brand subline — same uppercase letter-spaced "Bukuri & Stil" as the
+       splash tagline and the top-nav center label. -->
+  <text x="600" y="465"
         font-family="'Instrument Sans', Helvetica, Arial, sans-serif"
-        font-size="22"
-        font-weight="400"
+        font-size="18"
+        font-weight="500"
         fill="#332C29"
-        text-anchor="middle">Nga maji, e rezervon në 30 sekonda.</text>
+        text-anchor="middle"
+        letter-spacing="8">BUKURI &amp; STIL</text>
 
   <!-- Bottom band — gold tagline -->
   <line x1="0" y1="540" x2="1200" y2="540" stroke="#D9CAB3" stroke-width="1"/>
@@ -69,7 +71,7 @@
         font-weight="500"
         fill="#7A2232"
         text-anchor="middle"
-        letter-spacing="6">FERIZAJ &#183; MAJI 2026 &#183; TERMINI-IM.COM</text>
+        letter-spacing="6">FERIZAJ &#183; 2026 &#183; TERMINI-IM.COM</text>
 
   <!-- Bottom gold rule -->
   <line x1="0" y1="624" x2="1200" y2="624" stroke="#C89B47" stroke-width="6"/>
