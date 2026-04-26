@@ -15,6 +15,7 @@ import '../../features/home/presentation/screens/landing_screen.dart';
 import '../../features/company_detail/presentation/screens/company_detail_screen.dart';
 import '../../features/booking/presentation/screens/booking_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/sharing/presentation/screens/share_qr_screen.dart';
 import '../../features/shell/presentation/screens/main_shell.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/company/presentation/screens/capacity_settings_screen.dart';
@@ -216,6 +217,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: SettingsScreen(startInProfileEdit: editProfile),
           );
         },
+      ),
+      GoRoute(
+        path: '/settings/share-qr',
+        name: RouteNames.shareQr,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const ShareQrScreen(),
+        ),
       ),
       // "Mes rendez-vous" — accessible via Settings for company members
       // (owner/employee) who also book as clients elsewhere. Clients see the

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/models/company_card_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -31,7 +32,7 @@ class HomeScreenMobile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final companyState = ref.watch(companyListProvider);
-    final companies = companyState.companies;
+    final companies = companyState.companies.expandFavoritesDualEntry();
     final isSearching = ref.watch(searchQueryProvider).isNotEmpty;
 
     return Scaffold(
@@ -118,7 +119,9 @@ class HomeScreenMobile extends ConsumerWidget {
                     duration: const Duration(milliseconds: 220),
                     switchInCurve: Curves.easeOutCubic,
                     child: CompanyCard(
-                      key: ValueKey(companies[index].id),
+                      // Suffix the key with index because the dual-entry
+                      // expansion produces 2 cards sharing the same id.
+                      key: ValueKey('${companies[index].id}-$index'),
                       company: companies[index],
                     ),
                   ),

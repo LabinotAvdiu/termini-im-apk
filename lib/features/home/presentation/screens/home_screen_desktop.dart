@@ -80,7 +80,7 @@ class _HomeScreenDesktopState extends ConsumerState<HomeScreenDesktop> {
   @override
   Widget build(BuildContext context) {
     final companyState = ref.watch(companyListProvider);
-    final companies = companyState.companies;
+    final companies = companyState.companies.expandFavoritesDualEntry();
     final isSearching = ref.watch(searchQueryProvider).isNotEmpty;
 
     return Scaffold(

@@ -2764,6 +2764,132 @@ abstract class AppLocalizations {
   /// **'Aperçu'**
   String get shareLinkPreviewLabel;
 
+  /// No description provided for @shareQrPageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage QR'**
+  String get shareQrPageTitle;
+
+  /// No description provided for @shareQrLinkPretitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien direct'**
+  String get shareQrLinkPretitle;
+
+  /// No description provided for @shareQrLinkTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le lien du salon'**
+  String get shareQrLinkTitle;
+
+  /// No description provided for @shareQrLinkHelper.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage ce lien par WhatsApp, SMS ou email — il ouvre directement la prise de RDV.'**
+  String get shareQrLinkHelper;
+
+  /// No description provided for @shareQrToggleLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec moi comme employé'**
+  String get shareQrToggleLabel;
+
+  /// No description provided for @shareQrToggleHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le lien et le QR ouvriront la prise de RDV avec toi déjà choisi.'**
+  String get shareQrToggleHelp;
+
+  /// No description provided for @shareQrCaptionPretitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carte de visite'**
+  String get shareQrCaptionPretitle;
+
+  /// No description provided for @shareQrCaptionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le QR code'**
+  String get shareQrCaptionTitle;
+
+  /// No description provided for @shareQrCaptionHelper.
+  ///
+  /// In fr, this message translates to:
+  /// **'Imprime, encadre dans ton salon, ou envoie par email. Le scan ouvre la réservation.'**
+  String get shareQrCaptionHelper;
+
+  /// No description provided for @shareQrCaptionInputLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Légende au-dessus du QR'**
+  String get shareQrCaptionInputLabel;
+
+  /// No description provided for @shareQrCaptionInputHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon de Lina · Ferizaj'**
+  String get shareQrCaptionInputHint;
+
+  /// No description provided for @shareQrBottomText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoute-moi en favori\net prends RDV'**
+  String get shareQrBottomText;
+
+  /// No description provided for @shareQrEmailSendLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'M\'envoyer le QR'**
+  String get shareQrEmailSendLabel;
+
+  /// No description provided for @shareQrEmailSendButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get shareQrEmailSendButton;
+
+  /// No description provided for @shareQrEmailSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email envoyé — vérifie ta boîte.'**
+  String get shareQrEmailSent;
+
+  /// No description provided for @shareQrEmailFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi échoué. Réessaie.'**
+  String get shareQrEmailFailed;
+
+  /// No description provided for @shareQrSettingsTile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage QR'**
+  String get shareQrSettingsTile;
+
+  /// No description provided for @shareQrSettingsTileSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Génère le QR de ton salon'**
+  String get shareQrSettingsTileSubtitle;
+
+  /// No description provided for @favoriteWithEmployeeBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec {name}'**
+  String favoriteWithEmployeeBadge(String name);
+
+  /// No description provided for @favoriteFreeChoice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Et tous les coiffeurs'**
+  String get favoriteFreeChoice;
+
+  /// No description provided for @favoriteFreeChoiceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisis ton coiffeur librement'**
+  String get favoriteFreeChoiceHint;
+
   /// No description provided for @tomorrowLabel.
   ///
   /// In fr, this message translates to:
@@ -3181,7 +3307,7 @@ abstract class AppLocalizations {
   /// No description provided for @hapticDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Petits retours tactiles sur les interactions'**
+  /// **'Sur les actions de l\'app. Les notifications vibrent toujours.'**
   String get hapticDesc;
 
   /// No description provided for @soundsLabel.
@@ -3193,7 +3319,7 @@ abstract class AppLocalizations {
   /// No description provided for @soundsDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Désactivés par défaut'**
+  /// **'Sur les actions de l\'app. Les notifications sonnent toujours.'**
   String get soundsDesc;
 
   /// No description provided for @animationsLabel.

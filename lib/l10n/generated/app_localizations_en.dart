@@ -1442,6 +1442,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareLinkPreviewLabel => 'Preview';
 
   @override
+  String get shareQrPageTitle => 'QR share';
+
+  @override
+  String get shareQrLinkPretitle => 'Direct link';
+
+  @override
+  String get shareQrLinkTitle => 'Copy salon link';
+
+  @override
+  String get shareQrLinkHelper =>
+      'Share this link via WhatsApp, SMS or email — it opens the booking flow directly.';
+
+  @override
+  String get shareQrToggleLabel => 'With me as employee';
+
+  @override
+  String get shareQrToggleHelp =>
+      'The link and QR will open the booking with you already picked.';
+
+  @override
+  String get shareQrCaptionPretitle => 'Business card';
+
+  @override
+  String get shareQrCaptionTitle => 'Your QR code';
+
+  @override
+  String get shareQrCaptionHelper =>
+      'Print, frame in your salon, or send by email. Scanning opens the booking.';
+
+  @override
+  String get shareQrCaptionInputLabel => 'Caption above the QR';
+
+  @override
+  String get shareQrCaptionInputHint => 'Lina\'s Salon · Ferizaj';
+
+  @override
+  String get shareQrBottomText => 'Add me to favorites\nand book';
+
+  @override
+  String get shareQrEmailSendLabel => 'Email me the QR';
+
+  @override
+  String get shareQrEmailSendButton => 'Send';
+
+  @override
+  String get shareQrEmailSent => 'Email sent — check your inbox.';
+
+  @override
+  String get shareQrEmailFailed => 'Send failed. Try again.';
+
+  @override
+  String get shareQrSettingsTile => 'QR share';
+
+  @override
+  String get shareQrSettingsTileSubtitle => 'Generate your salon QR';
+
+  @override
+  String favoriteWithEmployeeBadge(String name) {
+    return 'With $name';
+  }
+
+  @override
+  String get favoriteFreeChoice => 'And all stylists';
+
+  @override
+  String get favoriteFreeChoiceHint => 'Pick any stylist';
+
+  @override
   String get tomorrowLabel => 'Tomorrow';
 
   @override
@@ -1684,13 +1752,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hapticLabel => 'Haptic feedback';
 
   @override
-  String get hapticDesc => 'Subtle taps when you interact';
+  String get hapticDesc => 'On app actions. Notifications always vibrate.';
 
   @override
   String get soundsLabel => 'Interface sounds';
 
   @override
-  String get soundsDesc => 'Off by default';
+  String get soundsDesc => 'On app actions. Notifications always play sound.';
 
   @override
   String get animationsLabel => 'Animations';

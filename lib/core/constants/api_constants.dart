@@ -73,6 +73,11 @@ abstract class ApiConstants {
   static String companyFavorite(String id) => '/companies/$id/favorite';
 
   // ---------------------------------------------------------------------------
+  // Share QR — owner / employee emails own salon QR
+  // ---------------------------------------------------------------------------
+  static const String shareQrEmail = '/share/qr-email';
+
+  // ---------------------------------------------------------------------------
   // Bookings (client)
   // ---------------------------------------------------------------------------
   static const String bookings = '/bookings';

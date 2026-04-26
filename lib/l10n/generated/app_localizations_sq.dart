@@ -1442,6 +1442,74 @@ class AppLocalizationsSq extends AppLocalizations {
   String get shareLinkPreviewLabel => 'Paraqitja';
 
   @override
+  String get shareQrPageTitle => 'Ndarja QR';
+
+  @override
+  String get shareQrLinkPretitle => 'Lidhje direkte';
+
+  @override
+  String get shareQrLinkTitle => 'Kopjo lidhjen e sallonit';
+
+  @override
+  String get shareQrLinkHelper =>
+      'Ndaje këtë lidhje me WhatsApp, SMS apo email — hap drejtpërdrejt rezervimin.';
+
+  @override
+  String get shareQrToggleLabel => 'Me mua si punonjës';
+
+  @override
+  String get shareQrToggleHelp =>
+      'Lidhja dhe QR do të hapin rezervimin me ty të zgjedhur tashmë.';
+
+  @override
+  String get shareQrCaptionPretitle => 'Karta e biznesit';
+
+  @override
+  String get shareQrCaptionTitle => 'Kodi yt QR';
+
+  @override
+  String get shareQrCaptionHelper =>
+      'Printo, kornizoje në sallon, ose dërgoje me email. Skanimi hap rezervimin.';
+
+  @override
+  String get shareQrCaptionInputLabel => 'Mbishkrimi mbi QR';
+
+  @override
+  String get shareQrCaptionInputHint => 'Sallon Lina · Ferizaj';
+
+  @override
+  String get shareQrBottomText => 'Më shto në të preferuarat\ndhe rezervo';
+
+  @override
+  String get shareQrEmailSendLabel => 'Më dërgo QR me email';
+
+  @override
+  String get shareQrEmailSendButton => 'Dërgo';
+
+  @override
+  String get shareQrEmailSent => 'Emaili u dërgua — kontrollo kutinë postare.';
+
+  @override
+  String get shareQrEmailFailed => 'Dërgimi dështoi. Provo përsëri.';
+
+  @override
+  String get shareQrSettingsTile => 'Ndarja QR';
+
+  @override
+  String get shareQrSettingsTileSubtitle => 'Gjenero QR e sallonit tënd';
+
+  @override
+  String favoriteWithEmployeeBadge(String name) {
+    return 'Me $name';
+  }
+
+  @override
+  String get favoriteFreeChoice => 'Dhe të gjithë stilistët';
+
+  @override
+  String get favoriteFreeChoiceHint => 'Zgjidh çdo stilist';
+
+  @override
   String get tomorrowLabel => 'Nesër';
 
   @override
@@ -1686,13 +1754,15 @@ class AppLocalizationsSq extends AppLocalizations {
   String get hapticLabel => 'Dridhjet';
 
   @override
-  String get hapticDesc => 'Dridhje të lehta gjatë ndërveprimit';
+  String get hapticDesc =>
+      'Në veprimet e aplikacionit. Njoftimet gjithmonë dridhen.';
 
   @override
   String get soundsLabel => 'Zërat e ndërfaqes';
 
   @override
-  String get soundsDesc => 'Çaktivizuar si parazgjedhje';
+  String get soundsDesc =>
+      'Në veprimet e aplikacionit. Njoftimet gjithmonë tingëllojnë.';
 
   @override
   String get animationsLabel => 'Animacionet';

@@ -45,6 +45,12 @@ class CompanyCard extends ConsumerWidget {
           onTap: () => context.pushNamed(
             RouteNames.companyDetail,
             pathParameters: {'id': company.id},
+            // When this card carries a preferred employee (favorite-with-pro
+            // dual-entry pattern), forward the employee id through the URL
+            // so the company detail + booking flow pre-select that pro.
+            queryParameters: company.preferredEmployeeId != null
+                ? {'employee': company.preferredEmployeeId!}
+                : const {},
           ),
           child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -78,6 +84,13 @@ class CompanyCard extends ConsumerWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          // Editorial "Avec Lina" badge — shown ONLY on the
+                          // Card A version of a dual-entry favorite (the
+                          // companion plain card has cleared this field).
+                          if (company.preferredEmployeeName != null) ...[
+                            const SizedBox(height: 3),
+                            _EmployeeBadge(name: company.preferredEmployeeName!),
+                          ],
                           const SizedBox(height: AppSpacing.xs),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -515,6 +528,44 @@ class _BookButton extends StatelessWidget {
         context.l10n.bookAppointment,
         style: AppTextStyles.buttonSmall.copyWith(color: AppColors.background),
       ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// "Avec Lina" badge — shown right under the salon name on Card A of the
+// dual-entry favorite pattern. Editorial italic in bordeaux with a small
+// user icon for context.
+// ---------------------------------------------------------------------------
+
+class _EmployeeBadge extends StatelessWidget {
+  final String name;
+  const _EmployeeBadge({required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          Icons.person_outline_rounded,
+          size: 12,
+          color: AppColors.primary,
+        ),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            context.l10n.favoriteWithEmployeeBadge(name),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.primary,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

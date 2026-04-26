@@ -16,6 +16,7 @@ abstract class RouteNames {
   static const String booking = 'booking';
   static const String bookingSuccess = 'booking-success';
   static const String settings = 'settings';
+  static const String shareQr = 'share-qr';
   static const String capacitySettings = 'capacity-settings';
   static const String pendingApprovals = 'pending-approvals';
   static const String submitReview = 'submit-review';

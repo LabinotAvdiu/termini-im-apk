@@ -24,9 +24,11 @@ class FavoriteNotifier extends Notifier<AsyncValue<void>> {
 
   FavoriteRepository get _repo => ref.read(favoriteRepositoryProvider);
 
-  /// Adds [companyId] to favorites with optimistic UI update.
-  /// Returns `true` on success, `false` on failure (already rolled back).
-  Future<bool> add(String companyId) async {
+  /// Adds [companyId] to favorites with optimistic UI update. When
+  /// [employeeId] is provided AND the salon is in employee_based mode, the
+  /// backend stores the preference and the favorites screen will show the
+  /// dual-entry pattern. Returns `true` on success.
+  Future<bool> add(String companyId, {String? employeeId}) async {
     // Optimistic update — patch home list
     ref
         .read(companyListProvider.notifier)
@@ -39,7 +41,7 @@ class FavoriteNotifier extends Notifier<AsyncValue<void>> {
 
     state = const AsyncLoading();
     try {
-      await _repo.add(companyId);
+      await _repo.add(companyId, employeeId: employeeId);
       state = const AsyncData(null);
       // E25 — favorite_added
       ref.read(analyticsProvider).logFavoriteAdded(salonId: companyId);
