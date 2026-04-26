@@ -52,14 +52,13 @@ jobs:
         # docs/landing/.well-known/ in this repo, so any change to the
         # SHA-256 / Team ID gets deployed automatically.
         #
-        # `og-default.png` is excluded for now: a placeholder lives on the
-        # VPS (copy of favicon, ~350 B). When the real 1200x630 editorial
-        # image is added to docs/landing/og-default.png in this repo, drop
-        # the exclude so the deploy ships it.
+        # `og-default.png` (1200x630 editorial, used by ShareController as
+        # OG fallback when a salon has no profile photo) ships from
+        # docs/landing/og-default.png — keep dimensions + size budget if
+        # regenerating from og-cover.svg (target < 300 KB for WhatsApp).
         run: |
           rsync -avz --delete \
             --exclude '/app/' \
-            --exclude '/og-default.png' \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }} -o StrictHostKeyChecking=yes" \
             docs/landing/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/termini-im/
