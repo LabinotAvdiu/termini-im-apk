@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -237,42 +238,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 }
 
 // ---------------------------------------------------------------------------
-// Brand wordmark — "Termini" Fraunces + "im" Instrument Serif italic bourgogne
-// Remplace l'ancienne overline "TERMINI IM" all-caps non conforme à la charte.
-// ---------------------------------------------------------------------------
-class _BrandWordmark extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: 'Termini',
-            style: GoogleFonts.fraunces(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-              letterSpacing: 0.2,
-              height: 1.2,
-            ),
-          ),
-          TextSpan(
-            text: 'im',
-            style: GoogleFonts.instrumentSerif(
-              fontSize: 15,
-              fontStyle: FontStyle.italic,
-              color: AppColors.primary,
-              height: 1.2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Top gradient decoration blob
 // ---------------------------------------------------------------------------
 class _TopGradientDecoration extends StatelessWidget {
@@ -306,22 +271,11 @@ class _LogoHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border, width: 1),
-          ),
-          child: const Center(
-            child: BrandLogo(variant: BrandLogoVariant.burgundy, size: 64),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        // Wordmark "Termini im" — Fraunces + Instrument Serif italic bourgogne
-        _BrandWordmark(),
-        const SizedBox(height: AppSpacing.xs),
+        // Full wordmark — same mark as the landing page and OG card.
+        // Pre-launch, the monogram alone doesn't read as "Termini im";
+        // the wordmark builds recognition across every touchpoint.
+        const BrandLogo(variant: BrandLogoVariant.wordmark, size: 40),
+        const SizedBox(height: AppSpacing.lg),
         // Display serif headline
         Text.rich(
           TextSpan(
@@ -684,154 +638,25 @@ class _GoogleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size(24, 24),
-      painter: _GoogleLogoPainter(),
+    return SvgPicture.asset(
+      'assets/icons/google.svg',
+      width: 24,
+      height: 24,
     );
   }
 }
 
-class _GoogleLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final r = size.width / 2;
-
-    // Clip to circle
-    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r)));
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.white);
-
-    // Segment angles (degrees → radians): Red, Yellow, Green, Blue
-    // Standard Google G arc: starts at ~-21° and sweeps 360° split into 4 segments
-    const double toRad = 3.14159265 / 180.0;
-    final segments = [
-      // [startDeg, sweepDeg, color]
-      [-21.0, 90.0, const Color(0xFFEA4335)],  // Red    (top-right → bottom-right)
-      [69.0,  90.0, const Color(0xFFFBBC05)],  // Yellow (bottom-right → bottom-left)
-      [159.0, 90.0, const Color(0xFF34A853)],  // Green  (bottom-left → top-left)
-      [249.0, 90.0, const Color(0xFF4285F4)],  // Blue   (top-left → top-right)
-    ];
-
-    // ignore: unused_local_variable
-    final arcRect = Rect.fromCircle(center: Offset(cx, cy), radius: r);
-    final strokeWidth = r * 0.38;
-    final innerR = r - strokeWidth;
-
-    for (final seg in segments) {
-      final paint = Paint()
-        ..color = seg[2] as Color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth;
-      canvas.drawArc(
-        Rect.fromCircle(center: Offset(cx, cy), radius: innerR + strokeWidth / 2),
-        (seg[0] as double) * toRad,
-        (seg[1] as double) * toRad,
-        false,
-        paint,
-      );
-    }
-
-    // White cutout inner circle to form ring
-    canvas.drawCircle(
-      Offset(cx, cy),
-      innerR - 0.5,
-      Paint()..color = Colors.white,
-    );
-
-    // Blue horizontal bar (the crossbar of the G)
-    final barPaint = Paint()
-      ..color = const Color(0xFF4285F4)
-      ..style = PaintingStyle.fill;
-
-    // Bar sits in the right half, vertically centered, inset from center
-    final barTop = cy - strokeWidth * 0.38;
-    final barBottom = cy + strokeWidth * 0.38;
-    final barLeft = cx - 0.5;          // starts at center
-    final barRight = cx + innerR + 0.5; // reaches outer edge of ring
-
-    // Clip to right semicircle so bar doesn't bleed left
-    canvas.save();
-    canvas.clipRect(Rect.fromLTRB(cx, 0, size.width, size.height));
-    canvas.drawRect(Rect.fromLTRB(barLeft, barTop, barRight, barBottom), barPaint);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Official Facebook "f" logo: blue rounded square with white f.
 class _FacebookIcon extends StatelessWidget {
   const _FacebookIcon();
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size(24, 24),
-      painter: _FacebookLogoPainter(),
+    return SvgPicture.asset(
+      'assets/icons/facebook.svg',
+      width: 24,
+      height: 24,
     );
   }
-}
-
-class _FacebookLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rr = size.width * 0.22; // corner radius
-
-    // Blue rounded-square background
-    final bgPaint = Paint()..color = const Color(0xFF1877F2);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        Radius.circular(rr),
-      ),
-      bgPaint,
-    );
-
-    // White "f" glyph via path
-    final w = size.width;
-    final h = size.height;
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    // Stem
-    final stemW = w * 0.13;
-    final stemLeft = w * 0.425;
-    final stemTop = h * 0.33;
-    canvas.drawRect(
-      Rect.fromLTWH(stemLeft, stemTop, stemW, h * 0.56),
-      paint,
-    );
-
-    // Crossbar
-    final crossH = h * 0.10;
-    final crossTop = h * 0.48;
-    canvas.drawRect(
-      Rect.fromLTWH(w * 0.28, crossTop, w * 0.42, crossH),
-      paint,
-    );
-
-    // Rounded cap on top of stem (the arc of the f)
-    final capPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stemW
-      ..strokeCap = StrokeCap.round;
-
-    final capCenter = Offset(stemLeft + stemW * 2.2, stemTop);
-    canvas.drawArc(
-      Rect.fromCircle(center: capCenter, radius: stemW * 1.5),
-      3.14159,
-      3.14159,
-      false,
-      capPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ---------------------------------------------------------------------------

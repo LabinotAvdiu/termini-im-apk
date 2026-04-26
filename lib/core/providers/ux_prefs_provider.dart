@@ -87,6 +87,12 @@ class UxPrefsNotifier extends StateNotifier<UxPrefsState> {
 
   // ── Haptic helpers ───────────────────────────────────────────────────────
 
+  // Why: selectionClick() est intentionnellement subordonné au toggle système
+  // Android "interaction tactile" — ces vibrations subtiles (changement de
+  // step, tap d'étoile) ne se déclenchent QUE si l'utilisateur a activé le
+  // feedback haptique au niveau OS. Les actions importantes (confirm RDV,
+  // submit avis) utilisent lightImpact/mediumImpact qui passent par
+  // Vibrator.vibrate() direct et restent toujours perceptibles.
   void selectionClick() {
     if (!kIsWeb && state.hapticEnabled) {
       HapticFeedback.selectionClick();

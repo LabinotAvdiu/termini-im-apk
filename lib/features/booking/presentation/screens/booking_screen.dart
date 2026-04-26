@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/providers/ux_prefs_provider.dart';
 import '../../../../core/services/analytics_service.dart';
+import '../../../../core/services/sound_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -169,8 +170,9 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     if (!mounted) return;
 
     if (booking != null) {
-      // Succès major — mediumImpact
+      // Succès major — vibration moyenne + son éditorial.
       ref.read(uxPrefsProvider.notifier).mediumImpact();
+      SoundService.playSuccess(enabled: ref.read(uxPrefsProvider).soundsEnabled);
       _showSuccessDialog();
     }
   }

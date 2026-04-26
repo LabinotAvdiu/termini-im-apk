@@ -4,9 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show Color;
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../firebase_options.dart';
+import '../services/sound_service.dart';
 import 'models/in_app_notification.dart';
 
 // ---------------------------------------------------------------------------
@@ -413,6 +415,13 @@ class NotificationService {
 
     if (_onShowInApp != null) {
       // L'overlay in-app est prêt — affichage éditorial, pas de notif OS.
+      // Signal sonore + vibration en parallèle car l'OS supprime les bannières
+      // quand l'app est au foreground : sans ces signaux, l'utilisateur peut
+      // rater l'arrivée d'un walk-in / avis pendant qu'il regarde une autre
+      // page. Les deux signaux ignorent les toggles utilisateurs (un push
+      // raté = info perdue).
+      SoundService.playNotif();
+      _vibrateForNotif();
       _onShowInApp!(inApp);
     } else {
       // Fallback : overlay pas encore injecté (edge case au démarrage).
@@ -443,6 +452,21 @@ class NotificationService {
         ),
         payload: payload,
       );
+    }
+  }
+
+  // Vibration "notification" — double tap espacé de 100ms pour donner un feel
+  // de buzz-buzz typique d'un push, sans dépendre d'un package externe pour
+  // les patterns. Ignore le toggle hapticEnabled : un push qui arrive en
+  // foreground doit toujours notifier l'utilisateur.
+  static Future<void> _vibrateForNotif() async {
+    if (kIsWeb) return;
+    try {
+      await HapticFeedback.heavyImpact();
+      await Future.delayed(const Duration(milliseconds: 100));
+      await HapticFeedback.heavyImpact();
+    } catch (_) {
+      // Ignore — certains devices peuvent ne pas supporter heavyImpact.
     }
   }
 

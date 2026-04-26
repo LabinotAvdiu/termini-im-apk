@@ -16,6 +16,7 @@ import 'core/services/deep_link_service.dart';
 import 'core/services/error_reporter_service.dart';
 import 'core/services/models/error_report.dart';
 import 'core/services/remote_config_service.dart';
+import 'core/services/sound_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 
 void main() async {
@@ -48,6 +49,9 @@ void main() async {
   // Si Firebase n'est pas encore configuré (placeholders dev), l'app continue
   // normalement — NotificationService.init() absorbe l'erreur en interne.
   await NotificationService.init();
+
+  // Pré-charge le son notif en mémoire pour zéro latence au premier push.
+  unawaited(SoundService.warmup());
 
   // E28 — Backend error reporter : initialise avant les hooks d'erreur.
   await ErrorReporterService.instance.init();
