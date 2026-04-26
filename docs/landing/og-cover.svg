@@ -52,15 +52,18 @@
         text-anchor="middle"
         letter-spacing="-1.8">Kosova ka shumë <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" font-weight="400" fill="#7A2232">stil.</tspan></text>
 
-  <!-- Brand subline — same uppercase letter-spaced "Bukuri & Stil" as the
-       splash tagline and the top-nav center label. Instrument Sans Medium. -->
+  <!-- Brand subline — exact match with the top-nav center label of the
+       desktop home (lib/features/home/.../home_screen_desktop.dart:252):
+       homeBrandTagline = "Bukuri & Stil" (NOT uppercase) rendered with
+       AppTextStyles.overline (Instrument Sans Medium 10pt, letter-spacing 1.4).
+       Scaled up here for the 1200x630 OG canvas. -->
   <text x="600" y="465"
         font-family="'Instrument Sans Medium', 'Instrument Sans', Helvetica, Arial, sans-serif"
-        font-size="17"
+        font-size="22"
         font-weight="500"
-        fill="#332C29"
+        fill="#716059"
         text-anchor="middle"
-        letter-spacing="7">BUKURI &amp; STIL</text>
+        letter-spacing="3">Bukuri &amp; Stil</text>
 
   <!-- Bottom band — gold tagline -->
   <line x1="0" y1="540" x2="1200" y2="540" stroke="#D9CAB3" stroke-width="1"/>
