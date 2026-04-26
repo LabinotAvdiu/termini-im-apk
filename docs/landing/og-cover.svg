@@ -43,24 +43,24 @@
 
   <!-- Hero tagline — exact match with the splash screen + desktop home hero
        ("Kosova ka shumë stil." with italic burgundy "stil."). Fraunces
-       display + Instrument Serif italic. -->
+       Regular (400) + Instrument Serif Italic. -->
   <text x="600" y="395"
         font-family="Fraunces, Georgia, serif"
-        font-size="58"
-        font-weight="300"
+        font-size="60"
+        font-weight="400"
         fill="#171311"
         text-anchor="middle"
-        letter-spacing="-1.5">Kosova ka shumë <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">stil.</tspan></text>
+        letter-spacing="-1.8">Kosova ka shumë <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" font-weight="400" fill="#7A2232">stil.</tspan></text>
 
   <!-- Brand subline — same uppercase letter-spaced "Bukuri & Stil" as the
-       splash tagline and the top-nav center label. -->
+       splash tagline and the top-nav center label. Instrument Sans Medium. -->
   <text x="600" y="465"
-        font-family="'Instrument Sans', Helvetica, Arial, sans-serif"
-        font-size="18"
+        font-family="'Instrument Sans Medium', 'Instrument Sans', Helvetica, Arial, sans-serif"
+        font-size="17"
         font-weight="500"
         fill="#332C29"
         text-anchor="middle"
-        letter-spacing="8">BUKURI &amp; STIL</text>
+        letter-spacing="7">BUKURI &amp; STIL</text>
 
   <!-- Bottom band — gold tagline -->
   <line x1="0" y1="540" x2="1200" y2="540" stroke="#D9CAB3" stroke-width="1"/>
