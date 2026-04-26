@@ -26,17 +26,23 @@
   <!-- Decorative top accent — gold rule -->
   <line x1="0" y1="0" x2="1200" y2="0" stroke="#C89B47" stroke-width="6"/>
 
-  <!-- Bordeaux signature dot -->
-  <circle cx="600" cy="142" r="6" fill="#7A2232"/>
+  <!-- Wordmark : "Termini im" — dot inline to the LEFT of the text, exactly
+       like the splash screen and the desktop top-nav brand mark.
+       Group both elements and translate as a block to keep them visually
+       linked; centred horizontally via x positioning of the group. -->
+  <g transform="translate(600, 0)">
+    <!-- Bordeaux signature dot — to the left of the "T" -->
+    <circle cx="-225" cy="215" r="8" fill="#7A2232"/>
 
-  <!-- Wordmark : "Termini im" -->
-  <text x="600" y="240"
-        font-family="Fraunces, 'Times New Roman', Georgia, serif"
-        font-size="92"
-        font-weight="400"
-        fill="#171311"
-        text-anchor="middle"
-        letter-spacing="-3">Termini <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">im.</tspan></text>
+    <!-- Wordmark text — left-aligned, starts just after the dot -->
+    <text x="-205" y="240"
+          font-family="Fraunces, 'Times New Roman', Georgia, serif"
+          font-size="92"
+          font-weight="400"
+          fill="#171311"
+          text-anchor="start"
+          letter-spacing="-3">Termini <tspan font-family="'Instrument Serif', Georgia, serif" font-style="italic" fill="#7A2232">im.</tspan></text>
+  </g>
 
   <!-- Editorial divider -->
   <line x1="540" y1="312" x2="660" y2="312" stroke="#D9CAB3" stroke-width="1"/>
