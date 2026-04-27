@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Termini im — Partage QR (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordeaux: #7A2232;
+    --bordeaux-soft: #9E3D4F;
+    --bordeaux-deep: #511522;
+    --gold: #C89B47;
+    --gold-soft: #D9B46A;
+    --ivory: #F7F2EA;
+    --ivory-alt: #FCF7EE;
+    --bone: #E8DCC8;
+    --ink: #171311;
+    --ink-soft: #332C29;
+    --muted: #716059;
+    --line: #D9CAB3;
+    --divider: #E8DCC8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--ivory);
+    color: var(--ink);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 64px 32px;
+    position: relative;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.075 0 0 0 0 0.066 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .page-header .pretitle {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+  }
+
+  .page-header p {
+    font-family: 'Instrument Sans', sans-serif;
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .frames-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 64px;
+    align-items: start;
+  }
+
+  /* Desktop frame */
+  .desktop-section {
+    margin-bottom: 80px;
+  }
+
+  .desktop-frame-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .browser-frame {
+    width: 100%;
+    max-width: 1180px;
+    background: var(--ivory-alt);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    box-shadow: 0 20px 60px -20px rgba(81, 21, 34, 0.18),
+                0 8px 24px -8px rgba(81, 21, 34, 0.08);
+  }
+
+  .browser-chrome {
+    background: var(--bone);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .browser-chrome .dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .browser-chrome .dot-btn {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+
+  .browser-chrome .url-bar {
+    flex: 1;
+    padding: 6px 14px;
+    background: var(--ivory);
+    border-radius: 6px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: -0.005em;
+  }
+
+  .browser-chrome .url-bar strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Desktop top bar (in-app) */
+  .desktop-topbar {
+    background: var(--ivory-alt);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--bone);
+  }
+
+  .desktop-topbar .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .desktop-topbar .breadcrumb a {
+    color: var(--bordeaux);
+    text-decoration: none;
+    font-style: italic;
+    font-family: 'Instrument Serif', serif;
+    font-size: 14px;
+  }
+
+  .desktop-topbar .breadcrumb .sep { color: var(--line); }
+
+  .desktop-topbar .wordmark {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    position: relative;
+  }
+
+  .desktop-topbar .wordmark em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--bordeaux);
+  }
+
+  .desktop-topbar .wordmark::before {
+    content: '·';
+    position: absolute;
+    top: -10px;
+    left: 28px;
+    color: var(--bordeaux);
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .desktop-topbar .actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Desktop screen content — constrained, centered */
+  .desktop-screen {
+    background: var(--ivory);
+    min-height: 720px;
+    padding: 56px 32px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .desktop-page {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .desktop-page-header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .desktop-page-header .heading-block {
+    flex: 1;
+  }
+
+  .desktop-page-header .pretitle {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .desktop-page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+
+  .desktop-page-header h1 em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+  }
+
+  .desktop-page-header .subtitle {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 8px;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  .desktop-page-header .lang-selector {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+
+  .desktop-content-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  /* Two-column layout for some sections on desktop */
+  .desktop-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .desktop-block-label {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .desktop-block-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    margin-bottom: 8px;
+  }
+
+  .desktop-block-title em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+  }
+
+  .desktop-block-help {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .frame-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .frame-label {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .frame-label .dot {
+    color: var(--gold);
+    margin: 0 6px;
+  }
+
+  /* Mobile frame */
+  .mobile-frame {
+    width: 390px;
+    background: var(--ivory-alt);
+    border-radius: 36px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    box-shadow: 0 24px 56px -16px rgba(81, 21, 34, 0.15),
+                0 8px 24px -8px rgba(81, 21, 34, 0.08);
+    position: relative;
+  }
+
+  .mobile-frame .status-bar {
+    height: 30px;
+    background: var(--ivory-alt);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 11px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .mobile-frame .app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px 14px 12px;
+    background: var(--ivory-alt);
+    border-bottom: 1px solid var(--bone);
+  }
+
+  .app-bar .back {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--bordeaux);
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .app-bar .title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+
+  .app-bar .lang {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .screen-content {
+    padding: 24px 20px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* Section header */
+  .section-pretitle {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .section-title em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+  }
+
+  .section-helper {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  /* Link preview row */
+  .link-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--ivory);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-top: 14px;
+    transition: border-color 0.15s;
+    cursor: pointer;
+  }
+
+  .link-preview:hover { border-color: var(--bordeaux); }
+
+  .link-preview .url {
+    flex: 1;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: -0.005em;
+  }
+
+  .link-preview .url-host { color: var(--muted); }
+  .link-preview .url-path { color: var(--ink); font-weight: 600; }
+
+  .link-preview .copy-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bordeaux);
+    background: rgba(122, 34, 50, 0.08);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Toggle row */
+  .toggle-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+    background: rgba(122, 34, 50, 0.04);
+    border-left: 2px solid var(--bordeaux);
+    border-radius: 0 10px 10px 0;
+    margin-top: 14px;
+  }
+
+  .toggle-row.synced {
+    background: rgba(200, 155, 71, 0.08);
+    border-left-color: var(--gold);
+  }
+
+  .toggle-row .label-block {
+    flex: 1;
+  }
+
+  .toggle-row .toggle-label {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--bordeaux);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .toggle-row .toggle-help {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .toggle-row .gold-dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin: 0 6px 2px;
+    vertical-align: middle;
+  }
+
+  /* iOS-style switch */
+  .switch {
+    width: 44px;
+    height: 26px;
+    background: var(--bordeaux);
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .switch.off { background: var(--bone); }
+  .switch.off::after { right: auto; left: 2px; }
+
+  /* Text input */
+  .text-input-wrapper {
+    margin-top: 14px;
+  }
+
+  .text-input-label {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .text-input {
+    width: 100%;
+    padding: 12px 0 10px;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .text-input:focus { border-bottom-color: var(--bordeaux); }
+  .text-input::placeholder {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* QR card */
+  .qr-card {
+    background: var(--ivory);
+    border: 1px solid var(--gold);
+    border-radius: 18px;
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    box-shadow: 0 4px 24px -8px rgba(200, 155, 71, 0.18);
+  }
+
+  .qr-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 24px;
+    right: 24px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .qr-caption {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.3;
+    max-width: 280px;
+  }
+
+  .qr-caption.placeholder {
+    color: var(--muted);
+    opacity: 0.65;
+  }
+
+  /* QR code visual — fake but realistic looking */
+  .qr-code {
+    width: 220px;
+    height: 220px;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    box-shadow: 0 2px 10px -4px rgba(0,0,0,0.08);
+  }
+
+  .qr-code svg { width: 100%; height: 100%; display: block; }
+
+  /* Logo embedded in center of QR */
+  .qr-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: var(--ivory);
+    border: 2px solid var(--bordeaux);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .qr-logo .wordmark {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--bordeaux);
+    line-height: 1;
+    font-weight: 400;
+  }
+
+  .qr-logo .dot {
+    position: absolute;
+    top: -3px;
+    width: 4px;
+    height: 4px;
+    background: var(--bordeaux);
+    border-radius: 50%;
+  }
+
+  .qr-bottom-text {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--bordeaux);
+    text-align: center;
+    line-height: 1.4;
+    max-width: 280px;
+  }
+
+  /* Email send block */
+  .email-send {
+    margin-top: 4px;
+    padding: 16px 18px;
+    background: var(--ivory);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .email-send .email-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .email-send .email-label {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .email-send .email-addr {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .send-btn {
+    padding: 10px 16px;
+    background: var(--bordeaux);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .send-btn:hover { background: var(--bordeaux-deep); }
+
+  /* Favorites screen */
+  .fav-screen-content {
+    padding: 24px 20px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .fav-section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .fav-section-header h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .fav-section-header .count {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Salon card — adapté du d1-card de termini-editorial.html (image 16:10
+     top + body avec nom/adresse/slots/CTA) */
+  .salon-card {
+    background: var(--ivory-alt);
+    border: 1px solid rgba(217, 202, 179, 0.5);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative;
+  }
+
+  .salon-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--bordeaux);
+  }
+
+  .salon-card .img {
+    aspect-ratio: 16 / 10;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--bone);
+    position: relative;
+  }
+
+  .salon-card .img .star-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--ivory);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .salon-card .img .review-count {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    padding: 5px 10px;
+    background: rgba(23, 19, 17, 0.7);
+    backdrop-filter: blur(6px);
+    color: var(--ivory);
+    border-radius: 999px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Heart icon — on Card A only */
+  .salon-card .heart-icon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: var(--bordeaux);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 2;
+    box-shadow: 0 2px 8px -2px rgba(81, 21, 34, 0.4);
+  }
+
+  /* Employee badge — on the image, bottom-right (Card A only) */
+  .salon-card .employee-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    background: var(--bordeaux);
+    color: white;
+    border-radius: 999px;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px -2px rgba(81, 21, 34, 0.4);
+  }
+
+  .salon-card .employee-badge .gold-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--gold-soft);
+    border-radius: 50%;
+  }
+
+  .salon-card .body {
+    padding: 18px;
+  }
+
+  .salon-card h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .salon-card .addr {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Employee subtitle UNDER addr (alternate placement, not used here in
+     favor of the badge — kept available if owner prefers it) */
+  .salon-card .employee-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--bordeaux);
+    margin-top: 6px;
+  }
+
+  .salon-card .employee-line .dot {
+    color: var(--gold);
+  }
+
+  .salon-card .slots {
+    margin-top: 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .salon-card .slots span {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--ivory);
+    border: 1px solid var(--line);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .salon-card .slots span.hot {
+    background: var(--ink);
+    color: var(--ivory);
+    border-color: var(--ink);
+  }
+
+  .salon-card .foot {
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .salon-card .foot .link {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .salon-card .foot .cta {
+    padding: 8px 14px;
+    background: var(--bordeaux);
+    color: var(--ivory);
+    border-radius: 999px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Card B — plain (no employee, no heart) */
+  .salon-card.plain {
+    border-color: var(--bone);
+    opacity: 0.96;
+  }
+
+  .salon-card.plain .booking-hint {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* Card A — slight gold accent border to signal "favorite with preference" */
+  .salon-card.favorite-with-employee {
+    border-color: var(--gold);
+    box-shadow: 0 4px 16px -8px rgba(200, 155, 71, 0.2);
+  }
+
+  /* Pair marker — chip between Card A and Card B */
+  .pair-marker {
+    text-align: center;
+    margin: 4px 0;
+    position: relative;
+  }
+
+  .pair-marker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--line);
+    z-index: 0;
+  }
+
+  .pair-marker span {
+    display: inline-block;
+    background: var(--ivory-alt);
+    padding: 4px 14px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+    font-weight: 600;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Annotation callouts */
+  .annotation {
+    position: absolute;
+    background: var(--ink);
+    color: var(--ivory);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+    max-width: 220px;
+    z-index: 10;
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,0.3);
+  }
+
+  .annotation::before {
+    content: '';
+    position: absolute;
+    border: 6px solid transparent;
+  }
+
+  .annotation .strong {
+    color: var(--gold-soft);
+    font-weight: 600;
+  }
+
+  /* Footer notes */
+  .design-notes {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .design-notes h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .design-notes h3 em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--bordeaux);
+    font-weight: 400;
+  }
+
+  .design-notes ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .design-notes li {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .design-notes li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .design-notes li strong {
+    color: var(--bordeaux);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <div class="pretitle">Termini im · design proposal</div>
+      <h1>Partage <em>QR</em></h1>
+      <p>Page Settings → Partage QR + comportement Favoris en mode <em>employee_based</em> avec employé préféré sauvegardé. Validation avant implémentation Flutter.</p>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- FRAME 0 : DESKTOP PARTAGE QR (constrained)    -->
+    <!-- ============================================== -->
+    <section class="desktop-section">
+      <div class="desktop-frame-wrapper">
+        <div class="frame-label">Desktop <span class="dot">·</span> Settings → Partage QR <span class="dot">·</span> contenu contraint à 640px</div>
+
+        <div class="browser-frame">
+          <div class="browser-chrome">
+            <div class="dots">
+              <div class="dot-btn"></div>
+              <div class="dot-btn"></div>
+              <div class="dot-btn"></div>
+            </div>
+            <div class="url-bar">app.termini-im.com<strong>/settings/share-qr</strong></div>
+          </div>
+
+          <div class="desktop-topbar">
+            <div class="breadcrumb">
+              <a href="#">← Retour</a>
+              <span class="sep">·</span>
+              <span>Paramètres</span>
+              <span class="sep">·</span>
+              <span style="color: var(--ink);">Partage QR</span>
+            </div>
+            <div class="wordmark">Termini<em>im</em></div>
+            <div class="actions">
+              <span style="font-family: 'Instrument Sans'; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2em;">FR</span>
+            </div>
+          </div>
+
+          <div class="desktop-screen">
+            <div class="desktop-page">
+              <div class="desktop-page-header">
+                <div class="heading-block">
+                  <div class="pretitle">Carte de visite</div>
+                  <h1>Ton <em>QR code</em> de salon</h1>
+                  <p class="subtitle">Imprime, encadre dans ton salon, partage par email ou WhatsApp. Le scan ouvre directement la prise de RDV.</p>
+                </div>
+                <div class="lang-selector">FR</div>
+              </div>
+
+              <div class="desktop-content-blocks">
+
+                <!-- Block 1 : Link copy + Toggle (sync) -->
+                <div>
+                  <div class="desktop-block-label">Lien direct</div>
+                  <div class="desktop-block-title">Copier le lien <em>du salon</em></div>
+                  <p class="desktop-block-help">Partage ce lien par WhatsApp, SMS ou email — il ouvre directement la prise de RDV.</p>
+
+                  <div class="link-preview">
+                    <div class="url">
+                      <span class="url-host">app.termini-im.com</span><span class="url-path">/company/247?employee=18</span>
+                    </div>
+                    <div class="copy-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </div>
+                  </div>
+
+                  <div class="toggle-row synced" style="margin-top: 16px;">
+                    <div class="label-block">
+                      <div class="toggle-label">Avec moi comme employé</div>
+                      <div class="toggle-help">Le lien et le QR ouvriront la prise de RDV avec toi <em>déjà choisi</em>. <span class="gold-dot"></span>Sync entre lien et QR.</div>
+                    </div>
+                    <div class="switch"></div>
+                  </div>
+                </div>
+
+                <!-- Block 2 : Two-column — input + QR card side-by-side -->
+                <div>
+                  <div class="desktop-block-label">QR code</div>
+                  <div class="desktop-block-title">Légende et <em>aperçu</em></div>
+                  <p class="desktop-block-help">Tape une légende (optionnelle) qui apparaîtra au-dessus du QR — ex : nom + ville.</p>
+
+                  <div class="desktop-two-col">
+                    <!-- Left: text input + email send below -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                      <div class="text-input-wrapper" style="margin-top: 0;">
+                        <div class="text-input-label">Légende au-dessus du QR</div>
+                        <input type="text" class="text-input" value="Salon de Lina · Ferizaj" />
+                      </div>
+
+                      <div class="email-send" style="margin-top: 0;">
+                        <div class="email-info">
+                          <div class="email-label">M'envoyer le QR</div>
+                          <div class="email-addr">labinotavdiu.dev@gmail.com</div>
+                        </div>
+                        <button class="send-btn">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                          Envoyer
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Right: QR card -->
+                    <div class="qr-card" style="padding: 24px 20px 20px;">
+                      <div class="qr-caption" style="font-size: 16px;">Salon de Lina · Ferizaj</div>
+
+                      <div class="qr-code" style="width: 180px; height: 180px;">
+                        <svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="33" height="33" fill="white"/>
+                          <g fill="#171311">
+                            <rect x="0" y="0" width="7" height="7"/>
+                            <rect x="1" y="1" width="5" height="5" fill="white"/>
+                            <rect x="2" y="2" width="3" height="3"/>
+                            <rect x="26" y="0" width="7" height="7"/>
+                            <rect x="27" y="1" width="5" height="5" fill="white"/>
+                            <rect x="28" y="2" width="3" height="3"/>
+                            <rect x="0" y="26" width="7" height="7"/>
+                            <rect x="1" y="27" width="5" height="5" fill="white"/>
+                            <rect x="2" y="28" width="3" height="3"/>
+                          </g>
+                          <g fill="#171311">
+                            <rect x="9" y="0" width="1" height="1"/><rect x="11" y="0" width="1" height="1"/><rect x="14" y="0" width="1" height="1"/><rect x="17" y="0" width="1" height="1"/><rect x="20" y="0" width="1" height="1"/><rect x="23" y="0" width="1" height="1"/>
+                            <rect x="8" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/><rect x="16" y="1" width="1" height="1"/><rect x="19" y="1" width="1" height="1"/><rect x="22" y="1" width="1" height="1"/><rect x="25" y="1" width="1" height="1"/>
+                            <rect x="9" y="2" width="1" height="1"/><rect x="12" y="2" width="1" height="1"/><rect x="15" y="2" width="1" height="1"/><rect x="18" y="2" width="1" height="1"/><rect x="21" y="2" width="1" height="1"/><rect x="24" y="2" width="1" height="1"/>
+                            <rect x="8" y="3" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="14" y="3" width="1" height="1"/><rect x="17" y="3" width="1" height="1"/><rect x="20" y="3" width="1" height="1"/><rect x="23" y="3" width="1" height="1"/>
+                            <rect x="0" y="9" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="12" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="18" y="9" width="1" height="1"/><rect x="21" y="9" width="1" height="1"/><rect x="24" y="9" width="1" height="1"/><rect x="27" y="9" width="1" height="1"/><rect x="30" y="9" width="1" height="1"/>
+                            <rect x="1" y="10" width="1" height="1"/><rect x="4" y="10" width="1" height="1"/><rect x="7" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="13" y="10" width="1" height="1"/><rect x="16" y="10" width="1" height="1"/><rect x="19" y="10" width="1" height="1"/><rect x="22" y="10" width="1" height="1"/><rect x="25" y="10" width="1" height="1"/><rect x="29" y="10" width="1" height="1"/>
+                            <rect x="3" y="11" width="1" height="1"/><rect x="6" y="11" width="1" height="1"/><rect x="9" y="11" width="1" height="1"/><rect x="14" y="11" width="1" height="1"/><rect x="17" y="11" width="1" height="1"/><rect x="20" y="11" width="1" height="1"/><rect x="23" y="11" width="1" height="1"/><rect x="26" y="11" width="1" height="1"/><rect x="28" y="11" width="1" height="1"/>
+                            <rect x="2" y="12" width="1" height="1"/><rect x="5" y="12" width="1" height="1"/><rect x="8" y="12" width="1" height="1"/><rect x="22" y="12" width="1" height="1"/><rect x="25" y="12" width="1" height="1"/><rect x="27" y="12" width="1" height="1"/><rect x="30" y="12" width="1" height="1"/>
+                            <rect x="0" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="23" y="13" width="1" height="1"/><rect x="26" y="13" width="1" height="1"/><rect x="29" y="13" width="1" height="1"/><rect x="32" y="13" width="1" height="1"/>
+                            <rect x="1" y="14" width="1" height="1"/><rect x="3" y="14" width="1" height="1"/><rect x="6" y="14" width="1" height="1"/><rect x="9" y="14" width="1" height="1"/><rect x="24" y="14" width="1" height="1"/><rect x="27" y="14" width="1" height="1"/><rect x="31" y="14" width="1" height="1"/>
+                            <rect x="2" y="15" width="1" height="1"/><rect x="5" y="15" width="1" height="1"/><rect x="8" y="15" width="1" height="1"/><rect x="22" y="15" width="1" height="1"/><rect x="25" y="15" width="1" height="1"/><rect x="28" y="15" width="1" height="1"/>
+                            <rect x="0" y="16" width="1" height="1"/><rect x="4" y="16" width="1" height="1"/><rect x="7" y="16" width="1" height="1"/><rect x="23" y="16" width="1" height="1"/><rect x="26" y="16" width="1" height="1"/><rect x="29" y="16" width="1" height="1"/>
+                            <rect x="2" y="17" width="1" height="1"/><rect x="5" y="17" width="1" height="1"/><rect x="9" y="17" width="1" height="1"/><rect x="22" y="17" width="1" height="1"/><rect x="25" y="17" width="1" height="1"/><rect x="27" y="17" width="1" height="1"/><rect x="30" y="17" width="1" height="1"/>
+                            <rect x="0" y="18" width="1" height="1"/><rect x="3" y="18" width="1" height="1"/><rect x="7" y="18" width="1" height="1"/><rect x="23" y="18" width="1" height="1"/><rect x="26" y="18" width="1" height="1"/><rect x="29" y="18" width="1" height="1"/>
+                            <rect x="9" y="26" width="1" height="1"/><rect x="11" y="26" width="1" height="1"/><rect x="14" y="26" width="1" height="1"/><rect x="17" y="26" width="1" height="1"/><rect x="20" y="26" width="1" height="1"/><rect x="23" y="26" width="1" height="1"/>
+                            <rect x="8" y="27" width="1" height="1"/><rect x="10" y="27" width="1" height="1"/><rect x="13" y="27" width="1" height="1"/><rect x="16" y="27" width="1" height="1"/><rect x="19" y="27" width="1" height="1"/><rect x="22" y="27" width="1" height="1"/>
+                            <rect x="9" y="28" width="1" height="1"/><rect x="12" y="28" width="1" height="1"/><rect x="15" y="28" width="1" height="1"/><rect x="18" y="28" width="1" height="1"/><rect x="21" y="28" width="1" height="1"/>
+                            <rect x="8" y="29" width="1" height="1"/><rect x="11" y="29" width="1" height="1"/><rect x="14" y="29" width="1" height="1"/><rect x="17" y="29" width="1" height="1"/><rect x="20" y="29" width="1" height="1"/>
+                            <rect x="9" y="30" width="1" height="1"/><rect x="13" y="30" width="1" height="1"/><rect x="16" y="30" width="1" height="1"/><rect x="19" y="30" width="1" height="1"/>
+                          </g>
+                        </svg>
+                        <div class="qr-logo" style="width: 42px; height: 42px;">
+                          <span class="dot"></span>
+                          <div class="wordmark" style="font-size: 18px;"><em>im</em></div>
+                        </div>
+                      </div>
+
+                      <div class="qr-bottom-text" style="font-size: 13px;">Ajoute-moi en favori<br>et prends RDV</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="frames-grid">
+      <!-- ============================================== -->
+      <!-- FRAME 1 : MOBILE PARTAGE QR PAGE              -->
+      <!-- ============================================== -->
+      <div class="frame-wrapper">
+        <div class="frame-label">Mobile <span class="dot">·</span> Settings → Partage QR</div>
+
+        <div class="mobile-frame">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>•••</span>
+          </div>
+
+          <div class="app-bar">
+            <div class="back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </div>
+            <div class="title">Partage QR</div>
+            <div class="lang">FR</div>
+          </div>
+
+          <div class="screen-content">
+            <!-- Section 1: Link copy -->
+            <div>
+              <div class="section-pretitle">Lien direct</div>
+              <h2 class="section-title">Copier le lien <em>du salon</em></h2>
+              <p class="section-helper">Partage ce lien par WhatsApp, SMS ou tout autre moyen — il ouvre directement la prise de RDV.</p>
+
+              <div class="link-preview">
+                <div class="url">
+                  <span class="url-host">app.termini-im.com</span><span class="url-path">/company/247?employee=18</span>
+                </div>
+                <div class="copy-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Toggle (synced) -->
+            <div class="toggle-row synced" style="margin-top: -12px;">
+              <div class="label-block">
+                <div class="toggle-label">Avec moi comme employé</div>
+                <div class="toggle-help">Le lien et le QR ouvriront la prise de RDV avec toi <em>déjà choisi</em>. <span class="gold-dot"></span>Sync entre lien et QR.</div>
+              </div>
+              <div class="switch"></div>
+            </div>
+
+            <!-- Section 3: Text input + QR card -->
+            <div>
+              <div class="section-pretitle">Carte de visite</div>
+              <h2 class="section-title">Le <em>QR code</em></h2>
+              <p class="section-helper">Imprime, encadre dans ton salon, ou envoie par email. Le scan ajoute aux favoris et ouvre la réservation.</p>
+
+              <div class="text-input-wrapper">
+                <div class="text-input-label">Légende au-dessus du QR</div>
+                <input type="text" class="text-input" value="Salon de Lina · Ferizaj" />
+              </div>
+
+              <div class="qr-card" style="margin-top: 20px;">
+                <div class="qr-caption">Salon de Lina · Ferizaj</div>
+
+                <div class="qr-code">
+                  <!-- Stylized QR pattern (decorative SVG, not scannable) -->
+                  <svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="33" height="33" fill="white"/>
+                    <!-- 3 corner squares (finder patterns) -->
+                    <g fill="#171311">
+                      <!-- Top-left -->
+                      <rect x="0" y="0" width="7" height="7"/>
+                      <rect x="1" y="1" width="5" height="5" fill="white"/>
+                      <rect x="2" y="2" width="3" height="3"/>
+                      <!-- Top-right -->
+                      <rect x="26" y="0" width="7" height="7"/>
+                      <rect x="27" y="1" width="5" height="5" fill="white"/>
+                      <rect x="28" y="2" width="3" height="3"/>
+                      <!-- Bottom-left -->
+                      <rect x="0" y="26" width="7" height="7"/>
+                      <rect x="1" y="27" width="5" height="5" fill="white"/>
+                      <rect x="2" y="28" width="3" height="3"/>
+                    </g>
+                    <!-- Random data cells -->
+                    <g fill="#171311">
+                      <rect x="9" y="0" width="1" height="1"/><rect x="11" y="0" width="1" height="1"/><rect x="14" y="0" width="1" height="1"/><rect x="17" y="0" width="1" height="1"/><rect x="20" y="0" width="1" height="1"/><rect x="23" y="0" width="1" height="1"/>
+                      <rect x="8" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/><rect x="16" y="1" width="1" height="1"/><rect x="19" y="1" width="1" height="1"/><rect x="22" y="1" width="1" height="1"/><rect x="25" y="1" width="1" height="1"/>
+                      <rect x="9" y="2" width="1" height="1"/><rect x="12" y="2" width="1" height="1"/><rect x="15" y="2" width="1" height="1"/><rect x="18" y="2" width="1" height="1"/><rect x="21" y="2" width="1" height="1"/><rect x="24" y="2" width="1" height="1"/>
+                      <rect x="8" y="3" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="14" y="3" width="1" height="1"/><rect x="17" y="3" width="1" height="1"/><rect x="20" y="3" width="1" height="1"/><rect x="23" y="3" width="1" height="1"/>
+                      <rect x="9" y="4" width="1" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="16" y="4" width="1" height="1"/><rect x="19" y="4" width="1" height="1"/><rect x="22" y="4" width="1" height="1"/>
+                      <rect x="8" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="14" y="5" width="1" height="1"/><rect x="17" y="5" width="1" height="1"/><rect x="20" y="5" width="1" height="1"/><rect x="24" y="5" width="1" height="1"/>
+                      <rect x="9" y="6" width="1" height="1"/><rect x="12" y="6" width="1" height="1"/><rect x="15" y="6" width="1" height="1"/><rect x="18" y="6" width="1" height="1"/><rect x="21" y="6" width="1" height="1"/>
+                      <!-- Middle band -->
+                      <rect x="0" y="9" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="12" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="18" y="9" width="1" height="1"/><rect x="21" y="9" width="1" height="1"/><rect x="24" y="9" width="1" height="1"/><rect x="27" y="9" width="1" height="1"/><rect x="30" y="9" width="1" height="1"/><rect x="32" y="9" width="1" height="1"/>
+                      <rect x="1" y="10" width="1" height="1"/><rect x="4" y="10" width="1" height="1"/><rect x="7" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="13" y="10" width="1" height="1"/><rect x="16" y="10" width="1" height="1"/><rect x="19" y="10" width="1" height="1"/><rect x="22" y="10" width="1" height="1"/><rect x="25" y="10" width="1" height="1"/><rect x="29" y="10" width="1" height="1"/><rect x="31" y="10" width="1" height="1"/>
+                      <rect x="0" y="11" width="1" height="1"/><rect x="3" y="11" width="1" height="1"/><rect x="6" y="11" width="1" height="1"/><rect x="9" y="11" width="1" height="1"/><rect x="14" y="11" width="1" height="1"/><rect x="17" y="11" width="1" height="1"/><rect x="20" y="11" width="1" height="1"/><rect x="23" y="11" width="1" height="1"/><rect x="26" y="11" width="1" height="1"/><rect x="28" y="11" width="1" height="1"/><rect x="32" y="11" width="1" height="1"/>
+                      <rect x="2" y="12" width="1" height="1"/><rect x="5" y="12" width="1" height="1"/><rect x="8" y="12" width="1" height="1"/><rect x="11" y="12" width="1" height="1"/><rect x="22" y="12" width="1" height="1"/><rect x="25" y="12" width="1" height="1"/><rect x="27" y="12" width="1" height="1"/><rect x="30" y="12" width="1" height="1"/>
+                      <rect x="0" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="10" y="13" width="1" height="1"/><rect x="23" y="13" width="1" height="1"/><rect x="26" y="13" width="1" height="1"/><rect x="29" y="13" width="1" height="1"/><rect x="32" y="13" width="1" height="1"/>
+                      <rect x="1" y="14" width="1" height="1"/><rect x="3" y="14" width="1" height="1"/><rect x="6" y="14" width="1" height="1"/><rect x="9" y="14" width="1" height="1"/><rect x="24" y="14" width="1" height="1"/><rect x="27" y="14" width="1" height="1"/><rect x="31" y="14" width="1" height="1"/>
+                      <rect x="2" y="15" width="1" height="1"/><rect x="5" y="15" width="1" height="1"/><rect x="8" y="15" width="1" height="1"/><rect x="11" y="15" width="1" height="1"/><rect x="22" y="15" width="1" height="1"/><rect x="25" y="15" width="1" height="1"/><rect x="28" y="15" width="1" height="1"/><rect x="32" y="15" width="1" height="1"/>
+                      <rect x="0" y="16" width="1" height="1"/><rect x="4" y="16" width="1" height="1"/><rect x="7" y="16" width="1" height="1"/><rect x="10" y="16" width="1" height="1"/><rect x="23" y="16" width="1" height="1"/><rect x="26" y="16" width="1" height="1"/><rect x="29" y="16" width="1" height="1"/><rect x="31" y="16" width="1" height="1"/>
+                      <rect x="2" y="17" width="1" height="1"/><rect x="5" y="17" width="1" height="1"/><rect x="9" y="17" width="1" height="1"/><rect x="22" y="17" width="1" height="1"/><rect x="25" y="17" width="1" height="1"/><rect x="27" y="17" width="1" height="1"/><rect x="30" y="17" width="1" height="1"/><rect x="32" y="17" width="1" height="1"/>
+                      <rect x="0" y="18" width="1" height="1"/><rect x="3" y="18" width="1" height="1"/><rect x="7" y="18" width="1" height="1"/><rect x="10" y="18" width="1" height="1"/><rect x="23" y="18" width="1" height="1"/><rect x="26" y="18" width="1" height="1"/><rect x="29" y="18" width="1" height="1"/><rect x="31" y="18" width="1" height="1"/>
+                      <rect x="1" y="19" width="1" height="1"/><rect x="4" y="19" width="1" height="1"/><rect x="6" y="19" width="1" height="1"/><rect x="9" y="19" width="1" height="1"/><rect x="22" y="19" width="1" height="1"/><rect x="25" y="19" width="1" height="1"/><rect x="28" y="19" width="1" height="1"/><rect x="32" y="19" width="1" height="1"/>
+                      <!-- Bottom band -->
+                      <rect x="9" y="26" width="1" height="1"/><rect x="11" y="26" width="1" height="1"/><rect x="14" y="26" width="1" height="1"/><rect x="17" y="26" width="1" height="1"/><rect x="20" y="26" width="1" height="1"/><rect x="23" y="26" width="1" height="1"/>
+                      <rect x="8" y="27" width="1" height="1"/><rect x="10" y="27" width="1" height="1"/><rect x="13" y="27" width="1" height="1"/><rect x="16" y="27" width="1" height="1"/><rect x="19" y="27" width="1" height="1"/><rect x="22" y="27" width="1" height="1"/><rect x="25" y="27" width="1" height="1"/>
+                      <rect x="9" y="28" width="1" height="1"/><rect x="12" y="28" width="1" height="1"/><rect x="15" y="28" width="1" height="1"/><rect x="18" y="28" width="1" height="1"/><rect x="21" y="28" width="1" height="1"/><rect x="24" y="28" width="1" height="1"/>
+                      <rect x="8" y="29" width="1" height="1"/><rect x="11" y="29" width="1" height="1"/><rect x="14" y="29" width="1" height="1"/><rect x="17" y="29" width="1" height="1"/><rect x="20" y="29" width="1" height="1"/><rect x="23" y="29" width="1" height="1"/>
+                      <rect x="9" y="30" width="1" height="1"/><rect x="13" y="30" width="1" height="1"/><rect x="16" y="30" width="1" height="1"/><rect x="19" y="30" width="1" height="1"/><rect x="22" y="30" width="1" height="1"/>
+                      <rect x="8" y="31" width="1" height="1"/><rect x="10" y="31" width="1" height="1"/><rect x="14" y="31" width="1" height="1"/><rect x="17" y="31" width="1" height="1"/><rect x="20" y="31" width="1" height="1"/><rect x="24" y="31" width="1" height="1"/>
+                      <rect x="9" y="32" width="1" height="1"/><rect x="12" y="32" width="1" height="1"/><rect x="15" y="32" width="1" height="1"/><rect x="18" y="32" width="1" height="1"/><rect x="21" y="32" width="1" height="1"/>
+                    </g>
+                  </svg>
+                  <!-- Embedded brand logo center -->
+                  <div class="qr-logo">
+                    <span class="dot"></span>
+                    <div class="wordmark"><em>im</em></div>
+                  </div>
+                </div>
+
+                <div class="qr-bottom-text">Ajoute-moi en favori<br>et prends RDV</div>
+              </div>
+            </div>
+
+            <!-- Section 4: Email -->
+            <div class="email-send">
+              <div class="email-info">
+                <div class="email-label">M'envoyer le QR</div>
+                <div class="email-addr">labinotavdiu.dev@gmail.com</div>
+              </div>
+              <button class="send-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                Envoyer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FRAME 2 : FAVORITES SCREEN — DUAL ENTRY       -->
+      <!-- ============================================== -->
+      <div class="frame-wrapper">
+        <div class="frame-label">Mobile <span class="dot">·</span> Favoris (mode <em style="font-style:italic">employee_based</em>)</div>
+
+        <div class="mobile-frame">
+          <div class="status-bar">
+            <span>9:42</span>
+            <span>•••</span>
+          </div>
+
+          <div class="app-bar">
+            <div class="back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </div>
+            <div class="title">Mes favoris</div>
+            <div class="lang">FR</div>
+          </div>
+
+          <div class="fav-screen-content">
+            <!-- Card A: Favorite WITH preferred employee -->
+            <div class="salon-card favorite-with-employee">
+              <div class="img" style="background-image: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=700&q=80')">
+                <span class="star-tag">★ 4,9</span>
+                <span class="review-count">312 avis</span>
+                <div class="heart-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <div class="employee-badge">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <span>Avec Lina</span>
+                  <span class="gold-dot"></span>
+                  <span>coloriste</span>
+                </div>
+              </div>
+              <div class="body">
+                <h4>Salon de Lina</h4>
+                <div class="addr">Rr. Nënë Tereza · Ferizaj · 600 m</div>
+                <div class="slots">
+                  <span>14:00</span><span class="hot">14:30</span>
+                  <span>15:15</span><span>16:00</span>
+                </div>
+                <div class="foot">
+                  <span class="link">Voir la fiche →</span>
+                  <span class="cta">Prendre RDV</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pair-marker">
+              <span>Et tous les coiffeurs</span>
+            </div>
+
+            <!-- Card B: Same salon, no preference, no heart -->
+            <div class="salon-card plain">
+              <div class="img" style="background-image: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=700&q=80')">
+                <span class="star-tag">★ 4,9</span>
+                <span class="review-count">312 avis</span>
+              </div>
+              <div class="body">
+                <h4>Salon de Lina</h4>
+                <div class="addr">Rr. Nënë Tereza · Ferizaj · 600 m</div>
+                <div class="booking-hint">Choisis ton coiffeur librement</div>
+                <div class="slots">
+                  <span>14:00</span><span class="hot">14:30</span>
+                  <span>15:15</span><span>16:00</span>
+                </div>
+                <div class="foot">
+                  <span class="link">Voir la fiche →</span>
+                  <span class="cta">Prendre RDV</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Other salon: regular favorite, single card (no employee preference) -->
+            <div class="salon-card favorite-with-employee" style="margin-top: 12px;">
+              <div class="img" style="background-image: url('https://images.unsplash.com/photo-1622287162716-f311baa1a2b8?w=700&q=80')">
+                <span class="star-tag">★ 4,7</span>
+                <span class="review-count">158 avis</span>
+                <div class="heart-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+              </div>
+              <div class="body">
+                <h4>Studio Bardha</h4>
+                <div class="addr">Rruga UÇK · Ferizaj · 1,2 km</div>
+                <div class="slots">
+                  <span class="hot">15:00</span><span>15:45</span>
+                  <span>16:30</span><span>17:15</span>
+                </div>
+                <div class="foot">
+                  <span class="link">Voir la fiche →</span>
+                  <span class="cta">Prendre RDV</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Design notes -->
+    <section class="design-notes">
+      <h3>Décisions <em>design</em></h3>
+      <ul>
+        <li><strong>QR avec logo central</strong> — wordmark "im" Instrument Serif italic bordeaux dans un carré ivoire à bords bordeaux, centré sur le QR. Niveau de correction d'erreur QR à <strong>H (30%)</strong> pour que le scan reste fiable malgré la zone occluse au centre.</li>
+        <li><strong>Toggle synchronisé</strong> — un seul état partagé entre la section "Copier le lien" et la section QR. Visuellement unifié par la bordure bordeaux sur toute la zone de section.</li>
+        <li><strong>Carte favorite (avec employé)</strong> — bordure dorée, gradient ivoire-vers-ivory_alt, ombre dorée subtile, cœur bordeaux rempli en haut-droite. Nom employé en <strong>Instrument Serif italic bordeaux</strong> avec icône utilisateur à gauche et point doré séparateur (cohérent avec le système typographique de l'app).</li>
+        <li><strong>Pair marker entre Carte A et Carte B</strong> — petit chip "Et tous les coiffeurs" en Instrument Sans uppercase letterspacé, signale que les 2 cartes représentent le même salon avec 2 intentions différentes (employé verrouillé vs sélection libre).</li>
+        <li><strong>Carte B (plain)</strong> — pas de cœur, nom du salon en ink-soft (légèrement atténué) pour que la hiérarchie visuelle privilégie clairement la Carte A. Sous-titre "Choisis ton coiffeur" en italic muet pour expliciter l'intention.</li>
+        <li><strong>Mode capacity_based ou favori sans employé préféré</strong> — comportement inchangé : 1 seule carte normale (cf. "Studio Bardha" en exemple bas).</li>
+        <li><strong>Email send block</strong> — adresse à gauche en Instrument Sans, bouton "Envoyer" bordeaux à droite avec icône paper-plane. Le mail contiendra le QR PNG en pièce jointe + le texte de la légende en haut + "Ajoute-moi en favori et prends RDV" en bas.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

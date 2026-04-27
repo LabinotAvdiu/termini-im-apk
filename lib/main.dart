@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: depend_on_referenced_packages — part of the Flutter SDK, no pubspec entry needed
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'app.dart';
+import 'core/network/dio_provider.dart';
 import 'core/notifications/models/in_app_notification.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/notifications/providers/in_app_notification_provider.dart';
@@ -16,6 +17,7 @@ import 'core/services/deep_link_service.dart';
 import 'core/services/error_reporter_service.dart';
 import 'core/services/models/error_report.dart';
 import 'core/services/remote_config_service.dart';
+import 'core/services/sound_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 
 void main() async {
@@ -48,6 +50,9 @@ void main() async {
   // Si Firebase n'est pas encore configuré (placeholders dev), l'app continue
   // normalement — NotificationService.init() absorbe l'erreur en interne.
   await NotificationService.init();
+
+  // Pré-charge le son notif en mémoire pour zéro latence au premier push.
+  unawaited(SoundService.warmup());
 
   // E28 — Backend error reporter : initialise avant les hooks d'erreur.
   await ErrorReporterService.instance.init();
@@ -157,6 +162,15 @@ void main() async {
   unawaited(
     DeepLinkService.instance.init(() => container.read(routerProvider)),
   );
+
+  // Wire the API interceptor's session-expired callback. Done here (not in
+  // dio_provider.dart) to avoid a Riverpod dependency cycle: the auth
+  // provider transitively depends on the interceptor, so the interceptor
+  // can't depend on the auth provider during graph construction. We bridge
+  // them after the container is built — at this point both are stable.
+  container.read(apiInterceptorProvider).setOnSessionExpired(() {
+    container.read(authStateProvider.notifier).triggerSessionExpired();
+  });
 
   runApp(
     UncontrolledProviderScope(

@@ -18,6 +18,10 @@
          ne connaît pas l'adresse (cas fréquent pour les adresses récentes au Kosovo) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Vibrations — feedback haptique sur les actions UI (tap étoile,
+         confirmation RDV, annulation). Permission auto-accordée mais doit
+         être déclarée pour que les OEMs (Xiaomi, Huawei) ne la bloquent pas. -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:label="Termini im"
         android:name="${applicationName}"

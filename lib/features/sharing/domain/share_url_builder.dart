@@ -9,14 +9,28 @@ const String kShareBaseUrl = 'https://www.termini-im.com';
 /// service first — booking can't start without one.
 ///
 /// When [employeeId] is provided, the salon detail filters services to
-/// those that employee can perform and forwards the employee through to the
-/// booking screen on "Choisir".
+/// those that employee can perform and forwards the employee through to
+/// the booking screen on "Choisir".
+///
+/// When [autoFavorite] is true, the URL carries `fav=1` which signals to
+/// the company detail screen that the visitor arrived via a QR scan and
+/// the salon should be auto-added to favorites (with the optional
+/// preferred employee). Used for the Settings → Partage QR flow only.
 ///
 /// Shape:
 ///   https://www.termini-im.com/company/{companyId}
 ///   https://www.termini-im.com/company/{companyId}?employee={employeeId}
-String buildSalonShareUrl(String companyId, {String? employeeId}) {
+///   https://www.termini-im.com/company/{companyId}?employee={employeeId}&fav=1
+String buildSalonShareUrl(
+  String companyId, {
+  String? employeeId,
+  bool autoFavorite = false,
+}) {
   final base = Uri.parse('$kShareBaseUrl/company/$companyId');
-  if (employeeId == null || employeeId.isEmpty) return base.toString();
-  return base.replace(queryParameters: {'employee': employeeId}).toString();
+  final params = <String, String>{
+    if (employeeId != null && employeeId.isNotEmpty) 'employee': employeeId,
+    if (autoFavorite) 'fav': '1',
+  };
+  if (params.isEmpty) return base.toString();
+  return base.replace(queryParameters: params).toString();
 }

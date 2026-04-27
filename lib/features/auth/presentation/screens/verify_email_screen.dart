@@ -220,7 +220,20 @@ class _EmailVerificationScreenState
                     const SizedBox(height: AppSpacing.xxl),
                     if (_verified)
                       _SuccessCard(
-                        onBackHome: () => context.go('/home'),
+                        onBackHome: () {
+                          // Return to wherever the user came from rather
+                          // than always landing on /home — if they hit
+                          // verify from the booking flow, /settings, or
+                          // /my-salon, we want to drop them back there
+                          // so they can continue where they left off.
+                          // Falls back to /home only when no nav stack
+                          // is available (deep link, fresh app launch).
+                          if (context.canPop()) {
+                            context.pop();
+                          } else {
+                            context.go('/home');
+                          }
+                        },
                       )
                     else
                       _OtpCard(

@@ -73,6 +73,13 @@ class AuthState {
   /// this flag and routes to the company-setup screen instead of /home.
   final bool needsCompanySetup;
 
+  /// True when the API interceptor has detected that the refresh token was
+  /// rejected by the server (real 401 on /auth/refresh, not a transient
+  /// network error). A global overlay watches this flag and surfaces the
+  /// "Vous n'êtes pas connecté" modal so the user can choose between
+  /// re-authenticating and falling back to guest browsing.
+  final bool sessionExpired;
+
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
@@ -84,6 +91,7 @@ class AuthState {
     this.isGuest = false,
     this.justSignedUp = false,
     this.needsCompanySetup = false,
+    this.sessionExpired = false,
   });
 
   /// Convenience getters for tab-layout decisions in MainShell.
@@ -102,6 +110,7 @@ class AuthState {
     bool? isGuest,
     bool? justSignedUp,
     bool? needsCompanySetup,
+    bool? sessionExpired,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -116,6 +125,7 @@ class AuthState {
       isGuest: isGuest ?? this.isGuest,
       justSignedUp: justSignedUp ?? this.justSignedUp,
       needsCompanySetup: needsCompanySetup ?? this.needsCompanySetup,
+      sessionExpired: sessionExpired ?? this.sessionExpired,
     );
   }
 }
@@ -189,6 +199,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void enterGuestMode() {
     state = state.copyWith(isGuest: true, error: null);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Session-expired handling — driven by ApiInterceptor when /auth/refresh
+  // returns a real 401 (refresh token revoked or expired). A global overlay
+  // watches [AuthState.sessionExpired] and surfaces the modal.
+  // ---------------------------------------------------------------------------
+
+  /// Marks the session as expired so the global overlay can show the modal.
+  /// Idempotent: a second call while the modal is up is ignored, which keeps
+  /// the modal from re-firing for every queued 401 after a token rejection.
+  ///
+  /// We DO NOT wipe the auth state here. If we did, the router's
+  /// refreshListenable would fire immediately, redirect the user away from
+  /// their current page, and the route transition would race the modal
+  /// opening. The modal must show first; the wipe happens when the user
+  /// picks a button (resolveWithLogin / resolveWithHome).
+  void triggerSessionExpired() {
+    if (state.sessionExpired) return;
+    state = state.copyWith(sessionExpired: true);
+  }
+
+  /// Called by the modal's "Se connecter" button. Wipes the auth state so
+  /// the router treats the user as logged out, then the overlay navigates
+  /// to /login.
+  void resolveSessionExpiredWithLogin() {
+    state = AuthState(rememberMe: state.rememberMe);
+    unawaited(AnalyticsService.instance.clearUserId());
+    unawaited(CrashReporter.instance.clearUserId());
+  }
+
+  /// Called by the modal's "Aller à l'accueil" button. Wipes the auth
+  /// state but flips guest mode on so the user can keep browsing salons
+  /// without re-authenticating.
+  void resolveSessionExpiredWithGuest() {
+    state = AuthState(
+      rememberMe: state.rememberMe,
+      isGuest: true,
+    );
+    unawaited(AnalyticsService.instance.clearUserId());
+    unawaited(CrashReporter.instance.clearUserId());
+  }
+
+  /// Legacy alias kept for compatibility with the old overlay code path —
+  /// equivalent to resolveSessionExpiredWithLogin without the navigation.
+  void dismissSessionExpired() {
+    if (!state.sessionExpired) return;
+    state = state.copyWith(sessionExpired: false);
   }
 
   // ---------------------------------------------------------------------------

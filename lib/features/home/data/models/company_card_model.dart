@@ -56,6 +56,13 @@ class CompanyCardModel {
   /// Defaults to `false` when unauthenticated or when the field is absent.
   final bool isFavorite;
 
+  /// Preferred employee for this favorite (employee_based + favorite + saved
+  /// preference). Null when capacity_based, not favorited, or no preference.
+  /// When non-null, the favorites screen shows TWO cards: one with the
+  /// employee locked, one for free employee selection.
+  final String? preferredEmployeeId;
+  final String? preferredEmployeeName;
+
   const CompanyCardModel({
     required this.id,
     required this.name,
@@ -67,6 +74,8 @@ class CompanyCardModel {
     required this.slots,
     this.bookingMode = 'employee_based',
     this.isFavorite = false,
+    this.preferredEmployeeId,
+    this.preferredEmployeeName,
   });
 
   CompanyCardModel copyWith({
@@ -80,6 +89,9 @@ class CompanyCardModel {
     List<DaySlot>? slots,
     String? bookingMode,
     bool? isFavorite,
+    String? preferredEmployeeId,
+    String? preferredEmployeeName,
+    bool clearPreferredEmployee = false,
   }) {
     return CompanyCardModel(
       id: id ?? this.id,
@@ -92,6 +104,12 @@ class CompanyCardModel {
       slots: slots ?? this.slots,
       bookingMode: bookingMode ?? this.bookingMode,
       isFavorite: isFavorite ?? this.isFavorite,
+      preferredEmployeeId: clearPreferredEmployee
+          ? null
+          : (preferredEmployeeId ?? this.preferredEmployeeId),
+      preferredEmployeeName: clearPreferredEmployee
+          ? null
+          : (preferredEmployeeName ?? this.preferredEmployeeName),
     );
   }
 
@@ -116,6 +134,43 @@ class CompanyCardModel {
           json['booking_mode'] as String? ??
           'employee_based',
       isFavorite: json['isFavorite'] as bool? ?? false,
+      preferredEmployeeId: json['preferredEmployeeId'] as String?,
+      preferredEmployeeName: json['preferredEmployeeName'] as String?,
     );
+  }
+}
+
+/// Dual-entry expansion for the home / favorites listings.
+///
+/// When a favorite has a preferred employee AND the salon is in
+/// `employee_based` mode, two entries are emitted: the original (Card A —
+/// favorite + employee badge, taps lock the booking to that pro) and a
+/// plain twin (Card B — same salon, no heart, no employee filter, taps
+/// open the regular booking flow).
+///
+/// Other favorites and non-favorites are passed through unchanged.
+extension CompanyCardListDualEntry on List<CompanyCardModel> {
+  List<CompanyCardModel> expandFavoritesDualEntry() {
+    final result = <CompanyCardModel>[];
+    for (final c in this) {
+      final hasPreferredEmployee = c.isFavorite &&
+          c.preferredEmployeeId != null &&
+          c.preferredEmployeeId!.isNotEmpty &&
+          c.bookingMode == 'employee_based';
+
+      if (hasPreferredEmployee) {
+        // Card A — keeps preferredEmployee + heart.
+        result.add(c);
+        // Card B — same salon, no heart, no employee filter, no slots
+        // pre-bias (we keep slots since they reflect availability either way).
+        result.add(c.copyWith(
+          isFavorite: false,
+          clearPreferredEmployee: true,
+        ));
+      } else {
+        result.add(c);
+      }
+    }
+    return result;
   }
 }

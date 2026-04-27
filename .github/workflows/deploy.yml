@@ -46,10 +46,19 @@ jobs:
         # The landing is the public face of termini-im.com until launch.
         # When launch ships, swap this back to deploying build/web/ to root
         # (or remove the --base-href flag and deploy build/web/ here too).
+        #
+        # `.well-known/` (App Links + Universal Links verification files) is
+        # included in the rsync — the source of truth lives in
+        # docs/landing/.well-known/ in this repo, so any change to the
+        # SHA-256 / Team ID gets deployed automatically.
+        #
+        # `og-default.png` (1200x630 editorial, used by ShareController as
+        # OG fallback when a salon has no profile photo) ships from
+        # docs/landing/og-default.png — keep dimensions + size budget if
+        # regenerating from og-cover.svg (target < 300 KB for WhatsApp).
         run: |
           rsync -avz --delete \
             --exclude '/app/' \
-            --exclude '/.well-known/' \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }} -o StrictHostKeyChecking=yes" \
             docs/landing/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/termini-im/

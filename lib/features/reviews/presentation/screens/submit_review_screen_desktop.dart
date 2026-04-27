@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/providers/ux_prefs_provider.dart';
+import '../../../../core/services/sound_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -128,6 +129,7 @@ class _SubmitReviewDialogState extends ConsumerState<_SubmitReviewDialog>
       if (uxPrefs.hapticEnabled) {
         await HapticFeedback.mediumImpact();
       }
+      SoundService.playSuccess(enabled: uxPrefs.soundsEnabled);
 
       setState(() {
         _isSubmitting = false;

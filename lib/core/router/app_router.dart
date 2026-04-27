@@ -15,6 +15,7 @@ import '../../features/home/presentation/screens/landing_screen.dart';
 import '../../features/company_detail/presentation/screens/company_detail_screen.dart';
 import '../../features/booking/presentation/screens/booking_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/sharing/presentation/screens/share_qr_screen.dart';
 import '../../features/shell/presentation/screens/main_shell.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/company/presentation/screens/capacity_settings_screen.dart';
@@ -217,6 +218,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      GoRoute(
+        path: '/settings/share-qr',
+        name: RouteNames.shareQr,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const ShareQrScreen(),
+        ),
+      ),
       // "Mes rendez-vous" — accessible via Settings for company members
       // (owner/employee) who also book as clients elsewhere. Clients see the
       // same screen inside the shell as a tab.
@@ -304,11 +313,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           // forward the id to the booking flow on "Choisir".
           final preselectedEmployeeId =
               state.uri.queryParameters['employee'];
+          // QR-share marker `?fav=1` — the visitor scanned a salon QR
+          // generated from Settings → Partage QR, intent is to favorite.
+          // Detail screen auto-adds to favorites on landing (with the
+          // preferred employee when present). See share_url_builder.dart.
+          final autoFavorite = state.uri.queryParameters['fav'] == '1';
           return editorialSlidePage(
             key: state.pageKey,
             child: CompanyDetailScreen(
               companyId: id,
               preselectedEmployeeId: preselectedEmployeeId,
+              autoFavorite: autoFavorite,
             ),
           );
         },

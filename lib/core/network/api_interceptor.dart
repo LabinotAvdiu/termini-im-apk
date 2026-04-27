@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../constants/api_constants.dart';
@@ -29,12 +30,18 @@ class ApiInterceptor extends Interceptor {
 
   /// In-flight refresh; when non-null, every concurrent 401 awaits this same
   /// future instead of triggering parallel /auth/refresh calls.
-  Completer<String?>? _refreshCompleter;
+  Completer<_RefreshResult>? _refreshCompleter;
 
   /// In-memory fallback for the refresh token when the user signed in with
   /// rememberMe=false (nothing persisted to secure storage). Set by the
   /// AuthRepository whenever a session is established.
   String? _memoryRefreshToken;
+
+  /// Callback fired when the refresh token is rejected by the server (i.e.
+  /// the user's session is genuinely over — not a transient network error).
+  /// Wired in dio_provider.dart to flip `AuthState.sessionExpired` so the
+  /// global overlay can show the "vous n'êtes pas connecté" modal.
+  VoidCallback? _onSessionExpired;
 
   ApiInterceptor({FlutterSecureStorage? storage})
       : _storage = storage ?? const FlutterSecureStorage() {
@@ -58,6 +65,12 @@ class ApiInterceptor extends Interceptor {
     _memoryRefreshToken = token;
   }
 
+  /// Wire the session-expired callback from a Riverpod provider. Called once
+  /// during dio_provider construction.
+  void setOnSessionExpired(VoidCallback? callback) {
+    _onSessionExpired = callback;
+  }
+
   @override
   void onRequest(
     RequestOptions options,
@@ -79,14 +92,15 @@ class ApiInterceptor extends Interceptor {
     // where a 401 means "bad credentials / expired refresh", not "access
     // token expired". That avoids an infinite refresh loop.
     if (statusCode == 401 && !_isAuthEndpoint(path)) {
-      final newToken = await _refreshAccessToken();
+      final result = await _refreshAccessToken();
 
-      if (newToken != null) {
+      if (result.token != null) {
         try {
           // Replay the original request with the fresh token. Use the
           // dedicated _refreshDio so we don't re-enter this interceptor.
           final retried = await _refreshDio.fetch(
-            err.requestOptions..headers['Authorization'] = 'Bearer $newToken',
+            err.requestOptions
+              ..headers['Authorization'] = 'Bearer ${result.token}',
           );
           handler.resolve(retried);
           return;
@@ -96,15 +110,46 @@ class ApiInterceptor extends Interceptor {
         }
       }
 
-      // Refresh failed — wipe local session and surface an unauthorized
-      // error so the auth layer can redirect to /login.
-      await _clearLocalSession();
-      handler.reject(
-        DioException(
-          requestOptions: err.requestOptions,
-          error: const UnauthorizedException(),
-        ),
-      );
+      // Refresh failed. Three cases:
+      //
+      //  1. The refresh token was actually rejected by the server (real 401
+      //     on /auth/refresh). The session is genuinely over -> wipe local
+      //     state, fire the session-expired callback so the global overlay
+      //     can show the modal.
+      //
+      //  2. Refresh failed because of a transient error (network blip,
+      //     timeout, 5xx, server briefly down). The refresh token is still
+      //     valid, the user is still logged in — we MUST NOT wipe the
+      //     session, or every brief offline moment would force a re-login.
+      //     Just bubble up the original 401 as a NetworkException.
+      //
+      //  3. There was no refresh token to attempt with (guest browsing or
+      //     in-flight request racing a fresh login). Bubble up Unauthorized
+      //     but DO NOT show the modal — there's no session to expire.
+      if (result.rejected) {
+        await _clearLocalSession();
+        _onSessionExpired?.call();
+        handler.reject(
+          DioException(
+            requestOptions: err.requestOptions,
+            error: const UnauthorizedException(),
+          ),
+        );
+      } else if (result.noSession) {
+        handler.reject(
+          DioException(
+            requestOptions: err.requestOptions,
+            error: const UnauthorizedException(),
+          ),
+        );
+      } else {
+        handler.reject(
+          DioException(
+            requestOptions: err.requestOptions,
+            error: const NetworkException(),
+          ),
+        );
+      }
       return;
     }
 
@@ -149,14 +194,16 @@ class ApiInterceptor extends Interceptor {
     handler.next(err);
   }
 
-  /// Single-flight refresh: concurrent callers share the same future.
-  /// Returns the new access token, or null when refresh is not possible
-  /// (no refresh token, or refresh rejected by the server).
-  Future<String?> _refreshAccessToken() async {
+  /// Single-flight refresh: concurrent callers share the same future. The
+  /// returned [_RefreshResult] tells the caller whether the refresh
+  /// succeeded, was rejected by the server (real expired/revoked token), or
+  /// failed for transient reasons (network/timeout/5xx) — the caller acts
+  /// differently in each case (only the `rejected` case wipes the session).
+  Future<_RefreshResult> _refreshAccessToken() async {
     final inflight = _refreshCompleter;
     if (inflight != null) return inflight.future;
 
-    final completer = Completer<String?>();
+    final completer = Completer<_RefreshResult>();
     _refreshCompleter = completer;
 
     try {
@@ -165,8 +212,13 @@ class ApiInterceptor extends Interceptor {
               _memoryRefreshToken;
 
       if (refreshToken == null || refreshToken.isEmpty) {
-        completer.complete(null);
-        return null;
+        // No refresh token at all — either the user is browsing as a guest
+        // (never had a session) or they're in the middle of a fresh login
+        // and an in-flight request from before is racing the login. Either
+        // way, don't fire the session-expired modal: there's no session to
+        // expire. Just bubble the 401 up as Unauthorized.
+        completer.complete(const _RefreshResult.noSession());
+        return completer.future;
       }
 
       final response = await _refreshDio.post(
@@ -185,8 +237,10 @@ class ApiInterceptor extends Interceptor {
       final newRefresh = payload['refresh_token'] as String?;
 
       if (newAccess == null || newAccess.isEmpty) {
-        completer.complete(null);
-        return null;
+        // Server replied 200 but with no token? Treat as transient — the
+        // refresh token is still recorded as valid on the backend.
+        completer.complete(const _RefreshResult.transient());
+        return completer.future;
       }
 
       // Persist the new pair. For rememberMe=false sessions, secure storage
@@ -220,11 +274,22 @@ class ApiInterceptor extends Interceptor {
         // ever touches disk when the user chose "don't remember me".
       }
 
-      completer.complete(newAccess);
-      return newAccess;
+      completer.complete(_RefreshResult.success(newAccess));
+      return completer.future;
+    } on DioException catch (e) {
+      // 401 on /auth/refresh = the refresh token itself is rejected. Real
+      // logout. Anything else (timeout, no network, 5xx, etc.) is transient
+      // and must NOT clear the user's session.
+      final isRejection = e.response?.statusCode == 401;
+      completer.complete(
+        isRejection
+            ? const _RefreshResult.rejected()
+            : const _RefreshResult.transient(),
+      );
+      return completer.future;
     } catch (_) {
-      completer.complete(null);
-      return null;
+      completer.complete(const _RefreshResult.transient());
+      return completer.future;
     } finally {
       _refreshCompleter = null;
     }
@@ -257,4 +322,40 @@ class ApiInterceptor extends Interceptor {
     ];
     return noRetryPaths.any(path.endsWith);
   }
+}
+
+/// Outcome of a refresh attempt — drives whether we wipe the session and/or
+/// fire the "session expired" modal.
+///   * [_RefreshResult.success]    — refresh succeeded, replay the request.
+///   * [_RefreshResult.rejected]   — /auth/refresh returned 401, the user's
+///                                   session is genuinely over → wipe the
+///                                   local session AND show the modal.
+///   * [_RefreshResult.transient]  — network/timeout/5xx during refresh →
+///                                   keep the session intact, surface a
+///                                   NetworkException so the user can retry.
+///   * [_RefreshResult.noSession]  — no refresh token to attempt with (guest
+///                                   browsing, or in-flight request from a
+///                                   logged-out screen) → bubble up as
+///                                   Unauthorized but DO NOT show the modal,
+///                                   there's no session to expire.
+class _RefreshResult {
+  final String? token;
+  final bool rejected;
+  final bool noSession;
+
+  const _RefreshResult.success(String this.token)
+      : rejected = false,
+        noSession = false;
+  const _RefreshResult.rejected()
+      : token = null,
+        rejected = true,
+        noSession = false;
+  const _RefreshResult.transient()
+      : token = null,
+        rejected = false,
+        noSession = false;
+  const _RefreshResult.noSession()
+      : token = null,
+        rejected = false,
+        noSession = true;
 }

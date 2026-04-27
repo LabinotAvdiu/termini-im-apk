@@ -13,9 +13,16 @@ class FavoriteRepository {
 
   const FavoriteRepository({required DioClient client}) : _client = client;
 
-  /// Marks a company as favorite. Throws on network/API error.
-  Future<void> add(String companyId) async {
-    await _client.post(ApiConstants.companyFavorite(companyId));
+  /// Marks a company as favorite. When [employeeId] is provided, the backend
+  /// records the preference so the favorites screen can show the dual-entry
+  /// pattern (one card with the pro locked, one without). Throws on error.
+  Future<void> add(String companyId, {String? employeeId}) async {
+    await _client.post(
+      ApiConstants.companyFavorite(companyId),
+      data: employeeId == null
+          ? null
+          : {'employee_id': int.tryParse(employeeId) ?? employeeId},
+    );
   }
 
   /// Removes a company from favorites. Throws on network/API error.

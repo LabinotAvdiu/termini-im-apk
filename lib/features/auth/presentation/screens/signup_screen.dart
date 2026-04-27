@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -1617,154 +1618,30 @@ class _SupportLink extends StatelessWidget {
 // Social brand icons — rendered via CustomPainter (no external packages)
 // ---------------------------------------------------------------------------
 
-/// Official Google multicolor "G" logo painted on a 24x24 canvas.
 class _GoogleIcon extends StatelessWidget {
   const _GoogleIcon();
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size(24, 24),
-      painter: _GoogleLogoPainter(),
+    return SvgPicture.asset(
+      'assets/icons/google.svg',
+      width: 24,
+      height: 24,
     );
   }
 }
 
-class _GoogleLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final r = size.width / 2;
-
-    // Clip to circle
-    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r)));
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.white);
-
-    // Segment angles (degrees → radians): Red, Yellow, Green, Blue
-    const double toRad = 3.14159265 / 180.0;
-    final segments = [
-      [-21.0, 90.0, const Color(0xFFEA4335)],  // Red
-      [69.0,  90.0, const Color(0xFFFBBC05)],  // Yellow
-      [159.0, 90.0, const Color(0xFF34A853)],  // Green
-      [249.0, 90.0, const Color(0xFF4285F4)],  // Blue
-    ];
-
-    final strokeWidth = r * 0.38;
-    final innerR = r - strokeWidth;
-
-    for (final seg in segments) {
-      final paint = Paint()
-        ..color = seg[2] as Color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth;
-      canvas.drawArc(
-        Rect.fromCircle(center: Offset(cx, cy), radius: innerR + strokeWidth / 2),
-        (seg[0] as double) * toRad,
-        (seg[1] as double) * toRad,
-        false,
-        paint,
-      );
-    }
-
-    // White cutout inner circle to form ring
-    canvas.drawCircle(
-      Offset(cx, cy),
-      innerR - 0.5,
-      Paint()..color = Colors.white,
-    );
-
-    // Blue horizontal bar (the crossbar of the G)
-    final barPaint = Paint()
-      ..color = const Color(0xFF4285F4)
-      ..style = PaintingStyle.fill;
-
-    final barTop = cy - strokeWidth * 0.38;
-    final barBottom = cy + strokeWidth * 0.38;
-    final barLeft = cx - 0.5;
-    final barRight = cx + innerR + 0.5;
-
-    canvas.save();
-    canvas.clipRect(Rect.fromLTRB(cx, 0, size.width, size.height));
-    canvas.drawRect(Rect.fromLTRB(barLeft, barTop, barRight, barBottom), barPaint);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Official Facebook "f" logo: blue rounded square with white f.
 class _FacebookIcon extends StatelessWidget {
   const _FacebookIcon();
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size(24, 24),
-      painter: _FacebookLogoPainter(),
+    return SvgPicture.asset(
+      'assets/icons/facebook.svg',
+      width: 24,
+      height: 24,
     );
   }
-}
-
-class _FacebookLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rr = size.width * 0.22;
-
-    // Blue rounded-square background
-    final bgPaint = Paint()..color = const Color(0xFF1877F2);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        Radius.circular(rr),
-      ),
-      bgPaint,
-    );
-
-    // White "f" glyph via path
-    final w = size.width;
-    final h = size.height;
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    // Stem
-    final stemW = w * 0.13;
-    final stemLeft = w * 0.425;
-    final stemTop = h * 0.33;
-    canvas.drawRect(
-      Rect.fromLTWH(stemLeft, stemTop, stemW, h * 0.56),
-      paint,
-    );
-
-    // Crossbar
-    canvas.drawRect(
-      Rect.fromLTWH(w * 0.28, h * 0.48, w * 0.42, h * 0.10),
-      paint,
-    );
-
-    // Rounded cap on top of stem
-    final capPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stemW
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawArc(
-      Rect.fromCircle(
-        center: Offset(stemLeft + stemW * 2.2, stemTop),
-        radius: stemW * 1.5,
-      ),
-      3.14159,
-      3.14159,
-      false,
-      capPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ---------------------------------------------------------------------------

@@ -1442,6 +1442,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareLinkPreviewLabel => 'Preview';
 
   @override
+  String get shareQrPageTitle => 'QR share';
+
+  @override
+  String get shareQrLinkPretitle => 'Direct link';
+
+  @override
+  String get shareQrLinkTitle => 'Copy salon link';
+
+  @override
+  String get shareQrLinkHelper =>
+      'Share this link via WhatsApp, SMS or email — it opens the booking flow directly.';
+
+  @override
+  String get shareQrToggleLabel => 'With me as employee';
+
+  @override
+  String get shareQrToggleHelp =>
+      'The link and QR will open the booking with you already picked.';
+
+  @override
+  String get shareQrCaptionPretitle => 'Business card';
+
+  @override
+  String get shareQrCaptionTitle => 'Your QR code';
+
+  @override
+  String get shareQrCaptionHelper =>
+      'Print, frame in your salon, or send by email. Scanning opens the booking.';
+
+  @override
+  String get shareQrCaptionInputLabel => 'Caption above the QR';
+
+  @override
+  String get shareQrCaptionInputHint => 'Lina\'s Salon · Ferizaj';
+
+  @override
+  String get shareQrBottomText => 'Add me to favorites\nand book';
+
+  @override
+  String get shareQrEmailSendLabel => 'Email me the QR';
+
+  @override
+  String get shareQrEmailSendButton => 'Send';
+
+  @override
+  String get shareQrEmailSent => 'Email sent.';
+
+  @override
+  String get shareQrEmailFailed => 'Send failed. Try again.';
+
+  @override
+  String get shareQrSettingsTile => 'QR share';
+
+  @override
+  String get shareQrSettingsTileSubtitle => 'Generate your salon QR';
+
+  @override
+  String favoriteWithEmployeeBadge(String name) {
+    return 'With $name';
+  }
+
+  @override
+  String get favoriteFreeChoice => 'And all stylists';
+
+  @override
+  String get favoriteFreeChoiceHint => 'Pick any stylist';
+
+  @override
   String get tomorrowLabel => 'Tomorrow';
 
   @override
@@ -1606,6 +1674,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favoriteRemoved => 'Removed from favorites';
 
   @override
+  String get favoriteAddedFromQr => 'Salon added to your favorites';
+
+  @override
   String get removeFavoriteTitle => 'Remove from favorites?';
 
   @override
@@ -1684,13 +1755,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hapticLabel => 'Haptic feedback';
 
   @override
-  String get hapticDesc => 'Subtle taps when you interact';
+  String get hapticDesc => 'On app actions. Notifications always vibrate.';
 
   @override
   String get soundsLabel => 'Interface sounds';
 
   @override
-  String get soundsDesc => 'Off by default';
+  String get soundsDesc => 'On app actions. Notifications always play sound.';
 
   @override
   String get animationsLabel => 'Animations';
@@ -2124,7 +2195,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your address is now verified. You can book with peace of mind.';
 
   @override
-  String get verifyEmailSuccessCta => 'Back to home';
+  String get verifyEmailSuccessCta => 'Continue';
 
   @override
   String get verifyEmailCodeRequired => 'Code is required';
@@ -2379,4 +2450,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsChannelInApp => 'IN-APP';
+
+  @override
+  String get sessionExpiredTitle => 'You are not logged in';
+
+  @override
+  String get sessionExpiredMessage =>
+      'Your session has expired. Sign in again to continue or go back to the home page.';
+
+  @override
+  String get sessionExpiredLoginAction => 'Sign in';
+
+  @override
+  String get sessionExpiredHomeAction => 'Go to home';
 }

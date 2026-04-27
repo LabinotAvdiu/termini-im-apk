@@ -1034,6 +1034,14 @@ class _MyPagesSection extends ConsumerWidget {
             const Divider(
                 height: 1, color: AppColors.divider, indent: 48),
             _SettingsTile(
+              icon: Icons.qr_code_2_rounded,
+              title: context.l10n.shareQrSettingsTile,
+              subtitle: context.l10n.shareQrSettingsTileSubtitle,
+              onTap: () => context.pushNamed(RouteNames.shareQr),
+            ),
+            const Divider(
+                height: 1, color: AppColors.divider, indent: 48),
+            _SettingsTile(
               icon: Icons.chat_bubble_outline_rounded,
               title: context.l10n.messages,
               subtitle: context.l10n.messagesSubtitle,
