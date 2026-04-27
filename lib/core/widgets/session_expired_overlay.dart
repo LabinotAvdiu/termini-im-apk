@@ -43,13 +43,20 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
     // rebuilds (it only wraps the navigator), but listenManual is the
     // explicit pattern for "fire-and-forget" listeners that survive widget
     // rebuilds and don't depend on the build cycle to register.
+    debugPrint('[overlay] initState — registering listenManual subscription');
     _sessionExpiredSub = ref.listenManual<bool>(
       authStateProvider.select((s) => s.sessionExpired),
       (previous, next) {
+        debugPrint('[overlay] listener fired prev=$previous next=$next '
+            'modalOpen=$_modalOpen');
         if (next == true && !_modalOpen) {
           _modalOpen = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) return;
+            if (!mounted) {
+              debugPrint('[overlay] post-frame fired but widget unmounted');
+              return;
+            }
+            debugPrint('[overlay] post-frame fired → calling _showModal');
             _showModal();
           });
         }
@@ -80,6 +87,7 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
   _PostModalAction _pendingAction = _PostModalAction.none;
 
   Future<void> _showModal() async {
+    debugPrint('[overlay] _showModal entry — about to showDialog');
     _pendingAction = _PostModalAction.none;
 
     await showDialog<void>(

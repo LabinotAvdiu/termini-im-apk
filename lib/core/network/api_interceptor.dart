@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/foundation.dart' show VoidCallback, debugPrint;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../constants/api_constants.dart';
@@ -126,9 +126,19 @@ class ApiInterceptor extends Interceptor {
       //  3. There was no refresh token to attempt with (guest browsing or
       //     in-flight request racing a fresh login). Bubble up Unauthorized
       //     but DO NOT show the modal — there's no session to expire.
+      debugPrint('[interceptor] 401 on $path — refresh result: '
+          'rejected=${result.rejected} noSession=${result.noSession} '
+          'tokenNull=${result.token == null}');
       if (result.rejected) {
+        debugPrint('[interceptor] refresh REJECTED → wipe + onSessionExpired');
         await _clearLocalSession();
-        _onSessionExpired?.call();
+        if (_onSessionExpired == null) {
+          debugPrint('[interceptor] WARNING: _onSessionExpired callback is NULL '
+              '(wiring failed in main.dart?)');
+        } else {
+          debugPrint('[interceptor] calling _onSessionExpired callback');
+          _onSessionExpired!.call();
+        }
         handler.reject(
           DioException(
             requestOptions: err.requestOptions,
@@ -136,6 +146,7 @@ class ApiInterceptor extends Interceptor {
           ),
         );
       } else if (result.noSession) {
+        debugPrint('[interceptor] noSession → reject with Unauthorized, no modal');
         handler.reject(
           DioException(
             requestOptions: err.requestOptions,
@@ -143,6 +154,7 @@ class ApiInterceptor extends Interceptor {
           ),
         );
       } else {
+        debugPrint('[interceptor] transient → reject with Network');
         handler.reject(
           DioException(
             requestOptions: err.requestOptions,
