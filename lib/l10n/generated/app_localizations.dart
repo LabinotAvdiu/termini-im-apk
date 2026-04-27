@@ -4093,7 +4093,7 @@ abstract class AppLocalizations {
   /// No description provided for @verifyEmailSuccessCta.
   ///
   /// In fr, this message translates to:
-  /// **'Retour à l\'accueil'**
+  /// **'Continuer'**
   String get verifyEmailSuccessCta;
 
   /// No description provided for @verifyEmailCodeRequired.

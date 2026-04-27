@@ -880,7 +880,7 @@
   "verifyEmailSuccess": "Email-i u konfirmua",
   "verifyEmailSuccessTitle": "Email-i u konfirmua",
   "verifyEmailSuccessMessage": "Adresa jote tani është e verifikuar. Mund të rezervosh me qetësi.",
-  "verifyEmailSuccessCta": "Kthehu në kryefaqe",
+  "verifyEmailSuccessCta": "Vazhdo",
   "verifyEmailCodeRequired": "Kodi është i detyrueshëm",
   "verifyEmailCodeLength": "Kodi duhet të ketë 6 karaktere",
   "verifyEmailErrorInvalid": "Kod i pavlefshëm ose i skaduar",

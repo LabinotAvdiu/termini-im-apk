@@ -880,7 +880,7 @@
   "verifyEmailSuccess": "Email confirmed",
   "verifyEmailSuccessTitle": "Email confirmed",
   "verifyEmailSuccessMessage": "Your address is now verified. You can book with peace of mind.",
-  "verifyEmailSuccessCta": "Back to home",
+  "verifyEmailSuccessCta": "Continue",
   "verifyEmailCodeRequired": "Code is required",
   "verifyEmailCodeLength": "Code must be 6 characters",
   "verifyEmailErrorInvalid": "Invalid or expired code",

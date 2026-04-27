@@ -879,7 +879,7 @@
   "verifyEmailSuccess": "Email confirmé",
   "verifyEmailSuccessTitle": "Email confirmé",
   "verifyEmailSuccessMessage": "Ton adresse est maintenant vérifiée. Tu peux réserver en toute sérénité.",
-  "verifyEmailSuccessCta": "Retour à l'accueil",
+  "verifyEmailSuccessCta": "Continuer",
   "verifyEmailCodeRequired": "Le code est requis",
   "verifyEmailCodeLength": "Le code doit faire 6 caractères",
   "verifyEmailErrorInvalid": "Code invalide ou expiré",

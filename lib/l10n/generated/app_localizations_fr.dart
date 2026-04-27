@@ -2207,7 +2207,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ton adresse est maintenant vérifiée. Tu peux réserver en toute sérénité.';
 
   @override
-  String get verifyEmailSuccessCta => 'Retour à l\'accueil';
+  String get verifyEmailSuccessCta => 'Continuer';
 
   @override
   String get verifyEmailCodeRequired => 'Le code est requis';

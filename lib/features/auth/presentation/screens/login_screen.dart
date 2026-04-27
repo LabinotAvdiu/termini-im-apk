@@ -13,7 +13,6 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_top_bar.dart';
-import '../../../../core/widgets/brand_logo.dart';
 import '../../../../core/widgets/language_sheet.dart';
 import '../../../support/data/models/support_models.dart';
 import '../../../support/presentation/widgets/contact_support_dialog.dart';
@@ -77,9 +76,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _afterLoginNav(AuthState authState) {
     if (authState.needsCompanySetup) {
       context.go('/company-setup');
-    } else {
-      context.go('/home');
+      return;
     }
+    // Honour `?returnTo=` so a guest who hit the auth modal from /booking
+    // or /company/X lands back on that exact URL instead of /home.
+    // showAuthRequiredModal captures the original location and forwards
+    // it through the login query params; we just consume it here.
+    final returnTo = GoRouterState.of(context).uri.queryParameters['returnTo'];
+    if (returnTo != null && returnTo.isNotEmpty) {
+      // Guard against loops (returnTo pointing back at an auth route).
+      final loops = returnTo.startsWith('/login') ||
+          returnTo.startsWith('/signup') ||
+          returnTo.startsWith('/role-select') ||
+          returnTo.startsWith('/landing') ||
+          returnTo.startsWith('/forgot-password');
+      if (!loops) {
+        context.go(returnTo);
+        return;
+      }
+    }
+    context.go('/home');
   }
 
   Future<void> _loginWithGoogle() async {
@@ -302,10 +318,11 @@ class _LogoHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Full wordmark — same mark as the landing page and OG card.
-        // Pre-launch, the monogram alone doesn't read as "Termini im";
-        // the wordmark builds recognition across every touchpoint.
-        const BrandLogo(variant: BrandLogoVariant.wordmark, size: 40),
+        // Wordmark composed natively (same layout as the QR-center
+        // version): [• bordeaux] Termini [im italique] [• ink]. Avoids
+        // the SVG <text> rendering quirks of logo-primary.svg where the
+        // last `i` of "Termini" appears to overlap the `i` of "im".
+        const _LoginBrandWordmark(),
         const SizedBox(height: AppSpacing.lg),
         // Display serif headline
         Text.rich(
@@ -339,6 +356,68 @@ class _LogoHeader extends StatelessWidget {
           context.l10n.loginSubtitle,
           style: AppTextStyles.bodySmall,
           textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Wordmark composed natively for the login header. Mirrors the layout of
+// logo-primary.svg (• bordeaux, "Termini", "im" italic, • ink) but built
+// with Text widgets so the Google Fonts already loaded by the app are
+// honored — avoiding the SVG <text> rendering quirks where the last `i`
+// of "Termini" overlapped the `i` of "im". Sized for the auth header
+// (font ~28 for "Termini").
+// ---------------------------------------------------------------------------
+class _LoginBrandWordmark extends StatelessWidget {
+  const _LoginBrandWordmark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Leading bordeaux dot — signature
+        Container(
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'Termini',
+          style: GoogleFonts.fraunces(
+            fontSize: 28,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textPrimary,
+            height: 1,
+            letterSpacing: -0.6,
+          ),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          'im',
+          style: GoogleFonts.instrumentSerif(
+            fontSize: 30,
+            fontStyle: FontStyle.italic,
+            color: AppColors.primary,
+            height: 1,
+          ),
+        ),
+        const SizedBox(width: 6),
+        // Trailing ink dot — full-stop punctuation
+        Container(
+          width: 5,
+          height: 5,
+          decoration: const BoxDecoration(
+            color: AppColors.textPrimary,
+            shape: BoxShape.circle,
+          ),
         ),
       ],
     );

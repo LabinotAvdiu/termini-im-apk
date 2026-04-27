@@ -2195,7 +2195,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your address is now verified. You can book with peace of mind.';
 
   @override
-  String get verifyEmailSuccessCta => 'Back to home';
+  String get verifyEmailSuccessCta => 'Continue';
 
   @override
   String get verifyEmailCodeRequired => 'Code is required';

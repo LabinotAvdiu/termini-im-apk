@@ -225,25 +225,33 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Titre + sous-titre centrés
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _title ?? '',
-                style: AppTextStyles.h3,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (modalSubtitle != null && modalSubtitle.isNotEmpty) ...[
-                const SizedBox(height: 2),
+          // Titre + sous-titre centrés. Padding horizontal symétrique
+          // (= largeur du bouton close + marge) pour que le titre ne
+          // passe jamais sous le X et reste lisible centré quand il
+          // est long (ex: "Rezervo Takim · Etape 1 / 2").
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 56),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Text(
-                  modalSubtitle,
-                  style: AppTextStyles.bodySmall,
+                  _title ?? '',
+                  style: AppTextStyles.h3,
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
+                if (modalSubtitle != null && modalSubtitle.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    modalSubtitle,
+                    style: AppTextStyles.bodySmall,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
 
           // Close X à gauche, ne pousse pas le titre

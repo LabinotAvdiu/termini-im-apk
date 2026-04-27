@@ -2201,7 +2201,7 @@ class AppLocalizationsSq extends AppLocalizations {
       'Adresa jote tani është e verifikuar. Mund të rezervosh me qetësi.';
 
   @override
-  String get verifyEmailSuccessCta => 'Kthehu në kryefaqe';
+  String get verifyEmailSuccessCta => 'Vazhdo';
 
   @override
   String get verifyEmailCodeRequired => 'Kodi është i detyrueshëm';
