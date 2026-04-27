@@ -28,8 +28,9 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  // final _emailController = TextEditingController( text: 'karim@barbier-parisien.fr');
+  final _emailController = TextEditingController( text: 'donjeta@termini.im');
+  final _passwordController = TextEditingController(text: 'Password1');
   bool _passwordVisible = false;
 
   /// Which social provider is currently running — null / 'google' / 'facebook' /
@@ -55,11 +56,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
 
     if (!mounted) return;
-    final error = ref.read(authStateProvider).error;
-    if (error != null) {
+    final authState = ref.read(authStateProvider);
+    if (authState.error != null) {
       // Clear only the password field, keep the email
       _passwordController.clear();
-      context.showErrorSnackBar(error);
+      context.showErrorSnackBar(authState.error);
+      return;
+    }
+    // Explicit fallback navigation. The router's redirect on auth state
+    // change normally handles this, but after the session-expired flow
+    // (state was wiped, then re-built mid-flight) we've seen the
+    // refreshListenable miss the second update. Going explicitly is cheap
+    // and idempotent — the redirect will not double-bounce because /home
+    // is already the resolved target.
+    if (authState.isAuthenticated && mounted) {
+      _afterLoginNav(authState);
+    }
+  }
+
+  void _afterLoginNav(AuthState authState) {
+    if (authState.needsCompanySetup) {
+      context.go('/company-setup');
+    } else {
+      context.go('/home');
     }
   }
 
@@ -71,8 +90,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) setState(() => _loadingSocial = null);
     }
     if (!mounted) return;
-    final error = ref.read(authStateProvider).error;
-    if (error != null) context.showErrorSnackBar(error);
+    final authState = ref.read(authStateProvider);
+    if (authState.error != null) {
+      context.showErrorSnackBar(authState.error);
+      return;
+    }
+    if (authState.isAuthenticated && mounted) _afterLoginNav(authState);
   }
 
   Future<void> _loginWithFacebook() async {
@@ -83,8 +106,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) setState(() => _loadingSocial = null);
     }
     if (!mounted) return;
-    final error = ref.read(authStateProvider).error;
-    if (error != null) context.showErrorSnackBar(error);
+    final authState = ref.read(authStateProvider);
+    if (authState.error != null) {
+      context.showErrorSnackBar(authState.error);
+      return;
+    }
+    if (authState.isAuthenticated && mounted) _afterLoginNav(authState);
   }
 
   Future<void> _loginWithApple() async {
@@ -95,8 +122,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) setState(() => _loadingSocial = null);
     }
     if (!mounted) return;
-    final error = ref.read(authStateProvider).error;
-    if (error != null) context.showErrorSnackBar(error);
+    final authState = ref.read(authStateProvider);
+    if (authState.error != null) {
+      context.showErrorSnackBar(authState.error);
+      return;
+    }
+    if (authState.isAuthenticated && mounted) _afterLoginNav(authState);
   }
 
   // ---- Build ----
