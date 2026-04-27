@@ -53,33 +53,63 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
     return widget.child;
   }
 
+  /// Action chosen by the user when the modal closes — drives the post-
+  /// dismiss navigation. Captured here so the navigation runs AFTER the
+  /// dialog has finished its pop animation and the underlying State context
+  /// is settled (calling context.go() while the dialog is mid-pop has been
+  /// flaky in production).
+  _PostModalAction _pendingAction = _PostModalAction.none;
+
   Future<void> _showModal() async {
+    _pendingAction = _PostModalAction.none;
+
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       barrierColor: AppColors.textPrimary.withValues(alpha: 0.55),
       builder: (dialogCtx) => _SessionExpiredDialog(
         onLogin: () {
+          _pendingAction = _PostModalAction.goLogin;
           ref.read(authStateProvider.notifier).dismissSessionExpired();
           Navigator.of(dialogCtx).pop();
-          // `go` (not push) because the auth state was already wiped — the
-          // user is restarting from a clean slate. The router redirect will
-          // also handle this, but going explicitly avoids any flicker.
-          context.go('/login');
         },
         onHome: () {
-          // Guest mode lets the user keep browsing salons without signing in.
-          // Same as tapping "Continuer sans compte" elsewhere in the app.
+          _pendingAction = _PostModalAction.goHomeAsGuest;
           ref.read(authStateProvider.notifier).enterGuestMode();
           ref.read(authStateProvider.notifier).dismissSessionExpired();
           Navigator.of(dialogCtx).pop();
-          context.go('/home');
         },
       ),
     );
-    if (mounted) _modalOpen = false;
+
+    if (!mounted) {
+      _modalOpen = false;
+      return;
+    }
+
+    // Run the navigation AFTER the dialog has finished tearing down and the
+    // next frame has rendered, otherwise GoRouter.of(context) can race with
+    // the dialog's overlay removal and silently no-op.
+    final action = _pendingAction;
+    _pendingAction = _PostModalAction.none;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      switch (action) {
+        case _PostModalAction.goLogin:
+          context.go('/login');
+        case _PostModalAction.goHomeAsGuest:
+          context.go('/home');
+        case _PostModalAction.none:
+          break;
+      }
+      _modalOpen = false;
+    });
   }
 }
+
+/// Action picked by the user from the modal — applied AFTER the dialog has
+/// fully popped so the navigation doesn't race the overlay teardown.
+enum _PostModalAction { none, goLogin, goHomeAsGuest }
 
 class _SessionExpiredDialog extends StatelessWidget {
   final VoidCallback onLogin;

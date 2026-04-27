@@ -110,7 +110,7 @@ class ApiInterceptor extends Interceptor {
         }
       }
 
-      // Refresh failed. Distinguish between two cases:
+      // Refresh failed. Three cases:
       //
       //  1. The refresh token was actually rejected by the server (real 401
       //     on /auth/refresh). The session is genuinely over -> wipe local
@@ -121,11 +121,21 @@ class ApiInterceptor extends Interceptor {
       //     timeout, 5xx, server briefly down). The refresh token is still
       //     valid, the user is still logged in — we MUST NOT wipe the
       //     session, or every brief offline moment would force a re-login.
-      //     Just bubble up the original 401 as a NetworkException so the
-      //     UI can show a generic retry message.
+      //     Just bubble up the original 401 as a NetworkException.
+      //
+      //  3. There was no refresh token to attempt with (guest browsing or
+      //     in-flight request racing a fresh login). Bubble up Unauthorized
+      //     but DO NOT show the modal — there's no session to expire.
       if (result.rejected) {
         await _clearLocalSession();
         _onSessionExpired?.call();
+        handler.reject(
+          DioException(
+            requestOptions: err.requestOptions,
+            error: const UnauthorizedException(),
+          ),
+        );
+      } else if (result.noSession) {
         handler.reject(
           DioException(
             requestOptions: err.requestOptions,
@@ -202,9 +212,12 @@ class ApiInterceptor extends Interceptor {
               _memoryRefreshToken;
 
       if (refreshToken == null || refreshToken.isEmpty) {
-        // No refresh token at all — nothing we can do, treat as rejected so
-        // the user is sent to the login modal.
-        completer.complete(const _RefreshResult.rejected());
+        // No refresh token at all — either the user is browsing as a guest
+        // (never had a session) or they're in the middle of a fresh login
+        // and an in-flight request from before is racing the login. Either
+        // way, don't fire the session-expired modal: there's no session to
+        // expire. Just bubble the 401 up as Unauthorized.
+        completer.complete(const _RefreshResult.noSession());
         return completer.future;
       }
 
@@ -311,20 +324,38 @@ class ApiInterceptor extends Interceptor {
   }
 }
 
-/// Outcome of a refresh attempt — drives whether we wipe the session.
-///   * [token] non-null  → refresh succeeded, replay original request.
-///   * [rejected] true   → /auth/refresh returned 401, session is over.
-///   * neither           → transient failure (network/timeout/5xx), keep
-///                         the session intact and let the user retry.
+/// Outcome of a refresh attempt — drives whether we wipe the session and/or
+/// fire the "session expired" modal.
+///   * [_RefreshResult.success]    — refresh succeeded, replay the request.
+///   * [_RefreshResult.rejected]   — /auth/refresh returned 401, the user's
+///                                   session is genuinely over → wipe the
+///                                   local session AND show the modal.
+///   * [_RefreshResult.transient]  — network/timeout/5xx during refresh →
+///                                   keep the session intact, surface a
+///                                   NetworkException so the user can retry.
+///   * [_RefreshResult.noSession]  — no refresh token to attempt with (guest
+///                                   browsing, or in-flight request from a
+///                                   logged-out screen) → bubble up as
+///                                   Unauthorized but DO NOT show the modal,
+///                                   there's no session to expire.
 class _RefreshResult {
   final String? token;
   final bool rejected;
+  final bool noSession;
 
-  const _RefreshResult.success(String this.token) : rejected = false;
+  const _RefreshResult.success(String this.token)
+      : rejected = false,
+        noSession = false;
   const _RefreshResult.rejected()
       : token = null,
-        rejected = true;
+        rejected = true,
+        noSession = false;
   const _RefreshResult.transient()
       : token = null,
-        rejected = false;
+        rejected = false,
+        noSession = false;
+  const _RefreshResult.noSession()
+      : token = null,
+        rejected = false,
+        noSession = true;
 }
