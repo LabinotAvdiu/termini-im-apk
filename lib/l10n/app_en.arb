@@ -540,6 +540,23 @@
   "shareQrEmailFailed": "Send failed. Try again.",
   "shareQrSettingsTile": "QR share",
   "shareQrSettingsTileSubtitle": "Generate your salon QR",
+  "onboardingEyebrow": "SALON DEACTIVATED",
+  "onboardingTitle": "Your salon isn't visible yet",
+  "onboardingSubtitle": "Complete these 3 steps to publish it and let clients find you.",
+  "onboardingStep1Title": "Add photos",
+  "onboardingStep1Desc": "A good gallery doubles bookings. 3 photos minimum.",
+  "onboardingStep2Title": "Configure your services",
+  "onboardingStep2Desc": "Durations, prices, categories — what the client sees before booking.",
+  "onboardingStep3Title": "Set your hours",
+  "onboardingStep3Desc": "Opening days and times so clients see your free slots.",
+  "onboardingStep4Title": "Invite your team",
+  "onboardingStep4Desc": "Add your stylists so they manage their own schedule.",
+  "onboardingStep5Title": "Share your salon",
+  "onboardingStep5Desc": "Send your link to regulars and let them book direct.",
+  "onboardingSuccessEyebrow": "YOUR SALON IS LIVE",
+  "onboardingSuccessTitle": "Nicely done, your salon is published",
+  "onboardingSuccessSubtitle": "Share it to receive your first bookings.",
+  "onboardingSuccessCta": "Share my salon",
   "favoriteWithEmployeeBadge": "With {name}",
   "@favoriteWithEmployeeBadge": {
     "placeholders": { "name": { "type": "String" } }
@@ -607,6 +624,10 @@
   "galleryDeleteConfirm": "Delete this photo from your gallery?",
   "galleryUploading": "Uploading…",
   "galleryUploadError": "Upload failed. Please try again.",
+  "galleryUploadErrorTooBig": "Image too large. Maximum size: 8 MB.",
+  "galleryUploadErrorWrongType": "Unsupported format. Use JPG, PNG or WebP.",
+  "galleryUploadErrorNetwork": "Connection failed. Check your network and try again.",
+  "galleryUploadErrorCorrupted": "This image appears to be corrupted or unreadable.",
   "galleryReorderHint": "Hold and drag to reorder",
   "galleryOrderExplanation": "The photo order matches how your salon appears on its public page.",
   "salonCoverPhotoHint": "The first photo of your gallery is shown on the search page.",
@@ -924,8 +945,6 @@
   "deleteAccountErrorOwnerSalon": "You must transfer or delete your salon before you can delete your account.",
   "deleteAccountErrorGeneric": "Something went wrong. Please try again later.",
 
-  "planningEmptyDayTitle": "No appointments today.",
-  "planningEmptyDaySubtitle": "Time for a Turkish coffee?",
 
   "tomorrowBookingBannerMessage": "Tomorrow at {time} at {salon} →",
   "@tomorrowBookingBannerMessage": {

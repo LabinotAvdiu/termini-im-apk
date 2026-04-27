@@ -2,11 +2,28 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../data/datasources/my_company_remote_datasource.dart';
 import '../../data/models/gallery_photo_model.dart';
 import '../../data/models/my_company_model.dart';
+
+/// Typed outcome of a gallery upload attempt — drives the localized
+/// snackbar in CompanyDashboardScreen.pickAndUploadPhoto.
+enum GalleryUploadError {
+  /// File exceeds the 8 MB backend limit.
+  tooBig,
+
+  /// File extension / MIME type is not jpg/jpeg/png/webp.
+  wrongType,
+
+  /// Connection failure — network down, timeout, server unreachable.
+  network,
+
+  /// Catch-all for unmapped errors (corrupted file, server 5xx with no body).
+  unknown,
+}
 
 // ---------------------------------------------------------------------------
 // Datasource provider
@@ -446,13 +463,15 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
     }
   }
 
-  Future<bool> uploadPhoto({
+  /// Returns null on success, or a typed [GalleryUploadError] on failure.
+  /// The screen layer maps this to a localized snackbar.
+  Future<GalleryUploadError?> uploadPhoto({
     required Uint8List bytes,
     required String filename,
   }) async {
     // Drop a second upload attempt while one is already in flight — the UI
     // already disables the button, this is belt-and-braces for rapid taps.
-    if (state.galleryUploading) return false;
+    if (state.galleryUploading) return GalleryUploadError.unknown;
     state = state.copyWith(
       galleryUploading: true,
       galleryUploadProgress: 0.0,
@@ -479,15 +498,43 @@ class CompanyDashboardNotifier extends StateNotifier<CompanyDashboardState> {
       );
       // E25 — gallery_photo_uploaded
       AnalyticsService.instance.logGalleryPhotoUploaded();
-      return true;
+      return null;
     } catch (e) {
+      final classified = _classifyUploadError(e);
       state = state.copyWith(
         galleryUploading: false,
         galleryUploadProgress: null,
-        galleryError: e.toString(),
+        galleryError: classified.name,
       );
-      return false;
+      return classified;
     }
+  }
+
+  /// Maps a raw exception from the datasource into our typed error enum.
+  /// Backend (Laravel StoreGalleryPhotoRequest) returns 422 with these
+  /// hard-coded English messages -- we sniff them so we can localize the
+  /// snackbar. Falls back to `unknown` for anything we can't match.
+  GalleryUploadError _classifyUploadError(Object e) {
+    if (e is NetworkException) return GalleryUploadError.network;
+    if (e is ValidationException) {
+      final msg = e.message.toLowerCase();
+      if (msg.contains('larger') ||
+          msg.contains('mb') ||
+          msg.contains('size') ||
+          msg.contains('grand') ||
+          msg.contains('madhe')) {
+        return GalleryUploadError.tooBig;
+      }
+      if (msg.contains('image') ||
+          msg.contains('jpeg') ||
+          msg.contains('png') ||
+          msg.contains('webp') ||
+          msg.contains('mime') ||
+          msg.contains('format')) {
+        return GalleryUploadError.wrongType;
+      }
+    }
+    return GalleryUploadError.unknown;
   }
 
   Future<bool> deleteGalleryPhoto(String id) async {

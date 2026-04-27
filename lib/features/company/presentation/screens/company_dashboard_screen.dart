@@ -322,6 +322,15 @@ class _CompanyDashboardScreenState
 
   // ── Gallery ───────────────────────────────────────────────────────────────
 
+  /// Max upload size accepted by the backend's StoreGalleryPhotoRequest
+  /// (Lagedi/backend/.../MyCompany/StoreGalleryPhotoRequest.php). Pre-
+  /// validating client-side gives the user instant feedback instead of a
+  /// round-trip just to be told their picture is too big.
+  static const int _galleryMaxBytes = 8 * 1024 * 1024;
+  static const Set<String> _galleryAllowedExt = {
+    'jpg', 'jpeg', 'png', 'webp',
+  };
+
   Future<void> pickAndUploadPhoto() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(
@@ -335,13 +344,42 @@ class _CompanyDashboardScreenState
     final bytes = await picked.readAsBytes();
     final filename = picked.name.isNotEmpty ? picked.name : 'photo.jpg';
 
-    final ok = await ref.read(companyDashboardProvider.notifier).uploadPhoto(
+    // Client-side pre-validation: short-circuit before hitting the network
+    // so the snackbar is instant and we don't waste bandwidth on a known-
+    // bad file.
+    final extension = filename.contains('.')
+        ? filename.split('.').last.toLowerCase()
+        : '';
+    if (!_galleryAllowedExt.contains(extension)) {
+      if (mounted) {
+        _showSnack(context, context.l10n.galleryUploadErrorWrongType);
+      }
+      return;
+    }
+    if (bytes.lengthInBytes > _galleryMaxBytes) {
+      if (mounted) {
+        _showSnack(context, context.l10n.galleryUploadErrorTooBig);
+      }
+      return;
+    }
+
+    final error = await ref.read(companyDashboardProvider.notifier).uploadPhoto(
           bytes: bytes,
           filename: filename,
         );
-    if (!ok && mounted) {
-      _showSnack(context, context.l10n.galleryUploadError);
+    if (error != null && mounted) {
+      _showSnack(context, _galleryErrorMessage(error));
     }
+  }
+
+  String _galleryErrorMessage(GalleryUploadError error) {
+    final l = context.l10n;
+    return switch (error) {
+      GalleryUploadError.tooBig => l.galleryUploadErrorTooBig,
+      GalleryUploadError.wrongType => l.galleryUploadErrorWrongType,
+      GalleryUploadError.network => l.galleryUploadErrorNetwork,
+      GalleryUploadError.unknown => l.galleryUploadError,
+    };
   }
 
   Future<void> confirmDeleteGalleryPhoto(GalleryPhotoModel photo) async {

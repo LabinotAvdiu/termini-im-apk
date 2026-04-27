@@ -540,6 +540,23 @@
   "shareQrEmailFailed": "Envoi échoué. Réessaie.",
   "shareQrSettingsTile": "Partage QR",
   "shareQrSettingsTileSubtitle": "Génère le QR de ton salon",
+  "onboardingEyebrow": "SALON DÉSACTIVÉ",
+  "onboardingTitle": "Ton salon n'est pas visible",
+  "onboardingSubtitle": "Termine ces 3 étapes pour le publier et que tes clients te trouvent.",
+  "onboardingStep1Title": "Ajoute des photos",
+  "onboardingStep1Desc": "Une bonne galerie double les réservations. 3 photos minimum.",
+  "onboardingStep2Title": "Configure tes services",
+  "onboardingStep2Desc": "Durées, prix, catégories — ce que voit le client avant de réserver.",
+  "onboardingStep3Title": "Définis tes horaires",
+  "onboardingStep3Desc": "Jours et heures d'ouverture pour afficher les créneaux libres.",
+  "onboardingStep4Title": "Invite ton équipe",
+  "onboardingStep4Desc": "Ajoute tes employés pour qu'ils gèrent leur planning.",
+  "onboardingStep5Title": "Partage ton salon",
+  "onboardingStep5Desc": "Envoie ton lien à tes clients fidèles, ils réservent direct.",
+  "onboardingSuccessEyebrow": "TON SALON EST EN LIGNE",
+  "onboardingSuccessTitle": "Bravo, ton salon est publié",
+  "onboardingSuccessSubtitle": "Partage-le pour recevoir tes premiers rendez-vous.",
+  "onboardingSuccessCta": "Partager mon salon",
   "favoriteWithEmployeeBadge": "Avec {name}",
   "@favoriteWithEmployeeBadge": {
     "placeholders": { "name": { "type": "String" } }
@@ -606,6 +623,10 @@
   "galleryDeleteConfirm": "Supprimer cette photo de votre galerie ?",
   "galleryUploading": "Envoi en cours…",
   "galleryUploadError": "Échec de l'envoi. Veuillez réessayer.",
+  "galleryUploadErrorTooBig": "Image trop volumineuse. Taille maximum : 8 Mo.",
+  "galleryUploadErrorWrongType": "Format non supporté. Utilisez JPG, PNG ou WebP.",
+  "galleryUploadErrorNetwork": "Connexion impossible. Vérifiez votre réseau et réessayez.",
+  "galleryUploadErrorCorrupted": "Cette image semble corrompue ou illisible.",
   "galleryReorderHint": "Maintenez et glissez pour réorganiser",
   "galleryOrderExplanation": "L'ordre des photos correspond à celui affiché sur la fiche publique de votre salon.",
   "salonCoverPhotoHint": "La première photo de votre galerie est affichée sur la page de recherche.",
@@ -923,8 +944,6 @@
   "deleteAccountErrorOwnerSalon": "Tu dois transférer ou supprimer ton salon avant de pouvoir supprimer ton compte.",
   "deleteAccountErrorGeneric": "Une erreur est survenue. Réessaie plus tard.",
 
-  "planningEmptyDayTitle": "Pas de rendez-vous aujourd'hui.",
-  "planningEmptyDaySubtitle": "Le bon moment pour un café.",
 
   "tomorrowBookingBannerMessage": "Demain à {time} chez {salon} →",
   "@tomorrowBookingBannerMessage": {

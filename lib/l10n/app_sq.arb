@@ -540,6 +540,23 @@
   "shareQrEmailFailed": "Dërgimi dështoi. Provo përsëri.",
   "shareQrSettingsTile": "Ndarja QR",
   "shareQrSettingsTileSubtitle": "Gjenero QR e sallonit tënd",
+  "onboardingEyebrow": "SALLONI ÇAKTIVIZUAR",
+  "onboardingTitle": "Salloni yt nuk është i dukshëm",
+  "onboardingSubtitle": "Plotëso këto 3 hapa për ta publikuar dhe që klientët të të gjejnë.",
+  "onboardingStep1Title": "Shto foto",
+  "onboardingStep1Desc": "Një galeri e mirë dyfishon rezervimet. Të paktën 3 foto.",
+  "onboardingStep2Title": "Konfiguro shërbimet",
+  "onboardingStep2Desc": "Kohëzgjatjet, çmimet, kategoritë — çfarë sheh klienti para rezervimit.",
+  "onboardingStep3Title": "Vendos oraret",
+  "onboardingStep3Desc": "Ditët dhe oraret e hapjes që të shfaqen oraret e lira.",
+  "onboardingStep4Title": "Fto ekipin",
+  "onboardingStep4Desc": "Shto punonjësit që ata të menaxhojnë orarin e tyre.",
+  "onboardingStep5Title": "Ndaj sallonin",
+  "onboardingStep5Desc": "Dërgoji lidhjen klientëve të zakonshëm dhe lërë t'i rezervojnë direkt.",
+  "onboardingSuccessEyebrow": "SALLONI YT ËSHTË ONLINE",
+  "onboardingSuccessTitle": "Bravo, salloni yt u publikua",
+  "onboardingSuccessSubtitle": "Ndaje për të marrë rezervimet e para.",
+  "onboardingSuccessCta": "Ndaj sallonin tim",
   "favoriteWithEmployeeBadge": "Me {name}",
   "@favoriteWithEmployeeBadge": {
     "placeholders": { "name": { "type": "String" } }
@@ -607,6 +624,10 @@
   "galleryDeleteConfirm": "Fshi këtë foto nga galeria juaj?",
   "galleryUploading": "Duke ngarkuar…",
   "galleryUploadError": "Ngarkimi dështoi. Provo sërish.",
+  "galleryUploadErrorTooBig": "Fotoja është shumë e madhe. Madhësia maksimale: 8 MB.",
+  "galleryUploadErrorWrongType": "Format i pambështetur. Përdor JPG, PNG ose WebP.",
+  "galleryUploadErrorNetwork": "Lidhja dështoi. Kontrollo rrjetin dhe provo sërish.",
+  "galleryUploadErrorCorrupted": "Kjo foto duket e dëmtuar ose e palexueshme.",
   "galleryReorderHint": "Mbaj dhe tërhiq për të rirenditur",
   "galleryOrderExplanation": "Radha e fotove përputhet me atë që shfaqet në faqen publike të sallonit tuaj.",
   "salonCoverPhotoHint": "Fotoja e parë e galerisë tuaj shfaqet në faqen e kërkimit.",
@@ -924,8 +945,6 @@
   "deleteAccountErrorOwnerSalon": "Duhet të transferosh ose të fshish sallonin tënd para se të fshish llogarinë.",
   "deleteAccountErrorGeneric": "Ndodhi një gabim. Provo përsëri më vonë.",
 
-  "planningEmptyDayTitle": "S'ke termine sot.",
-  "planningEmptyDaySubtitle": "Koha për një kafe turke?",
 
   "tomorrowBookingBannerMessage": "Nesër në {time} tek {salon} →",
   "@tomorrowBookingBannerMessage": {
