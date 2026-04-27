@@ -33,23 +33,42 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
   /// stack the same dialog multiple times.
   bool _modalOpen = false;
 
+  ProviderSubscription<bool>? _sessionExpiredSub;
+
   @override
-  Widget build(BuildContext context) {
-    ref.listen<bool>(
+  void initState() {
+    super.initState();
+    // Use listenManual so the subscription is set up exactly once at mount
+    // time, not on every build of the wrapper widget. The wrapper rarely
+    // rebuilds (it only wraps the navigator), but listenManual is the
+    // explicit pattern for "fire-and-forget" listeners that survive widget
+    // rebuilds and don't depend on the build cycle to register.
+    _sessionExpiredSub = ref.listenManual<bool>(
       authStateProvider.select((s) => s.sessionExpired),
       (previous, next) {
         if (next == true && !_modalOpen) {
           _modalOpen = true;
-          // Defer until after the current frame so the listener doesn't
-          // fight with whatever rebuild triggered the auth state change.
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             _showModal();
           });
         }
       },
+      // Fire once with the current value too, so if `sessionExpired` was
+      // already true before this widget mounted (e.g. an interceptor 401
+      // that fired during app startup), the modal still appears.
+      fireImmediately: true,
     );
+  }
 
+  @override
+  void dispose() {
+    _sessionExpiredSub?.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return widget.child;
   }
 
