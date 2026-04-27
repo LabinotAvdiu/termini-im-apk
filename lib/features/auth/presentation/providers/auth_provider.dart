@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -217,11 +217,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// opening. The modal must show first; the wipe happens when the user
   /// picks a button (resolveWithLogin / resolveWithHome).
   void triggerSessionExpired() {
-    debugPrint('[auth] triggerSessionExpired called '
-        '(was=${state.sessionExpired} isAuth=${state.isAuthenticated})');
     if (state.sessionExpired) return;
     state = state.copyWith(sessionExpired: true);
-    debugPrint('[auth] sessionExpired flag set → true');
   }
 
   /// Called by the modal's "Se connecter" button. Wipes the auth state so
