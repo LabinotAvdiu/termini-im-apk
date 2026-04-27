@@ -980,5 +980,9 @@
   "notificationsInboxYesterday": "Yesterday",
   "notificationsChannelPush": "PUSH",
   "notificationsChannelEmail": "EMAIL",
-  "notificationsChannelInApp": "IN-APP"
+  "notificationsChannelInApp": "IN-APP",
+  "sessionExpiredTitle": "You are not logged in",
+  "sessionExpiredMessage": "Your session has expired. Sign in again to continue or go back to the home page.",
+  "sessionExpiredLoginAction": "Sign in",
+  "sessionExpiredHomeAction": "Go to home"
 }

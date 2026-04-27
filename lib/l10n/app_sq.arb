@@ -980,5 +980,9 @@
   "notificationsInboxYesterday": "Dje",
   "notificationsChannelPush": "PUSH",
   "notificationsChannelEmail": "EMAIL",
-  "notificationsChannelInApp": "IN-APP"
+  "notificationsChannelInApp": "IN-APP",
+  "sessionExpiredTitle": "Nuk jeni i kyçur",
+  "sessionExpiredMessage": "Sesioni juaj ka skaduar. Kyçuni përsëri për të vazhduar ose kthehuni në faqen kryesore.",
+  "sessionExpiredLoginAction": "Kyçu",
+  "sessionExpiredHomeAction": "Shko te faqja kryesore"
 }

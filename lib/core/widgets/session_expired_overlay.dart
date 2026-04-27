@@ -1,0 +1,217 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text_styles.dart';
+import '../utils/extensions.dart';
+
+/// Wraps the app and listens for [AuthState.sessionExpired]. When the API
+/// interceptor detects that the refresh token was rejected (real 401 on
+/// /auth/refresh — not a transient network blip), it flips the flag via
+/// `authStateProvider.notifier.triggerSessionExpired()`, and this widget
+/// surfaces a modal asking the user to either re-authenticate or fall back
+/// to guest browsing on /home.
+///
+/// Mounted from `app.dart` inside `MaterialApp.router(builder:)` so the
+/// overlay sees a Navigator + Directionality + Theme even on the very
+/// first frame.
+class SessionExpiredOverlay extends ConsumerStatefulWidget {
+  final Widget child;
+  const SessionExpiredOverlay({super.key, required this.child});
+
+  @override
+  ConsumerState<SessionExpiredOverlay> createState() =>
+      _SessionExpiredOverlayState();
+}
+
+class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
+  /// Tracks whether a modal is currently visible so a flurry of stacked 401s
+  /// (from queued requests that all see the same token rejection) can't
+  /// stack the same dialog multiple times.
+  bool _modalOpen = false;
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen<bool>(
+      authStateProvider.select((s) => s.sessionExpired),
+      (previous, next) {
+        if (next == true && !_modalOpen) {
+          _modalOpen = true;
+          // Defer until after the current frame so the listener doesn't
+          // fight with whatever rebuild triggered the auth state change.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _showModal();
+          });
+        }
+      },
+    );
+
+    return widget.child;
+  }
+
+  Future<void> _showModal() async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: AppColors.textPrimary.withValues(alpha: 0.55),
+      builder: (dialogCtx) => _SessionExpiredDialog(
+        onLogin: () {
+          ref.read(authStateProvider.notifier).dismissSessionExpired();
+          Navigator.of(dialogCtx).pop();
+          // `go` (not push) because the auth state was already wiped — the
+          // user is restarting from a clean slate. The router redirect will
+          // also handle this, but going explicitly avoids any flicker.
+          context.go('/login');
+        },
+        onHome: () {
+          // Guest mode lets the user keep browsing salons without signing in.
+          // Same as tapping "Continuer sans compte" elsewhere in the app.
+          ref.read(authStateProvider.notifier).enterGuestMode();
+          ref.read(authStateProvider.notifier).dismissSessionExpired();
+          Navigator.of(dialogCtx).pop();
+          context.go('/home');
+        },
+      ),
+    );
+    if (mounted) _modalOpen = false;
+  }
+}
+
+class _SessionExpiredDialog extends StatelessWidget {
+  final VoidCallback onLogin;
+  final VoidCallback onHome;
+
+  const _SessionExpiredDialog({
+    required this.onLogin,
+    required this.onHome,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return PopScope(
+      canPop: false,
+      child: Dialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        ),
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xxl,
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon — bordeaux gradient lock matching auth_required_modal
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF511522), Color(0xFF7A2232)],
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusLg),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.28),
+                        blurRadius: 14,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.lock_outline_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.md),
+
+                Text(
+                  l.sessionExpiredTitle,
+                  style: AppTextStyles.h3,
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: AppSpacing.sm),
+
+                Text(
+                  l.sessionExpiredMessage,
+                  style: AppTextStyles.body
+                      .copyWith(color: AppColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Primary action — Se connecter
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: onLogin,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusMd),
+                      ),
+                    ),
+                    child: Text(
+                      l.sessionExpiredLoginAction,
+                      style: AppTextStyles.button
+                          .copyWith(color: Colors.white),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.sm),
+
+                // Secondary — Aller à l'accueil
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton(
+                    onPressed: onHome,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(
+                        color: AppColors.primary,
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusMd),
+                      ),
+                    ),
+                    child: Text(
+                      l.sessionExpiredHomeAction,
+                      style: AppTextStyles.button
+                          .copyWith(color: AppColors.primary),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

@@ -979,5 +979,9 @@
   "notificationsInboxYesterday": "Hier",
   "notificationsChannelPush": "PUSH",
   "notificationsChannelEmail": "EMAIL",
-  "notificationsChannelInApp": "IN-APP"
+  "notificationsChannelInApp": "IN-APP",
+  "sessionExpiredTitle": "Vous n'êtes pas connecté",
+  "sessionExpiredMessage": "Votre session a expiré. Reconnectez-vous pour continuer ou retournez à l'accueil.",
+  "sessionExpiredLoginAction": "Se connecter",
+  "sessionExpiredHomeAction": "Aller à l'accueil"
 }

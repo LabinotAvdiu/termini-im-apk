@@ -12,6 +12,9 @@ final _secureStorageProvider = Provider<FlutterSecureStorage>(
 );
 
 /// Provides the configured [ApiInterceptor] (reads token from storage).
+/// The "session expired" callback is wired AFTER construction in main.dart
+/// to avoid a Riverpod dependency cycle (auth provider depends on the
+/// repository which depends on this interceptor).
 final apiInterceptorProvider = Provider<ApiInterceptor>((ref) {
   final storage = ref.watch(_secureStorageProvider);
   return ApiInterceptor(storage: storage);

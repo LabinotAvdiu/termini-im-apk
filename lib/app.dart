@@ -6,6 +6,7 @@ import 'core/services/analytics_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'core/widgets/session_expired_overlay.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/remote_config/presentation/screens/force_update_screen.dart';
 import 'features/remote_config/presentation/screens/maintenance_screen.dart';
@@ -94,8 +95,13 @@ class _TakimiAppState extends ConsumerState<TakimiApp> {
       // us a global overlay that floats above every route while still having
       // access to the Material context.
       builder: (context, child) {
-        return InAppNotificationOverlay(
-          child: child ?? const SizedBox.shrink(),
+        // Session-expired overlay sits OUTSIDE the in-app notification
+        // overlay so it sees the same Navigator + Theme + Directionality.
+        // Both wrappers must live inside MaterialApp.router for that.
+        return SessionExpiredOverlay(
+          child: InAppNotificationOverlay(
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
       },
     );
