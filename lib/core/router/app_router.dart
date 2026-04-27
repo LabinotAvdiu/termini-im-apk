@@ -313,11 +313,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           // forward the id to the booking flow on "Choisir".
           final preselectedEmployeeId =
               state.uri.queryParameters['employee'];
+          // QR-share marker `?fav=1` — the visitor scanned a salon QR
+          // generated from Settings → Partage QR, intent is to favorite.
+          // Detail screen auto-adds to favorites on landing (with the
+          // preferred employee when present). See share_url_builder.dart.
+          final autoFavorite = state.uri.queryParameters['fav'] == '1';
           return editorialSlidePage(
             key: state.pageKey,
             child: CompanyDetailScreen(
               companyId: id,
               preselectedEmployeeId: preselectedEmployeeId,
+              autoFavorite: autoFavorite,
             ),
           );
         },

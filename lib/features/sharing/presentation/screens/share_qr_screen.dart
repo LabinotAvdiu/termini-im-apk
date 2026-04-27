@@ -40,6 +40,10 @@ class _ShareQrScreenState extends ConsumerState<ShareQrScreen> {
   void initState() {
     super.initState();
     _captionCtrl = TextEditingController();
+    // Rebuild the screen on every keystroke so the QR card preview reflects
+    // the live caption. Cheaper than spreading setState calls through every
+    // input widget and avoids the markNeedsBuild hack that doesn't propagate.
+    _captionCtrl.addListener(_onCaptionChanged);
     // Pre-fill with the salon name once the dashboard is loaded.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(companyDashboardProvider);
@@ -49,8 +53,13 @@ class _ShareQrScreenState extends ConsumerState<ShareQrScreen> {
     });
   }
 
+  void _onCaptionChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    _captionCtrl.removeListener(_onCaptionChanged);
     _captionCtrl.dispose();
     super.dispose();
   }
@@ -68,9 +77,14 @@ class _ShareQrScreenState extends ConsumerState<ShareQrScreen> {
     final user = ref.read(authStateProvider).user;
     if (company == null) return '';
     final useEmployee = _showToggle && _includeMe && user != null;
+    // QR-share URLs always carry fav=1 — scanning a salon QR is intent
+    // to favorite (the editorial caption says "Ajoute-moi en favori et
+    // prends RDV"). Plain share-link copies from the bottom-sheet stay
+    // without auto-fav (different intent: "I'm sharing this place").
     return buildSalonShareUrl(
       company.id,
       employeeId: useEmployee ? user.id : null,
+      autoFavorite: true,
     );
   }
 
@@ -233,13 +247,21 @@ class _ShareQrScreenState extends ConsumerState<ShareQrScreen> {
                   else ...[
                     _CaptionInput(controller: _captionCtrl),
                     const SizedBox(height: AppSpacing.lg),
-                    _QrCard(
-                      cardKey: _qrCardKey,
-                      caption: _captionCtrl.text.trim().isEmpty
-                          ? company.name
-                          : _captionCtrl.text.trim(),
-                      url: _buildShareUrl(),
-                      bottomText: context.l10n.shareQrBottomText,
+                    // Mobile — center the QR card so it doesn't stretch
+                    // edge-to-edge; the fullscreen button stays anchored
+                    // to the card's top-right corner inside the Stack.
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 320),
+                        child: _QrCard(
+                          cardKey: _qrCardKey,
+                          caption: _captionCtrl.text.trim().isEmpty
+                              ? company.name
+                              : _captionCtrl.text.trim(),
+                          url: _buildShareUrl(),
+                          bottomText: context.l10n.shareQrBottomText,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     _EmailSend(
@@ -446,7 +468,6 @@ class _CaptionInput extends StatelessWidget {
         TextField(
           controller: controller,
           maxLength: 80,
-          onChanged: (_) => (context as Element).markNeedsBuild(),
           style: GoogleFonts.fraunces(
             fontSize: 17,
             color: AppColors.textPrimary,
@@ -489,89 +510,338 @@ class _QrCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      key: cardKey,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          border: Border.all(color: AppColors.secondary),
-          borderRadius: BorderRadius.circular(18),
+    return Stack(
+      children: [
+        RepaintBoundary(
+          key: cardKey,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              border: Border.all(color: AppColors.secondary),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  caption,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.fraunces(
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.textPrimary,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      QrImageView(
+                        data: url,
+                        version: QrVersions.auto,
+                        size: 220,
+                        eyeStyle: const QrEyeStyle(
+                          eyeShape: QrEyeShape.square,
+                          color: AppColors.textPrimary,
+                        ),
+                        dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: AppColors.textPrimary,
+                        ),
+                        // Level H = 30% error correction — survives the central
+                        // logo overlay without losing scan reliability.
+                        errorCorrectionLevel: QrErrorCorrectLevel.H,
+                      ),
+                      const _QrCenterWordmark(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  bottomText,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.instrumentSerif(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.primary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        child: Column(
-          children: [
-            Text(
-              caption,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.fraunces(
-                fontSize: 18,
-                fontStyle: FontStyle.italic,
-                color: AppColors.textPrimary,
-                height: 1.3,
+        // Fullscreen toggle — opens an immersive view of the same card so
+        // the owner can show the QR to a client face-to-face without UI
+        // distractions. Sits inside the card border, top-right.
+        Positioned(
+          top: 10,
+          right: 10,
+          child: Material(
+            color: AppColors.background,
+            shape: const CircleBorder(),
+            elevation: 1,
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () => _openFullscreen(context),
+              child: Container(
+                width: 34,
+                height: 34,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.18),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.fullscreen_rounded,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
               ),
             ),
-            const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  QrImageView(
-                    data: url,
-                    version: QrVersions.auto,
-                    size: 220,
-                    eyeStyle: const QrEyeStyle(
-                      eyeShape: QrEyeShape.square,
-                      color: AppColors.textPrimary,
-                    ),
-                    dataModuleStyle: const QrDataModuleStyle(
-                      dataModuleShape: QrDataModuleShape.square,
-                      color: AppColors.textPrimary,
-                    ),
-                    // Level H = 30% error correction — survives the central
-                    // logo overlay without losing scan reliability.
-                    errorCorrectionLevel: QrErrorCorrectLevel.H,
-                  ),
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      border: Border.all(color: AppColors.primary, width: 2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'im',
-                        style: GoogleFonts.instrumentSerif(
-                          fontSize: 22,
-                          fontStyle: FontStyle.italic,
-                          color: AppColors.primary,
-                          height: 1,
-                        ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _openFullscreen(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder<void>(
+        opaque: true,
+        barrierDismissible: false,
+        transitionDuration: const Duration(milliseconds: 220),
+        pageBuilder: (_, animation, __) => _QrFullscreenView(
+          caption: caption,
+          url: url,
+          bottomText: bottomText,
+        ),
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
+    );
+  }
+}
+
+// Fullscreen QR display — for showing the code to a client across a
+// counter, or for taking a clean screenshot to print. No nav bars,
+// no chrome — just caption + QR + bottom text + close.
+class _QrFullscreenView extends StatelessWidget {
+  final String caption;
+  final String url;
+  final String bottomText;
+
+  const _QrFullscreenView({
+    required this.caption,
+    required this.url,
+    required this.bottomText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    // QR sized to whichever is smaller — width or height — minus
+    // breathing room for the caption above and bottom text below.
+    final qrSize = (size.shortestSide * 0.78).clamp(260.0, 520.0);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      caption,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.fraunces(
+                        fontSize: 28,
+                        fontStyle: FontStyle.italic,
+                        color: AppColors.textPrimary,
+                        height: 1.25,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.08),
+                            blurRadius: 28,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          QrImageView(
+                            data: url,
+                            version: QrVersions.auto,
+                            size: qrSize,
+                            eyeStyle: const QrEyeStyle(
+                              eyeShape: QrEyeShape.square,
+                              color: AppColors.textPrimary,
+                            ),
+                            dataModuleStyle: const QrDataModuleStyle(
+                              dataModuleShape: QrDataModuleShape.square,
+                              color: AppColors.textPrimary,
+                            ),
+                            errorCorrectionLevel: QrErrorCorrectLevel.H,
+                          ),
+                          // Scale the wordmark proportionally to the QR so
+                          // it remains visually balanced at any size.
+                          _QrCenterWordmark(scale: qrSize / 220),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Text(
+                      bottomText,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.instrumentSerif(
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                        color: AppColors.primary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 18),
-            Text(
-              bottomText,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.instrumentSerif(
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-                color: AppColors.primary,
-                height: 1.4,
+            // Close button — top-right, ivory bg + bordeaux icon
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Material(
+                color: AppColors.background,
+                shape: const CircleBorder(),
+                elevation: 2,
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.16),
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      size: 22,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// "Termini im" wordmark — composed natively to match logo-primary.svg's
+// layout: [• bordeaux] Termini [im italique] [• ink]. The two dots are
+// signature elements of the brand, positioned on the sides per the
+// editorial wordmark spec. Ratio ~4:1, kept under 30% of the QR surface
+// so error correction level H absorbs the occlusion without scan loss.
+//
+// [scale] proportionally resizes every dimension (font, dots, padding,
+// gaps). 1.0 matches the default 220px QR; in fullscreen pass
+// `qrSize / 220` so the wordmark grows with the QR.
+class _QrCenterWordmark extends StatelessWidget {
+  final double scale;
+  const _QrCenterWordmark({this.scale = 1.0});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 10 * scale,
+        vertical: 6 * scale,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(8 * scale),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0x14000000),
+            blurRadius: 4 * scale,
+            offset: Offset(0, 1 * scale),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Leading bordeaux dot — signature
+          Container(
+            width: 5 * scale,
+            height: 5 * scale,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 6 * scale),
+          // "Termini"
+          Text(
+            'Termini',
+            style: GoogleFonts.fraunces(
+              fontSize: 18 * scale,
+              fontWeight: FontWeight.w400,
+              color: AppColors.textPrimary,
+              height: 1,
+              letterSpacing: -0.4 * scale,
+            ),
+          ),
+          SizedBox(width: 3 * scale),
+          // "im" italic bordeaux
+          Text(
+            'im',
+            style: GoogleFonts.instrumentSerif(
+              fontSize: 20 * scale,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              height: 1,
+            ),
+          ),
+          SizedBox(width: 4 * scale),
+          // Trailing ink dot — full-stop punctuation
+          Container(
+            width: 3 * scale,
+            height: 3 * scale,
+            decoration: const BoxDecoration(
+              color: AppColors.textPrimary,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ],
       ),
     );
   }

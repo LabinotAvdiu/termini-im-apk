@@ -1487,7 +1487,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get shareQrEmailSendButton => 'Dërgo';
 
   @override
-  String get shareQrEmailSent => 'Emaili u dërgua — kontrollo kutinë postare.';
+  String get shareQrEmailSent => 'Emaili u dërgua.';
 
   @override
   String get shareQrEmailFailed => 'Dërgimi dështoi. Provo përsëri.';
@@ -1674,6 +1674,9 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get favoriteRemoved => 'U hoq nga të preferuarat';
+
+  @override
+  String get favoriteAddedFromQr => 'Salloni u shtua tek të preferuarat e tua';
 
   @override
   String get removeFavoriteTitle => 'Hiq nga të preferuarat?';
@@ -2453,4 +2456,17 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get notificationsChannelInApp => 'IN-APP';
+
+  @override
+  String get sessionExpiredTitle => 'Nuk jeni i kyçur';
+
+  @override
+  String get sessionExpiredMessage =>
+      'Sesioni juaj ka skaduar. Kyçuni përsëri për të vazhduar ose kthehuni në faqen kryesore.';
+
+  @override
+  String get sessionExpiredLoginAction => 'Kyçu';
+
+  @override
+  String get sessionExpiredHomeAction => 'Shko te faqja kryesore';
 }

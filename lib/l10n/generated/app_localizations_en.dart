@@ -1487,7 +1487,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareQrEmailSendButton => 'Send';
 
   @override
-  String get shareQrEmailSent => 'Email sent — check your inbox.';
+  String get shareQrEmailSent => 'Email sent.';
 
   @override
   String get shareQrEmailFailed => 'Send failed. Try again.';
@@ -1672,6 +1672,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get favoriteRemoved => 'Removed from favorites';
+
+  @override
+  String get favoriteAddedFromQr => 'Salon added to your favorites';
 
   @override
   String get removeFavoriteTitle => 'Remove from favorites?';
@@ -2447,4 +2450,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsChannelInApp => 'IN-APP';
+
+  @override
+  String get sessionExpiredTitle => 'You are not logged in';
+
+  @override
+  String get sessionExpiredMessage =>
+      'Your session has expired. Sign in again to continue or go back to the home page.';
+
+  @override
+  String get sessionExpiredLoginAction => 'Sign in';
+
+  @override
+  String get sessionExpiredHomeAction => 'Go to home';
 }

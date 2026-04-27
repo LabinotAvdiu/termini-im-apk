@@ -536,7 +536,7 @@
   "shareQrBottomText": "Add me to favorites\nand book",
   "shareQrEmailSendLabel": "Email me the QR",
   "shareQrEmailSendButton": "Send",
-  "shareQrEmailSent": "Email sent — check your inbox.",
+  "shareQrEmailSent": "Email sent.",
   "shareQrEmailFailed": "Send failed. Try again.",
   "shareQrSettingsTile": "QR share",
   "shareQrSettingsTileSubtitle": "Generate your salon QR",
@@ -613,6 +613,7 @@
 
   "favoriteAdded": "Added to favorites",
   "favoriteRemoved": "Removed from favorites",
+  "favoriteAddedFromQr": "Salon added to your favorites",
   "removeFavoriteTitle": "Remove from favorites?",
   "removeFavoriteConfirm": "{name} will no longer be highlighted.",
   "@removeFavoriteConfirm": {

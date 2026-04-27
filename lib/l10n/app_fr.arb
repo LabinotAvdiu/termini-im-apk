@@ -536,7 +536,7 @@
   "shareQrBottomText": "Ajoute-moi en favori\net prends RDV",
   "shareQrEmailSendLabel": "M'envoyer le QR",
   "shareQrEmailSendButton": "Envoyer",
-  "shareQrEmailSent": "Email envoyé — vérifie ta boîte.",
+  "shareQrEmailSent": "Email envoyé.",
   "shareQrEmailFailed": "Envoi échoué. Réessaie.",
   "shareQrSettingsTile": "Partage QR",
   "shareQrSettingsTileSubtitle": "Génère le QR de ton salon",
@@ -612,6 +612,7 @@
 
   "favoriteAdded": "Ajouté aux favoris",
   "favoriteRemoved": "Retiré des favoris",
+  "favoriteAddedFromQr": "Salon ajouté à tes favoris",
   "removeFavoriteTitle": "Retirer des favoris ?",
   "removeFavoriteConfirm": "{name} ne sera plus mis en avant.",
   "@removeFavoriteConfirm": {

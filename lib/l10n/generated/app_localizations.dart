@@ -2851,7 +2851,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareQrEmailSent.
   ///
   /// In fr, this message translates to:
-  /// **'Email envoyé — vérifie ta boîte.'**
+  /// **'Email envoyé.'**
   String get shareQrEmailSent;
 
   /// No description provided for @shareQrEmailFailed.
@@ -3165,6 +3165,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Retiré des favoris'**
   String get favoriteRemoved;
+
+  /// No description provided for @favoriteAddedFromQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon ajouté à tes favoris'**
+  String get favoriteAddedFromQr;
 
   /// No description provided for @removeFavoriteTitle.
   ///
@@ -4539,6 +4545,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'IN-APP'**
   String get notificationsChannelInApp;
+
+  /// No description provided for @sessionExpiredTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'êtes pas connecté'**
+  String get sessionExpiredTitle;
+
+  /// No description provided for @sessionExpiredMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre session a expiré. Reconnectez-vous pour continuer ou retournez à l\'accueil.'**
+  String get sessionExpiredMessage;
+
+  /// No description provided for @sessionExpiredLoginAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter'**
+  String get sessionExpiredLoginAction;
+
+  /// No description provided for @sessionExpiredHomeAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aller à l\'accueil'**
+  String get sessionExpiredHomeAction;
 }
 
 class _AppLocalizationsDelegate

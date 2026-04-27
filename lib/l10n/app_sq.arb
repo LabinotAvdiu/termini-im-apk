@@ -536,7 +536,7 @@
   "shareQrBottomText": "Më shto në të preferuarat\ndhe rezervo",
   "shareQrEmailSendLabel": "Më dërgo QR me email",
   "shareQrEmailSendButton": "Dërgo",
-  "shareQrEmailSent": "Emaili u dërgua — kontrollo kutinë postare.",
+  "shareQrEmailSent": "Emaili u dërgua.",
   "shareQrEmailFailed": "Dërgimi dështoi. Provo përsëri.",
   "shareQrSettingsTile": "Ndarja QR",
   "shareQrSettingsTileSubtitle": "Gjenero QR e sallonit tënd",
@@ -613,6 +613,7 @@
 
   "favoriteAdded": "U shtua tek të preferuarat",
   "favoriteRemoved": "U hoq nga të preferuarat",
+  "favoriteAddedFromQr": "Salloni u shtua tek të preferuarat e tua",
   "removeFavoriteTitle": "Hiq nga të preferuarat?",
   "removeFavoriteConfirm": "{name} nuk do të jetë më i theksuar.",
   "@removeFavoriteConfirm": {
