@@ -67,16 +67,21 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
       context: context,
       barrierDismissible: false,
       barrierColor: AppColors.textPrimary.withValues(alpha: 0.55),
+      // Use the root navigator so the dialog sits above any in-flight
+      // GoRouter route transitions (the auth state wipe would normally
+      // race the modal mount otherwise).
+      useRootNavigator: true,
       builder: (dialogCtx) => _SessionExpiredDialog(
         onLogin: () {
           _pendingAction = _PostModalAction.goLogin;
-          ref.read(authStateProvider.notifier).dismissSessionExpired();
+          // Wipe auth state NOW (before nav). The router will re-evaluate
+          // once we're on /login and not redirect anywhere unexpected.
+          ref.read(authStateProvider.notifier).resolveSessionExpiredWithLogin();
           Navigator.of(dialogCtx).pop();
         },
         onHome: () {
           _pendingAction = _PostModalAction.goHomeAsGuest;
-          ref.read(authStateProvider.notifier).enterGuestMode();
-          ref.read(authStateProvider.notifier).dismissSessionExpired();
+          ref.read(authStateProvider.notifier).resolveSessionExpiredWithGuest();
           Navigator.of(dialogCtx).pop();
         },
       ),

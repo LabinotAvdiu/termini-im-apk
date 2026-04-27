@@ -210,21 +210,40 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Marks the session as expired so the global overlay can show the modal.
   /// Idempotent: a second call while the modal is up is ignored, which keeps
   /// the modal from re-firing for every queued 401 after a token rejection.
+  ///
+  /// We DO NOT wipe the auth state here. If we did, the router's
+  /// refreshListenable would fire immediately, redirect the user away from
+  /// their current page, and the route transition would race the modal
+  /// opening. The modal must show first; the wipe happens when the user
+  /// picks a button (resolveWithLogin / resolveWithHome).
   void triggerSessionExpired() {
     if (state.sessionExpired) return;
-    // Reset auth-related state immediately so the router redirects guests-
-    // allowed routes correctly. Preserve rememberMe and surface the flag so
-    // the overlay knows to show the modal.
+    state = state.copyWith(sessionExpired: true);
+  }
+
+  /// Called by the modal's "Se connecter" button. Wipes the auth state so
+  /// the router treats the user as logged out, then the overlay navigates
+  /// to /login.
+  void resolveSessionExpiredWithLogin() {
+    state = AuthState(rememberMe: state.rememberMe);
+    unawaited(AnalyticsService.instance.clearUserId());
+    unawaited(CrashReporter.instance.clearUserId());
+  }
+
+  /// Called by the modal's "Aller à l'accueil" button. Wipes the auth
+  /// state but flips guest mode on so the user can keep browsing salons
+  /// without re-authenticating.
+  void resolveSessionExpiredWithGuest() {
     state = AuthState(
       rememberMe: state.rememberMe,
-      sessionExpired: true,
+      isGuest: true,
     );
     unawaited(AnalyticsService.instance.clearUserId());
     unawaited(CrashReporter.instance.clearUserId());
   }
 
-  /// Dismisses the modal. Called by the modal buttons after the user has
-  /// chosen what to do next (Se connecter / Aller à l'accueil).
+  /// Legacy alias kept for compatibility with the old overlay code path —
+  /// equivalent to resolveSessionExpiredWithLogin without the navigation.
   void dismissSessionExpired() {
     if (!state.sessionExpired) return;
     state = state.copyWith(sessionExpired: false);
