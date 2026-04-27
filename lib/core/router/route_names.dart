@@ -20,6 +20,7 @@ abstract class RouteNames {
   static const String pendingApprovals = 'pending-approvals';
   static const String submitReview = 'submit-review';
   static const String myCompanyReviews = 'my-company-reviews';
+  static const String adminSupportTickets = 'admin-support-tickets';
   static const String verifyEmail = 'verify-email';
   static const String notificationsInbox = 'notifications-inbox';
 }

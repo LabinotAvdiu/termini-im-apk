@@ -24,7 +24,7 @@ import '../../data/repositories/auth_repository.dart';
 import '../../../notifications/data/repositories/notification_repository.dart'
     show notificationRepositoryProvider;
 
-enum UserRole { user, company, employee }
+enum UserRole { user, company, employee, admin }
 
 // ---------------------------------------------------------------------------
 // Delete account result — sealed class for type-safe UI handling
@@ -90,6 +90,7 @@ class AuthState {
   bool get isOwner    => role == UserRole.company;
   bool get isEmployee => role == UserRole.employee;
   bool get isClient   => role == UserRole.user;
+  bool get isAdmin    => role == UserRole.admin;
 
   AuthState copyWith({
     bool? isAuthenticated,
@@ -164,10 +165,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Maps the API role string + optional companyRole field to [UserRole].
   ///
+  /// - 'admin'                                          → [UserRole.admin]
   /// - 'company' top-level role + companyRole == 'employee' → [UserRole.employee]
   /// - 'company' top-level role (owner or unspecified)      → [UserRole.company]
   /// - anything else                                        → [UserRole.user]
   static UserRole _resolveRole(String apiRole, UserModel? user) {
+    if (apiRole == 'admin') {
+      return UserRole.admin;
+    }
     if (apiRole == 'company') {
       if (user?.companyRole == 'employee') return UserRole.employee;
       return UserRole.company;
@@ -227,7 +232,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
         rememberMe: state.rememberMe,
       );
-      final resolvedRoleLogin = _resolveRole(response.role, response.user);
+      final resolvedRoleLogin = _resolveRole(response.user.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
@@ -317,7 +322,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
-      final resolvedRole = _resolveRole(response.role, response.user);
+      final resolvedRole = _resolveRole(response.user.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
@@ -413,7 +418,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
-      final resolvedRoleGoogle = _resolveRole(response.role, response.user);
+      final resolvedRoleGoogle = _resolveRole(response.user.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
@@ -480,7 +485,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         token: response.token,
         user: response.user,
-        role: _resolveRole(response.role, response.user),
+        role: _resolveRole(response.user.role, response.user),
         needsCompanySetup: false,
         // Mirror the signup() flag so MainShell lands new owners on the
         // "Mon Salon" tab instead of the client home feed.
@@ -527,7 +532,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
-      final resolvedRoleFb = _resolveRole(response.role, response.user);
+      final resolvedRoleFb = _resolveRole(response.user.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,
@@ -592,7 +597,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         rememberMe: state.rememberMe,
       );
 
-      final resolvedRoleApple = _resolveRole(response.role, response.user);
+      final resolvedRoleApple = _resolveRole(response.user.role, response.user);
       state = state.copyWith(
         isAuthenticated: true,
         isLoading: false,

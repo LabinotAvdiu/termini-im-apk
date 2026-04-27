@@ -7,6 +7,8 @@ class UserModel {
   final String? profileImageUrl;
   final String? thumbnailUrl;
   final bool emailVerified;
+  /// Main role from the backend: 'admin', 'company', or 'user'.
+  final String role;
   // Present when the user belongs to a company: 'owner' or 'employee'.
   // Null for regular (client) accounts.
   final String? companyRole;
@@ -24,6 +26,7 @@ class UserModel {
     this.profileImageUrl,
     this.thumbnailUrl,
     this.emailVerified = false,
+    this.role = 'user',
     this.locale,
     this.companyRole,
     this.gender,
@@ -48,6 +51,7 @@ class UserModel {
       profileImageUrl: json['profileImageUrl'] as String?,
       thumbnailUrl:    json['thumbnailUrl'] as String?,
       emailVerified:   json['emailVerified'] as bool? ?? false,
+      role:            (json['role'] as String?) ?? 'user',
       companyRole:     json['companyRole'] as String?,
       locale:          json['locale'] as String?,
       gender:          json['gender'] as String?,
@@ -64,6 +68,7 @@ class UserModel {
       'profileImageUrl': profileImageUrl,
       'thumbnailUrl':    thumbnailUrl,
       'emailVerified':   emailVerified,
+      'role':            role,
       'companyRole':     companyRole,
       'gender':          gender,
     };
@@ -85,6 +90,7 @@ class UserModel {
     Object? profileImageUrl = _clearSentinel,
     Object? thumbnailUrl    = _clearSentinel,
     bool? emailVerified,
+    String? role,
     String? companyRole,
     String? locale,
     String? gender,
@@ -102,6 +108,7 @@ class UserModel {
           ? this.thumbnailUrl
           : thumbnailUrl as String?,
       emailVerified:   emailVerified   ?? this.emailVerified,
+      role:            role            ?? this.role,
       companyRole:     companyRole     ?? this.companyRole,
       locale:          locale          ?? this.locale,
       gender:          gender          ?? this.gender,

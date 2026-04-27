@@ -98,7 +98,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;
@@ -119,7 +119,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;
@@ -143,7 +143,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;
@@ -173,7 +173,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;
@@ -191,7 +191,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;
@@ -215,7 +215,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;
@@ -237,7 +237,7 @@ class AuthRepository {
     await _persistSession(
       token: response.token,
       refreshToken: response.refreshToken,
-      role: response.role,
+      role: response.user.role,
       rememberMe: rememberMe,
     );
     return response;

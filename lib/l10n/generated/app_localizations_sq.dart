@@ -2030,6 +2030,21 @@ class AppLocalizationsSq extends AppLocalizations {
   String get supportErrorRetry => 'Provo përsëri';
 
   @override
+  String get adminSupportTicketsTitle => 'Tickets mbështetje';
+
+  @override
+  String get adminTicketOpen => 'Hapur';
+
+  @override
+  String get adminTicketResolved => 'Zgjidhur';
+
+  @override
+  String get adminTicketsEmpty => 'Asnjë ticket mbështetjeje ende.';
+
+  @override
+  String get adminMarkResolved => 'Shëno si i zgjidhur';
+
+  @override
   String get supportFileTooLarge => 'Skedar shumë i madh • maks 5 MB';
 
   @override

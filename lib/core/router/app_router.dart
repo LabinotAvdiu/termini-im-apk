@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/admin/presentation/screens/admin_support_tickets_screen.dart';
 import '../../features/auth/presentation/screens/company_setup_screen.dart';
 import '../../features/auth/presentation/screens/company_mode_screen.dart';
 import '../../features/auth/presentation/providers/company_setup_draft_provider.dart';
@@ -70,6 +71,12 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Don't redirect while loading (prevents flash to login during signup/login)
       if (isLoading) return null;
+
+      // Admin-only routes — redirect non-admins to /home.
+      final isAdminRoute = currentPath.startsWith('/admin');
+      if (isAdminRoute && (!isLoggedIn || !authState.isAdmin)) {
+        return '/home';
+      }
 
       // Authenticated company accounts without a Company record yet — force
       // them through the two-step setup flow before anything else.
@@ -283,6 +290,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/admin/support-tickets',
+        name: RouteNames.adminSupportTickets,
+        pageBuilder: (context, state) => editorialSlidePage(
+          key: state.pageKey,
+          child: const AdminSupportTicketsScreen(),
+        ),
+      ),
+      GoRoute(
         path: '/appointments/:id/review',
         name: RouteNames.submitReview,
         pageBuilder: (context, state) {
@@ -369,7 +384,7 @@ class _HomeDispatcher extends ConsumerWidget {
   }
 }
 
-/// Wraps [AppointmentsScreen] dans un Scaffold avec `AppTopBar.standard`
+/// Wraps [AppointmentsScreen] avec `AppTopBar.standard` lorsqu'il est
 /// lorsqu'il est atteint depuis Settings (en dehors du shell).
 class _StandaloneAppointments extends StatelessWidget {
   const _StandaloneAppointments();

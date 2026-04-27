@@ -102,6 +102,7 @@ class _MainShellState extends ConsumerState<MainShell> {
       isCapacityOwner: isCapacityOwner,
       isIndividualEmployee: isIndividualEmployee,
       isClient: isClient,
+      isAdmin: authState.isAdmin,
       pendingCount: pendingCount,
       selectedIndex: safeIndex,
       onTap: _onTabTapped,
@@ -218,6 +219,7 @@ List<_TabSpec> _buildTabs({
   required bool isCapacityOwner,
   required bool isIndividualEmployee,
   required bool isClient,
+  required bool isAdmin,
   required int pendingCount,
   required int selectedIndex,
   required ValueChanged<int> onTap,
@@ -292,6 +294,16 @@ List<_TabSpec> _buildTabs({
           selected: selectedIndex == i,
           onTap: () => onTap(i),
         ));
+  }
+
+  if (isAdmin) {
+    final onAdminRoute = GoRouterState.of(context).uri.path.startsWith('/admin');
+    list.add(_TabSpec(
+      icon: Icons.support_agent_rounded,
+      label: context.l10n.adminSupportTicketsTitle,
+      selected: onAdminRoute,
+      onTap: () => context.go('/admin/support-tickets'),
+    ));
   }
 
   // Profile — routes out of the shell to the Settings screen (index is ignored).

@@ -3772,6 +3772,36 @@ abstract class AppLocalizations {
   /// **'Réessayer'**
   String get supportErrorRetry;
 
+  /// No description provided for @adminSupportTicketsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tickets support'**
+  String get adminSupportTicketsTitle;
+
+  /// No description provided for @adminTicketOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvert'**
+  String get adminTicketOpen;
+
+  /// No description provided for @adminTicketResolved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résolu'**
+  String get adminTicketResolved;
+
+  /// No description provided for @adminTicketsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun ticket support pour l\'instant.'**
+  String get adminTicketsEmpty;
+
+  /// No description provided for @adminMarkResolved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme résolu'**
+  String get adminMarkResolved;
+
   /// No description provided for @supportFileTooLarge.
   ///
   /// In fr, this message translates to:
