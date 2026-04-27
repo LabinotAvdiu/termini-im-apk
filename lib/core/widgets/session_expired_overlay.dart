@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../router/app_router.dart' show routerProvider;
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
@@ -90,14 +90,27 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
     debugPrint('[overlay] _showModal entry — about to showDialog');
     _pendingAction = _PostModalAction.none;
 
+    // SessionExpiredOverlay is mounted INSIDE MaterialApp.router(builder:),
+    // which means our State context lives ABOVE the Navigator in the
+    // element tree. showDialog needs a context with a Navigator ancestor,
+    // so we reach into GoRouter's own navigator key to grab a context
+    // that does. Without this we'd hit:
+    //   "Navigator operation requested with a context that does not
+    //    include a Navigator."
+    final router = ref.read(routerProvider);
+    final navContext =
+        router.routerDelegate.navigatorKey.currentContext;
+    if (navContext == null) {
+      debugPrint('[overlay] navigatorKey.currentContext is null — abort');
+      _modalOpen = false;
+      return;
+    }
+
     await showDialog<void>(
-      context: context,
+      context: navContext,
       barrierDismissible: false,
       barrierColor: AppColors.textPrimary.withValues(alpha: 0.55),
-      // Use the root navigator so the dialog sits above any in-flight
-      // GoRouter route transitions (the auth state wipe would normally
-      // race the modal mount otherwise).
-      useRootNavigator: true,
+      useRootNavigator: false,
       builder: (dialogCtx) => _SessionExpiredDialog(
         onLogin: () {
           _pendingAction = _PostModalAction.goLogin;
@@ -119,18 +132,20 @@ class _SessionExpiredOverlayState extends ConsumerState<SessionExpiredOverlay> {
       return;
     }
 
-    // Run the navigation AFTER the dialog has finished tearing down and the
-    // next frame has rendered, otherwise GoRouter.of(context) can race with
-    // the dialog's overlay removal and silently no-op.
+    // Use the GoRouter instance directly — same reason as showDialog above:
+    // our State's context is mounted above the Router, so context.go()
+    // would not resolve InheritedGoRouter. Going through the provider
+    // gives us the router straight from Riverpod with no tree lookup.
     final action = _pendingAction;
     _pendingAction = _PostModalAction.none;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final router = ref.read(routerProvider);
       switch (action) {
         case _PostModalAction.goLogin:
-          context.go('/login');
+          router.go('/login');
         case _PostModalAction.goHomeAsGuest:
-          context.go('/home');
+          router.go('/home');
         case _PostModalAction.none:
           break;
       }
