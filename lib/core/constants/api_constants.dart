@@ -141,6 +141,12 @@ abstract class ApiConstants {
   static const String supportTickets = '/support-tickets';
 
   // ---------------------------------------------------------------------------
+  // Admin support (admin-only)
+  // ---------------------------------------------------------------------------
+  static const String adminSupportTickets = '/admin/support-tickets';
+  static String adminSupportTicket(String id) => '/admin/support-tickets/$id';
+
+  // ---------------------------------------------------------------------------
   // E28 — Client error reporting (public POST, auth:sanctum GET)
   // ---------------------------------------------------------------------------
   static const String clientErrors = '/errors';

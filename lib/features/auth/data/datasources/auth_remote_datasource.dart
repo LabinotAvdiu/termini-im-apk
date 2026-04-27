@@ -15,17 +15,15 @@ import '../models/user_model.dart';
 ///   "data": {
 ///     "token":         "...",
 ///     "refresh_token": "...",
-///     "user":          { UserResource },
-///     "role":          "user|company"
+///     "user":          { UserResource }
 ///   }
 /// }
 class AuthResponse {
   final String token;
   final String? refreshToken;
   final UserModel user;
-  final String role; // 'user' | 'company'
 
-  /// True when the user authenticated as [role]='company' but the Company
+  /// True when the user authenticated as role='company' but the Company
   /// record isn't provisioned yet (fresh social sign-up). The app should
   /// route them straight to the business-info completion screen.
   final bool needsCompanySetup;
@@ -34,7 +32,6 @@ class AuthResponse {
     required this.token,
     this.refreshToken,
     required this.user,
-    required this.role,
     this.needsCompanySetup = false,
   });
 
@@ -46,7 +43,6 @@ class AuthResponse {
       token:             data['token'] as String,
       refreshToken:      data['refresh_token'] as String?,
       user:              UserModel.fromJson(userJson),
-      role:              (data['role'] as String?) ?? (userJson['role'] as String?) ?? 'user',
       needsCompanySetup: (data['needsCompanySetup'] as bool?) ?? false,
     );
   }

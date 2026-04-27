@@ -2026,6 +2026,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportErrorRetry => 'Retry';
 
   @override
+  String get adminSupportTicketsTitle => 'Support tickets';
+
+  @override
+  String get adminTicketOpen => 'Open';
+
+  @override
+  String get adminTicketResolved => 'Resolved';
+
+  @override
+  String get adminTicketsEmpty => 'No support tickets yet.';
+
+  @override
+  String get adminMarkResolved => 'Mark as resolved';
+
+  @override
   String get supportFileTooLarge => 'File too large • max 5 MB';
 
   @override

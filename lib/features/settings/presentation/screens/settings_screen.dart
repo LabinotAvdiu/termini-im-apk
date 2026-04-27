@@ -560,6 +560,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.changePassword,
                     onTap: _showChangePasswordDialog,
                   ),
+
+                  // Mes rendez-vous — visible uniquement pour les pros
+                  // (owner/employee). Les clients ont déjà la vue dans le shell.
+                  if (ref.watch(authStateProvider.select(
+                    (s) => s.isOwner || s.isEmployee,
+                  ))) ...[
+                    const Divider(
+                        height: 1, color: AppColors.divider, indent: 48),
+                    _SettingsTile(
+                      icon: Icons.calendar_month_rounded,
+                      title: context.l10n.myAppointments,
+                      onTap: () => context.goNamed(RouteNames.myAppointments),
+                    ),
+                  ],
+
+                  if (ref.watch(authStateProvider.select((s) => s.isAdmin))) ...[
+                    const Divider(
+                        height: 1, color: AppColors.divider, indent: 48),
+                    _SettingsTile(
+                      icon: Icons.support_agent_rounded,
+                      title: context.l10n.adminSupportTicketsTitle,
+                      onTap: () =>
+                          context.goNamed(RouteNames.adminSupportTickets),
+                    ),
+                  ],
                 ],
               ),
             ),
